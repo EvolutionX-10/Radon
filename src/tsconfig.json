@@ -1,0 +1,21 @@
+{
+    "extends": "../tsconfig.base.json",
+    "compilerOptions": {
+        "allowJs": true,
+        "outDir": "../dist",
+        "rootDir": ".",
+        "baseUrl": ".",
+        "paths": {
+            "#lib/*": ["lib/*"],
+            "#models": ["models/index.ts"],
+            "#vars": ["./vars.ts"],
+            "#config": ["./config.ts"]
+        },
+        "composite": true,
+        "moduleResolution": "Node",
+        "experimentalDecorators": true,
+        "suppressImplicitAnyIndexErrors": true
+    },
+    "include": [".", "./**/*.json"],
+    "exclude": ["./tsconfig.json"]
+}
