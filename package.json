@@ -20,6 +20,9 @@
         "release": "standard-version && git push --follow-tags",
         "preview": "standard-version --dry-run"
     },
+    "engines": {
+        "node": ">=17.4.0"
+    },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/EvolutionX-10/Radon.git"
