@@ -3,8 +3,20 @@
     "version": "0.1.0",
     "description": "An advanced moderation discord bot",
     "main": "./src/index.ts",
+    "imports": {
+        "#lib/RadonClient": "./src/lib/RadonClient.ts",
+        "#lib/types": "./src/lib/types/index.ts",
+        "#lib/structures": "./src/lib/structures/index.ts",
+        "#lib/setup": "./src/lib/setup/index.ts",
+        "#lib/utility": "./src/lib/utility/index.ts",
+        "#lib/*": "./src/lib/*/index.ts",
+        "#models": "./src/models/index.ts",
+        "#vars": "./src/vars.ts",
+        "#config": "./src/config.ts"
+    },
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "ts-node ./src/index.ts"
     },
     "repository": {
         "type": "git",
@@ -29,7 +41,7 @@
         "@types/string-similarity": "^4.0.0",
         "@typescript-eslint/eslint-plugin": "^5.12.0",
         "@typescript-eslint/parser": "^5.12.0",
-        "cz-conventional-changelog": "^3.3.0",
+        "cz-conventional-changelog": "^3.0.1",
         "eslint": "^8.9.0",
         "prettier": "^2.5.1",
         "standard-version": "^9.3.2"
@@ -49,9 +61,17 @@
         "@sapphire/ts-config": "^3.3.1",
         "@sapphire/type": "^2.1.2",
         "@sapphire/utilities": "^3.3.0",
+        "axios": "^0.26.0",
         "discord.js": "^13.6.0",
         "dotenv": "^16.0.0",
+        "humanize-duration": "^3.27.1",
+        "mongoose": "^6.2.2",
         "ts-node": "^10.5.0"
+    },
+    "resolutions": {
+        "node-fetch": "3.2.1",
+        "ansi-regex": "6.0.1",
+        "cross-fetch": "3.1.5"
     },
     "config": {
         "commitizen": {
