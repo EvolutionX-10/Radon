@@ -46,7 +46,11 @@ export class UserListener extends Listener {
                     `${message.author.id} [AUTO] Spam --silent`,
                     { commandName: 'blacklist', commandPrefix: '', prefix: '' }
                 );
-                await (cmd as RadonCommand).messageRun(message, args as Args, {});
+                await (cmd as RadonCommand).messageRun(
+                    message,
+                    args as Args,
+                    {}
+                );
                 return await send(message, {
                     content: `<@${message.author.id}> you're blacklisted for spamming commands!`,
                     allowedMentions: {
