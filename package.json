@@ -73,9 +73,7 @@
         "mongoose": "^6.2.2",
         "ts-node": "^10.5.0"
     },
-    "resolutions": {
-        
-    },
+    "resolutions": {},
     "config": {
         "commitizen": {
             "path": "./node_modules/cz-conventional-changelog"
