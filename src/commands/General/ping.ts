@@ -5,6 +5,7 @@ import { ApplyOptions } from '@sapphire/decorators';
 import { PermissionLevels } from '#lib/types';
 import {
     ApplicationCommandRegistry,
+    MessageCommand,
     RegisterBehavior,
 } from '@sapphire/framework';
 import { vars } from '#vars';
@@ -12,10 +13,11 @@ import { des } from '#lib/messages';
 @ApplyOptions<RadonCommand.Options>({
     description: des.general.ping,
     permissionLevel: PermissionLevels.Everyone,
-    cooldownFilteredUsers: [],
 })
 export class UserCommand extends RadonCommand {
-    public async messageRun(message: Message) {
+    public async messageRun(
+        ...[message]: Parameters<MessageCommand['messageRun']>
+    ) {
         const msg = await send(message, 'Ping?');
         const content = `Pong! (Roundtrip took: ${Math.round(
             (msg.editedTimestamp || msg.createdTimestamp) -
