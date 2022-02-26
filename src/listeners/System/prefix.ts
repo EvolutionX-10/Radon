@@ -20,7 +20,6 @@ export class UserListener extends Listener {
                 type: ownerMode ? 'LISTENING' : 'WATCHING',
             };
             if (current === newstatus) return;
-
             this.container.client.user?.setPresence({
                 status: newstatus,
                 activities: [
@@ -30,9 +29,9 @@ export class UserListener extends Listener {
                     },
                 ],
             });
-            setTimeout(check, 100);
+            setTimeout(check, 1000);
         };
-        check();
+        await check();
         this.container.client.fetchPrefix = async (message: Message) => {
             const database = await prefixDB.findById(message.guildId);
             if (ownerMode) {
