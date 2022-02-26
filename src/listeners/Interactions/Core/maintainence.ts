@@ -1,7 +1,7 @@
 import { modesDB } from '#models';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Events, Listener, ListenerOptions } from '@sapphire/framework';
-import type { Interaction } from 'discord.js';
+import type { Interaction, Message } from 'discord.js';
 @ApplyOptions<ListenerOptions>({
     event: Events.InteractionCreate,
 })
@@ -35,13 +35,20 @@ export class UserListener extends Listener {
                 );
             }
             const description = ownerMode
-                ? 'Status: Disabled'
-                : 'Status: Enabled';
-            const msg = await interaction.channel?.messages.fetch(
-                interaction.message.id
-            );
+                ? '```\n' + 'Status: Disabled' + '\n' + '```'
+                : '```\n' + 'Status: Enabled' + '\n' + '```';
+            const msg = interaction.message as Message;
             await msg?.edit({
                 embeds: [msg.embeds[0].setDescription(description)],
+            });
+            this.container.client.user?.setPresence({
+                status: ownerMode ? 'dnd' : 'invisible',
+                activities: [
+                    {
+                        name: ownerMode ? 'for Rule Breakers' : 'Evo',
+                        type: ownerMode ? 'WATCHING' : 'LISTENING',
+                    },
+                ],
             });
         }
     }
