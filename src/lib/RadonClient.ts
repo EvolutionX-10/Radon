@@ -1,14 +1,19 @@
-import 'dotenv/config';
 import { SapphireClient, container } from '@sapphire/framework';
 import { client_config } from '#config';
 import mongoose from 'mongoose';
+import { config as dotenv } from 'dotenv-cra';
+import { envParseBoolean } from '#lib/env';
 
+dotenv({
+    debug: process.env.DOTENV_DEBUG_ENABLED
+        ? envParseBoolean('DOTENV_DEBUG_ENABLED')
+        : undefined,
+});
 export class RadonClient extends SapphireClient {
     public constructor() {
         super(client_config);
     }
     public override async login(token?: string): Promise<string> {
-        container.logger.info('Logging in...');
         container.database = await this.connect();
         return await super.login(token);
     }
@@ -18,7 +23,6 @@ export class RadonClient extends SapphireClient {
     }
     private async connect() {
         await mongoose.connect(process.env.MONGO as string);
-        container.logger.info(`Connected to Database!`);
         return mongoose;
     }
 }

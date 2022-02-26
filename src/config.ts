@@ -1,3 +1,5 @@
+process.env.NODE_ENV ??= 'development';
+
 import type {
     BitFieldResolvable,
     ClientOptions,
@@ -11,9 +13,9 @@ import {
     CooldownOptions,
     LogLevel,
 } from '@sapphire/framework';
-import 'dotenv/config';
 import { Time } from '@sapphire/time-utilities';
 import { vars } from '#vars';
+
 export const config: config = {
     intents: ['GUILDS', 'GUILD_MEMBERS', 'GUILD_MESSAGES', 'GUILD_BANS'],
     cooldown_options: {
@@ -48,4 +50,8 @@ export const client_config: ClientOptions = {
     logger: config.logger,
     loadMessageCommandListeners: true,
     typing: false,
+    hmr: {
+        enabled: process.env.NODE_ENV === 'development',
+    },
+    shards: 'auto',
 };

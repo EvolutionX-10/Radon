@@ -1,13 +1,73 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { RadonClient } from '#lib/RadonClient';
 import { ApplyOptions } from '@sapphire/decorators';
-import { Events, Listener } from '@sapphire/framework';
+import { Events, Listener, Store } from '@sapphire/framework';
+import {
+    blue,
+    gray,
+    green,
+    magentaBright,
+    white,
+    yellow,
+    greenBright,
+    blueBright,
+} from 'colorette';
+import figlet from 'figlet';
+import gradient from 'gradient-string';
 @ApplyOptions<Listener.Options>({
     event: Events.ClientReady,
     once: true,
 })
 export class UserListener extends Listener {
+    private readonly style = this.isDev ? yellow : blue;
     public override async run(client: RadonClient) {
         this.container.client = client;
-        this.container.logger.info(`Client ready!`);
+        this.container.logger.info(
+            `Logged in as ${greenBright(client.user?.tag as string)}`
+        );
+        this.printBanner();
+        this.printStoreDebugInformation();
+    }
+    private get isDev() {
+        return process.env.NODE_ENV === 'development';
+    }
+    private printBanner() {
+        const success = green('+');
+
+        const llc = this.isDev ? magentaBright : white;
+        const blc = this.isDev ? blueBright : blue;
+
+        // Offset Pad
+        const pad = ' '.repeat(2);
+
+        console.log(
+            String.raw`
+${gradient.pastel.multiline(figlet.textSync('Radon'))}
+${pad}${blc(`${process.env.CLIENT_NAME} [${process.env.CLIENT_VERSION}]`)}
+${pad}[${success}] Gateway
+${
+    this.isDev
+        ? ` ${pad}${blc('<')}${llc('/')}${blc('>')} ${llc('DEVELOPMENT MODE')}`
+        : ''
+}
+		`.trim()
+        );
+    }
+    private printStoreDebugInformation() {
+        const { client, logger } = this.container;
+        const stores = [...client.stores.values()];
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const last = stores.pop()!;
+
+        for (const store of stores) logger.info(this.styleStore(store, false));
+        logger.info(this.styleStore(last, true));
+    }
+
+    private styleStore(store: Store<any>, last: boolean) {
+        return gray(
+            `${last ? '└─' : '├─'} Loaded ${this.style(
+                store.size.toString().padEnd(3, ' ')
+            )} ${store.name}.`
+        );
     }
 }
