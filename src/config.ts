@@ -29,7 +29,10 @@ export const config: config = {
     },
     partials: ['GUILD_MEMBER', 'MESSAGE', 'USER'],
     logger: {
-        level: LogLevel.Info,
+        level:
+            process.env.NODE_ENV === 'development'
+                ? LogLevel.Debug
+                : LogLevel.Info,
     },
 };
 interface config {

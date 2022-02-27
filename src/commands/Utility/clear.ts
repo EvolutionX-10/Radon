@@ -64,7 +64,7 @@ export class UserCommand extends RadonCommand {
             },
             {
                 guildIds: vars.guildIds,
-                idHints: ['946807890658857030'],
+                idHints: ['946807890658857030', '947165799309783050'],
             }
         );
     }

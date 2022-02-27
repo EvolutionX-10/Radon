@@ -27,6 +27,11 @@ export class UserListener extends Listener {
         );
         this.printBanner();
         this.printStoreDebugInformation();
+        this.container.logger.info(
+            `${greenBright('ws            [')}${blueBright(
+                'READY'
+            )}${greenBright(']')}`
+        );
     }
     private get isDev() {
         return process.env.NODE_ENV === 'development';
@@ -42,7 +47,9 @@ export class UserListener extends Listener {
 
         console.log(
             String.raw`
-${gradient.pastel.multiline(figlet.textSync('Radon'))}
+${gradient.pastel.multiline(
+    figlet.textSync(this.container.client.user?.username ?? 'Err')
+)}
 ${pad}${blc(`${process.env.CLIENT_NAME} [${process.env.CLIENT_VERSION}]`)}
 ${pad}[${success}] Gateway
 ${
