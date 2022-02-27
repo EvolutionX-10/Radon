@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.2](https://github.com/EvolutionX-10/Radon/compare/v0.1.1...v0.1.2) (2022-02-27)
+
+
+### Features
+
+* **yarn:** update to yarn v3.2 🎉 ([4db8642](https://github.com/EvolutionX-10/Radon/commit/4db864216e2cc388e37a38acca91fdcff9cee25b))
+
 ### [0.1.1](https://github.com/EvolutionX-10/Radon/compare/v0.1.0...v0.1.1) (2022-02-26)
 
 
