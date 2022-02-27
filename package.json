@@ -2,7 +2,7 @@
     "name": "radon",
     "version": "0.1.1",
     "description": "An advanced moderation discord bot",
-    "main": "./dist/index.ts",
+    "main": "./dist/index.js",
     "imports": {
         "#lib/RadonClient": "./dist/lib/RadonClient.js",
         "#lib/types": "./dist/lib/types/index.js",
