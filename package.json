@@ -18,7 +18,7 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "yarn compile && NODE_ENV=production && node ./dist/index.js",
-        "dev": "yarn build && node ./dist/index.js",
+        "dev": "yarn compile && node ./dist/index.js",
         "release": "standard-version && git push --follow-tags",
         "preview": "standard-version --dry-run",
         "compile": "tsc -p ./src",
