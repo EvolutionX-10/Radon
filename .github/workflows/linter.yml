@@ -37,4 +37,3 @@ jobs:
           auto_fix: true
           eslint_extensions: ts
           commit_message: "style(auto): fix code style issues with ${linter}"
-          prettier_args: "--tab-width=4 --single-quote=true"
