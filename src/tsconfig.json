@@ -15,7 +15,7 @@
         "moduleResolution": "Node",
         "experimentalDecorators": true,
         "suppressImplicitAnyIndexErrors": true,
-        "skipLibCheck": true,
+        "skipLibCheck": true
     },
     "include": [".", "./**/*.json"],
     "exclude": ["./tsconfig.json"]
