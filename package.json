@@ -2,24 +2,26 @@
     "name": "radon",
     "version": "0.1.1",
     "description": "An advanced moderation discord bot",
-    "main": "./src/index.ts",
+    "main": "./dist/index.ts",
     "imports": {
-        "#lib/RadonClient": "./src/lib/RadonClient.ts",
-        "#lib/types": "./src/lib/types/index.ts",
-        "#lib/structures": "./src/lib/structures/index.ts",
-        "#lib/setup": "./src/lib/setup/index.ts",
-        "#lib/utility": "./src/lib/utility/index.ts",
-        "#lib/*": "./src/lib/*/index.ts",
-        "#models": "./src/models/index.ts",
-        "#vars": "./src/vars.ts",
-        "#config": "./src/config.ts"
+        "#lib/RadonClient": "./dist/lib/RadonClient.js",
+        "#lib/types": "./dist/lib/types/index.js",
+        "#lib/structures": "./dist/lib/structures/index.js",
+        "#lib/setup": "./dist/lib/setup/index.js",
+        "#lib/utility": "./dist/lib/utility/index.js",
+        "#lib/*": "./dist/lib/*/index.js",
+        "#models": "./dist/models/index.js",
+        "#vars": "./dist/vars.js",
+        "#config": "./dist/config.js"
     },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "set NODE_ENV=production && ts-node ./src/index.ts",
-        "dev": "ts-node ./src/index.ts",
+        "start": "set NODE_ENV=production && node ./dist/index.js",
+        "dev": "node ./dist/index.js",
         "release": "standard-version && git push --follow-tags",
-        "preview": "standard-version --dry-run"
+        "preview": "standard-version --dry-run",
+        "compile": "tsc -p ./src",
+        "watch": "tsc -b src --watch"
     },
     "engines": {
         "node": ">=17.4.0"

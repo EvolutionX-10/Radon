@@ -14,7 +14,8 @@
         "composite": true,
         "moduleResolution": "Node",
         "experimentalDecorators": true,
-        "suppressImplicitAnyIndexErrors": true
+        "suppressImplicitAnyIndexErrors": true,
+        "skipLibCheck": true,
     },
     "include": [".", "./**/*.json"],
     "exclude": ["./tsconfig.json"]
