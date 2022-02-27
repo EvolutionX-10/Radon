@@ -1,4 +1,4 @@
-import { modesDB, prefixDB } from '#models';
+import { modesDB } from '#models';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Events, Listener, ListenerOptions } from '@sapphire/framework';
 import type { ExcludeEnum, Message } from 'discord.js';
@@ -32,56 +32,15 @@ export class UserListener extends Listener {
             setTimeout(check, 1000);
         };
         await check();
-        this.container.client.fetchPrefix = async (message: Message) => {
-            const database = await prefixDB.findById(message.guildId);
-            if (ownerMode) {
-                if (database) {
-                    const {
-                        prefix,
-                        ownerPrefix,
-                    }: { prefix: string; ownerPrefix: boolean } = database;
-                    if (
-                        vars.owners.includes(message.author.id) &&
-                        ownerPrefix
-                    ) {
-                        let guild_prefix: string[] = [];
-                        guild_prefix.push(prefix);
-                        guild_prefix = guild_prefix.concat(vars.owner_prefixes);
-                        return guild_prefix;
-                    } else {
-                        const guild_prefix: string[] = [];
-                        guild_prefix.push(prefix);
-                        return guild_prefix;
-                    }
-                }
-
-                return vars.prefixes.concat(vars.owner_prefixes);
-            }
+        this.container.client.fetchPrefix = (message: Message) => {
             if (!message.guild) {
                 if (vars.owners.includes(message.author.id)) {
-                    return vars.prefixes.concat(vars.owner_prefixes);
-                } else return vars.prefixes;
-            }
-
-            if (database) {
-                const {
-                    prefix,
-                    ownerPrefix,
-                }: { prefix: string; ownerPrefix: boolean } = database;
-                if (vars.owners.includes(message.author.id) && ownerPrefix) {
-                    let guild_prefix: string[] = [];
-                    guild_prefix.push(prefix);
-                    guild_prefix = guild_prefix.concat(vars.owner_prefixes);
-                    return guild_prefix;
-                } else {
-                    const guild_prefix: string[] = [];
-                    guild_prefix.push(prefix);
-                    return guild_prefix;
-                }
+                    return vars.owner_prefixes;
+                } else return null;
             }
             if (vars.owners.includes(message.author.id)) {
-                return vars.prefixes.concat(vars.owner_prefixes);
-            } else return vars.prefixes;
+                return vars.owner_prefixes;
+            } else return null;
         };
     }
 }

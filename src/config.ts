@@ -44,7 +44,6 @@ interface config {
 }
 export const client_config: ClientOptions = {
     intents: config.intents,
-    defaultPrefix: vars.prefixes,
     allowedMentions: config.mentions,
     caseInsensitiveCommands: true,
     caseInsensitivePrefixes: true,
@@ -57,4 +56,5 @@ export const client_config: ClientOptions = {
         enabled: process.env.NODE_ENV === 'development',
     },
     shards: 'auto',
+    disableMentionPrefix: true,
 };
