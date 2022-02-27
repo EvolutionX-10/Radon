@@ -1,7 +1,13 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import type { Message } from 'discord.js';
+import type {
+    CommandInteraction,
+    ContextMenuInteraction,
+    Message,
+} from 'discord.js';
 import {
     AsyncPreconditionResult,
+    ChatInputCommand,
+    ContextMenuCommand,
     Identifiers,
     PieceContext,
     Precondition,
@@ -37,10 +43,33 @@ export abstract class PermissionsPrecondition extends Precondition {
         // Run the specific precondition's logic:
         return this.handle(message, command, context);
     }
-
+    public async chatInputRun(
+        interaction: CommandInteraction,
+        command: ChatInputCommand,
+        context: PermissionsPrecondition.Context
+    ): PermissionsPrecondition.AsyncResult {
+        if (interaction.guild === null || interaction.member === null) {
+            return this.guildOnly
+                ? this.error({ identifier: Identifiers.PreconditionGuildOnly })
+                : this.ok();
+        }
+        return this.handle(interaction, command, context);
+    }
+    public async contextMenuRun(
+        interaction: ContextMenuInteraction,
+        command: ContextMenuCommand,
+        context: PermissionsPrecondition.Context
+    ): PermissionsPrecondition.AsyncResult {
+        if (interaction.guild === null || interaction.member === null) {
+            return this.guildOnly
+                ? this.error({ identifier: Identifiers.PreconditionGuildOnly })
+                : this.ok();
+        }
+        return this.handle(interaction, command, context);
+    }
     public abstract handle(
-        message: Message,
-        command: RadonCommand,
+        message: Message | CommandInteraction | ContextMenuInteraction,
+        command: RadonCommand | ChatInputCommand | ContextMenuCommand,
         context: PermissionsPrecondition.Context
     ): PermissionsPrecondition.Result;
 }
