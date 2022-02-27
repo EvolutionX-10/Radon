@@ -16,11 +16,11 @@
     },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "yarn build && NODE_ENV=production && node ./dist/index.js",
+        "start": "yarn compile && NODE_ENV=production && node ./dist/index.js",
         "dev": "yarn build && node ./dist/index.js",
         "release": "standard-version && git push --follow-tags",
         "preview": "standard-version --dry-run",
-        "build": "tsc -p ./src",
+        "compile": "tsc -p ./src",
         "watch": "tsc -b src --watch"
     },
     "engines": {
