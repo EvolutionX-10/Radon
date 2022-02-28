@@ -17,7 +17,13 @@ import { Time } from '@sapphire/time-utilities';
 import { vars } from '#vars';
 
 export const config: config = {
-    intents: ['GUILDS', 'GUILD_MEMBERS', 'GUILD_MESSAGES', 'GUILD_BANS'],
+    intents: [
+        'GUILDS',
+        'GUILD_MEMBERS',
+        'GUILD_MESSAGES',
+        'GUILD_BANS',
+        'DIRECT_MESSAGES',
+    ],
     cooldown_options: {
         delay: Time.Second * 10,
         filteredUsers: vars.owners,
@@ -27,7 +33,7 @@ export const config: config = {
         parse: ['everyone', 'roles', 'users'],
         repliedUser: false,
     },
-    partials: ['GUILD_MEMBER', 'MESSAGE', 'USER'],
+    partials: ['GUILD_MEMBER', 'MESSAGE', 'USER', 'CHANNEL'],
     logger: {
         level:
             process.env.NODE_ENV === 'development'
