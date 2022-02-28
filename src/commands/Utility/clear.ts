@@ -1,23 +1,27 @@
 import { des } from '#lib/messages';
 import { RadonCommand } from '#lib/structures';
+import { PermissionLevels } from '#lib/types';
 import { sec } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import type {
+import {
     ApplicationCommandRegistry,
     ChatInputCommand,
+    RegisterBehavior,
 } from '@sapphire/framework';
-import type { TextChannel } from 'discord.js';
+import { Constants, TextChannel } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
     cooldownDelay: sec(15),
     description: des.utility.clear,
+    permissionLevel: PermissionLevels.Moderator,
+    runIn: ['GUILD_ANY'],
 })
 export class UserCommand extends RadonCommand {
     public async chatInputRun(
         ...[interaction]: Parameters<ChatInputCommand['chatInputRun']>
     ) {
         await interaction.deferReply({ ephemeral: true });
-        const count = interaction.options.getNumber('count', true);
+        const count = interaction.options.getInteger('count', true);
         const channel = interaction.channel as TextChannel;
         let dels = 0;
         if (count > 100) {
@@ -25,10 +29,10 @@ export class UserCommand extends RadonCommand {
             const p = new Promise((resolve: (value: void) => void) => {
                 arr.forEach(async (num, i, ar) => {
                     setTimeout(async () => {
-                        if (i === ar.length - 1) resolve();
                         const { size } = await channel.bulkDelete(num, true);
                         dels += size;
-                    }, 2000 * i);
+                        if (i === ar.length - 1) resolve();
+                    }, 5000 * i);
                 });
             });
             p.then(async () => {
@@ -57,14 +61,15 @@ export class UserCommand extends RadonCommand {
                         description: 'Number of messages to delete',
                         minValue: 1,
                         maxValue: 500,
-                        type: 'NUMBER',
+                        type: Constants.ApplicationCommandOptionTypes.INTEGER,
                         required: true,
                     },
                 ],
             },
             {
                 guildIds: vars.guildIds,
-                idHints: ['946807890658857030', '947165799309783050'],
+                idHints: ['947723986521956433', '947165799309783050'],
+                behaviorWhenNotIdentical: RegisterBehavior.Overwrite,
             }
         );
     }
