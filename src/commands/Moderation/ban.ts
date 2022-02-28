@@ -20,10 +20,12 @@ export class UserCommand extends RadonCommand {
         ...[interaction]: Parameters<ChatInputCommand['chatInputRun']>
     ) {
         if (!interaction.guild) return;
-        const member = interaction.options.getMember(
-            'member',
-            true
-        ) as GuildMember;
+        const member = interaction.options.getMember('member') as GuildMember;
+        if (!member)
+            return await interaction.reply({
+                content: `${vars.emojis.cross} You must specify a valid member`,
+                ephemeral: true,
+            });
         const reason = interaction.options.getString('reason');
         const days = interaction.options.getInteger('days');
         const { content: ctn, result } = runAllChecks(
