@@ -12,27 +12,15 @@ export class UserListener extends Listener {
         if (interaction.customId === 'radon-maintenance') {
             await interaction.deferUpdate({ fetchReply: true });
             const mode = await modesDB.findById(id);
-            const { ownerMode } = mode;
+            const ownerMode = mode?.ownerMode as boolean;
             if (ownerMode) {
-                await modesDB.findByIdAndUpdate(
-                    id,
-                    {
-                        ownerMode: false,
-                    },
-                    {
-                        timestamps: true,
-                    }
-                );
+                await modesDB.findByIdAndUpdate(id, {
+                    ownerMode: false,
+                });
             } else {
-                await modesDB.findByIdAndUpdate(
-                    id,
-                    {
-                        ownerMode: true,
-                    },
-                    {
-                        timestamps: true,
-                    }
-                );
+                await modesDB.findByIdAndUpdate(id, {
+                    ownerMode: true,
+                });
             }
             const description = ownerMode
                 ? '```\n' + 'Status: Disabled' + '\n' + '```'

@@ -11,7 +11,7 @@ import type { ActivityTypes } from 'discord.js/typings/enums';
 export class UserListener extends Listener {
     public async run() {
         const mode = await modesDB.findById('61cf428394b75db75b5dafb4');
-        const ownerMode: boolean = mode.ownerMode;
+        const ownerMode = mode?.ownerMode;
         const check = async () => {
             const current = this.container.client.user?.presence.status;
             const newstatus: status = ownerMode ? 'invisible' : 'dnd';

@@ -24,7 +24,7 @@ export class UserPrecondition extends Precondition {
     }
     private async inOwnerMode(id: string) {
         const database = await modesDB.findById('61cf428394b75db75b5dafb4');
-        const mode: boolean = database.ownerMode;
+        const mode = database?.ownerMode;
         if (!mode) return this.ok();
         else
             return vars.owners.includes(id)

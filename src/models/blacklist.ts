@@ -1,17 +1,11 @@
+import { buildSchema, modelOptions, prop } from '@typegoose/typegoose';
 import { container } from '@sapphire/framework';
-const blacklistSchema = new container.database.Schema(
-    {
-        _id: String,
-        username: String,
-        reason: String,
-    },
-    {
-        timestamps: true,
-    }
-);
-
-export default container.database.model(
-    'blacklist',
-    blacklistSchema,
-    'blacklist'
-);
+@modelOptions({ schemaOptions: { timestamps: true } })
+class blacklist {
+    @prop({ required: true })
+    public _id!: string;
+    @prop({ required: true })
+    public reason!: string;
+}
+const schema = buildSchema(blacklist);
+export default container.database.model('blacklist', schema, 'blacklist');

@@ -465,6 +465,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@typegoose/typegoose@npm:^9.7.0":
+  version: 9.7.0
+  resolution: "@typegoose/typegoose@npm:9.7.0"
+  dependencies:
+    lodash: ^4.17.20
+    loglevel: ^1.8.0
+    reflect-metadata: ^0.1.13
+    semver: ^7.3.2
+    tslib: ^2.3.1
+  peerDependencies:
+    mongoose: ~6.2.3
+  checksum: 2589617b6af36d04c9aed508d488709cadc86f986cd91b1250db51016d483ddbecc98074ca73443629aac637a660ec9fad89227fd81da618003e1175aa8f1943
+  languageName: node
+  linkType: hard
+
 "@types/figlet@npm:^1.5.4":
   version: 1.5.4
   resolution: "@types/figlet@npm:1.5.4"
@@ -3313,6 +3328,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"loglevel@npm:^1.8.0":
+  version: 1.8.0
+  resolution: "loglevel@npm:1.8.0"
+  checksum: 41aeea17de24aba8dba68084a31fe9189648bce4f39c1277e021bb276c3c53a75b0d337395919cf271068ad40ecefabad0e4fdeb4a8f11908beee532b898f4a7
+  languageName: node
+  linkType: hard
+
 "longest@npm:^2.0.1":
   version: 2.0.1
   resolution: "longest@npm:2.0.1"
@@ -4206,6 +4228,7 @@ __metadata:
     "@sapphire/ts-config": ^3.3.1
     "@sapphire/type": ^2.1.2
     "@sapphire/utilities": ^3.3.0
+    "@typegoose/typegoose": ^9.7.0
     "@types/figlet": ^1.5.4
     "@types/gradient-string": ^1.1.2
     "@types/humanize-duration": ^3.27.1
@@ -4320,6 +4343,13 @@ __metadata:
     indent-string: ^4.0.0
     strip-indent: ^3.0.0
   checksum: fa1ef20404a2d399235e83cc80bd55a956642e37dd197b4b612ba7327bf87fa32745aeb4a1634b2bab25467164ab4ed9c15be2c307923dd08b0fe7c52431ae6b
+  languageName: node
+  linkType: hard
+
+"reflect-metadata@npm:^0.1.13":
+  version: 0.1.13
+  resolution: "reflect-metadata@npm:0.1.13"
+  checksum: 798d379a7b6f6455501145419505c97dd11cbc23857a386add2b9ef15963ccf15a48d9d15507afe01d4cd74116df8a213247200bac00320bd7c11ddeaa5e8fb4
   languageName: node
   linkType: hard
 
@@ -4530,7 +4560,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^7.1.1, semver@npm:^7.3.4, semver@npm:^7.3.5":
+"semver@npm:^7.1.1, semver@npm:^7.3.2, semver@npm:^7.3.4, semver@npm:^7.3.5":
   version: 7.3.5
   resolution: "semver@npm:7.3.5"
   dependencies:
