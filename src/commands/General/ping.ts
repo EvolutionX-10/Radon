@@ -47,7 +47,7 @@ export class UserCommand extends RadonCommand {
             {
                 behaviorWhenNotIdentical: RegisterBehavior.Overwrite,
                 guildIds: vars.guildIds,
-                idHints: ['944941953232019506', '947165795874668554'],
+                idHints: ['947723983132966934', '947165795874668554'],
             }
         );
     }
