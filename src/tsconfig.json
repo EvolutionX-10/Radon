@@ -17,6 +17,6 @@
         "suppressImplicitAnyIndexErrors": true,
         "skipLibCheck": true
     },
-    "include": [".", "./**/*.json"],
+    "include": ["../package.json", ".", "./**/*.json"],
     "exclude": ["./tsconfig.json"]
 }

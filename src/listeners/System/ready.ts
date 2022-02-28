@@ -14,6 +14,9 @@ import {
 } from 'colorette';
 import figlet from 'figlet';
 import gradient from 'gradient-string';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-ignore
+import { version } from '../../../package.json';
 @ApplyOptions<Listener.Options>({
     event: Events.ClientReady,
     once: true,
@@ -50,7 +53,7 @@ export class UserListener extends Listener {
 ${gradient.pastel.multiline(
     figlet.textSync(this.container.client.user?.username ?? 'Err')
 )}
-${pad}${blc(`${process.env.CLIENT_NAME} [${process.env.CLIENT_VERSION}]`)}
+${pad}${blc(`${process.env.CLIENT_NAME} [${version}]`)}
 ${pad}[${success}] Gateway
 ${
     this.isDev
