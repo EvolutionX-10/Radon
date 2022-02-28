@@ -7,10 +7,18 @@ import {
 export class UserListener extends Listener<
     typeof Events.ChatInputCommandError
 > {
-    public run(
+    public async run(
         error: Error,
-        { command, interaction }: ChatInputCommandErrorPayload
+        { interaction }: ChatInputCommandErrorPayload
     ) {
-        console.log(error, command.name, interaction.user);
+        if (interaction.deferred) {
+            return await interaction.editReply({
+                content: error.message,
+            });
+        } else
+            return await interaction.reply({
+                content: error.message,
+                ephemeral: true,
+            });
     }
 }
