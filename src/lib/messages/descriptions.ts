@@ -6,6 +6,7 @@ export const des = {
         ping: `Check my latency!`,
     },
     moderation: {
+        ban: `Ban a member`,
         kick: `Kick a member`,
     },
     utility: {
