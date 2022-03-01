@@ -8,6 +8,7 @@ export const des = {
     moderation: {
         ban: `Ban a member`,
         kick: `Kick a member`,
+        softban: `Softban a member`,
         unban: `Unban a user`,
     },
     utility: {
