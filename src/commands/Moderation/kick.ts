@@ -16,6 +16,7 @@ import { Constants, GuildMember } from 'discord.js';
     runIn: 'GUILD_ANY',
     cooldownDelay: sec(10),
     cooldownLimit: 3,
+    requiredClientPermissions: ['KICK_MEMBERS'],
 })
 export class UserCommand extends RadonCommand {
     public async chatInputRun(

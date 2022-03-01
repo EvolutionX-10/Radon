@@ -1,5 +1,6 @@
 import { des } from '#lib/messages';
 import { RadonCommand } from '#lib/structures';
+import { PermissionLevels } from '#lib/types';
 import { runAllChecks, sec } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
@@ -13,6 +14,8 @@ import { Constants, GuildMember } from 'discord.js';
     cooldownDelay: sec(10),
     cooldownLimit: 3,
     description: des.moderation.ban,
+    permissionLevel: PermissionLevels.Moderator,
+    requiredClientPermissions: ['BAN_MEMBERS'],
     runIn: 'GUILD_ANY',
 })
 export class UserCommand extends RadonCommand {
