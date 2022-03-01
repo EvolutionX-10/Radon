@@ -11,7 +11,9 @@ export function isAdmin(member: GuildMember): boolean {
 export function isModerator(member: GuildMember): boolean {
     return (
         isAdmin(member) ||
-        !!member.roles.cache.find((r) => r.name.toLowerCase() == 'moderator')
+        !!member.roles.cache.find((r) =>
+            r.name.toLowerCase().includes('moderator')
+        )
     );
 }
 
