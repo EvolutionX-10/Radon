@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.0](https://github.com/EvolutionX-10/Radon/compare/v0.2.0...v1.0.0) (2022-03-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* removed the array of guild ids for production environment and made it empty array
+so now slashies are global
+
+### Features
+
+* added Procfile, ready for hosting! ([defa0a0](https://github.com/EvolutionX-10/Radon/commit/defa0a0ffc5959527eea3b67db5dc7b8d4a68bbc))
+* added typegoose for mongoose ✨ ([453c0ee](https://github.com/EvolutionX-10/Radon/commit/453c0ee8164d5e140f57f08229ae7fa2eb15a922))
+* new slash command `softban` ([21a267f](https://github.com/EvolutionX-10/Radon/commit/21a267f4f0a0a2c89334867b5c48022163e34e8e))
+* new slash command `timeout` 🎉 ([0b435f6](https://github.com/EvolutionX-10/Radon/commit/0b435f680b5f9efa6a42d0b2d76c50697f7e75a3))
+* unban command 🎉 ([c877ef5](https://github.com/EvolutionX-10/Radon/commit/c877ef507191065f9cf38ed589738ef275fcebfd))
+
+
+### Bug Fixes
+
+* added appropriate permissions in `ban` and `kick` ([6aa7575](https://github.com/EvolutionX-10/Radon/commit/6aa75756a9455743bf44853e2d7130d675ac87bc))
+* **ban:** fixed a bug where it didnt handle error at a user who isnt in guild ([324f718](https://github.com/EvolutionX-10/Radon/commit/324f7187db0005b14df6b9de04585725b062fb52))
+
+
+* convert guild slashies to global in vars ([e88db71](https://github.com/EvolutionX-10/Radon/commit/e88db71d59f22702d786b0d1a12b7809a1b0e96a))
+
 ## [0.2.0](https://github.com/EvolutionX-10/Radon/compare/v0.1.2...v0.2.0) (2022-02-28)
 
 
