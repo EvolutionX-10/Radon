@@ -9,6 +9,7 @@ export const des = {
         ban: `Ban a member`,
         kick: `Kick a member`,
         softban: `Softban a member`,
+        timeout: `Temporarily mute a member`,
         unban: `Unban a user`,
     },
     utility: {
