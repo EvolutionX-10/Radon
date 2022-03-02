@@ -11,7 +11,6 @@
 
 </div>
 
-
 ## Table of Contents
 
 -   [License](#license-here)
@@ -20,7 +19,6 @@
 -   [Contributing](#contributing)
 -   [Changelog](#changelog-here)
 -   [Plans](#plans)
- 
 
 ## License [`here`][apache]
 
