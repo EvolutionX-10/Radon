@@ -14,6 +14,7 @@
 ## Table of Contents
 
 -   [License](#license-here)
+-   [Beta Testing](#beta-testing-for-radon)
 -   [Developing on Radon](#developing-on-radon)
 -   [Self Hosting](#self-hosting)
 -   [Contributing](#contributing)
@@ -21,6 +22,10 @@
 -   [Plans](#plans)
 
 ## License [`here`][apache]
+
+## Beta Testing for Radon
+
+At the moment I am not completely free but if you are interested in beta testing the bot and helping me out I would be glad. Click [here](https://discord.gg/NSUWWDECmv) to join the development server!
 
 ## Developing on Radon
 
