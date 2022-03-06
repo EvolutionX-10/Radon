@@ -1,4 +1,9 @@
-import { SapphireClient, container } from '@sapphire/framework';
+import {
+    SapphireClient,
+    container,
+    ApplicationCommandRegistries,
+    RegisterBehavior,
+} from '@sapphire/framework';
 import { client_config } from '#config';
 import mongoose from 'mongoose';
 import { config as dotenv } from 'dotenv-cra';
@@ -14,6 +19,9 @@ export class RadonClient extends SapphireClient {
         super(client_config);
     }
     public override async login(token?: string): Promise<string> {
+        ApplicationCommandRegistries.setDefaultBehaviorWhenNotIdentical(
+            RegisterBehavior.Overwrite
+        );
         container.database = await this.connect();
         return await super.login(token);
     }
