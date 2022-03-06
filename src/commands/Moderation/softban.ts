@@ -4,10 +4,9 @@ import { PermissionLevels } from '#lib/types';
 import { runAllChecks, sec } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import {
+import type {
     ApplicationCommandRegistry,
     ChatInputCommand,
-    RegisterBehavior,
 } from '@sapphire/framework';
 import { Constants, GuildMember } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
@@ -82,7 +81,6 @@ export class UserCommand extends RadonCommand {
                 ],
             },
             {
-                behaviorWhenNotIdentical: RegisterBehavior.Overwrite,
                 guildIds: vars.guildIds,
                 idHints: ['948096163398160415', '948090347974692895'],
             }

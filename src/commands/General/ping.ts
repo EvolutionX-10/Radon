@@ -3,10 +3,9 @@ import { RadonCommand } from '#lib/structures';
 import { send } from '@sapphire/plugin-editable-commands';
 import { ApplyOptions } from '@sapphire/decorators';
 import { PermissionLevels } from '#lib/types';
-import {
+import type {
     ApplicationCommandRegistry,
     MessageCommand,
-    RegisterBehavior,
 } from '@sapphire/framework';
 import { vars } from '#vars';
 import { des } from '#lib/messages';
@@ -45,7 +44,6 @@ export class UserCommand extends RadonCommand {
                 description: this.description,
             },
             {
-                behaviorWhenNotIdentical: RegisterBehavior.Overwrite,
                 guildIds: vars.guildIds,
                 idHints: ['947723983132966934', '947165795874668554'],
             }
