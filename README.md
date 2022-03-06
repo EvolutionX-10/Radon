@@ -16,7 +16,6 @@
 -   [License](#license-here)
 -   [Beta Testing](#beta-testing-for-radon)
 -   [Developing on Radon](#developing-on-radon)
--   [Self Hosting](#self-hosting)
 -   [Contributing](#contributing)
 -   [Changelog](#changelog-here)
 -   [Plans](#plans)
@@ -25,7 +24,7 @@
 
 ## Beta Testing for Radon
 
-At the moment I am not completely free but if you are interested in beta testing the bot and helping me out I would be glad. Click [here](https://discord.gg/NSUWWDECmv) to join the development server!
+At the moment I am not completely free but if you are interested in beta testing the bot and helping me out I would be glad. Find me here [`EvolutionX#0001`](https://discord.com)
 
 ## Developing on Radon
 
@@ -37,27 +36,6 @@ At the moment I am not completely free but if you are interested in beta testing
 -   [`MongoDB`]: To store the database
 -   [`Discord.js`][discord.js]: To interact with the Discord API
 -   [`Sapphire`]: Framework used in Radon
-
-## Self Hosting
-
-We **do not** recommend self hosting Radon. But in case you do please note that we don't provide any support for self hosted instances of Radon.
-
-### To host Radon
-
-#### Prerequisites
-
--   [`Node.js`]: To run the project
--   [`MongoDB`]: To store the music database and other data
--   [`Git`]: To manage the project[^env]
-
-```bash
-git clone https://github.com/EvolutionX-10/Radon.git
-cd Radon
-yarn
-yarn start
-```
-
-_Note: We expect you have **solid** understanding of [TypeScript], [discord.js] and [Node.js] when Self Hosting_
 
 ## Contributing
 
