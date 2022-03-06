@@ -1,4 +1,3 @@
-import { des } from '#lib/messages';
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { sec } from '#lib/utility';
@@ -12,7 +11,7 @@ import { Constants } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
     cooldownDelay: sec(10),
     cooldownLimit: 3,
-    description: des.moderation.unban,
+    description: `Unban a user`,
     permissionLevel: PermissionLevels.Moderator,
     requiredClientPermissions: ['BAN_MEMBERS'],
     runIn: 'GUILD_ANY',

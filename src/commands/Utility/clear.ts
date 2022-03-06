@@ -1,4 +1,3 @@
-import { des } from '#lib/messages';
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { sec } from '#lib/utility';
@@ -11,7 +10,7 @@ import type {
 import { Constants, TextChannel } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
     cooldownDelay: sec(15),
-    description: des.utility.clear,
+    description: `Clear messages`,
     permissionLevel: PermissionLevels.Moderator,
     runIn: ['GUILD_ANY'],
 })

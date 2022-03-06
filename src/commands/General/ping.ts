@@ -8,9 +8,8 @@ import type {
     MessageCommand,
 } from '@sapphire/framework';
 import { vars } from '#vars';
-import { des } from '#lib/messages';
 @ApplyOptions<RadonCommand.Options>({
-    description: des.general.ping,
+    description: `Check my latency!`,
     permissionLevel: PermissionLevels.Everyone,
 })
 export class UserCommand extends RadonCommand {

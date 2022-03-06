@@ -13,14 +13,13 @@ import { codeBlock, isThenable } from '@sapphire/utilities';
 import type { Message } from 'discord.js';
 import { inspect } from 'util';
 import axios from 'axios';
-import { des } from '#lib/messages';
 @ApplyOptions<RadonCommand.Options>({
     aliases: ['ev'],
     quotes: [],
     permissionLevel: PermissionLevels.BotOwner,
     flags: true,
     options: true,
-    description: des.core.eval,
+    description: 'Evaluate some code',
     guarded: true,
 })
 export class UserCommand extends RadonCommand {

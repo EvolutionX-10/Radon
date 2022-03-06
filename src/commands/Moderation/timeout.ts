@@ -1,4 +1,3 @@
-import { des } from '#lib/messages';
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { runAllChecks } from '#lib/utility';
@@ -13,7 +12,7 @@ import ms from 'ms';
 import hd from 'humanize-duration';
 
 @ApplyOptions<RadonCommand.Options>({
-    description: des.moderation.timeout,
+    description: `Temporarily mute a member`,
     permissionLevel: PermissionLevels.Moderator,
     requiredClientPermissions: ['MODERATE_MEMBERS'],
     runIn: 'GUILD_ANY',

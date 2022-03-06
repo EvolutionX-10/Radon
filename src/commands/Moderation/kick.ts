@@ -1,4 +1,3 @@
-import { des } from '#lib/messages';
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { runAllChecks, sec } from '#lib/utility';
@@ -10,7 +9,7 @@ import type {
 } from '@sapphire/framework';
 import { Constants, GuildMember } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
-    description: des.moderation.kick,
+    description: `Kick a member`,
     permissionLevel: PermissionLevels.Moderator,
     runIn: 'GUILD_ANY',
     cooldownDelay: sec(10),
