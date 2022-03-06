@@ -9,9 +9,19 @@ import { send } from '@sapphire/plugin-editable-commands';
     hidden: true,
     guarded: true,
     runIn: 'GUILD_ANY',
+    subCommands: [
+        {
+            input: 'default',
+            default: true,
+        },
+        {
+            input: 'del',
+            output: 'delete',
+        },
+    ],
 })
 export class UserCommand extends RadonCommand {
-    public async messageRun(
+    public async default(
         ...[message]: Parameters<MessageCommand['messageRun']>
     ) {
         if (!message.guild) return;
@@ -28,5 +38,23 @@ export class UserCommand extends RadonCommand {
             content += `${cmd.name} (${cmd.id})\n`;
         });
         return await send(message, content);
+    }
+    public async delete(
+        ...[message, args]: Parameters<MessageCommand['messageRun']>
+    ) {
+        if (!message.guild) return;
+        const global =
+            await this.container.client.application?.commands.fetch();
+        const guild = await message.guild.commands.fetch();
+        const cmd_name = await args.pick('string').catch(() => null);
+        if (!cmd_name) return;
+        const cmd =
+            global?.find((c) => c.name === cmd_name) ||
+            guild?.find((c) => c.name === cmd_name);
+        if (!cmd) return;
+        await cmd.delete();
+        await message.channel.send({
+            content: `Successfully deleted ${cmd.name} (${cmd.id})`,
+        });
     }
 }
