@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/EvolutionX-10/Radon/compare/v1.0.0...v1.1.0) (2022-03-06)
+
+
+### Features
+
+* **cooldown:** better messages when in cooldown ([81111ce](https://github.com/EvolutionX-10/Radon/commit/81111cea795f467f18c0caa0daf4ed8af718c371))
+* **slash:** added delete subcommand to manage slashies ([d51bf85](https://github.com/EvolutionX-10/Radon/commit/d51bf8505a437dc922b7d140e0ddcea842563017))
+* **stats:** added new `stats` slash command ([8219c95](https://github.com/EvolutionX-10/Radon/commit/8219c95cf39c00296ff7c32e92f1d523ea4b1ce4))
+* **timestamps:** new class for discord timestamps ([03f22d4](https://github.com/EvolutionX-10/Radon/commit/03f22d41da8e4fe14b273595e29a7d27846a0bdf))
+
 ## [1.0.0](https://github.com/EvolutionX-10/Radon/compare/v0.2.0...v1.0.0) (2022-03-01)
 
 
