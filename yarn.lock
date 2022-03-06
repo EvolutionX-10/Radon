@@ -256,7 +256,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/decorators@npm:^4.2.5":
+"@sapphire/decorators@npm:4.2.5":
   version: 4.2.5
   resolution: "@sapphire/decorators@npm:4.2.5"
   dependencies:
@@ -265,7 +265,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/discord-utilities@npm:^2.8.0":
+"@sapphire/discord-utilities@npm:2.8.0, @sapphire/discord-utilities@npm:^2.8.0":
   version: 2.8.0
   resolution: "@sapphire/discord-utilities@npm:2.8.0"
   dependencies:
@@ -274,7 +274,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/discord.js-utilities@npm:^4.8.1":
+"@sapphire/discord.js-utilities@npm:4.8.1, @sapphire/discord.js-utilities@npm:^4.8.1":
   version: 4.8.1
   resolution: "@sapphire/discord.js-utilities@npm:4.8.1"
   dependencies:
@@ -303,7 +303,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/pieces@npm:^3.2.0":
+"@sapphire/pieces@npm:3.2.0, @sapphire/pieces@npm:^3.2.0":
   version: 3.2.0
   resolution: "@sapphire/pieces@npm:3.2.0"
   dependencies:
@@ -314,7 +314,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/plugin-editable-commands@npm:^1.1.3":
+"@sapphire/plugin-editable-commands@npm:1.1.3":
   version: 1.1.3
   resolution: "@sapphire/plugin-editable-commands@npm:1.1.3"
   dependencies:
@@ -324,7 +324,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/plugin-hmr@npm:^1.1.1":
+"@sapphire/plugin-hmr@npm:1.1.1":
   version: 1.1.1
   resolution: "@sapphire/plugin-hmr@npm:1.1.1"
   dependencies:
@@ -334,7 +334,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/plugin-logger@npm:^2.1.3":
+"@sapphire/plugin-logger@npm:2.1.3":
   version: 2.1.3
   resolution: "@sapphire/plugin-logger@npm:2.1.3"
   dependencies:
@@ -345,7 +345,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/plugin-subcommands@npm:^2.1.3":
+"@sapphire/plugin-subcommands@npm:2.1.3":
   version: 2.1.3
   resolution: "@sapphire/plugin-subcommands@npm:2.1.3"
   dependencies:
@@ -370,7 +370,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/stopwatch@npm:^1.3.0":
+"@sapphire/stopwatch@npm:1.3.0, @sapphire/stopwatch@npm:^1.3.0":
   version: 1.3.0
   resolution: "@sapphire/stopwatch@npm:1.3.0"
   dependencies:
@@ -379,7 +379,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/time-utilities@npm:^1.5.2, @sapphire/time-utilities@npm:^1.6.0":
+"@sapphire/time-utilities@npm:1.6.0, @sapphire/time-utilities@npm:^1.5.2, @sapphire/time-utilities@npm:^1.6.0":
   version: 1.6.0
   resolution: "@sapphire/time-utilities@npm:1.6.0"
   dependencies:
@@ -388,7 +388,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/ts-config@npm:^3.3.1":
+"@sapphire/ts-config@npm:3.3.1":
   version: 3.3.1
   resolution: "@sapphire/ts-config@npm:3.3.1"
   dependencies:
@@ -398,7 +398,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/type@npm:^2.1.2":
+"@sapphire/type@npm:2.1.2":
   version: 2.1.2
   resolution: "@sapphire/type@npm:2.1.2"
   dependencies:
@@ -409,7 +409,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/utilities@npm:^3.1.0, @sapphire/utilities@npm:^3.3.0":
+"@sapphire/utilities@npm:3.3.0, @sapphire/utilities@npm:^3.1.0, @sapphire/utilities@npm:^3.3.0":
   version: 3.3.0
   resolution: "@sapphire/utilities@npm:3.3.0"
   checksum: 0bbc527239d396ae7f5f76601190cc54c46b1f9483038ec5f37c4fac6a7d70428a2ce032df0fbfb22d036d31b4352c5b647786a8436b060ddeed77897baa4df9
@@ -465,7 +465,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typegoose/typegoose@npm:^9.7.0":
+"@typegoose/typegoose@npm:9.7.0":
   version: 9.7.0
   resolution: "@typegoose/typegoose@npm:9.7.0"
   dependencies:
@@ -480,14 +480,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/figlet@npm:^1.5.4":
+"@types/figlet@npm:1.5.4":
   version: 1.5.4
   resolution: "@types/figlet@npm:1.5.4"
   checksum: 25390eaa1a24233b05ec85771cd1a134477ee56717cf564b625cd2133fda963dc78942cfd2303e364406ee0126e722e94761d8c577d74a25820e6b33090a0e32
   languageName: node
   linkType: hard
 
-"@types/gradient-string@npm:^1.1.2":
+"@types/gradient-string@npm:1.1.2":
   version: 1.1.2
   resolution: "@types/gradient-string@npm:1.1.2"
   dependencies:
@@ -496,7 +496,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/humanize-duration@npm:^3.27.1":
+"@types/humanize-duration@npm:3.27.1":
   version: 3.27.1
   resolution: "@types/humanize-duration@npm:3.27.1"
   checksum: d3d69b64918d0cee4aa69580dd04d1b96e3385645d398e27b1535f8c6d0252b0235defb16619379a6196c6bbdfc7b6032f010b25cac44903a32b09db8aa06f30
@@ -524,7 +524,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ms@npm:^0.7.31":
+"@types/ms@npm:0.7.31":
   version: 0.7.31
   resolution: "@types/ms@npm:0.7.31"
   checksum: daadd354aedde024cce6f5aa873fefe7b71b22cd0e28632a69e8b677aeb48ae8caa1c60e5919bb781df040d116b01cb4316335167a3fc0ef6a63fa3614c0f6da
@@ -541,7 +541,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=12, @types/node@npm:^17.0.21":
+"@types/node@npm:*, @types/node@npm:17.0.21, @types/node@npm:>=12":
   version: 17.0.21
   resolution: "@types/node@npm:17.0.21"
   checksum: 89dcd2fe82f21d3634266f8384e9c865cf8af49685639fbdbd799bdd1040480fb1e8eeda2d3b9fce41edbe704d2a4be9f427118c4ae872e8d9bb7cbeb3c41a94
@@ -562,7 +562,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/string-similarity@npm:^4.0.0":
+"@types/string-similarity@npm:4.0.0":
   version: 4.0.0
   resolution: "@types/string-similarity@npm:4.0.0"
   checksum: e530b8c1254ae3318662baaa71e5d42938c900dd6d3486a358f188dfe0d6f14c2342ad48f363db9851230ab51e17460de7a6569038c022815ade6d4bbe78f46f
@@ -602,7 +602,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/eslint-plugin@npm:^5.12.1":
+"@typescript-eslint/eslint-plugin@npm:5.12.1":
   version: 5.12.1
   resolution: "@typescript-eslint/eslint-plugin@npm:5.12.1"
   dependencies:
@@ -625,7 +625,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/parser@npm:^5.12.1":
+"@typescript-eslint/parser@npm:5.12.1":
   version: 5.12.1
   resolution: "@typescript-eslint/parser@npm:5.12.1"
   dependencies:
@@ -981,7 +981,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^0.26.0":
+"axios@npm:0.26.0":
   version: 0.26.0
   resolution: "axios@npm:0.26.0"
   dependencies:
@@ -1282,7 +1282,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"colorette@npm:^2.0.16":
+"colorette@npm:2.0.16, colorette@npm:^2.0.16":
   version: 2.0.16
   resolution: "colorette@npm:2.0.16"
   checksum: cd55596a3a2d1071c1a28eee7fd8a5387593ff1bd10a3e8d0a6221499311fe34a9f2b9272d77c391e0e003dcdc8934fb2f8d106e7ef1f7516f8060c901d41a27
@@ -1658,7 +1658,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cz-conventional-changelog@npm:^3.3.0":
+"cz-conventional-changelog@npm:3.3.0":
   version: 3.3.0
   resolution: "cz-conventional-changelog@npm:3.3.0"
   dependencies:
@@ -1821,7 +1821,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"discord.js@npm:^13.6.0":
+"discord.js@npm:13.6.0":
   version: 13.6.0
   resolution: "discord.js@npm:13.6.0"
   dependencies:
@@ -1856,7 +1856,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv-cra@npm:^3.0.2":
+"dotenv-cra@npm:3.0.2":
   version: 3.0.2
   resolution: "dotenv-cra@npm:3.0.2"
   dependencies:
@@ -2018,7 +2018,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^8.10.0":
+"eslint@npm:8.10.0":
   version: 8.10.0
   resolution: "eslint@npm:8.10.0"
   dependencies:
@@ -2210,7 +2210,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"figlet@npm:^1.5.2":
+"figlet@npm:1.5.2":
   version: 1.5.2
   resolution: "figlet@npm:1.5.2"
   checksum: cc860391669b44e119871d589e09a2814aa86351726a5791e0d3e2d098e4fc37171c85fcfed13f4e9000995bd004dc6dbf848da5fe458cf1477e776b7318986f
@@ -2664,7 +2664,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gradient-string@npm:^2.0.0":
+"gradient-string@npm:2.0.0":
   version: 2.0.0
   resolution: "gradient-string@npm:2.0.0"
   dependencies:
@@ -2796,7 +2796,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"humanize-duration@npm:^3.27.1":
+"humanize-duration@npm:3.27.1":
   version: 3.27.1
   resolution: "humanize-duration@npm:3.27.1"
   checksum: dad9f1a1367e6da9ca7568629e689e66c1b28206ff72096b51c6963fd7319f660073201fdb9bd5349427b9ea7c0d5cdf33e787c157cf30f996eaec4795029c30
@@ -2812,7 +2812,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"husky@npm:^7.0.4":
+"husky@npm:7.0.4":
   version: 7.0.4
   resolution: "husky@npm:7.0.4"
   bin:
@@ -3194,7 +3194,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lint-staged@npm:^12.3.4":
+"lint-staged@npm:12.3.4":
   version: 12.3.4
   resolution: "lint-staged@npm:12.3.4"
   dependencies:
@@ -3638,7 +3638,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongoose@npm:^6.2.3":
+"mongoose@npm:6.2.3":
   version: 6.2.3
   resolution: "mongoose@npm:6.2.3"
   dependencies:
@@ -4121,7 +4121,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^2.5.1":
+"prettier@npm:2.5.1":
   version: 2.5.1
   resolution: "prettier@npm:2.5.1"
   bin:
@@ -4130,7 +4130,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pretty-quick@npm:^3.1.3":
+"pretty-quick@npm:3.1.3":
   version: 3.1.3
   resolution: "pretty-quick@npm:3.1.3"
   dependencies:
@@ -4214,46 +4214,46 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "radon@workspace:."
   dependencies:
-    "@sapphire/decorators": ^4.2.5
-    "@sapphire/discord-utilities": ^2.8.0
-    "@sapphire/discord.js-utilities": ^4.8.1
+    "@sapphire/decorators": 4.2.5
+    "@sapphire/discord-utilities": 2.8.0
+    "@sapphire/discord.js-utilities": 4.8.1
     "@sapphire/framework": next
-    "@sapphire/pieces": ^3.2.0
-    "@sapphire/plugin-editable-commands": ^1.1.3
-    "@sapphire/plugin-hmr": ^1.1.1
-    "@sapphire/plugin-logger": ^2.1.3
-    "@sapphire/plugin-subcommands": ^2.1.3
-    "@sapphire/stopwatch": ^1.3.0
-    "@sapphire/time-utilities": ^1.6.0
-    "@sapphire/ts-config": ^3.3.1
-    "@sapphire/type": ^2.1.2
-    "@sapphire/utilities": ^3.3.0
-    "@typegoose/typegoose": ^9.7.0
-    "@types/figlet": ^1.5.4
-    "@types/gradient-string": ^1.1.2
-    "@types/humanize-duration": ^3.27.1
-    "@types/ms": ^0.7.31
-    "@types/node": ^17.0.21
-    "@types/string-similarity": ^4.0.0
-    "@typescript-eslint/eslint-plugin": ^5.12.1
-    "@typescript-eslint/parser": ^5.12.1
-    axios: ^0.26.0
-    colorette: ^2.0.16
-    cz-conventional-changelog: ^3.3.0
-    discord.js: ^13.6.0
-    dotenv-cra: ^3.0.2
-    eslint: ^8.10.0
-    figlet: ^1.5.2
-    gradient-string: ^2.0.0
-    humanize-duration: ^3.27.1
-    husky: ^7.0.4
-    lint-staged: ^12.3.4
-    mongoose: ^6.2.3
-    prettier: ^2.5.1
-    pretty-quick: ^3.1.3
-    standard-version: ^9.3.2
-    ts-node: ^10.5.0
-    typescript: ^4.5.5
+    "@sapphire/pieces": 3.2.0
+    "@sapphire/plugin-editable-commands": 1.1.3
+    "@sapphire/plugin-hmr": 1.1.1
+    "@sapphire/plugin-logger": 2.1.3
+    "@sapphire/plugin-subcommands": 2.1.3
+    "@sapphire/stopwatch": 1.3.0
+    "@sapphire/time-utilities": 1.6.0
+    "@sapphire/ts-config": 3.3.1
+    "@sapphire/type": 2.1.2
+    "@sapphire/utilities": 3.3.0
+    "@typegoose/typegoose": 9.7.0
+    "@types/figlet": 1.5.4
+    "@types/gradient-string": 1.1.2
+    "@types/humanize-duration": 3.27.1
+    "@types/ms": 0.7.31
+    "@types/node": 17.0.21
+    "@types/string-similarity": 4.0.0
+    "@typescript-eslint/eslint-plugin": 5.12.1
+    "@typescript-eslint/parser": 5.12.1
+    axios: 0.26.0
+    colorette: 2.0.16
+    cz-conventional-changelog: 3.3.0
+    discord.js: 13.6.0
+    dotenv-cra: 3.0.2
+    eslint: 8.10.0
+    figlet: 1.5.2
+    gradient-string: 2.0.0
+    humanize-duration: 3.27.1
+    husky: 7.0.4
+    lint-staged: 12.3.4
+    mongoose: 6.2.3
+    prettier: 2.5.1
+    pretty-quick: 3.1.3
+    standard-version: 9.3.2
+    ts-node: 10.5.0
+    typescript: 4.5.5
   languageName: unknown
   linkType: soft
 
@@ -4752,7 +4752,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"standard-version@npm:^9.3.2":
+"standard-version@npm:9.3.2":
   version: 9.3.2
   resolution: "standard-version@npm:9.3.2"
   dependencies:
@@ -5072,7 +5072,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-node@npm:^10.5.0":
+"ts-node@npm:10.5.0, ts-node@npm:^10.5.0":
   version: 10.5.0
   resolution: "ts-node@npm:10.5.0"
   dependencies:
@@ -5192,7 +5192,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.4.3, typescript@npm:^4.5.5":
+"typescript@npm:4.5.5, typescript@npm:^4.4.3, typescript@npm:^4.5.5":
   version: 4.5.5
   resolution: "typescript@npm:4.5.5"
   bin:
@@ -5202,7 +5202,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.4.3#~builtin<compat/typescript>, typescript@patch:typescript@^4.5.5#~builtin<compat/typescript>":
+"typescript@patch:typescript@4.5.5#~builtin<compat/typescript>, typescript@patch:typescript@^4.4.3#~builtin<compat/typescript>, typescript@patch:typescript@^4.5.5#~builtin<compat/typescript>":
   version: 4.5.5
   resolution: "typescript@patch:typescript@npm%3A4.5.5#~builtin<compat/typescript>::version=4.5.5&hash=bda367"
   bin:
