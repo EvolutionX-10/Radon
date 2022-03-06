@@ -34,7 +34,7 @@ At the moment I am not completely free but if you are interested in beta testing
 **You should have a good understanding of the following:**
 
 -   [`Node.js`]: To run the project
--   [`MongoDB`]: To store the music database and other data
+-   [`MongoDB`]: To store the database
 -   [`Discord.js`][discord.js]: To interact with the Discord API
 -   [`Sapphire`]: Framework used in Radon
 
