@@ -3638,9 +3638,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongoose@npm:6.2.3":
-  version: 6.2.3
-  resolution: "mongoose@npm:6.2.3"
+"mongoose@npm:6.2.4":
+  version: 6.2.4
+  resolution: "mongoose@npm:6.2.4"
   dependencies:
     bson: ^4.2.2
     kareem: 2.3.4
@@ -3649,7 +3649,7 @@ __metadata:
     mquery: 4.0.2
     ms: 2.1.3
     sift: 16.0.0
-  checksum: d18ff711bf2174255143641a8d37f9a536aa7d445754d9befa461f2bd12b78d29e0cf6ef65f5d8b8ec87959594be541c7cc565227230ae0a3c3a0fe708f62123
+  checksum: 7f163e4cedf7b6cbc19c41501f644db036b8b5272051ecb77b3dd9727fee4b595b6e17e4fd83a012b27eb72d8c1026864fc354fd39ec5830173f7a9b0fbad58a
   languageName: node
   linkType: hard
 
@@ -4248,7 +4248,7 @@ __metadata:
     humanize-duration: 3.27.1
     husky: 7.0.4
     lint-staged: 12.3.4
-    mongoose: 6.2.3
+    mongoose: 6.2.4
     prettier: 2.5.1
     pretty-quick: 3.1.3
     standard-version: 9.3.2
