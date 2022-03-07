@@ -256,12 +256,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/decorators@npm:4.2.5":
-  version: 4.2.5
-  resolution: "@sapphire/decorators@npm:4.2.5"
+"@sapphire/decorators@npm:4.3.0":
+  version: 4.3.0
+  resolution: "@sapphire/decorators@npm:4.3.0"
   dependencies:
     tslib: ^2.3.1
-  checksum: 658041ebdf2ab7e6223b3b8c844ad6d9ebf179518e60d7a85c2e176996ca53d3cbaea11fb410911b44d64a830cfc1950765268dd091181304d9eec5be3a7f16e
+  checksum: 43e784e301bc0266367fae345e39df4bd6925e3d24ff7010a3522db58e9d7a711468bec8078d7405995ec8e7a392179137b44923eff340994eac72edf34d2ce9
   languageName: node
   linkType: hard
 
@@ -4214,7 +4214,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "radon@workspace:."
   dependencies:
-    "@sapphire/decorators": 4.2.5
+    "@sapphire/decorators": 4.3.0
     "@sapphire/discord-utilities": 2.8.0
     "@sapphire/discord.js-utilities": 4.8.1
     "@sapphire/framework": next
