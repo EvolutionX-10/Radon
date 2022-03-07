@@ -65,7 +65,7 @@
     },
     "dependencies": {
         "@sapphire/decorators": "4.3.0",
-        "@sapphire/discord-utilities": "2.8.0",
+        "@sapphire/discord-utilities": "2.10.0",
         "@sapphire/discord.js-utilities": "4.9.0",
         "@sapphire/framework": "next",
         "@sapphire/pieces": "3.2.0",
