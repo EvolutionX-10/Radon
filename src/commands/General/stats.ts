@@ -6,7 +6,6 @@ import { ApplyOptions } from '@sapphire/decorators';
 import {
     ApplicationCommandRegistry,
     version as sapphireVersion,
-    type ChatInputCommand,
 } from '@sapphire/framework';
 import { roundNumber } from '@sapphire/utilities';
 import { MessageEmbed, version } from 'discord.js';
@@ -18,7 +17,7 @@ import { cpus, uptime, type CpuInfo } from 'node:os';
 })
 export class UserCommand extends RadonCommand {
     public async chatInputRun(
-        ...[interaction]: Parameters<ChatInputCommand['chatInputRun']>
+        interaction: RadonCommand.ChatInputCommandInteraction
     ) {
         return interaction.reply({
             embeds: [this.buildEmbed()],

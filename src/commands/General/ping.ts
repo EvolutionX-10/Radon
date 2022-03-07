@@ -3,19 +3,14 @@ import { RadonCommand } from '#lib/structures';
 import { send } from '@sapphire/plugin-editable-commands';
 import { ApplyOptions } from '@sapphire/decorators';
 import { PermissionLevels } from '#lib/types';
-import type {
-    ApplicationCommandRegistry,
-    MessageCommand,
-} from '@sapphire/framework';
+import type { ApplicationCommandRegistry } from '@sapphire/framework';
 import { vars } from '#vars';
 @ApplyOptions<RadonCommand.Options>({
     description: `Check my latency!`,
     permissionLevel: PermissionLevels.Everyone,
 })
 export class UserCommand extends RadonCommand {
-    public async messageRun(
-        ...[message]: Parameters<MessageCommand['messageRun']>
-    ) {
+    public async messageRun(message: RadonCommand.Message) {
         const msg = await send(message, 'Ping?');
         const content = `Pong! (Roundtrip took: ${Math.round(
             (msg.editedTimestamp || msg.createdTimestamp) -

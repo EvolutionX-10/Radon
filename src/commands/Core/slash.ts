@@ -40,7 +40,8 @@ export class UserCommand extends RadonCommand {
         return await send(message, content);
     }
     public async delete(
-        ...[message, args]: Parameters<MessageCommand['messageRun']>
+        message: RadonCommand.Message,
+        args: RadonCommand.Args
     ) {
         if (!message.guild) return;
         const global =

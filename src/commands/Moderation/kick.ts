@@ -3,10 +3,7 @@ import { PermissionLevels } from '#lib/types';
 import { runAllChecks, sec } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import type {
-    ApplicationCommandRegistry,
-    ChatInputCommand,
-} from '@sapphire/framework';
+import type { ApplicationCommandRegistry } from '@sapphire/framework';
 import { Constants, GuildMember } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
     description: `Kick a member`,
@@ -18,7 +15,7 @@ import { Constants, GuildMember } from 'discord.js';
 })
 export class UserCommand extends RadonCommand {
     public async chatInputRun(
-        ...[interaction]: Parameters<ChatInputCommand['chatInputRun']>
+        interaction: RadonCommand.ChatInputCommandInteraction
     ) {
         if (!interaction.guild) return;
         const member = interaction.options.getMember('member') as GuildMember;

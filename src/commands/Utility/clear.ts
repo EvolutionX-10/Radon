@@ -3,10 +3,7 @@ import { PermissionLevels } from '#lib/types';
 import { sec } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import type {
-    ApplicationCommandRegistry,
-    ChatInputCommand,
-} from '@sapphire/framework';
+import type { ApplicationCommandRegistry } from '@sapphire/framework';
 import { Constants, TextChannel } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
     cooldownDelay: sec(15),
@@ -16,7 +13,7 @@ import { Constants, TextChannel } from 'discord.js';
 })
 export class UserCommand extends RadonCommand {
     public async chatInputRun(
-        ...[interaction]: Parameters<ChatInputCommand['chatInputRun']>
+        interaction: RadonCommand.ChatInputCommandInteraction
     ) {
         await interaction.deferReply({ ephemeral: true });
         const count = interaction.options.getInteger('count', true);

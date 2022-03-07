@@ -3,10 +3,7 @@ import { PermissionLevels } from '#lib/types';
 import { runAllChecks } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import type {
-    ApplicationCommandRegistry,
-    ChatInputCommand,
-} from '@sapphire/framework';
+import type { ApplicationCommandRegistry } from '@sapphire/framework';
 import { Constants, GuildMember } from 'discord.js';
 import ms from 'ms';
 import hd from 'humanize-duration';
@@ -19,7 +16,7 @@ import hd from 'humanize-duration';
 })
 export class UserCommand extends RadonCommand {
     public async chatInputRun(
-        ...[interaction]: Parameters<ChatInputCommand['chatInputRun']>
+        interaction: RadonCommand.ChatInputCommandInteraction
     ) {
         if (!interaction.guild) return;
         await interaction.deferReply({ ephemeral: true, fetchReply: true });

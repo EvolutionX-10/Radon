@@ -5,7 +5,6 @@ import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import type { Args } from '@sapphire/framework';
 import { send } from '@sapphire/plugin-editable-commands';
 import { Stopwatch } from '@sapphire/stopwatch';
 import { Type } from '@sapphire/type';
@@ -23,7 +22,10 @@ import axios from 'axios';
     guarded: true,
 })
 export class UserCommand extends RadonCommand {
-    public async messageRun(message: Message, args: Args) {
+    public async messageRun(
+        message: RadonCommand.Message,
+        args: RadonCommand.Args
+    ) {
         if (args.getFlags('cc', 'c')) {
             console.clear();
             await message.react(vars.emojis.confirm);
