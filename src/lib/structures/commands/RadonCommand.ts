@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import { SubCommandPluginCommand } from '@sapphire/plugin-subcommands';
 import {
-    Args,
+    Args as SapphireArgs,
+    ChatInputCommandContext,
+    ContextMenuCommandContext,
     MessageCommandContext,
     Piece,
     PieceContext,
@@ -9,9 +11,14 @@ import {
     UserError,
 } from '@sapphire/framework';
 import { PermissionLevels } from '#lib/types';
-import { Permissions } from 'discord.js';
+import {
+    CommandInteraction,
+    ContextMenuInteraction,
+    Message as Msg,
+    Permissions,
+} from 'discord.js';
 export abstract class RadonCommand extends SubCommandPluginCommand<
-    Args,
+    RadonCommand.Args,
     RadonCommand
 > {
     /**
@@ -106,7 +113,12 @@ export namespace RadonCommand {
          */
         permissionLevel?: number;
     };
-    export type Context = MessageCommandContext;
+    export type MessageContext = MessageCommandContext;
+    export type ChatInputCommandInteraction = CommandInteraction;
+    export type ContextMenuCommandInteraction = ContextMenuInteraction;
+    export type Context = ChatInputCommandContext | ContextMenuCommandContext;
+    export type Args = SapphireArgs;
+    export type Message = Msg;
 }
 
 declare module '@sapphire/framework' {
