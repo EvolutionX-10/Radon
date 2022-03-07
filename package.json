@@ -86,7 +86,7 @@
         "figlet": "1.5.2",
         "gradient-string": "2.0.0",
         "humanize-duration": "3.27.1",
-        "mongoose": "6.2.3",
+        "mongoose": "6.2.4",
         "ts-node": "10.5.0"
     },
     "config": {
