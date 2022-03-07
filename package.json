@@ -87,7 +87,7 @@
         "gradient-string": "2.0.0",
         "humanize-duration": "3.27.1",
         "mongoose": "6.2.4",
-        "ts-node": "10.5.0"
+        "ts-node": "10.7.0"
     },
     "config": {
         "commitizen": {
