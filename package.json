@@ -64,7 +64,7 @@
         "typescript": "4.5.5"
     },
     "dependencies": {
-        "@sapphire/decorators": "4.2.5",
+        "@sapphire/decorators": "4.3.0",
         "@sapphire/discord-utilities": "2.8.0",
         "@sapphire/discord.js-utilities": "4.8.1",
         "@sapphire/framework": "next",
