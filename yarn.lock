@@ -265,21 +265,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/discord-utilities@npm:2.8.0, @sapphire/discord-utilities@npm:^2.8.0":
-  version: 2.8.0
-  resolution: "@sapphire/discord-utilities@npm:2.8.0"
-  dependencies:
-    twemoji-parser: ^13.1.0
-  checksum: fc537a40599f41425971b326e2d73abe2b821c3bd268b8c0953b6d1e5cc4884557bf723b85fde134c7000735cc0ae0a1fe15bf65f4b8f1f7bfd2fde5955ca3e0
-  languageName: node
-  linkType: hard
-
-"@sapphire/discord-utilities@npm:^2.10.0":
+"@sapphire/discord-utilities@npm:2.10.0, @sapphire/discord-utilities@npm:^2.10.0":
   version: 2.10.0
   resolution: "@sapphire/discord-utilities@npm:2.10.0"
   dependencies:
     twemoji-parser: ^13.1.0
   checksum: 36d161704a9046ae26a6b6e55eca0af3ad49b22c33782792e126f429cc6bc278cef459f77c261969ea4d30c049aa3631ce0c31ba08b0a87babf47aa8a3cb52e8
+  languageName: node
+  linkType: hard
+
+"@sapphire/discord-utilities@npm:^2.8.0":
+  version: 2.8.0
+  resolution: "@sapphire/discord-utilities@npm:2.8.0"
+  dependencies:
+    twemoji-parser: ^13.1.0
+  checksum: fc537a40599f41425971b326e2d73abe2b821c3bd268b8c0953b6d1e5cc4884557bf723b85fde134c7000735cc0ae0a1fe15bf65f4b8f1f7bfd2fde5955ca3e0
   languageName: node
   linkType: hard
 
@@ -4252,7 +4252,7 @@ __metadata:
   resolution: "radon@workspace:."
   dependencies:
     "@sapphire/decorators": 4.3.0
-    "@sapphire/discord-utilities": 2.8.0
+    "@sapphire/discord-utilities": 2.10.0
     "@sapphire/discord.js-utilities": 4.9.0
     "@sapphire/framework": next
     "@sapphire/pieces": 3.2.0
