@@ -1,5 +1,6 @@
 import { Timestamp } from '#lib/structures';
 import { color } from '#lib/utility';
+import { blacklistDB } from '#models';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Events, Listener } from '@sapphire/framework';
 import type { Guild, TextChannel } from 'discord.js';
@@ -9,6 +10,8 @@ import type { Guild, TextChannel } from 'discord.js';
 export class UserListener extends Listener {
     public async run(guild: Guild) {
         await this.container.client.guilds.fetch();
+        const isBlacklisted = await blacklistDB.findById(guild.id);
+        if (isBlacklisted) return;
         const channel = (await this.container.client.channels
             .fetch('950646213504552960')
             .catch(() => null)) as TextChannel;
