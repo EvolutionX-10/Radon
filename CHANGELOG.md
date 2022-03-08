@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/EvolutionX-10/Radon/compare/v1.1.0...v1.2.0) (2022-03-08)
+
+
+### Features
+
+* blacklist guilds easily ([6ad49fd](https://github.com/EvolutionX-10/Radon/commit/6ad49fda115ffa5677bad6107775df078fbbaa18))
+* initiate new settings of guild and global ([6a5baa0](https://github.com/EvolutionX-10/Radon/commit/6a5baa01c0b83f597c938d8087671e7601d8dd46))
+* **log:** guild joins are now logged ([3a184f8](https://github.com/EvolutionX-10/Radon/commit/3a184f8b52839f4e6f13cfc712c1ecd849d31bad))
+* **log:** guild leaves are now logged ([ba38adf](https://github.com/EvolutionX-10/Radon/commit/ba38adfac040d487412a6bcad673da07fd0bf801))
+* **logs:** now supports blacklists and does not emit if leaving a blacklisted guild ([94a3e16](https://github.com/EvolutionX-10/Radon/commit/94a3e16167fff676b7abe471ae1fb56f2c58637d))
+* new exports for RadonCommand ([c73bb83](https://github.com/EvolutionX-10/Radon/commit/c73bb83e484fdbc8f0f6386fd382c1cebb7c74c1))
+* **settings:** new classes for guild settings and core settings ([370ed88](https://github.com/EvolutionX-10/Radon/commit/370ed88d1d80ea814b9f0b938da7dfabbdd33e32))
+
+
+### Bug Fixes
+
+* blacklist precondition now does not respond in guilds that are blacklisted ([79d62e7](https://github.com/EvolutionX-10/Radon/commit/79d62e75b5f8734efced95ffe93c3740a7d42504))
+* **deps:** pin dependencies ([5900f3e](https://github.com/EvolutionX-10/Radon/commit/5900f3eda48e0a627c8dea16dcd73ce2c6dd30a0))
+* **deps:** update dependency @sapphire/decorators to v4.3.0 ([84118c8](https://github.com/EvolutionX-10/Radon/commit/84118c85bbab2ebaecc9b260fec9395609e5a721))
+* **deps:** update dependency @sapphire/discord-utilities to v2.10.0 ([90f2951](https://github.com/EvolutionX-10/Radon/commit/90f29514c8d46a4635f3b8307e0700ec0c2a713c))
+* **deps:** update dependency @sapphire/discord.js-utilities to v4.9.0 ([5100522](https://github.com/EvolutionX-10/Radon/commit/5100522a581a29a0d19ffeafa5e7a390f3849c9d))
+* **deps:** update dependency @sapphire/pieces to v3.3.0 ([6fced25](https://github.com/EvolutionX-10/Radon/commit/6fced25373e4b94bf9b90f6c4eda38113a688da1))
+* **deps:** update dependency @sapphire/ts-config to v3.3.2 ([a03f434](https://github.com/EvolutionX-10/Radon/commit/a03f434935aacdfd7de0e5877ce8739ad0e5d845))
+* **deps:** update dependency mongoose to v6.2.4 ([c8ebf0c](https://github.com/EvolutionX-10/Radon/commit/c8ebf0c77daac5cc3ebf290475aff56c1953d790))
+* **deps:** update dependency ts-node to v10.7.0 ([7f57cf4](https://github.com/EvolutionX-10/Radon/commit/7f57cf46c25234e43ec1bcb4f12b7ac301f4dfb3))
+* fixed package versions ([f33552b](https://github.com/EvolutionX-10/Radon/commit/f33552bd203a359c5af0e31279e989a699da1a13))
+
 ## [1.1.0](https://github.com/EvolutionX-10/Radon/compare/v1.0.0...v1.1.0) (2022-03-06)
 
 
