@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { RadonClient } from '#lib/RadonClient';
+import { GuildSettings, Settings } from '#lib/structures';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Events, Listener, Store } from '@sapphire/framework';
 import {
@@ -24,6 +25,8 @@ import { version } from '../../../package.json';
 export class UserListener extends Listener {
     private readonly style = this.isDev ? yellow : blue;
     public override async run(client: RadonClient) {
+        this.container.settings = new Settings();
+        await client.guilds.fetch();
         this.container.client = client;
         this.container.logger.info(
             `Logged in as ${greenBright(client.user?.tag as string)}`
@@ -35,6 +38,8 @@ export class UserListener extends Listener {
                 'READY'
             )}${greenBright(']')}`
         );
+        const guilds = client.guilds.cache;
+        guilds.forEach((guild) => (guild.settings = new GuildSettings()));
     }
     private get isDev() {
         return process.env.NODE_ENV === 'development';
