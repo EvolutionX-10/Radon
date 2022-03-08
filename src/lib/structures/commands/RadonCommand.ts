@@ -17,6 +17,7 @@ import {
     Message as Msg,
     Permissions,
 } from 'discord.js';
+import type { GuildSettings } from '#lib/structures';
 export abstract class RadonCommand extends SubCommandPluginCommand<
     RadonCommand.Args,
     RadonCommand
@@ -147,5 +148,8 @@ declare module '@sapphire/framework' {
 declare module 'discord.js' {
     interface Message {
         sudo: GuildMember | null;
+    }
+    interface Guild {
+        settings: GuildSettings;
     }
 }
