@@ -8,6 +8,7 @@ import { client_config } from '#config';
 import mongoose from 'mongoose';
 import { config as dotenv } from 'dotenv-cra';
 import { envParseBoolean } from '#lib/env';
+import type { Settings } from '#lib/structures';
 
 dotenv({
     debug: process.env.DOTENV_DEBUG_ENABLED
@@ -38,5 +39,6 @@ export class RadonClient extends SapphireClient {
 declare module '@sapphire/pieces' {
     interface Container {
         database: typeof mongoose;
+        settings: Settings;
     }
 }
