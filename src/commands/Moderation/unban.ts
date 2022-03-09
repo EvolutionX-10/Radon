@@ -8,7 +8,7 @@ import { Constants } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
     cooldownDelay: sec(10),
     cooldownLimit: 3,
-    description: `Unban a user`,
+    description: `Remove a ban from a user`,
     permissionLevel: PermissionLevels.Moderator,
     requiredClientPermissions: ['BAN_MEMBERS'],
     runIn: 'GUILD_ANY',

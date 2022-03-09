@@ -24,7 +24,8 @@
         "preview": "standard-version --dry-run",
         "compile": "tsc -p ./src",
         "watch": "tsc -b src --watch",
-        "postinstall": "husky install"
+        "postinstall": "husky install",
+        "logs": "heroku logs --app=radon-dev -t --force-colors"
     },
     "engines": {
         "node": ">=17.4.0"

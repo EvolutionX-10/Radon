@@ -7,8 +7,9 @@ import type { ApplicationCommandRegistry } from '@sapphire/framework';
 import { Constants, TextChannel } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
     cooldownDelay: sec(15),
-    description: `Clear messages`,
+    description: `Deletes messages from current channel`,
     permissionLevel: PermissionLevels.Moderator,
+    requiredClientPermissions: ['MANAGE_MESSAGES'],
     runIn: ['GUILD_ANY'],
 })
 export class UserCommand extends RadonCommand {

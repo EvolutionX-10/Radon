@@ -8,7 +8,7 @@ import { Constants, GuildMember } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
     cooldownDelay: sec(10),
     cooldownLimit: 3,
-    description: `Softban a member`,
+    description: `Quickly bans and unbans, acts as a quick purge`,
     permissionLevel: PermissionLevels.Moderator,
     requiredClientPermissions: ['BAN_MEMBERS'],
     runIn: 'GUILD_ANY',

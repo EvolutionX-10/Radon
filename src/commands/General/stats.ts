@@ -12,7 +12,7 @@ import { MessageEmbed, version } from 'discord.js';
 import { cpus, uptime, type CpuInfo } from 'node:os';
 
 @ApplyOptions<RadonCommand.Options>({
-    description: 'Provides some details about me',
+    description: 'Provides some stats about me',
     permissionLevel: PermissionLevels.Everyone,
 })
 export class UserCommand extends RadonCommand {
