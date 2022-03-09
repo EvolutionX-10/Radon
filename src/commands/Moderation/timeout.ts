@@ -34,7 +34,7 @@ export class UserCommand extends RadonCommand {
             return await interaction.editReply({
                 content:
                     ctn ||
-                    `${vars.emojis.cross} I can't perform timeout on ${member}`,
+                    `${vars.emojis.cross} I can't perform timeout on bots!`,
             });
         let time = interaction.options.getString('duration', true);
         if (!isNaN(+time)) time = time + 's';
