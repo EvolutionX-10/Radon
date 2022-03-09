@@ -1,6 +1,6 @@
 <div align="center">
 
-# Radon
+# [Radon][invite]
 
 [![CodeFactor]](https://www.codefactor.io/repository/github/evolutionx-10/radon/overview/main)
 [![License]][apache]
@@ -84,6 +84,7 @@ _Note2: There is **NO** [`ETA`] for these plans._
 [apache]: https://github.com/EvolutionX-10/Radon/blob/main/LICENSE.md
 [`eta`]: https://www.javatpoint.com/eta-full-form
 [`sapphire`]: https://www.sapphirejs.dev
+[invite]: https://discord.com/api/oauth2/authorize?client_id=944833303226236989&scope=applications.commands+bot&permissions=543276137727
 
 <!-- BADGES -->
 
