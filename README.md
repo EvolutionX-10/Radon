@@ -55,7 +55,7 @@ To contribute to this repository, feel free to fork the repository and make your
 -   [ ] Create more server utility commands
 -   [ ] Create advanced automod system
 -   [ ] Create a simple setup system
--   [ ] Create a support server
+-   [x] Create a [support server](https://discord.gg/YBFaDggpvt)
 
 _Note: These plans might change in the future._ <br>
 _Note2: There is **NO** [`ETA`] for these plans._
