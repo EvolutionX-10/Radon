@@ -1,6 +1,6 @@
 export enum color {
+    Admin = 0xbaeb34,
     Core = 0xff8700,
-    Economy = 0xbaeb34,
     Games = 0xdfc9de,
     General = 0x0033ff,
     Music = 0x7289da,
