@@ -9,7 +9,7 @@ import {
 } from '@sapphire/framework';
 import { roundNumber } from '@sapphire/utilities';
 import { MessageEmbed, version } from 'discord.js';
-import { cpus, uptime, type CpuInfo } from 'node:os';
+import { uptime } from 'node:os';
 
 @ApplyOptions<RadonCommand.Options>({
     description: 'Provides some stats about me',
@@ -52,7 +52,7 @@ export class UserCommand extends RadonCommand {
         const fields = {
             stats: `• **Users**: ${stats.users}\n• **Guilds**: ${stats.guilds}\n• **Channels**: ${stats.channels}\n• **Discord.js**: ${stats.version}\n• **Node.js**: ${stats.nodeJs}\n• **Framework**: ${stats.sapphireVersion}`,
             uptime: `• **Host**: ${uptime.host}\n• **Total**: ${uptime.total}\n• **Client**: ${uptime.client}`,
-            serverUsage: `• **CPU Load**: ${usage.cpuLoad}\n• **Heap**: ${usage.ramUsed}MB (Total: ${usage.ramTotal}MB)`,
+            serverUsage: `**Heap**: ${usage.ramUsed}MB (Total: ${usage.ramTotal}MB)`,
         };
 
         return new MessageEmbed()
@@ -94,23 +94,9 @@ export class UserCommand extends RadonCommand {
     private get usageStatistics(): StatsUsage {
         const usage = process.memoryUsage();
         return {
-            cpuLoad: cpus()
-                .map(UserCommand.formatCpuInfo.bind(null))
-                // .slice(0, 2)
-                .join(' | '),
             ramTotal: `${(usage.heapTotal / 1048576).toFixed(2)}`,
             ramUsed: `${(usage.heapUsed / 1048576).toFixed(2)}`,
         };
-    }
-
-    private static formatCpuInfo({ times }: CpuInfo) {
-        return `${
-            roundNumber(
-                ((times.user + times.nice + times.sys + times.irq) /
-                    times.idle) *
-                    10000
-            ) / 100
-        }%`;
     }
 }
 
@@ -130,7 +116,6 @@ interface StatsUptime {
 }
 
 interface StatsUsage {
-    cpuLoad: string;
     ramTotal: string;
     ramUsed: string;
 }
