@@ -30,7 +30,7 @@ export class UserCommand extends RadonCommand {
             member,
             'timeout'
         );
-        if (!result)
+        if (!result || member.user.bot)
             return await interaction.editReply({
                 content: ctn,
             });
