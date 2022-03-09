@@ -96,7 +96,7 @@ export class UserCommand extends RadonCommand {
         return {
             cpuLoad: cpus()
                 .map(UserCommand.formatCpuInfo.bind(null))
-                .slice(0, 2)
+                // .slice(0, 2)
                 .join(' | '),
             ramTotal: `${(usage.heapTotal / 1048576).toFixed(2)}`,
             ramUsed: `${(usage.heapUsed / 1048576).toFixed(2)}`,
