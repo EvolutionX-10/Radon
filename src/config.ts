@@ -63,4 +63,5 @@ export const client_config: ClientOptions = {
     },
     shards: 'auto',
     disableMentionPrefix: true,
+    preventFailedToFetchLogForGuildIds: ['733135938347073576'],
 };
