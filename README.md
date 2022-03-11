@@ -33,7 +33,7 @@ At the moment I am not completely free but if you are interested in beta testing
 **You should have a good understanding of the following:**
 
 -   [`Node.js`]: To run the project
--   [`MongoDB`]: To store the database
+-   [`MongoDB`]: To store the data
 -   [`Discord.js`][discord.js]: To interact with the Discord API
 -   [`Sapphire`]: Framework used in Radon
 
@@ -54,7 +54,7 @@ To contribute to this repository, feel free to fork the repository and make your
 
 -   [ ] Create more server utility commands
 -   [ ] Create advanced automod system
--   [ ] Create a simple setup system
+-   [x] Create a simple setup system
 -   [x] Create a [support server](https://discord.gg/YBFaDggpvt)
 
 _Note: These plans might change in the future._ <br>
