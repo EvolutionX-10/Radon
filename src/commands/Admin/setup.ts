@@ -467,7 +467,8 @@ export class UserCommand extends RadonCommand {
                     `Please __mention__ the roles below in chat.\n` +
                     `Note that only the roles below will be considered as admins\n` +
                     `If you want multiple roles, you can enter them below but **only one role per message**!\n` +
-                    `When done, press the button to confirm, else press retry`,
+                    `When done, press the button to confirm, else press retry\n` +
+                    `**Note**: Moderation roles and Administration roles cannot be the same`,
             },
             {
                 name: 'Roles Entered',
