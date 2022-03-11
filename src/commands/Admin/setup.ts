@@ -19,6 +19,7 @@ import {
 } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
     cooldownDelay: sec(60),
+    cooldownLimit: 3,
     description: `Easy and interactive setup for Radon`,
     permissionLevel: PermissionLevels.Administrator,
     runIn: 'GUILD_ANY',
@@ -60,7 +61,7 @@ export class UserCommand extends RadonCommand {
             ],
         })) as Message;
         const collector = msg.createMessageComponentCollector({
-            time: mins(1),
+            time: mins(3),
             componentType: 'BUTTON',
         });
         //--------------------------------------
@@ -249,7 +250,7 @@ export class UserCommand extends RadonCommand {
         });
         const collector2 = msg.channel.createMessageCollector({
             filter: (m) => m.author.id === interaction.user.id,
-            time: mins(2),
+            time: mins(3),
         });
         collector2.on('collect', async (m) => {
             if (stage === 1) {
@@ -308,9 +309,6 @@ export class UserCommand extends RadonCommand {
                 return;
             }
             collector2.stop('done');
-        });
-        collector2.on('end', async (_c, r) => {
-            console.log(r);
         });
         async function makeModlog(is_private: boolean) {
             let permissionOverwrites: OverwriteResolvable[] = [];
