@@ -1,10 +1,14 @@
-import { RadonCommand } from '#lib/structures';
+import { RadonCommand, Timestamp } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
-import { runAllChecks } from '#lib/utility';
+import {
+    severity,
+    runAllChecks,
+    generateModLogDescription,
+} from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import type { ApplicationCommandRegistry } from '@sapphire/framework';
-import { Constants, GuildMember } from 'discord.js';
+import { Constants, GuildMember, MessageEmbed } from 'discord.js';
 import ms from 'ms';
 import hd from 'humanize-duration';
 
@@ -67,11 +71,28 @@ export class UserCommand extends RadonCommand {
                         (content += `\n${vars.emojis.cross} Couldn't DM the member!`)
                 );
         }
+        const embed = new MessageEmbed().setColor(severity.timeout).setAuthor({
+            name: interaction.user.tag,
+            iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
+        });
+        const des = generateModLogDescription(
+            member,
+            'Timeout',
+            reason,
+            new Timestamp(Date.now() + duration)
+        );
+        embed.setDescription(des);
+
+        if (
+            interaction.guild &&
+            (await interaction.guild.settings?.modlogs.modLogs_exist()) &&
+            duration !== 0
+        ) {
+            await interaction.guild.settings?.modlogs.sendModLog(embed);
+        }
         if (duration === 0)
             content = `${vars.emojis.confirm} Removed timeout from ${member} [${member.user.tag}]`;
-        return await interaction.editReply({
-            content,
-        });
+        return await interaction.editReply({ content });
     }
 
     public async registerApplicationCommands(
@@ -104,7 +125,7 @@ export class UserCommand extends RadonCommand {
             },
             {
                 guildIds: vars.guildIds,
-                idHints: ['948096165017169943', '947884711865376868'],
+                idHints: ['948096165017169943', '951679384476086353'],
             }
         );
     }

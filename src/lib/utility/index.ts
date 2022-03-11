@@ -6,3 +6,4 @@ export * from './functions/permissions';
 export * from './functions/role';
 export * from './colors/embedColor';
 export * from './functions/modperms';
+export * from './functions/generateDescription';

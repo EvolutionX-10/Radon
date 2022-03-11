@@ -6,7 +6,10 @@ import { color, mins, sec } from '#lib/utility';
 import { guildSettingsDB } from '#models';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import type { ApplicationCommandRegistry } from '@sapphire/framework';
+import {
+    type ApplicationCommandRegistry,
+    container,
+} from '@sapphire/framework';
 import {
     ButtonInteraction,
     Message,
@@ -166,7 +169,7 @@ export class UserCommand extends RadonCommand {
                                 await i.followUp({
                                     content:
                                         `I couldn't create the modlog channel due to insufficient permissions!\nPlease try again after granting ` +
-                                        `\`Manage Channels\` [Creation of Channel] \`Manage Roles\` [To configure channel permissions] permissions to me!\n
+                                        `\`Manage Channels\` [Creation of Channel], \`Manage Roles\` [To configure channel permissions], \`Embed Links and Send Messages\` [To send modlogs] permissions to me!\n
                                         ` +
                                         `Note: I need a role higher than @everyone with the mentioned permissions!` +
                                         `If you are still having issues run \`/invite\` and join our support server!`,
@@ -238,8 +241,6 @@ export class UserCommand extends RadonCommand {
                     embeds: [final],
                     components: [],
                 });
-                // todo save data to database
-
                 return;
             }
             await msg.edit({
@@ -319,6 +320,11 @@ export class UserCommand extends RadonCommand {
                         deny: ['VIEW_CHANNEL'],
                         type: 'role',
                     },
+                    {
+                        id: container.client.user!.id,
+                        allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'EMBED_LINKS'],
+                        type: 'member',
+                    },
                 ];
                 modRoles.forEach((mod) => {
                     permissionOverwrites.push({
@@ -341,6 +347,12 @@ export class UserCommand extends RadonCommand {
                         id: interaction.guild!.id,
                         allow: ['VIEW_CHANNEL'],
                         deny: ['MANAGE_CHANNELS', 'SEND_MESSAGES'],
+                        type: 'role',
+                    },
+                    {
+                        id: container.client.user!.id,
+                        allow: ['SEND_MESSAGES', 'EMBED_LINKS'],
+                        type: 'member',
                     },
                 ];
             }

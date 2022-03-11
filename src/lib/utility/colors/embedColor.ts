@@ -9,3 +9,12 @@ export enum color {
     Owner = 0xffff00,
     System = 0xc9dfca,
 }
+
+export enum severity {
+    ban = 0xf80404,
+    kick = 0xfb9f06,
+    timeout = 0xffcf06,
+    softban = 0xfc7c09,
+    warn = 0xfcfc7c,
+    unban = 0x94ec94,
+}

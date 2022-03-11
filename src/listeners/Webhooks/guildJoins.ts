@@ -14,7 +14,7 @@ export class UserListener extends Listener {
             await guild.leave();
             return;
         }
-        guild.settings = new GuildSettings();
+        guild.settings = new GuildSettings(guild);
         await this.container.client.guilds.fetch();
         await guild.members.fetch();
         const channel = (await this.container.client.channels

@@ -1,10 +1,10 @@
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
-import { sec } from '#lib/utility';
+import { generateModLogDescription, sec, severity } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import type { ApplicationCommandRegistry } from '@sapphire/framework';
-import { Constants } from 'discord.js';
+import { Constants, MessageEmbed } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
     cooldownDelay: sec(10),
     cooldownLimit: 3,
@@ -45,6 +45,22 @@ export class UserCommand extends RadonCommand {
             .catch(
                 () => (content += `\n${vars.emojis.cross} Couldn't DM user!`)
             );
+        const embed = new MessageEmbed().setColor(severity.unban).setAuthor({
+            name: interaction.user.tag,
+            iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
+        });
+        const description = generateModLogDescription(
+            user,
+            'Unban',
+            reason ?? undefined
+        );
+        embed.setDescription(description);
+        if (
+            interaction.guild &&
+            (await interaction.guild.settings?.modlogs.modLogs_exist())
+        ) {
+            await interaction.guild.settings?.modlogs.sendModLog(embed);
+        }
 
         return interaction.reply({
             content,
@@ -75,7 +91,7 @@ export class UserCommand extends RadonCommand {
             },
             {
                 guildIds: vars.guildIds,
-                idHints: ['947830619386302525', '947808233131757578'],
+                idHints: ['947830619386302525', '951679387084922930'],
             }
         );
     }

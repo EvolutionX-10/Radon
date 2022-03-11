@@ -39,7 +39,7 @@ export class UserListener extends Listener {
             )}${greenBright(']')}`
         );
         const guilds = client.guilds.cache;
-        guilds.forEach((guild) => (guild.settings = new GuildSettings()));
+        guilds.forEach((guild) => (guild.settings = new GuildSettings(guild)));
     }
     private get isDev() {
         return process.env.NODE_ENV === 'development';

@@ -29,8 +29,9 @@ export class UserCommand extends RadonCommand {
         if (!id) return send(message, `Please provide a valid ID.`);
         const reason = await args.rest('string').catch(() => null);
         if (!reason) return send(message, `Please provide a reason.`);
-        await this.container.client.guilds.fetch();
-        const guild = this.container.client.guilds.cache.get(id);
+        const guild = await this.container.client.guilds
+            .fetch(id)
+            .catch(() => null);
         if (!guild && !args.getFlags('force'))
             return send(message, `I can't find that guild.`);
         if (args.getFlags('force') && !guild) {

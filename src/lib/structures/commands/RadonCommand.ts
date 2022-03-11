@@ -150,6 +150,6 @@ declare module 'discord.js' {
         sudo: GuildMember | null;
     }
     interface Guild {
-        settings: GuildSettings;
+        settings: GuildSettings | null;
     }
 }

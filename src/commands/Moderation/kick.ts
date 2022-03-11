@@ -1,10 +1,15 @@
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
-import { runAllChecks, sec } from '#lib/utility';
+import {
+    generateModLogDescription,
+    runAllChecks,
+    sec,
+    severity,
+} from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import type { ApplicationCommandRegistry } from '@sapphire/framework';
-import { Constants, GuildMember } from 'discord.js';
+import { Constants, GuildMember, MessageEmbed } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
     description: `Kick a member`,
     permissionLevel: PermissionLevels.Moderator,
@@ -52,6 +57,23 @@ export class UserCommand extends RadonCommand {
             content,
             ephemeral: true,
         });
+        const embed = new MessageEmbed().setColor(severity.kick).setAuthor({
+            name: interaction.user.tag,
+            iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
+        });
+        const description = generateModLogDescription(
+            member,
+            'Kick',
+            reason ?? undefined
+        );
+        embed.setDescription(description);
+        if (
+            interaction.guild &&
+            (await interaction.guild.settings?.modlogs.modLogs_exist()) &&
+            kicked
+        ) {
+            await interaction.guild.settings?.modlogs.sendModLog(embed);
+        }
     }
     public async registerApplicationCommands(
         registry: ApplicationCommandRegistry
@@ -77,7 +99,7 @@ export class UserCommand extends RadonCommand {
             },
             {
                 guildIds: vars.guildIds,
-                idHints: ['947723984949092392', '947165797590126642'],
+                idHints: ['947723984949092392', '951679380692828180'],
             }
         );
     }
