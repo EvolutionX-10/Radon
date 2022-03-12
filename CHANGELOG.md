@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/EvolutionX-10/Radon/compare/v1.2.0...v1.3.0) (2022-03-12)
+
+
+### Features
+
+* **cmd:** new command `/invite` for easy invites ([84a679a](https://github.com/EvolutionX-10/Radon/commit/84a679ac51edac8b28707efea5bc93aac1f4b459))
+* **color:** new color for admin commands ([a1a8d21](https://github.com/EvolutionX-10/Radon/commit/a1a8d21e197cfa84df811528bc73794ff907c91c))
+* **guildsettings:** model for guild settings ([28c0505](https://github.com/EvolutionX-10/Radon/commit/28c05057061ebe2e49d3390dc91bc9f3c00eb28c))
+* **modlogs:** modlogs are functional now 🎉 ([3d3976a](https://github.com/EvolutionX-10/Radon/commit/3d3976ade789104d8eb079c7102670908ba72549))
+* new command `/setup` ([91fe490](https://github.com/EvolutionX-10/Radon/commit/91fe4908a0b0bb018e10c22aa4f5ac1de0e6ec12))
+
+
+### Bug Fixes
+
+* **modlog:** creation of modlog is smoother and roles setup doesnt run in error ([74aae20](https://github.com/EvolutionX-10/Radon/commit/74aae2068a7f898fcaa5bf80b870613ba23da316))
+* **perms:** fixed some descriptions and permission issues ([70e6c34](https://github.com/EvolutionX-10/Radon/commit/70e6c345c1de74be9b3518a44b6c520b2affdfbc))
+* **setup:** increased time limits ([ebd5146](https://github.com/EvolutionX-10/Radon/commit/ebd5146ebb2399b6be9d44441211a708ddba5c24))
+* **timeout:** fixed a bug where string was empty ([152839b](https://github.com/EvolutionX-10/Radon/commit/152839ba0bb786815812c5ab3af9f54a49e8230b))
+* **timeout:** fixed a bug where timing out bots throw error ([bd59728](https://github.com/EvolutionX-10/Radon/commit/bd597283cd45966cdeb24a01e67f88e89d05eb5f))
+
 ## [1.2.0](https://github.com/EvolutionX-10/Radon/compare/v1.1.0...v1.2.0) (2022-03-08)
 
 
