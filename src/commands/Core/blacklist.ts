@@ -53,9 +53,8 @@ export class UserCommand extends RadonCommand {
         if (!channel) return;
         const webhook = (await channel.fetchWebhooks()).first();
         if (!webhook || !webhook.token) return;
-        const description = `Blacklisted ${
-            guild?.name ?? ``
-        } \`${id}\` for ${reason}`;
+        const description =
+            `Guild: ${guild?.name ?? ``} \`${id}\`` + `\nReason: ${reason}`;
         return await webhook.send({
             embeds: [
                 {
@@ -86,7 +85,7 @@ export class UserCommand extends RadonCommand {
         if (!channel) return;
         const webhook = (await channel.fetchWebhooks()).first();
         if (!webhook || !webhook.token) return;
-        const description = `Removed blacklist from \`${id}\`\nReason for blacklist: ${
+        const description = `Guild ID: \`${id}\`\nReason: ${
             reason ?? `Unknown`
         }`;
         return await webhook.send({
