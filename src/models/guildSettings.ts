@@ -1,6 +1,14 @@
-import { buildSchema, modelOptions, prop } from '@typegoose/typegoose';
+import {
+    buildSchema,
+    modelOptions,
+    prop,
+    Severity,
+} from '@typegoose/typegoose';
 import { container } from '@sapphire/framework';
-@modelOptions({ schemaOptions: { timestamps: true } })
+@modelOptions({
+    schemaOptions: { timestamps: true },
+    options: { allowMixed: Severity.ALLOW },
+})
 class guildSettings {
     @prop({ required: true })
     public _id!: string;
