@@ -20,14 +20,15 @@
         "start": "yarn compile && NODE_ENV=production && node ./dist/index.js",
         "dev": "yarn compile && node ./dist/index.js",
         "heroku": "git push heroku main",
-        "backup": "heroku git:remote -a radon-dev2 && yarn heroku",
-        "deploy": "yarn heroku && yarn backup && yarn heroku",
+        "backup": "heroku git:remote -a radon-dev2 && yarn heroku && heroku git:remote -a radon-dev",
+        "deploy": "yarn heroku && yarn backup && yarn heroku && heroku git:remote -a radon-dev",
         "release": "standard-version",
         "preview": "standard-version --dry-run",
         "compile": "tsc -p ./src",
         "watch": "tsc -b src --watch",
         "postinstall": "husky install",
-        "logs": "heroku logs --app=radon-dev -t --force-colors"
+        "logs": "heroku logs --app=radon-dev -t --force-colors",
+        "logs2": "heroku logs --app=radon-dev2 -t --force-colors"
     },
     "engines": {
         "node": ">=17.4.0"
