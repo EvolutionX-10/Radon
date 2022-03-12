@@ -20,6 +20,8 @@
         "start": "yarn compile && NODE_ENV=production && node ./dist/index.js",
         "dev": "yarn compile && node ./dist/index.js",
         "heroku": "git push heroku main",
+        "backup": "heroku git:remote -a radon-dev2 && yarn heroku",
+        "deploy": "yarn heroku && yarn backup && yarn heroku",
         "release": "standard-version",
         "preview": "standard-version --dry-run",
         "compile": "tsc -p ./src",
