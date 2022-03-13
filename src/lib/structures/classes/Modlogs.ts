@@ -7,8 +7,8 @@ export class Modlogs {
     }
     public async modLogs_exist() {
         const data = await guildSettingsDB.findById(this.guild.id);
-        if (data && data.modLogChannel) return true;
-        else return false;
+        if (data && data.modLogChannel) return data.modLogChannel;
+        else return null;
     }
     public async sendModLog(embed: MessageEmbed) {
         const data = await guildSettingsDB.findById(this.guild.id);
