@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import { SubCommandPluginCommand } from '@sapphire/plugin-subcommands';
 import {
+    ApplicationCommandRegistry,
     Args as SapphireArgs,
     ChatInputCommandContext,
     ContextMenuCommandContext,
@@ -120,6 +121,7 @@ export namespace RadonCommand {
     export type Context = ChatInputCommandContext | ContextMenuCommandContext;
     export type Args = SapphireArgs;
     export type Message = Msg;
+    export type Registry = ApplicationCommandRegistry;
 }
 
 declare module '@sapphire/framework' {
