@@ -6,10 +6,7 @@ import { color, mins, sec } from '#lib/utility';
 import { guildSettingsDB } from '#models';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import {
-    type ApplicationCommandRegistry,
-    container,
-} from '@sapphire/framework';
+import { container } from '@sapphire/framework';
 import {
     ButtonInteraction,
     Message,
@@ -364,9 +361,7 @@ export class UserCommand extends RadonCommand {
         }
         return;
     }
-    public async registerApplicationCommands(
-        registry: ApplicationCommandRegistry
-    ) {
+    public async registerApplicationCommands(registry: RadonCommand.Registry) {
         registry.registerChatInputCommand(
             {
                 name: this.name,

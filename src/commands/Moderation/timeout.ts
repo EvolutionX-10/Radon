@@ -7,7 +7,6 @@ import {
 } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import type { ApplicationCommandRegistry } from '@sapphire/framework';
 import { Constants, GuildMember, MessageEmbed } from 'discord.js';
 import ms from 'ms';
 import hd from 'humanize-duration';
@@ -95,9 +94,7 @@ export class UserCommand extends RadonCommand {
         return await interaction.editReply({ content });
     }
 
-    public async registerApplicationCommands(
-        registry: ApplicationCommandRegistry
-    ) {
+    public async registerApplicationCommands(registry: RadonCommand.Registry) {
         registry.registerChatInputCommand(
             {
                 name: this.name,

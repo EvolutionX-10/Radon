@@ -8,7 +8,6 @@ import {
 } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import type { ApplicationCommandRegistry } from '@sapphire/framework';
 import { Constants, GuildMember, MessageEmbed } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
     description: `Kick a member`,
@@ -75,9 +74,7 @@ export class UserCommand extends RadonCommand {
             await interaction.guild.settings?.modlogs.sendModLog(embed);
         }
     }
-    public async registerApplicationCommands(
-        registry: ApplicationCommandRegistry
-    ) {
+    public async registerApplicationCommands(registry: RadonCommand.Registry) {
         registry.registerChatInputCommand(
             {
                 name: this.name,

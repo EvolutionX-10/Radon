@@ -8,7 +8,6 @@ import {
 } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import type { ApplicationCommandRegistry } from '@sapphire/framework';
 import { Constants, GuildMember, MessageEmbed } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
     cooldownDelay: sec(10),
@@ -77,9 +76,7 @@ export class UserCommand extends RadonCommand {
             ephemeral: true,
         });
     }
-    public async registerApplicationCommands(
-        registry: ApplicationCommandRegistry
-    ) {
+    public async registerApplicationCommands(registry: RadonCommand.Registry) {
         registry.registerChatInputCommand(
             {
                 name: this.name,

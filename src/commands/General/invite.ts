@@ -3,7 +3,6 @@ import { PermissionLevels } from '#lib/types';
 import { color } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import type { ApplicationCommandRegistry } from '@sapphire/framework';
 import { MessageActionRow, MessageButton } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
     permissionLevel: PermissionLevels.Everyone,
@@ -44,9 +43,7 @@ export class UserCommand extends RadonCommand {
             components: [row],
         });
     }
-    public async registerApplicationCommands(
-        registry: ApplicationCommandRegistry
-    ) {
+    public async registerApplicationCommands(registry: RadonCommand.Registry) {
         registry.registerChatInputCommand(
             {
                 name: this.name,

@@ -3,7 +3,6 @@ import { RadonCommand } from '#lib/structures';
 import { send } from '@sapphire/plugin-editable-commands';
 import { ApplyOptions } from '@sapphire/decorators';
 import { PermissionLevels } from '#lib/types';
-import type { ApplicationCommandRegistry } from '@sapphire/framework';
 import { vars } from '#vars';
 @ApplyOptions<RadonCommand.Options>({
     description: `Check my latency!`,
@@ -29,9 +28,7 @@ export class UserCommand extends RadonCommand {
             content: `Pong! (Roundtrip took: ${diff}ms. Heartbeat: ${ping}ms.)`,
         });
     }
-    public async registerApplicationCommands(
-        registry: ApplicationCommandRegistry
-    ) {
+    public async registerApplicationCommands(registry: RadonCommand.Registry) {
         registry.registerChatInputCommand(
             {
                 name: this.name,

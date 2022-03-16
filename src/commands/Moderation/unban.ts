@@ -3,7 +3,6 @@ import { PermissionLevels } from '#lib/types';
 import { generateModLogDescription, sec, severity } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import type { ApplicationCommandRegistry } from '@sapphire/framework';
 import { Constants, MessageEmbed } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
     cooldownDelay: sec(10),
@@ -67,9 +66,7 @@ export class UserCommand extends RadonCommand {
             ephemeral: true,
         });
     }
-    public async registerApplicationCommands(
-        registry: ApplicationCommandRegistry
-    ) {
+    public async registerApplicationCommands(registry: RadonCommand.Registry) {
         registry.registerChatInputCommand(
             {
                 name: this.name,

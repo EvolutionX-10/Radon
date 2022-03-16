@@ -1,7 +1,6 @@
 import { RadonCommand } from '#lib/structures';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import type { ApplicationCommandRegistry } from '@sapphire/framework';
 import { Constants, TextChannel } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
     description: `Change the reason for the action`,
@@ -55,9 +54,7 @@ export class UserCommand extends RadonCommand {
             content: `Successfully updated the reason!`,
         });
     }
-    public async registerApplicationCommands(
-        registry: ApplicationCommandRegistry
-    ) {
+    public async registerApplicationCommands(registry: RadonCommand.Registry) {
         registry.registerChatInputCommand(
             {
                 name: this.name,

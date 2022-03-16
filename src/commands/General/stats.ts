@@ -3,10 +3,7 @@ import { PermissionLevels } from '#lib/types';
 import { color } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import {
-    ApplicationCommandRegistry,
-    version as sapphireVersion,
-} from '@sapphire/framework';
+import { version as sapphireVersion } from '@sapphire/framework';
 import { roundNumber } from '@sapphire/utilities';
 import { MessageEmbed, version } from 'discord.js';
 import { uptime } from 'node:os';
@@ -25,9 +22,7 @@ export class UserCommand extends RadonCommand {
         });
     }
 
-    public async registerApplicationCommands(
-        registry: ApplicationCommandRegistry
-    ) {
+    public async registerApplicationCommands(registry: RadonCommand.Registry) {
         registry.registerChatInputCommand(
             {
                 name: this.name,
