@@ -60,6 +60,7 @@ export const client_config: ClientOptions = {
     typing: false,
     hmr: {
         enabled: process.env.NODE_ENV === 'development',
+        silent: true,
     },
     shards: 'auto',
     disableMentionPrefix: true,
