@@ -11,7 +11,7 @@ export class UserListener extends Listener<
         error: Error,
         { interaction }: ChatInputCommandErrorPayload
     ) {
-        if (interaction.deferred) {
+        if (interaction.deferred || interaction.replied) {
             return await interaction.editReply({
                 content: error.message,
             });

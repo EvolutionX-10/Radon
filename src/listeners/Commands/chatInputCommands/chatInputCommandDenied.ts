@@ -28,7 +28,7 @@ export class UserListener extends Listener<
         return this.reply(interaction, content);
     }
     private async reply(interaction: CommandInteraction, content: string) {
-        if (interaction.deferred) {
+        if (interaction.deferred || interaction.replied) {
             return await interaction.editReply({
                 content,
             });
