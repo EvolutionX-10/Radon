@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://github.com/EvolutionX-10/Radon/compare/v1.3.0...v1.4.0) (2022-03-17)
+
+
+### Features
+
+* **clear opt:** new clear options like user, contains and skip_pinned ([f5afcaa](https://github.com/EvolutionX-10/Radon/commit/f5afcaa504e553ffb9c09fa9652897e18664e4e2))
+* **interaction-handler:** use of interaction handler to handle maintainence ([e47debb](https://github.com/EvolutionX-10/Radon/commit/e47debb7c20e1b6ea74c38cad970afc83a97cce9))
+* new slash command `/reason` ([5297c96](https://github.com/EvolutionX-10/Radon/commit/5297c96367ae2c604e0b231594682367f10eeab1))
+* **registry:** new export type registry in RadonCommand for ApplicationCommandRegistry ([a897c50](https://github.com/EvolutionX-10/Radon/commit/a897c50abcb4e90d87ebae96ef823173effa0abe))
+
+
+### Bug Fixes
+
+* **reply/defer:** fixed a bug where it used to throw error at commanderror event ([8fbfb79](https://github.com/EvolutionX-10/Radon/commit/8fbfb7952aab8dad255f343c471a9a7229e8cb0f))
+
 ## [1.3.0](https://github.com/EvolutionX-10/Radon/compare/v1.2.0...v1.3.0) (2022-03-12)
 
 
