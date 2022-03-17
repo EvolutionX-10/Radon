@@ -12,6 +12,7 @@ export class UserCommand extends RadonCommand {
         message: RadonCommand.Message,
         args: RadonCommand.Args
     ) {
+        if (process.env.NODE_ENV === 'production') return;
         if (args.getFlags('kill')) {
             await message.react('💀');
             process.exit(0);
