@@ -51,7 +51,7 @@ export class UserListener extends Listener {
         const blc = this.isDev ? blueBright : blue;
 
         // Offset Pad
-        const pad = ' '.repeat(2);
+        const pad = '  ';
 
         console.log(
             String.raw`
