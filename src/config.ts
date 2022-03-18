@@ -63,6 +63,6 @@ export const client_config: ClientOptions = {
         silent: true,
     },
     shards: 'auto',
-    disableMentionPrefix: true,
+    disableMentionPrefix: process.env.NODE_ENV === 'production',
     preventFailedToFetchLogForGuildIds: ['733135938347073576'],
 };
