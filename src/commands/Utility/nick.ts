@@ -51,7 +51,8 @@ export class UserCommand extends RadonCommand {
         const reason = `Done by ${interaction.user.tag}`;
         if (member.id === interaction.guild?.ownerId) {
             return interaction.reply({
-                content: 'You cannot decancer the owner of the server',
+                content: 'I cannot decancer the owner of the server',
+                ephemeral: true,
             });
         }
         const { result, content } = runAllChecks(
