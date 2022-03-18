@@ -67,7 +67,8 @@ export class UserCommand extends RadonCommand {
             });
         }
         const name = member.displayName;
-        const nickname = banish(name) ?? 'Moderated Nickname';
+        let nickname = banish(name).replace(/([^a-z ]+)/gim, '');
+        if (!nickname.length) nickname = 'Moderated Nickname';
         if (nickname === name) {
             return interaction.reply({
                 content: 'Nothing to decancer',
