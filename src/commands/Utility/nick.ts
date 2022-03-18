@@ -246,7 +246,7 @@ export class UserCommand extends RadonCommand {
         );
         registry.registerContextMenuCommand(
             {
-                name: 'decancer',
+                name: 'Decancer',
                 type: Constants.ApplicationCommandTypes.USER,
             },
             {
