@@ -1,6 +1,6 @@
 <div align="center">
 
-# [Radon][invite]
+# Radon
 
 [![CodeFactor]](https://www.codefactor.io/repository/github/evolutionx-10/radon/overview/main)
 [![License]][apache]
@@ -11,14 +11,18 @@
 
 </div>
 
+  
 ## Table of Contents
 
+-   [Invite](#invite-radon-to-your-server-click-here)
 -   [License](#license-here)
 -   [Beta Testing](#beta-testing-for-radon)
 -   [Developing on Radon](#developing-on-radon)
 -   [Contributing](#contributing)
 -   [Changelog](#changelog-here)
 -   [Plans](#plans)
+  
+## Invite Radon to your server [`Click here`][invite]
 
 ## License [`here`][apache]
 
@@ -60,6 +64,15 @@ To contribute to this repository, feel free to fork the repository and make your
 _Note: These plans might change in the future._ <br>
 _Note2: There is **NO** [`ETA`] for these plans._
 
+<div align="center">
+<a href="https://voidbots.net/bot/944833303226236989">
+  <img src= "https://voidbots.net/api/embed/944833303226236989?theme=custom&bg=000000&downbg=FFFFFF&text=FFFFFF&cards=222222" width="300" height="150" />
+</a>  
+<a href="https://top.gg/bot/944833303226236989">
+  <img src="https://top.gg/api/widget/944833303226236989.svg">
+</a>
+</div>
+
 <!-- REFERENCES -->
 
 [^env]: You will need to create a `.env` file in the root directory of the project.
@@ -92,3 +105,4 @@ _Note2: There is **NO** [`ETA`] for these plans._
 [license]: https://img.shields.io/github/license/EvolutionX-10/Radon
 [github stars]: https://img.shields.io/github/stars/EvolutionX-10/Radon
 [github issues]: https://img.shields.io/github/issues/EvolutionX-10/Radon
+[void]: https://voidbots.net/api/embed/944833303226236989?theme=custom&bg=000000&downbg=FFFFFF&text=FFFFFF&cards=222222
