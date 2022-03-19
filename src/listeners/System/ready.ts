@@ -15,6 +15,7 @@ import {
 } from 'colorette';
 import figlet from 'figlet';
 import gradient from 'gradient-string';
+import axios from 'axios';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
 import { version } from '../../../package.json';
@@ -40,6 +41,7 @@ export class UserListener extends Listener {
         );
         const guilds = client.guilds.cache;
         guilds.forEach((guild) => (guild.settings = new GuildSettings(guild)));
+        if (process.env.NODE_ENV === 'production') await this.postServerCount();
     }
     private get isDev() {
         return process.env.NODE_ENV === 'development';
@@ -84,5 +86,31 @@ ${
                 store.size.toString().padEnd(3, ' ')
             )} ${store.name}.`
         );
+    }
+    private async postServerCount() {
+        await axios({
+            url: `https://api.voidbots.net/bot/stats/944833303226236989`,
+            method: 'POST',
+            headers: {
+                Authorization: process.env.VOID_BOT_TOKEN as string,
+                'Content-Type': 'application/json',
+            },
+            data: JSON.stringify({
+                server_count: this.container.client.guilds.cache.size,
+                shard_count: this.container.client.shard?.count ?? 0,
+            }),
+        });
+        await axios({
+            url: `https://top.gg/api/bots/944833303226236989/stats`,
+            method: 'POST',
+            headers: {
+                Authorization: process.env.TOP_BOT_TOKEN as string,
+                'Content-Type': 'application/json',
+            },
+            data: JSON.stringify({
+                server_count: this.container.client.guilds.cache.size,
+                shard_count: this.container.client.shard?.count ?? 0,
+            }),
+        });
     }
 }
