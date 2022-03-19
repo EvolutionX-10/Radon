@@ -65,7 +65,7 @@ _Note2: There is **NO** [`ETA`] for these plans._
 
 <div align="center">
 <a href="https://voidbots.net/bot/944833303226236989">
-  <img src= "https://voidbots.net/api/embed/944833303226236989?theme=custom&bg=000000&downbg=FFFFFF&text=FFFFFF&cards=222222" width="300" height="150" />
+  <img src= "https://voidbots.net/api/embed/944833303226236989?theme=dark" width="300" height="150" />
 </a>  
 <a href="https://top.gg/bot/944833303226236989">
   <img src="https://top.gg/api/widget/944833303226236989.svg">
@@ -104,4 +104,3 @@ _Note2: There is **NO** [`ETA`] for these plans._
 [license]: https://img.shields.io/github/license/EvolutionX-10/Radon
 [github stars]: https://img.shields.io/github/stars/EvolutionX-10/Radon
 [github issues]: https://img.shields.io/github/issues/EvolutionX-10/Radon
-[void]: https://voidbots.net/api/embed/944833303226236989?theme=custom&bg=000000&downbg=FFFFFF&text=FFFFFF&cards=222222
