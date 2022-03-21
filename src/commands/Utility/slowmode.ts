@@ -6,7 +6,7 @@ import { Constants, TextChannel } from 'discord.js';
 import hd from 'humanize-duration';
 import ms from 'ms';
 @ApplyOptions<RadonCommand.Options>({
-    description: 'Manage slowmode of current channel',
+    description: 'View and Manage slowmode of current channel',
     permissionLevel: PermissionLevels.Moderator,
     requiredClientPermissions: ['MANAGE_CHANNELS'],
     runIn: ['GUILD_ANY'],
@@ -15,7 +15,20 @@ export class UserCommand extends RadonCommand {
     public async chatInputRun(
         interaction: RadonCommand.ChatInputCommandInteraction
     ) {
-        let time = interaction.options.getString('duration', true);
+        let time = interaction.options.getString('duration');
+        if (!time) {
+            await interaction.deferReply({ ephemeral: true });
+            return await interaction.editReply({
+                content: `Current Slowmode is ${
+                    (interaction.channel as TextChannel).rateLimitPerUser
+                        ? `${hd(
+                              (interaction.channel as TextChannel)
+                                  .rateLimitPerUser * 1000
+                          )}`
+                        : 'disabled'
+                }`,
+            });
+        }
         if (!isNaN(+time)) time = time + 's';
         const duration = ms(time);
         if (isNaN(duration))
@@ -61,7 +74,7 @@ export class UserCommand extends RadonCommand {
                         description:
                             'The amount of time to set the slowmode to, enter 0 to turn off',
                         type: Constants.ApplicationCommandOptionTypes.STRING,
-                        required: true,
+                        required: false,
                     },
                     {
                         name: 'reason',
