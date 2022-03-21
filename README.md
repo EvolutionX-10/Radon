@@ -27,7 +27,13 @@
 
 ## Beta Testing for Radon
 
-At the moment I am not completely free but if you are interested in beta testing the bot and helping me out I would be glad. Find me here [`EvolutionX#0001`](https://discord.com)
+At the moment I am not completely free but if you are interested in beta testing the bot and helping me out I would be glad. Find me here! <br>
+
+<div>
+  
+<img align = "center" src = "https://i.dlpng.com/static/png/5323399-transparent-discord-icon-227131-free-icons-library-discord-icon-transparent-500_500_preview.png" height = "45" width = "45"/>[`EvolutionX#0001`](https://discord.com/users/697795666373640213)
+
+</div>
 
 ## Developing on Radon
 
