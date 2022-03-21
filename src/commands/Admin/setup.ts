@@ -73,7 +73,7 @@ export class UserCommand extends RadonCommand {
         collector.on('collect', async (i) => {
             await i.deferUpdate({ fetchReply: true });
             if (i.user.id !== interaction.user.id) {
-                await interaction.followUp({
+                await i.followUp({
                     content: `This isn't for you mate`,
                     ephemeral: true,
                 });
