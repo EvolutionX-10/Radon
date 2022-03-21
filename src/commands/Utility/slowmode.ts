@@ -19,7 +19,7 @@ export class UserCommand extends RadonCommand {
         if (!time) {
             await interaction.deferReply({ ephemeral: true });
             return await interaction.editReply({
-                content: `Current Slowmode is ${
+                content: `Currently Slowmode is ${
                     (interaction.channel as TextChannel).rateLimitPerUser
                         ? `${hd(
                               (interaction.channel as TextChannel)
