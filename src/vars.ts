@@ -1,7 +1,7 @@
 export const vars = {
     emojis: {
-        cross: '❌',
-        confirm: '✅',
+        cross: '<:redCross:957909502911471636>',
+        confirm: '<:greenTick:957909436477878302>',
     },
     owners: ['697795666373640213'],
     owner_prefixes:
