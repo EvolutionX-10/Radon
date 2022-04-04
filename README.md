@@ -61,18 +61,16 @@ To contribute to this repository, feel free to fork the repository and make your
 
 ## Plans
 
--   [ ] Create more server utility commands
+-   [ ] Create lockdown command
 -   [ ] Create advanced automod system
 -   [x] Create a simple setup system
 -   [x] Create a [support server](https://discord.gg/YBFaDggpvt)
+-   [x] Add warning system
 
 _Note: These plans might change in the future._ <br>
 _Note2: There is **NO** [`ETA`] for these plans._
 
 <div align="center">
-<a href="https://voidbots.net/bot/944833303226236989">
-  <img src= "https://voidbots.net/api/embed/944833303226236989?theme=dark" width="300" height="150" />
-</a>  
 <a href="https://top.gg/bot/944833303226236989">
   <img src="https://top.gg/api/widget/944833303226236989.svg">
 </a>
