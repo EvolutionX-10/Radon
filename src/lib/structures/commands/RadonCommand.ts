@@ -13,6 +13,7 @@ import {
 } from '@sapphire/framework';
 import { PermissionLevels } from '#lib/types';
 import {
+    AutocompleteInteraction,
     CommandInteraction,
     ContextMenuInteraction,
     Message as Msg,
@@ -118,6 +119,7 @@ export namespace RadonCommand {
     export type MessageContext = MessageCommandContext;
     export type ChatInputCommandInteraction = CommandInteraction;
     export type ContextMenuCommandInteraction = ContextMenuInteraction;
+    export type AutoComplete = AutocompleteInteraction;
     export type Context = ChatInputCommandContext | ContextMenuCommandContext;
     export type Args = SapphireArgs;
     export type Message = Msg;
