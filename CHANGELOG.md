@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/EvolutionX-10/Radon/compare/v1.4.0...v1.5.0) (2022-04-04)
+
+
+### Features
+
+* **icons:** new icons in messages ([1648896](https://github.com/EvolutionX-10/Radon/commit/1648896517b04cd441fa15769869641da044c85a))
+* improved eval and it now auto resolves promises ([61fe2bb](https://github.com/EvolutionX-10/Radon/commit/61fe2bb944f4faaaa7e51a6d8f4a9707cb0cd889))
+* **new icons:** added new icons ([1d90d58](https://github.com/EvolutionX-10/Radon/commit/1d90d585263816d782d509f4773f68c580b19935))
+* **nickname:** new slash command nick and context menu command decancer ([fcd82b8](https://github.com/EvolutionX-10/Radon/commit/fcd82b88112c1b467e5f189222892ec1e29c53bb))
+* **restart:** restart command ([881df7f](https://github.com/EvolutionX-10/Radon/commit/881df7ff37b01bc0d93e4476740530262b841aa0))
+* **roles:** use role configs in preconditions and new classes to access em ([e9de37f](https://github.com/EvolutionX-10/Radon/commit/e9de37f389d11014f16d19a41605bdd20a37ea28))
+* **slowmode:** duration is not required anymore, without entering duration, you can see current val ([2579037](https://github.com/EvolutionX-10/Radon/commit/2579037d7c0aed3086cd68adbf1c4c68e1c0af91))
+* **slowmode:** new command `/slowmode`, manage slowmode of current channel ([09356d1](https://github.com/EvolutionX-10/Radon/commit/09356d11f846681ece54d351556addf80d3d52c7))
+* **stats:** radon posts server stats when starting to respective bot sites ([d9a78be](https://github.com/EvolutionX-10/Radon/commit/d9a78be7558cef06b880b5e2ac9387159b3a85e0))
+* **uid:** new function to generate unique ids ([72159b9](https://github.com/EvolutionX-10/Radon/commit/72159b943ed63d806277aad311f5559fa41c95d2))
+* **visible:** new method to see if the guild channel is visible by everyone or not, returns boolean ([dc2f403](https://github.com/EvolutionX-10/Radon/commit/dc2f403264292046e9c1371aa561c128aea4bb46))
+* warn command 🎉 ([066c95c](https://github.com/EvolutionX-10/Radon/commit/066c95cec40262569a487ea54187e85a37f82c44))
+* **warn model:** added model of warn ([2f8aa98](https://github.com/EvolutionX-10/Radon/commit/2f8aa9856ea7429ddf890a58665eb1cc99d5affd))
+* **warnexpire:** new function to expire warns ([c2a2bcf](https://github.com/EvolutionX-10/Radon/commit/c2a2bcf1cf1c69e615558ac4de0e7e3774dd2b20))
+* **warn:** new class `Warn` ([a703eb9](https://github.com/EvolutionX-10/Radon/commit/a703eb99c35608bc197714aa999aac71e1cae7ca))
+
+
+### Bug Fixes
+
+* **decancer:** fixed a bug where non qwerty characters were not removed ([6f47dbc](https://github.com/EvolutionX-10/Radon/commit/6f47dbcbd6aa4b75542c1acf7127e6f5b66e31b4))
+* one reply regarding decancer should have been ephemeral but wasnt ([2ddaa71](https://github.com/EvolutionX-10/Radon/commit/2ddaa71cea00a5be36eda9c2a4cf34953c200e88))
+* wrong user pressing button responses will be shown to wrong user itself instead of correct user ([97a332f](https://github.com/EvolutionX-10/Radon/commit/97a332f3c825a66530c851169c0f1d39c949fa00))
+
 ## [1.4.0](https://github.com/EvolutionX-10/Radon/compare/v1.3.0...v1.4.0) (2022-03-17)
 
 
