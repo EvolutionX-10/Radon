@@ -10,7 +10,7 @@ export class UserListener extends Listener {
     public async run(interaction: CommandInteraction) {
         if (isOwner(interaction.user)) return;
         const isvoted = await this.hasVoted(interaction);
-        if (!isvoted && chance(70)) await this.addVoteMsg(interaction);
+        if (!isvoted && chance(40)) await this.addVoteMsg(interaction);
     }
     private async hasVoted(interaction: CommandInteraction) {
         const { data }: { data: vote } = await axios({
@@ -62,7 +62,7 @@ export class UserListener extends Listener {
                     ],
                 },
             ],
-            ephemeral: chance(70),
+            ephemeral: chance(90),
         });
     }
 }
