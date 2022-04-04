@@ -17,4 +17,5 @@ export enum severity {
     softban = 0xfc7c09,
     warn = 0xfcfc7c,
     unban = 0x94ec94,
+    warn_removal = 0x21fec0,
 }
