@@ -74,12 +74,12 @@ export class UserCommand extends RadonCommand {
             name: interaction.user.tag,
             iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
         });
-        const des = generateModLogDescription(
+        const des = generateModLogDescription({
             member,
-            'Timeout',
+            action: 'Timeout',
             reason,
-            new Timestamp(Date.now() + duration)
-        );
+            duration: new Timestamp(Date.now() + duration),
+        });
         embed.setDescription(des);
 
         if (

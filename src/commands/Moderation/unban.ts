@@ -48,11 +48,11 @@ export class UserCommand extends RadonCommand {
             name: interaction.user.tag,
             iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
         });
-        const description = generateModLogDescription(
-            user,
-            'Unban',
-            reason ?? undefined
-        );
+        const description = generateModLogDescription({
+            member: user,
+            action: 'Unban',
+            reason: reason ?? undefined,
+        });
         embed.setDescription(description);
         if (
             interaction.guild &&
