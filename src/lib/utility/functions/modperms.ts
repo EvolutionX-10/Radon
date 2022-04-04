@@ -15,11 +15,11 @@ export function runAllChecks(
     let content: string;
     if (!target.manageable) {
         result = false;
-        content = `${vars.emojis.cross} I can't perform ${action} on ${target}`;
+        content = `${vars.emojis.cross} I can't ${action} ${target}`;
     } else if (
         executor.roles.highest.position === target.roles.highest.position
     ) {
-        content = `${vars.emojis.cross} You can't perform ${action} on ${target}`;
+        content = `${vars.emojis.cross} You can't ${action} ${target}`;
         result = false;
     } else {
         (result = true), (content = '');
