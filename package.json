@@ -31,7 +31,7 @@
         "logs2": "heroku logs --app=radon-dev2 -t --force-colors"
     },
     "engines": {
-        "node": ">=17.4.0"
+        "node": "17.5.0"
     },
     "repository": {
         "type": "git",
