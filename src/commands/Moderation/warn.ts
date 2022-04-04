@@ -107,7 +107,15 @@ export class UserCommand extends RadonCommand {
             });
         }
 
-        await interaction.respond(choices.slice(0, 24));
+        await interaction.respond(
+            choices
+                .filter((choice) =>
+                    choice.name
+                        .toLowerCase()
+                        .includes((focus.value as string).toLowerCase())
+                )
+                .slice(0, 24)
+        );
     }
 
     private async add(interaction: RadonCommand.ChatInputCommandInteraction) {
