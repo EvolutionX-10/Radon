@@ -69,11 +69,17 @@ export class UserCommand extends RadonCommand {
     }
     private async eval(message: Message, code: string, flags: flags) {
         const stopwatch = new Stopwatch();
-        if (flags.async) code = `(async () => {\n${code}\n})();`;
+        if (code.includes('await')) flags.async = true;
+        const ar = code.split(';');
+        if (flags.async)
+            code = `(async () => {\n${code}\nreturn ${
+                ar[ar.length - 1].length ? ar[ar.length - 1].trim() : 'void'
+            }})();`;
         // @ts-ignore
         const msg = message,
             client = this.container.client,
-            guild = message.guild;
+            guild = message.guild,
+            channel = message.channel;
 
         let success = true;
         let result = null;
@@ -82,9 +88,6 @@ export class UserCommand extends RadonCommand {
             // eslint-disable-next-line no-eval
             result = eval(code);
         } catch (error) {
-            if (error && error instanceof Error && error.stack) {
-                // this.container.client.logger.error(error.message)
-            }
             result = error;
             success = false;
         }
