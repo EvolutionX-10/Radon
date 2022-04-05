@@ -26,17 +26,18 @@ export class UserCommand extends RadonCommand {
         message: RadonCommand.Message,
         args: RadonCommand.Args
     ) {
-        if (args.getFlags('cc', 'c')) {
-            console.clear();
-            await message.react(vars.emojis.confirm);
-            return;
-        }
-
         const code = await args.rest('string');
         const { success, result, time, type } = await this.eval(message, code, {
             async: args.getFlags('async'),
             depth: Number(args.getOption('depth')) ?? 0,
             showHidden: args.getFlags('hidden', 'showHidden'),
+        }).catch((e: Error) => {
+            return {
+                success: false,
+                result: e.message,
+                time: '',
+                type: 'SyntaxError',
+            };
         });
         const footer = codeBlock('ts', type);
         if (args.getFlags('haste')) {
@@ -51,7 +52,6 @@ export class UserCommand extends RadonCommand {
         if (args.getFlags('silent', 's')) {
             if (!success && result) {
                 await message.react(vars.emojis.cross);
-                this.container.logger.fatal(`oops`);
                 return null;
             }
             await message.react(vars.emojis.confirm);
@@ -61,7 +61,12 @@ export class UserCommand extends RadonCommand {
         if (result.length > 1900) {
             return send(message, {
                 content: `Output was too long... sent the result as a file.\n\n${footer}`,
-                files: [{ attachment: Buffer.from(result), name: 'output.js' }],
+                files: [
+                    {
+                        attachment: Buffer.from(result),
+                        name: 'output.js',
+                    },
+                ],
             });
         }
 
@@ -71,9 +76,10 @@ export class UserCommand extends RadonCommand {
         const stopwatch = new Stopwatch();
         if (code.includes('await')) flags.async = true;
         const ar = code.split(';');
+        const last = ar.pop();
         if (flags.async)
-            code = `(async () => {\n${code}\nreturn ${
-                ar[ar.length - 1].length ? ar[ar.length - 1].trim() : 'void'
+            code = `(async () => {\n${ar.join(';\n')}\nreturn ${
+                last?.trim() ?? 'void'
             }})();`;
         // @ts-ignore
         const msg = message,
@@ -83,18 +89,15 @@ export class UserCommand extends RadonCommand {
 
         let success = true;
         let result = null;
-
         try {
-            // eslint-disable-next-line no-eval
             result = eval(code);
         } catch (error) {
-            result = error;
             success = false;
+            result = error;
         }
         stopwatch.stop();
         const type = new Type(result).toString();
         if (isThenable(result)) result = await result;
-
         if (typeof result !== 'string') {
             result = inspect(result, {
                 depth: flags.depth,
