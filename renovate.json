@@ -1,11 +1,14 @@
 {
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
     "extends": ["config:base"],
+    "labels": ["dependencies"],
+    "reviewers": ["EvolutionX-10"],
     "major": {
         "dependencyDashboardApproval": true,
-        "labels": ["dependencies: major"]
+        "addLabels": ["dependencies: major"]
     },
     "minor": {
-        "labels": ["dependencies: minor"]
+        "addLabels": ["dependencies: minor"]
     },
     "timezone": "Asia/Kolkata",
     "schedule": ["after 9pm every weekday"],
