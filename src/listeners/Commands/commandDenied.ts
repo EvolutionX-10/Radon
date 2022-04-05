@@ -29,7 +29,7 @@ export class UserListener extends Listener {
             )}.`;
             message.author.spam = message.author.spam + 1;
             if (message.author.spam === 5) {
-                return await send(message, {
+                return send(message, {
                     content: `<@${message.author.id}> stop spamming commands else you'll be blacklisted!`,
                     allowedMentions: {
                         parse: ['users'],
@@ -51,16 +51,16 @@ export class UserListener extends Listener {
                     args as Args,
                     {}
                 );
-                return await send(message, {
+                return send(message, {
                     content: `<@${message.author.id}> you're blacklisted for spamming commands!`,
                     allowedMentions: {
                         parse: ['users'],
                     },
                 });
             }
-            return await send(message, msg);
+            return send(message, msg);
         }
-        return await send(message, error.message);
+        return send(message, error.message);
     }
 }
 declare module 'discord.js' {

@@ -25,7 +25,7 @@ export class UserCommand extends RadonCommand {
         await interaction.deferReply({ ephemeral: true, fetchReply: true });
         const member = interaction.options.getMember('member') as GuildMember;
         if (!member)
-            return await interaction.editReply({
+            return interaction.editReply({
                 content: `${vars.emojis.cross} You must specify a valid member`,
             });
         const reason = interaction.options.getString('reason');
@@ -35,7 +35,7 @@ export class UserCommand extends RadonCommand {
             member,
             'soft ban'
         );
-        if (!result) return await interaction.editReply(ctn);
+        if (!result) return interaction.editReply(ctn);
         const content =
             `${vars.emojis.confirm} ${member} [${member.user.username}] has ` +
             `been soft banned ${

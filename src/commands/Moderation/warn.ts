@@ -40,18 +40,18 @@ export class UserCommand extends RadonCommand {
         const subcmd = interaction.options.getSubcommand();
         switch (subcmd) {
             case 'add':
-                return await this.add(interaction);
+                return this.add(interaction);
             case 'remove':
-                return await this.remove(interaction);
+                return this.remove(interaction);
             case 'list':
-                return await this.list(interaction);
+                return this.list(interaction);
         }
     }
 
     public async contextMenuRun(
         interaction: RadonCommand.ContextMenuCommandInteraction
     ) {
-        return await this.list(interaction);
+        return this.list(interaction);
     }
 
     // Thanks @favna
@@ -127,7 +127,7 @@ export class UserCommand extends RadonCommand {
         const member = interaction.options.getMember('user') as GuildMember;
         const reason = interaction.options.getString('reason', true);
         if (!member) {
-            return await interaction.reply({
+            return interaction.reply({
                 content: 'Please provide a valid member',
                 ephemeral: true,
             });
@@ -138,7 +138,7 @@ export class UserCommand extends RadonCommand {
             'warn'
         );
         if (!result || member.user.bot)
-            return await interaction.reply({
+            return interaction.reply({
                 content: ctn || `${vars.emojis.cross} I can't warn bots!`,
                 ephemeral: true,
             });
@@ -150,7 +150,7 @@ export class UserCommand extends RadonCommand {
             this.autoSeverity(severity);
         const silent = interaction.options.getBoolean('silent') ?? false;
         if (isNaN(ms(expires))) {
-            return await interaction.reply({
+            return interaction.reply({
                 content:
                     'Invalid duration! Valid examples: `1 week`, `1h`, `10 days`, `5 hours`',
                 ephemeral: true,
@@ -158,13 +158,13 @@ export class UserCommand extends RadonCommand {
         }
         const expiration = new Date(Date.now() + ms(expires));
         if (expiration.getTime() > Date.now() + ms('28 days')) {
-            return await interaction.reply({
+            return interaction.reply({
                 content: 'Expiration cannot be more than 28 days',
                 ephemeral: true,
             });
         }
         if (expiration.getTime() < Date.now() + ms('1 hour')) {
-            return await interaction.reply({
+            return interaction.reply({
                 content:
                     'Expiration cannot be less than 1 hour. Please use a longer duration.',
                 ephemeral: true,
@@ -180,7 +180,7 @@ export class UserCommand extends RadonCommand {
             mod: interaction.member as GuildMember,
         });
         if (typeof warn === 'undefined') {
-            return await interaction.reply({
+            return interaction.reply({
                 content: `It seems you've already reached the limit of active warns on ${member}`,
                 ephemeral: true,
             });
@@ -235,7 +235,7 @@ export class UserCommand extends RadonCommand {
         }
         if (deleteMsg) {
             if (!interaction.guild?.me?.permissions.has('MANAGE_MESSAGES')) {
-                return await interaction.followUp({
+                return interaction.followUp({
                     content:
                         "I don't have the `MANAGE_MESSAGES` permission, so I couldn't delete messages.",
                     ephemeral: true,
@@ -279,7 +279,7 @@ export class UserCommand extends RadonCommand {
         const reason =
             interaction.options.getString('reason') ?? 'No reason provided';
         if (!member) {
-            return await interaction.reply({
+            return interaction.reply({
                 content: 'Please provide a valid member',
                 ephemeral: true,
             });
@@ -289,7 +289,7 @@ export class UserCommand extends RadonCommand {
             member,
         });
         if (!warn) {
-            return await interaction.reply({
+            return interaction.reply({
                 content:
                     `That warning does not exist on ${member.user.tag}\n` +
                     `Possible reasons: \n` +
@@ -341,7 +341,7 @@ export class UserCommand extends RadonCommand {
             return;
         const member = interaction.options.getMember('user') as GuildMember;
         if (!member) {
-            return await interaction.reply({
+            return interaction.reply({
                 content: 'Please provide a valid member',
                 ephemeral: true,
             });
@@ -350,7 +350,7 @@ export class UserCommand extends RadonCommand {
             member,
         });
         if (!data?.exist || !data.person.warns.length) {
-            return await interaction.reply({
+            return interaction.reply({
                 content: `${member} has no warnings`,
                 ephemeral: true,
             });

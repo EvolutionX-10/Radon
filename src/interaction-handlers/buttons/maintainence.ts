@@ -27,7 +27,7 @@ export class ButtonHandler extends InteractionHandler {
             ],
         });
         const msg = result.msg;
-        return await msg?.edit({
+        return msg?.edit({
             embeds: [msg.embeds[0].setDescription(result.description)],
         });
     }

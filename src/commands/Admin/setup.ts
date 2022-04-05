@@ -442,7 +442,7 @@ export class UserCommand extends RadonCommand {
                 value: 'None',
             },
         ]);
-        return await prevMessage.edit({
+        return prevMessage.edit({
             embeds: [prevMessage.embeds[0]],
             components: [
                 row.setComponents([
@@ -482,7 +482,7 @@ export class UserCommand extends RadonCommand {
                 value: 'None',
             },
         ]);
-        return await prevMessage.edit({
+        return prevMessage.edit({
             embeds: [prevMessage.embeds[0]],
             components: [
                 row.setComponents([
@@ -521,7 +521,7 @@ export class UserCommand extends RadonCommand {
                 value: 'None',
             },
         ]);
-        return await prevMessage.edit({
+        return prevMessage.edit({
             embeds: [prevMessage.embeds[0]],
             components: [
                 row.setComponents([
@@ -563,7 +563,7 @@ export class UserCommand extends RadonCommand {
                     `Once created successfully, feel free to tune permissions of the modlog channel`,
             },
         ]);
-        return await prevMessage.edit({
+        return prevMessage.edit({
             embeds: [prevMessage.embeds[0]],
             components: [
                 row.setComponents([

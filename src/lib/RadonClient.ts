@@ -24,7 +24,7 @@ export class RadonClient extends SapphireClient {
             RegisterBehavior.Overwrite
         );
         container.database = await this.connect();
-        return await super.login(token);
+        return super.login(token);
     }
     public override async destroy(): Promise<void> {
         await container.database.connection.close();

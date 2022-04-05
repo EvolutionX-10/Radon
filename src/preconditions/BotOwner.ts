@@ -9,17 +9,17 @@ export class UserPrecondition extends Precondition {
     public async messageRun(
         ...[message]: Parameters<AllFlowsPrecondition['messageRun']>
     ) {
-        return await this.isBotOwner(message.author.id);
+        return this.isBotOwner(message.author.id);
     }
     public async chatInputRun(
         ...[interaction]: Parameters<AllFlowsPrecondition['chatInputRun']>
     ) {
-        return await this.isBotOwner(interaction.user.id);
+        return this.isBotOwner(interaction.user.id);
     }
     public async contextMenuRun(
         ...[interaction]: Parameters<AllFlowsPrecondition['contextMenuRun']>
     ) {
-        return await this.isBotOwner(interaction.user.id);
+        return this.isBotOwner(interaction.user.id);
     }
     private async isBotOwner(id: string): AsyncPreconditionResult {
         return vars.owners.includes(id)

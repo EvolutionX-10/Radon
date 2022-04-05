@@ -52,7 +52,7 @@ export class Warn {
                     }
                 )) as warnsData;
             } else {
-                return await warnsDB.findOneAndUpdate(
+                return warnsDB.findOneAndUpdate(
                     {
                         _id: this.guild.id,
                     },

@@ -24,7 +24,7 @@ export class UserCommand extends RadonCommand {
             fetchReply: true,
         })) as Message;
         const { diff, ping } = this.getPing(msg, interaction);
-        return await interaction.editReply({
+        return interaction.editReply({
             content: `Pong! (Roundtrip took: ${diff}ms. Heartbeat: ${ping}ms.)`,
         });
     }

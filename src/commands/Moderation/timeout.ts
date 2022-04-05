@@ -25,7 +25,7 @@ export class UserCommand extends RadonCommand {
         await interaction.deferReply({ ephemeral: true, fetchReply: true });
         const member = interaction.options.getMember('member') as GuildMember;
         if (!member)
-            return await interaction.editReply({
+            return interaction.editReply({
                 content: 'No member found!',
             });
         const { content: ctn, result } = runAllChecks(
@@ -34,7 +34,7 @@ export class UserCommand extends RadonCommand {
             'timeout'
         );
         if (!result || member.user.bot)
-            return await interaction.editReply({
+            return interaction.editReply({
                 content:
                     ctn ||
                     `${vars.emojis.cross} I can't perform timeout on bots!`,
@@ -43,13 +43,13 @@ export class UserCommand extends RadonCommand {
         if (!isNaN(+time)) time = time + 's';
         const duration = ms(time);
         if (isNaN(duration))
-            return await interaction.editReply({
+            return interaction.editReply({
                 content:
                     'Invalid duration! Valid examples: `1d`, `1h`, `1m`, `1s`\nTo remove a timeout' +
                     ' just put `0` as the duration.',
             });
         if (duration > 2419200000) {
-            return await interaction.editReply({
+            return interaction.editReply({
                 content: 'You cannot timeout a user for more than 28 days!',
             });
         }
@@ -91,7 +91,7 @@ export class UserCommand extends RadonCommand {
         }
         if (duration === 0)
             content = `${vars.emojis.confirm} Removed timeout from ${member} [${member.user.tag}]`;
-        return await interaction.editReply({ content });
+        return interaction.editReply({ content });
     }
 
     public async registerApplicationCommands(registry: RadonCommand.Registry) {

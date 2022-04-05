@@ -8,8 +8,8 @@ export async function error(
     const channelId = '927974957458288720';
     const channel = client.channels.cache.get(channelId) as TextChannel;
     if (typeof message == 'string') {
-        return await channel.send({
+        return channel.send({
             content: message,
         });
-    } else return await channel.send({ embeds: [message] });
+    } else return channel.send({ embeds: [message] });
 }

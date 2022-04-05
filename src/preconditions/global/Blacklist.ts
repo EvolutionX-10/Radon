@@ -8,17 +8,17 @@ export class UserPrecondition extends Precondition {
     public async messageRun(
         ...[message]: Parameters<AllFlowsPrecondition['messageRun']>
     ) {
-        return await this.isBlacklisted(message.guildId ?? undefined);
+        return this.isBlacklisted(message.guildId ?? undefined);
     }
     public async chatInputRun(
         ...[interaction]: Parameters<AllFlowsPrecondition['chatInputRun']>
     ) {
-        return await this.isBlacklisted(interaction.guildId ?? undefined);
+        return this.isBlacklisted(interaction.guildId ?? undefined);
     }
     public async contextMenuRun(
         ...[interaction]: Parameters<AllFlowsPrecondition['contextMenuRun']>
     ) {
-        return await this.isBlacklisted(interaction.guildId ?? undefined);
+        return this.isBlacklisted(interaction.guildId ?? undefined);
     }
     private async isBlacklisted(id?: string) {
         if (!id) return this.ok();

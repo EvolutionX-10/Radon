@@ -24,7 +24,7 @@ export class UserCommand extends RadonCommand {
         if (!interaction.guild) return;
         const member = interaction.options.getMember('member') as GuildMember;
         if (!member)
-            return await interaction.reply({
+            return interaction.reply({
                 content: `${vars.emojis.cross} You must specify a valid member`,
                 ephemeral: true,
             });
@@ -36,7 +36,7 @@ export class UserCommand extends RadonCommand {
             'ban'
         );
         if (!result)
-            return await interaction.reply({ content: ctn, ephemeral: true });
+            return interaction.reply({ content: ctn, ephemeral: true });
         let content =
             `${vars.emojis.confirm} ${member} [${member.user.username}] has ` +
             `been banned ${

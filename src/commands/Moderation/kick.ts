@@ -30,7 +30,7 @@ export class UserCommand extends RadonCommand {
             'kick'
         );
         if (!result)
-            return await interaction.reply({ content: ctn, ephemeral: true });
+            return interaction.reply({ content: ctn, ephemeral: true });
         let content = `${vars.emojis.confirm} ${member} [${
             member.user.username
         }] has been kicked ${
@@ -48,7 +48,7 @@ export class UserCommand extends RadonCommand {
             );
         const kicked = await member.kick(reason).catch(() => null);
         if (!kicked)
-            return await interaction.reply({
+            return interaction.reply({
                 content: `Kick failed`,
                 ephemeral: true,
             });

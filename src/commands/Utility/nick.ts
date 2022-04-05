@@ -83,7 +83,7 @@ export class UserCommand extends RadonCommand {
     private async set(interaction: RadonCommand.ChatInputCommandInteraction) {
         const member = interaction.options.getMember('member') as GuildMember;
         if (!member) {
-            return await interaction.reply({
+            return interaction.reply({
                 content: 'No member found',
                 ephemeral: true,
             });
@@ -95,7 +95,7 @@ export class UserCommand extends RadonCommand {
                   ` (${interaction.user.tag})`
                 : null) ?? `Done by ${interaction.user.tag}`;
         if (member.id === interaction.guild?.ownerId) {
-            return await interaction.reply({
+            return interaction.reply({
                 content: 'I cannot set the nickname of the guild owner',
                 ephemeral: true,
             });
@@ -106,26 +106,26 @@ export class UserCommand extends RadonCommand {
             'nickname set'
         );
         if (!result) {
-            return await interaction.reply({
+            return interaction.reply({
                 content,
                 ephemeral: true,
             });
         }
         if (member.displayName === nickname) {
-            return await interaction.reply({
+            return interaction.reply({
                 content: `${member}'s display name is already set to ${nickname}`,
                 ephemeral: true,
             });
         }
         await member.setNickname(nickname, reason);
-        return await interaction.reply({
+        return interaction.reply({
             content: `Nickname \`${nickname}\` set for ${member.user.tag}`,
         });
     }
     private async clear(interaction: RadonCommand.ChatInputCommandInteraction) {
         const member = interaction.options.getMember('member') as GuildMember;
         if (!member) {
-            return await interaction.reply({
+            return interaction.reply({
                 content: 'No member found',
                 ephemeral: true,
             });
@@ -136,7 +136,7 @@ export class UserCommand extends RadonCommand {
                   ` (${interaction.user.tag})`
                 : null) ?? `Done by ${interaction.user.tag}`;
         if (member.id === interaction.guild?.ownerId) {
-            return await interaction.reply({
+            return interaction.reply({
                 content: 'I cannot clear the nickname of the guild owner',
                 ephemeral: true,
             });
@@ -147,19 +147,19 @@ export class UserCommand extends RadonCommand {
             'nickname clear'
         );
         if (!result) {
-            return await interaction.reply({
+            return interaction.reply({
                 content,
                 ephemeral: true,
             });
         }
         if (!member.nickname) {
-            return await interaction.reply({
+            return interaction.reply({
                 content: `${member} does not have a nickname`,
                 ephemeral: true,
             });
         }
         await member.setNickname(null, reason);
-        return await interaction.reply({
+        return interaction.reply({
             content: `Nickname cleared for ${member.user.tag}`,
         });
     }

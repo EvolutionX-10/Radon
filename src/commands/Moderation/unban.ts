@@ -23,7 +23,7 @@ export class UserCommand extends RadonCommand {
             .fetch(user.id)
             .catch(() => null);
         if (!ban)
-            return await interaction.reply({
+            return interaction.reply({
                 content: `${vars.emojis.cross} ${user} [${user.username}] is not banned!`,
                 ephemeral: true,
             });

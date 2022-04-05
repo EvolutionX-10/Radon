@@ -18,7 +18,7 @@ export class UserCommand extends RadonCommand {
         let time = interaction.options.getString('duration');
         if (!time) {
             await interaction.deferReply({ ephemeral: true });
-            return await interaction.editReply({
+            return interaction.editReply({
                 content: `Currently Slowmode is ${
                     (interaction.channel as TextChannel).rateLimitPerUser
                         ? `${hd(
@@ -32,14 +32,14 @@ export class UserCommand extends RadonCommand {
         if (!isNaN(+time)) time = time + 's';
         const duration = ms(time);
         if (isNaN(duration))
-            return await interaction.reply({
+            return interaction.reply({
                 content:
                     'Invalid duration! Valid examples: `1h`, `1m`, `1s`, `2 hours`\nTo remove slowmode' +
                     ' just put `0` as the duration.',
                 ephemeral: true,
             });
         if (duration > 21600000) {
-            return await interaction.reply({
+            return interaction.reply({
                 content: 'You cannot set slowmode for more than 6hrs!',
             });
         }

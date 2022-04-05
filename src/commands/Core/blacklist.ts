@@ -55,7 +55,7 @@ export class UserCommand extends RadonCommand {
         if (!webhook || !webhook.token) return;
         const description =
             `Guild: ${guild?.name ?? ``} \`${id}\`` + `\nReason: ${reason}`;
-        return await webhook.send({
+        return webhook.send({
             embeds: [
                 {
                     color: color.System,
@@ -88,7 +88,7 @@ export class UserCommand extends RadonCommand {
         const description = `Guild ID: \`${id}\`\nReason: ${
             reason ?? `Unknown`
         }`;
-        return await webhook.send({
+        return webhook.send({
             embeds: [
                 {
                     color: color.System,

@@ -37,7 +37,7 @@ export class UserCommand extends RadonCommand {
         guild?.forEach((cmd) => {
             content += `${cmd.name} (${cmd.id})\n`;
         });
-        return await send(message, content);
+        return send(message, content);
     }
     public async delete(
         message: RadonCommand.Message,

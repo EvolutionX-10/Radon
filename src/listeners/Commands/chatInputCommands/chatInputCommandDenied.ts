@@ -29,11 +29,11 @@ export class UserListener extends Listener<
     }
     private async reply(interaction: CommandInteraction, content: string) {
         if (interaction.deferred || interaction.replied) {
-            return await interaction.editReply({
+            return interaction.editReply({
                 content,
             });
         } else
-            return await interaction.reply({
+            return interaction.reply({
                 content,
                 ephemeral: true,
             });
