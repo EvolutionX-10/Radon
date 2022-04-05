@@ -61,13 +61,18 @@ export class UserCommand extends RadonCommand {
         if (focus.name !== 'warn_id') {
             return this.noAutocompleteResults(interaction);
         }
-        //! this method returns `null` everytime
-        // const member = interaction.options.getMember('user') as GuildMember;
-        // console.log(member);
+
         const id = interaction.options.get('user')?.value as string;
-        const member = (await interaction.guild?.members.fetch(
-            id
-        )) as GuildMember;
+        // if id is not there return no result
+        if (!id) {
+            return this.noAutocompleteResults(interaction);
+        }
+        const member = (await interaction.guild?.members
+            .fetch(id)
+            .catch(() => null)) as GuildMember;
+        if (!member) {
+            return this.noAutocompleteResults(interaction);
+        }
         const data = await interaction.guild?.settings?.warns.get({ member });
         const warns = data?.person?.warns?.map((w) => w?._id);
 
