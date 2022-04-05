@@ -1,3 +1,23 @@
 {
-    "extends": ["config:base"]
+    "extends": ["config:base"],
+    "major": {
+        "dependencyDashboardApproval": true,
+        "labels": ["dependencies: major"]
+    },
+    "minor": {
+        "labels": ["dependencies: minor"]
+    },
+    "timezone": "Asia/Kolkata",
+    "schedule": ["after 9pm every weekday"],
+    "lockFileMaintenance": {
+        "enabled": true,
+        "automerge": true
+    },
+    "packageRules": [
+        {
+            "matchUpdateTypes": ["minor", "patch"],
+            "matchCurrentVersion": "!/^0/",
+            "automerge": true
+        }
+    ]
 }
