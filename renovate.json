@@ -1,6 +1,6 @@
 {
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": ["config:base"],
+    "extends": ["config:base", "helpers:pinGitHubActionDigests"],
     "labels": ["dependencies"],
     "reviewers": ["EvolutionX-10"],
     "major": {
@@ -10,8 +10,11 @@
     "minor": {
         "addLabels": ["dependencies: minor"]
     },
+    "patch": {
+        "addLabels": ["dependencies: patch"]
+    },
     "timezone": "Asia/Kolkata",
-    "schedule": ["after 9pm every weekday"],
+    "schedule": ["after 6pm everyday"],
     "lockFileMaintenance": {
         "enabled": true,
         "automerge": true
