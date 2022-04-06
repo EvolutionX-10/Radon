@@ -83,7 +83,7 @@
         "@sapphire/ts-config": "3.3.4",
         "@sapphire/type": "2.2.0",
         "@sapphire/utilities": "3.6.2",
-        "@typegoose/typegoose": "9.7.0",
+        "@typegoose/typegoose": "9.7.1",
         "axios": "0.26.1",
         "colorette": "2.0.16",
         "discord.js": "13.6.0",
