@@ -14,7 +14,7 @@
         "addLabels": ["dependencies: patch"]
     },
     "timezone": "Asia/Kolkata",
-    "schedule": ["after 6pm everyday"],
+    "schedule": ["before 6pm every weekday"],
     "lockFileMaintenance": {
         "enabled": true,
         "automerge": true
