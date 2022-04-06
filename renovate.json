@@ -2,16 +2,18 @@
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
     "extends": ["config:base", "helpers:pinGitHubActionDigests"],
     "labels": ["dependencies"],
-    "reviewers": ["EvolutionX-10"],
     "major": {
         "dependencyDashboardApproval": true,
-        "addLabels": ["dependencies: major"]
+        "addLabels": ["dependencies: major"],
+        "reviewers": ["EvolutionX-10"]
     },
     "minor": {
-        "addLabels": ["dependencies: minor"]
+        "addLabels": ["dependencies: minor"],
+        "reviewers": ["EvolutionX-10"]
     },
     "patch": {
-        "addLabels": ["dependencies: patch"]
+        "addLabels": ["dependencies: patch"],
+        "reviewers": ["EvolutionX-10"]
     },
     "timezone": "Asia/Kolkata",
     "schedule": ["before 6pm every weekday"],
