@@ -529,9 +529,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typegoose/typegoose@npm:9.7.0":
-  version: 9.7.0
-  resolution: "@typegoose/typegoose@npm:9.7.0"
+"@typegoose/typegoose@npm:9.7.1":
+  version: 9.7.1
+  resolution: "@typegoose/typegoose@npm:9.7.1"
   dependencies:
     lodash: ^4.17.20
     loglevel: ^1.8.0
@@ -540,7 +540,7 @@ __metadata:
     tslib: ^2.3.1
   peerDependencies:
     mongoose: ~6.2.3
-  checksum: 2589617b6af36d04c9aed508d488709cadc86f986cd91b1250db51016d483ddbecc98074ca73443629aac637a660ec9fad89227fd81da618003e1175aa8f1943
+  checksum: ccedac4a9989e1d53565ed22c395d08012b6deb9d94ee013c59f8aba2f8297b3576f1ad76fc01cdb8235d1fe0e4fcc1e944235355ac9bfa73e65e8fb868796f8
   languageName: node
   linkType: hard
 
@@ -4296,7 +4296,7 @@ __metadata:
     "@sapphire/ts-config": 3.3.4
     "@sapphire/type": 2.2.0
     "@sapphire/utilities": 3.6.2
-    "@typegoose/typegoose": 9.7.0
+    "@typegoose/typegoose": 9.7.1
     "@types/figlet": 1.5.4
     "@types/gradient-string": 1.1.2
     "@types/humanize-duration": 3.27.1
