@@ -1,31 +1,31 @@
 {
-    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": ["config:base", "helpers:pinGitHubActionDigests"],
-    "labels": ["dependencies"],
-    "major": {
-        "dependencyDashboardApproval": true,
-        "addLabels": ["dependencies: major"],
-        "reviewers": ["EvolutionX-10"]
-    },
-    "minor": {
-        "addLabels": ["dependencies: minor"],
-        "reviewers": ["EvolutionX-10"]
-    },
-    "patch": {
-        "addLabels": ["dependencies: patch"],
-        "reviewers": ["EvolutionX-10"]
-    },
-    "timezone": "Asia/Kolkata",
-    "schedule": ["before 6pm every weekday"],
-    "lockFileMaintenance": {
-        "enabled": true,
-        "automerge": true
-    },
-    "packageRules": [
-        {
-            "matchUpdateTypes": ["minor", "patch"],
-            "matchCurrentVersion": "!/^0/",
-            "automerge": true
-        }
-    ]
+	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
+	"extends": ["config:base", "helpers:pinGitHubActionDigests"],
+	"labels": ["dependencies"],
+	"major": {
+		"dependencyDashboardApproval": true,
+		"addLabels": ["dependencies: major"],
+		"reviewers": ["EvolutionX-10"]
+	},
+	"minor": {
+		"addLabels": ["dependencies: minor"],
+		"reviewers": ["EvolutionX-10"]
+	},
+	"patch": {
+		"addLabels": ["dependencies: patch"],
+		"reviewers": ["EvolutionX-10"]
+	},
+	"timezone": "Asia/Kolkata",
+	"schedule": ["before 6pm every weekday"],
+	"lockFileMaintenance": {
+		"enabled": true,
+		"automerge": true
+	},
+	"packageRules": [
+		{
+			"matchUpdateTypes": ["minor", "patch"],
+			"matchCurrentVersion": "!/^0/",
+			"automerge": true
+		}
+	]
 }

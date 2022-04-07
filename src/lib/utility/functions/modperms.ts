@@ -6,23 +6,17 @@ import type { GuildMember } from 'discord.js';
  * @param target The member who was targeted
  * @param action The action that was executed
  */
-export function runAllChecks(
-    executor: GuildMember,
-    target: GuildMember,
-    action: string
-) {
-    let result: boolean;
-    let content: string;
-    if (!target.manageable) {
-        result = false;
-        content = `${vars.emojis.cross} I can't ${action} ${target}`;
-    } else if (
-        executor.roles.highest.position === target.roles.highest.position
-    ) {
-        content = `${vars.emojis.cross} You can't ${action} ${target}`;
-        result = false;
-    } else {
-        (result = true), (content = '');
-    }
-    return { result, content };
+export function runAllChecks(executor: GuildMember, target: GuildMember, action: string) {
+	let result: boolean;
+	let content: string;
+	if (!target.manageable) {
+		result = false;
+		content = `${vars.emojis.cross} I can't ${action} ${target}`;
+	} else if (executor.roles.highest.position === target.roles.highest.position) {
+		content = `${vars.emojis.cross} You can't ${action} ${target}`;
+		result = false;
+	} else {
+		(result = true), (content = '');
+	}
+	return { result, content };
 }

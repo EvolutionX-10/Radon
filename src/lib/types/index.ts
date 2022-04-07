@@ -1,6 +1,2 @@
 export * from './permissionLevels';
-export type {
-    DMMessage,
-    GuildMessage,
-    MessageAcknowledgeable,
-} from './Discord';
+export type { DMMessage, GuildMessage, MessageAcknowledgeable } from './Discord';

@@ -361,6 +361,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sapphire/prettier-config@npm:^1.4.2":
+  version: 1.4.2
+  resolution: "@sapphire/prettier-config@npm:1.4.2"
+  dependencies:
+    prettier: ^2.6.1
+  checksum: 02b1d42ef8558b723fb6ead1e9af1a87c795133b9a0ba43a3c79f519f475421ec5ea28182ae4b01b0865f085d211fd5bd39a143c5b85d42878891939d837f1b6
+  languageName: node
+  linkType: hard
+
 "@sapphire/ratelimits@npm:^2.4.4":
   version: 2.4.4
   resolution: "@sapphire/ratelimits@npm:2.4.4"
@@ -1828,7 +1837,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"discord-api-types@npm:^0.26.0":
+"discord-api-types@npm:0.26.1, discord-api-types@npm:^0.26.0":
   version: 0.26.1
   resolution: "discord-api-types@npm:0.26.1"
   checksum: e53bfa7589b24108e6b403dbe213da34c4592f72e2b8fde6800dcb6c703065887ecbd644e1cdf694e4c7796954bc51462ced868f26ec45dc1e0dc4fa8d3c723c
@@ -4151,7 +4160,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:2.6.2":
+"prettier@npm:2.6.2, prettier@npm:^2.6.1":
   version: 2.6.2
   resolution: "prettier@npm:2.6.2"
   bin:
@@ -4254,6 +4263,7 @@ __metadata:
     "@sapphire/plugin-hmr": 1.2.0
     "@sapphire/plugin-logger": 2.2.1
     "@sapphire/plugin-subcommands": 2.2.0
+    "@sapphire/prettier-config": ^1.4.2
     "@sapphire/stopwatch": 1.4.1
     "@sapphire/time-utilities": 1.7.4
     "@sapphire/ts-config": 3.3.4
@@ -4271,6 +4281,7 @@ __metadata:
     axios: 0.26.1
     colorette: 2.0.16
     cz-conventional-changelog: 3.3.0
+    discord-api-types: 0.26.1
     discord.js: 13.6.0
     dotenv-cra: 3.0.2
     eslint: 8.12.0
@@ -4283,7 +4294,6 @@ __metadata:
     prettier: 2.6.2
     pretty-quick: 3.1.3
     standard-version: 9.3.2
-    ts-node: 10.7.0
     typescript: 4.6.3
   languageName: unknown
   linkType: soft
@@ -5103,7 +5113,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-node@npm:10.7.0, ts-node@npm:^10.7.0":
+"ts-node@npm:^10.7.0":
   version: 10.7.0
   resolution: "ts-node@npm:10.7.0"
   dependencies:
