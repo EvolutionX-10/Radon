@@ -9,14 +9,14 @@ import { vars } from '#vars';
 	permissionLevel: PermissionLevels.Everyone
 })
 export class UserCommand extends RadonCommand {
-	public async messageRun(message: RadonCommand.Message) {
+	public override async messageRun(message: RadonCommand.Message) {
 		const msg = await send(message, 'Ping?');
 		const content = `Pong! (Roundtrip took: ${Math.round(
 			(msg.editedTimestamp || msg.createdTimestamp) - (message.editedTimestamp || message.createdTimestamp)
 		)}ms. Heartbeat: ${Math.round(this.container.client.ws.ping)}ms.)`;
 		return send(message, content);
 	}
-	public async chatInputRun(interaction: CommandInteraction) {
+	public override async chatInputRun(interaction: CommandInteraction) {
 		const msg = (await interaction.reply({
 			content: `Ping?`,
 			ephemeral: true,
@@ -27,7 +27,7 @@ export class UserCommand extends RadonCommand {
 			content: `Pong! (Roundtrip took: ${diff}ms. Heartbeat: ${ping}ms.)`
 		});
 	}
-	public async registerApplicationCommands(registry: RadonCommand.Registry) {
+	public override async registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
 			{
 				name: this.name,

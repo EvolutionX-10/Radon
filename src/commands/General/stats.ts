@@ -13,14 +13,14 @@ import { uptime } from 'node:os';
 	permissionLevel: PermissionLevels.Everyone
 })
 export class UserCommand extends RadonCommand {
-	public async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
+	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		return interaction.reply({
 			embeds: [this.buildEmbed()],
 			ephemeral: true
 		});
 	}
 
-	public async registerApplicationCommands(registry: RadonCommand.Registry) {
+	public override async registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
 			{
 				name: this.name,

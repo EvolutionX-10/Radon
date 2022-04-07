@@ -13,7 +13,7 @@ import { Constants, GuildMember, MessageEmbed } from 'discord.js';
 	requiredClientPermissions: ['KICK_MEMBERS']
 })
 export class UserCommand extends RadonCommand {
-	public async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
+	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		if (!interaction.guild) return;
 		const member = interaction.options.getMember('member') as GuildMember;
 		const reason = interaction.options.getString('reason') as string;
@@ -51,7 +51,7 @@ export class UserCommand extends RadonCommand {
 			await interaction.guild.settings?.modlogs.sendModLog(embed);
 		}
 	}
-	public async registerApplicationCommands(registry: RadonCommand.Registry) {
+	public override async registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
 			{
 				name: this.name,

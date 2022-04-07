@@ -13,7 +13,7 @@ import { Constants, MessageEmbed } from 'discord.js';
 	runIn: 'GUILD_ANY'
 })
 export class UserCommand extends RadonCommand {
-	public async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
+	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		if (!interaction.guild) return;
 		const user = interaction.options.getUser('user', true);
 		const reason = interaction.options.getString('reason') || undefined;
@@ -52,7 +52,7 @@ export class UserCommand extends RadonCommand {
 			ephemeral: true
 		});
 	}
-	public async registerApplicationCommands(registry: RadonCommand.Registry) {
+	public override async registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
 			{
 				name: this.name,

@@ -3,7 +3,7 @@ import { isAdmin } from '#lib/utility';
 import type { GuildMessage } from '#lib/types';
 
 export class UserPermissionsPrecondition extends PermissionsPrecondition {
-	public async handle(message: GuildMessage): PermissionsPrecondition.AsyncResult {
+	public override async handle(message: GuildMessage): PermissionsPrecondition.AsyncResult {
 		const roles = (await message.guild.settings?.roles.admins) ?? [];
 		return isAdmin(message.member)
 			? this.ok()

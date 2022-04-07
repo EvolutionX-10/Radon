@@ -16,7 +16,7 @@ import ms from 'ms';
 	runIn: 'GUILD_ANY'
 })
 export class UserCommand extends RadonCommand {
-	public async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
+	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const subcmd = interaction.options.getSubcommand();
 		switch (subcmd) {
 			case 'add':
@@ -28,12 +28,12 @@ export class UserCommand extends RadonCommand {
 		}
 	}
 
-	public async contextMenuRun(interaction: RadonCommand.ContextMenuCommandInteraction) {
+	public override async contextMenuRun(interaction: RadonCommand.ContextMenuCommandInteraction) {
 		return this.list(interaction);
 	}
 
 	// Thanks @favna
-	public async autocompleteRun(interaction: RadonCommand.AutoComplete) {
+	public override async autocompleteRun(interaction: RadonCommand.AutoComplete) {
 		const focus = interaction.options.getFocused(true);
 
 		if (focus.name !== 'warn_id') {
@@ -317,7 +317,7 @@ export class UserCommand extends RadonCommand {
 		await paginatedMessage.run(interaction, interaction.user).catch(() => null);
 	}
 
-	public async registerApplicationCommands(registry: RadonCommand.Registry) {
+	public override async registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
 			{
 				name: this.name,

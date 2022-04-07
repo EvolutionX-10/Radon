@@ -7,7 +7,7 @@ import { CommandInteraction, MessageEmbed } from 'discord.js';
 	event: Events.ChatInputCommandFinish
 })
 export class UserListener extends Listener {
-	public async run(interaction: CommandInteraction) {
+	public override async run(interaction: CommandInteraction) {
 		if (isOwner(interaction.user)) return;
 		const isvoted = await this.hasVoted(interaction);
 		if (!isvoted && chance(40)) await this.addVoteMsg(interaction);

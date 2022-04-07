@@ -16,7 +16,7 @@ import { ButtonInteraction, Message, MessageActionRow, MessageButton, MessageEmb
 	runIn: 'GUILD_ANY'
 })
 export class UserCommand extends RadonCommand {
-	public async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
+	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		if (!interaction.guild) return;
 		const row = new MessageActionRow();
 		if (
@@ -324,7 +324,7 @@ export class UserCommand extends RadonCommand {
 		}
 		return;
 	}
-	public async registerApplicationCommands(registry: RadonCommand.Registry) {
+	public override async registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
 			{
 				name: this.name,

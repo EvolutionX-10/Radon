@@ -13,7 +13,7 @@ import { Constants, GuildMember, MessageEmbed } from 'discord.js';
 	runIn: 'GUILD_ANY'
 })
 export class UserCommand extends RadonCommand {
-	public async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
+	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		if (!interaction.guild) return;
 		await interaction.deferReply({ ephemeral: true, fetchReply: true });
 		const member = interaction.options.getMember('member') as GuildMember;
@@ -49,7 +49,7 @@ export class UserCommand extends RadonCommand {
 		}
 		return interaction.editReply(content);
 	}
-	public async registerApplicationCommands(registry: RadonCommand.Registry) {
+	public override async registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
 			{
 				name: this.name,

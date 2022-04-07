@@ -8,7 +8,7 @@ import type { ButtonInteraction, Message } from 'discord.js';
 	interactionHandlerType: InteractionHandlerTypes.Button
 })
 export class ButtonHandler extends InteractionHandler {
-	public async run(interaction: ButtonInteraction, result: InteractionHandler.ParseResult<this>) {
+	public override async run(interaction: ButtonInteraction, result: InteractionHandler.ParseResult<this>) {
 		if (!vars.owners.includes(interaction.user.id)) return this.none();
 		if (isNullish(result.ownerMode)) return;
 		this.container.client.user?.setPresence({
@@ -25,7 +25,7 @@ export class ButtonHandler extends InteractionHandler {
 			embeds: [msg.embeds[0].setDescription(result.description)]
 		});
 	}
-	public async parse(interaction: ButtonInteraction) {
+	public override async parse(interaction: ButtonInteraction) {
 		if (interaction.customId !== 'radon-maintenance') return this.none();
 		await interaction.deferUpdate({ fetchReply: true });
 		const id = '61cf428394b75db75b5dafb4';

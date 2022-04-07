@@ -7,13 +7,13 @@ import { AllFlowsPrecondition, Precondition } from '@sapphire/framework';
 	position: 1
 })
 export class UserPrecondition extends Precondition {
-	public async messageRun(...[message]: Parameters<AllFlowsPrecondition['messageRun']>) {
+	public override async messageRun(...[message]: Parameters<AllFlowsPrecondition['messageRun']>) {
 		return this.inOwnerMode(message.author.id);
 	}
-	public async chatInputRun(...[interaction]: Parameters<AllFlowsPrecondition['chatInputRun']>) {
+	public override async chatInputRun(...[interaction]: Parameters<AllFlowsPrecondition['chatInputRun']>) {
 		return this.inOwnerMode(interaction.user.id);
 	}
-	public async contextMenuRun(...[interaction]: Parameters<AllFlowsPrecondition['contextMenuRun']>) {
+	public override async contextMenuRun(...[interaction]: Parameters<AllFlowsPrecondition['contextMenuRun']>) {
 		return this.inOwnerMode(interaction.user.id);
 	}
 	private async inOwnerMode(id: string) {

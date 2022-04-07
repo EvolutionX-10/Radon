@@ -22,7 +22,7 @@ import axios from 'axios';
 	guarded: true
 })
 export class UserCommand extends RadonCommand {
-	public async messageRun(message: RadonCommand.Message, args: RadonCommand.Args) {
+	public override async messageRun(message: RadonCommand.Message, args: RadonCommand.Args) {
 		const code = await args.rest('string');
 		const { success, result, time, type } = await this.eval(message, code, {
 			async: args.getFlags('async'),

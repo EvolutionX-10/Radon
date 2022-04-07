@@ -4,7 +4,7 @@ import { ApplyOptions } from '@sapphire/decorators';
 	aliases: ['s']
 })
 export class UserCommand extends RadonCommand {
-	public async messageRun(message: RadonCommand.Message, args: RadonCommand.Args) {
+	public override async messageRun(message: RadonCommand.Message, args: RadonCommand.Args) {
 		const num = await args.pick('number').catch(() => null);
 		if (!num) return;
 		for (let i = 0; i < num; i++) {

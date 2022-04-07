@@ -8,7 +8,7 @@ import { container } from '@sapphire/framework';
 	flags: ['kill']
 })
 export class UserCommand extends RadonCommand {
-	public async messageRun(message: RadonCommand.Message, args: RadonCommand.Args) {
+	public override async messageRun(message: RadonCommand.Message, args: RadonCommand.Args) {
 		if (process.env.NODE_ENV === 'production') return;
 		if (args.getFlags('kill')) {
 			await message.react('💀');

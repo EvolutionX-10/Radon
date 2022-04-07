@@ -9,7 +9,7 @@ import { MessageActionRow, MessageButton } from 'discord.js';
 	description: `Invite Radon to your server!`
 })
 export class UserCommand extends RadonCommand {
-	public async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
+	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const invite = this.container.client.generateInvite({
 			scopes: ['applications.commands', 'bot'],
 			permissions: BigInt(543276137727)
@@ -33,7 +33,7 @@ export class UserCommand extends RadonCommand {
 			components: [row]
 		});
 	}
-	public async registerApplicationCommands(registry: RadonCommand.Registry) {
+	public override async registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
 			{
 				name: this.name,

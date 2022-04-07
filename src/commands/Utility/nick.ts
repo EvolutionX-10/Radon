@@ -12,7 +12,7 @@ import { banish } from '@favware/zalgo';
 	runIn: 'GUILD_ANY'
 })
 export class UserCommand extends RadonCommand {
-	public async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
+	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const subcmd = interaction.options.getSubcommand();
 		switch (subcmd) {
 			case 'set':
@@ -28,7 +28,7 @@ export class UserCommand extends RadonCommand {
 				});
 		}
 	}
-	public async contextMenuRun(interaction: RadonCommand.ContextMenuCommandInteraction) {
+	public override async contextMenuRun(interaction: RadonCommand.ContextMenuCommandInteraction) {
 		return this.decancer(interaction);
 	}
 	private async decancer(interaction: RadonCommand.ChatInputCommandInteraction | RadonCommand.ContextMenuCommandInteraction) {
@@ -136,7 +136,7 @@ export class UserCommand extends RadonCommand {
 			content: `Nickname cleared for ${member.user.tag}`
 		});
 	}
-	public async registerApplicationCommands(registry: RadonCommand.Registry) {
+	public override async registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
 			{
 				name: this.name,

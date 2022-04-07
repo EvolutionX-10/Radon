@@ -21,7 +21,11 @@ export abstract class PermissionsPrecondition extends Precondition {
 		this.guildOnly = options.guildOnly ?? true;
 	}
 
-	public async messageRun(message: Message, command: RadonCommand, context: PermissionsPrecondition.Context): PermissionsPrecondition.AsyncResult {
+	public override async messageRun(
+		message: Message,
+		command: RadonCommand,
+		context: PermissionsPrecondition.Context
+	): PermissionsPrecondition.AsyncResult {
 		// If not in a guild, resolve on an error:
 		if (message.guild === null || message.member === null) {
 			return this.guildOnly ? this.error({ identifier: Identifiers.PreconditionGuildOnly }) : this.ok();
@@ -30,7 +34,7 @@ export abstract class PermissionsPrecondition extends Precondition {
 		// Run the specific precondition's logic:
 		return this.handle(message, command, context);
 	}
-	public async chatInputRun(
+	public override async chatInputRun(
 		interaction: CommandInteraction,
 		command: ChatInputCommand,
 		context: PermissionsPrecondition.Context
@@ -40,7 +44,7 @@ export abstract class PermissionsPrecondition extends Precondition {
 		}
 		return this.handle(interaction, command, context);
 	}
-	public async contextMenuRun(
+	public override async contextMenuRun(
 		interaction: ContextMenuInteraction,
 		command: ContextMenuCommand,
 		context: PermissionsPrecondition.Context

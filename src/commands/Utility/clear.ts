@@ -12,7 +12,7 @@ import { Constants, TextChannel } from 'discord.js';
 	runIn: ['GUILD_ANY']
 })
 export class UserCommand extends RadonCommand {
-	public async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
+	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		await interaction.deferReply({ ephemeral: true });
 		const count = interaction.options.getInteger('count', true);
 		const channel = interaction.channel as TextChannel;
@@ -67,7 +67,7 @@ export class UserCommand extends RadonCommand {
 				});
 		}
 	}
-	public async registerApplicationCommands(registry: RadonCommand.Registry) {
+	public override async registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
 			{
 				name: this.name,

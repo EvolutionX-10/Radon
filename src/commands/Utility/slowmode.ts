@@ -12,7 +12,7 @@ import ms from 'ms';
 	runIn: ['GUILD_ANY']
 })
 export class UserCommand extends RadonCommand {
-	public async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
+	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		let time = interaction.options.getString('duration');
 		if (!time) {
 			await interaction.deferReply({ ephemeral: true });
@@ -48,7 +48,7 @@ export class UserCommand extends RadonCommand {
 			content
 		});
 	}
-	public async registerApplicationCommands(registry: RadonCommand.Registry) {
+	public override async registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
 			{
 				name: this.name,

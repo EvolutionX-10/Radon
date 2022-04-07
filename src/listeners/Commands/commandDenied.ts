@@ -7,7 +7,7 @@ import hd from 'humanize-duration';
 	event: Events.MessageCommandDenied
 })
 export class UserListener extends Listener {
-	public async run(error: UserError, { message }: MessageCommandDeniedPayload) {
+	public override async run(error: UserError, { message }: MessageCommandDeniedPayload) {
 		if (Reflect.get(Object(error.context), 'silent')) return;
 		if (error.identifier === Identifiers.PreconditionCooldown) {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any

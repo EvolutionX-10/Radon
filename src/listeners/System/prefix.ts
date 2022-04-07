@@ -9,7 +9,7 @@ import type { ActivityTypes } from 'discord.js/typings/enums';
 	event: Events.ClientReady
 })
 export class UserListener extends Listener {
-	public async run() {
+	public override async run() {
 		const mode = await modesDB.findById('61cf428394b75db75b5dafb4');
 		const ownerMode = mode?.ownerMode;
 		const check = async () => {

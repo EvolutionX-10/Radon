@@ -8,7 +8,7 @@ import type { Guild, TextChannel } from 'discord.js';
 	event: Events.GuildCreate
 })
 export class UserListener extends Listener {
-	public async run(guild: Guild) {
+	public override async run(guild: Guild) {
 		const isBlacklisted = await blacklistDB.findById(guild.id);
 		if (isBlacklisted) {
 			await guild.leave();
