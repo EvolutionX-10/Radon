@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.0](https://github.com/EvolutionX-10/Radon/compare/v1.5.0...v1.6.0) (2022-04-08)
+
+
+### Features
+
+* **codeql:** add new workflow for code analysis ([e41adbb](https://github.com/EvolutionX-10/Radon/commit/e41adbbc72ad52305f3b8393ecb6fecab68f0a38))
+
+
+### Bug Fixes
+
+* **ac:** fixed an unintended behaviour where it did not read user input [warn] ([f571077](https://github.com/EvolutionX-10/Radon/commit/f57107767b7d4e436e5ca446d6b54822978a22b2))
+* **deps:** pin dependency @favware/zalgo to 3.1.3 ([c5d30f8](https://github.com/EvolutionX-10/Radon/commit/c5d30f87ff9e0c907465b39acc47171a72a1d563))
+* **deps:** update dependency @sapphire/decorators to v4.3.4 ([2fcb687](https://github.com/EvolutionX-10/Radon/commit/2fcb687ddb0cc7be567057d0dd839cf294406bd7))
+* **deps:** update dependency @sapphire/discord-utilities to v2.10.3 ([d9242e5](https://github.com/EvolutionX-10/Radon/commit/d9242e5037b52a735f09fc927f835f901bb9ac43))
+* **deps:** update dependency @sapphire/discord.js-utilities to v4.9.4 ([3f96cbc](https://github.com/EvolutionX-10/Radon/commit/3f96cbcb109bfd8501fb04e0bff49ce0a3ce01cf))
+* **deps:** update dependency @sapphire/pieces to v3.3.1 ([#33](https://github.com/EvolutionX-10/Radon/issues/33)) ([8ee9166](https://github.com/EvolutionX-10/Radon/commit/8ee9166398c5f0a4b5c6c73eafecce9192fdb3b6))
+* **deps:** update dependency @sapphire/plugin-logger to v2.2.1 ([#34](https://github.com/EvolutionX-10/Radon/issues/34)) ([297f81f](https://github.com/EvolutionX-10/Radon/commit/297f81f90334d4a432219efd8cb82be160146288))
+* **deps:** update dependency @sapphire/stopwatch to v1.4.1 ([#35](https://github.com/EvolutionX-10/Radon/issues/35)) ([c8f3e63](https://github.com/EvolutionX-10/Radon/commit/c8f3e63876d0ff9aa06dda4388b228ba1f32c4df))
+* **deps:** update dependency @sapphire/time-utilities to v1.7.4 ([a681146](https://github.com/EvolutionX-10/Radon/commit/a68114691461d998dd1feb3c5ae00461a3ee61cf))
+* **deps:** update dependency @sapphire/ts-config to v3.3.4 ([#36](https://github.com/EvolutionX-10/Radon/issues/36)) ([609fa90](https://github.com/EvolutionX-10/Radon/commit/609fa9093fb4762ac2895e61ee551ea89ba0b564))
+* **deps:** update dependency @sapphire/utilities to v3.6.2 ([8bf138d](https://github.com/EvolutionX-10/Radon/commit/8bf138d3ec6a7f11161381685d1deba305164a3c))
+* **deps:** update dependency @typegoose/typegoose to v9.7.1 ([4db3671](https://github.com/EvolutionX-10/Radon/commit/4db36717d13d3e4925406622d9775ea9309360e8))
+* **deps:** update dependency axios to v0.26.1 ([9118451](https://github.com/EvolutionX-10/Radon/commit/9118451ec56c48703448918bae2fd17161784178))
+* **deps:** update dependency mongoose to v6.2.10 ([d30484b](https://github.com/EvolutionX-10/Radon/commit/d30484bcbec93ae174f9643f18ebd2fd3b48a46f))
+* **warn:** fixed a bug where invalid member used to crash in warn remove ([17e2569](https://github.com/EvolutionX-10/Radon/commit/17e2569005e997128fe3a409f94212f7c2cc1a28))
+
 ## [1.5.0](https://github.com/EvolutionX-10/Radon/compare/v1.4.0...v1.5.0) (2022-04-04)
 
 
