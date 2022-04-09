@@ -34,6 +34,6 @@ jobs:
           eslint: true
           prettier: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          auto_fix: true
+          auto_fix: false
           eslint_extensions: ts
           commit_message: "style(auto): fix code style issues with ${linter}"
