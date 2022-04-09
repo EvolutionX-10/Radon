@@ -29,7 +29,7 @@
 		"postinstall": "husky install",
 		"logs": "heroku logs --app=radon-dev -t --force-colors",
 		"logs2": "heroku logs --app=radon-dev2 -t --force-colors",
-		"format": "prettier --write './src/**/*.ts'"
+		"format": "prettier --write './src/**/*.ts' './README.md'"
 	},
 	"engines": {
 		"node": "17.5.0"
