@@ -58,7 +58,6 @@ To contribute to this repository, feel free to fork the repository and make your
 
 ## Changelog [`here`][changelog]
 
-
 <div align="center">
 <a href="https://top.gg/bot/944833303226236989">
   <img src="https://top.gg/api/widget/944833303226236989.svg">
