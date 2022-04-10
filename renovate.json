@@ -4,15 +4,15 @@
 	"labels": ["dependencies"],
 	"major": {
 		"dependencyDashboardApproval": true,
-		"addLabels": ["dependencies: major"],
+		"addLabels": ["Dependencies: Major"],
 		"reviewers": ["EvolutionX-10"]
 	},
 	"minor": {
-		"addLabels": ["dependencies: minor"],
+		"addLabels": ["Dependencies: Minor"],
 		"reviewers": ["EvolutionX-10"]
 	},
 	"patch": {
-		"addLabels": ["dependencies: patch"],
+		"addLabels": ["Dependencies: Patch"],
 		"reviewers": ["EvolutionX-10"]
 	},
 	"timezone": "Asia/Kolkata",
