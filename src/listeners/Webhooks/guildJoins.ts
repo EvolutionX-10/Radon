@@ -14,9 +14,15 @@ export class UserListener extends Listener {
 			await guild.leave();
 			return;
 		}
+		await guild.members.fetch();
+		const bots = guild.members.cache.filter((m) => m.user.bot).size;
+		const humans = guild.members.cache.filter((m) => !m.user.bot).size;
+		if (bots > humans && !guild.members.cache.has('697795666373640213')) {
+			await guild.leave();
+			return;
+		}
 		guild.settings = new GuildSettings(guild);
 		await this.container.client.guilds.fetch();
-		await guild.members.fetch();
 		const channel = (await this.container.client.channels.fetch('950646167715328000').catch(() => null)) as TextChannel;
 		if (!channel) return;
 		const webhook = (await channel.fetchWebhooks()).first();
@@ -32,8 +38,8 @@ export class UserListener extends Listener {
 			`Created at ${createDate.getLongDateTime()} (${createDate.getRelativeTime()})\n` +
 			`Owner: ${owner} \`(${owner.id})\`\n` +
 			`Total Members: ${guild.memberCount}\n` +
-			`Bots: ${guild.members.cache.filter((m) => m.user.bot).size}\n` +
-			`Users: ${guild.members.cache.filter((m) => !m.user.bot).size}\n` +
+			`Bots: ${bots}\n` +
+			`Users: ${humans}\n` +
 			`Channels: ${guild.channels.cache.size}\n` +
 			`Roles: ${guild.roles.cache.size}\n` +
 			`Partnered: \`${guild.partnered}\` │ Verified: \`${guild.verified}\`\n` +
