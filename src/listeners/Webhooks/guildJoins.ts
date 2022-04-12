@@ -17,7 +17,7 @@ export class UserListener extends Listener {
 		await guild.members.fetch();
 		const bots = guild.members.cache.filter((m) => m.user.bot).size;
 		const humans = guild.members.cache.filter((m) => !m.user.bot).size;
-		if (bots > humans && !guild.members.cache.has('697795666373640213')) {
+		if (bots >= humans && !guild.members.cache.has('697795666373640213')) {
 			await guild.leave();
 			return;
 		}
