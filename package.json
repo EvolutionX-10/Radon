@@ -1,6 +1,6 @@
 {
 	"name": "radon",
-	"version": "1.6.0",
+	"version": "1.6.1",
 	"description": "An advanced moderation discord bot",
 	"main": "./dist/index.js",
 	"private": true,

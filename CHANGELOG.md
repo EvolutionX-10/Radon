@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.1](https://github.com/EvolutionX-10/Radon/compare/v1.6.0...v1.6.1) (2022-04-16)
+
+
+### Bug Fixes
+
+* typeguard `isGuildMember` function ([dd73983](https://github.com/EvolutionX-10/Radon/commit/dd7398319987d4ef3fd7031b0d8e3cbf3a19dcbf))
+
 ## [1.6.0](https://github.com/EvolutionX-10/Radon/compare/v1.5.0...v1.6.0) (2022-04-08)
 
 
