@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { RadonClient } from '#lib/RadonClient';
-import { GuildSettings, Settings } from '#lib/structures';
+import { GuildSettings, Settings, Utils } from '#lib/structures';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Events, Listener, Store } from '@sapphire/framework';
 import { blue, gray, green, magentaBright, white, yellow, greenBright, blueBright } from 'colorette';
@@ -18,6 +18,7 @@ export class UserListener extends Listener {
 	private readonly style = this.isDev ? yellow : blue;
 	public override async run(client: RadonClient) {
 		this.container.settings = new Settings();
+		this.container.utils = new Utils();
 		await client.guilds.fetch();
 		this.container.client = client;
 		this.container.logger.info(`Logged in as ${greenBright(client.user?.tag as string)}`);
@@ -62,6 +63,7 @@ ${this.isDev ? ` ${pad}${blc('<')}${llc('/')}${blc('>')} ${llc('DEVELOPMENT MODE
 	private styleStore(store: Store<any>, last: boolean) {
 		return gray(`${last ? '└─' : '├─'} Loaded ${this.style(store.size.toString().padEnd(3, ' '))} ${store.name}.`);
 	}
+
 	private async postServerCount() {
 		await axios({
 			url: `https://api.voidbots.net/bot/stats/944833303226236989`,

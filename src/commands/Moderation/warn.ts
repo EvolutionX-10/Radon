@@ -5,7 +5,7 @@ import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import { cutText } from '@sapphire/utilities';
 import type { APIApplicationCommandOptionChoice } from 'discord-api-types/v9';
-import { Constants, GuildMember, MessageEmbed, TextChannel } from 'discord.js';
+import { Constants, GuildMember, TextChannel } from 'discord.js';
 import ms from 'ms';
 
 @ApplyOptions<RadonCommand.Options>({
@@ -161,12 +161,15 @@ export class UserCommand extends RadonCommand {
 				}
 			]
 		});
-		const embed = new MessageEmbed().setColor(sev.warn).setAuthor({
-			name: interaction.user.tag,
-			iconURL: interaction.user.displayAvatarURL({
-				dynamic: true
-			})
-		});
+		const embed = this.container.utils
+			.embed()
+			._color(sev.warn)
+			._author({
+				name: interaction.user.tag,
+				iconURL: interaction.user.displayAvatarURL({
+					dynamic: true
+				})
+			});
 		const des = generateModLogDescription({
 			member,
 			action: 'Warn',
@@ -174,7 +177,7 @@ export class UserCommand extends RadonCommand {
 			duration: new Timestamp(expiration.getTime()),
 			warnId
 		});
-		embed.setDescription(des);
+		embed._description(des);
 
 		if (interaction.guild && (await interaction.guild.settings?.modlogs.modLogs_exist())) {
 			await interaction.guild.settings?.modlogs.sendModLog(embed);
@@ -236,19 +239,22 @@ export class UserCommand extends RadonCommand {
 			content,
 			ephemeral: false
 		});
-		const embed = new MessageEmbed().setColor(sev.warn_removal).setAuthor({
-			name: interaction.user.tag,
-			iconURL: interaction.user.displayAvatarURL({
-				dynamic: true
-			})
-		});
+		const embed = this.container.utils
+			.embed()
+			._color(sev.warn_removal)
+			._author({
+				name: interaction.user.tag,
+				iconURL: interaction.user.displayAvatarURL({
+					dynamic: true
+				})
+			});
 		const des = generateModLogDescription({
 			member,
 			action: 'Warn Removal',
 			reason,
 			warnId: warnid
 		});
-		embed.setDescription(des);
+		embed._description(des);
 
 		if (interaction.guild && (await interaction.guild.settings?.modlogs.modLogs_exist())) {
 			await interaction.guild.settings?.modlogs.sendModLog(embed);
@@ -303,13 +309,14 @@ export class UserCommand extends RadonCommand {
 				dynamic: true
 			})
 		};
-		const template = new MessageEmbed()
-			.setColor(embed_color)
-			.setTitle(embed_title)
-			.setDescription(embed_description)
-			.setFooter({ text: embed_footer })
-			.setTimestamp(embed_timestamp)
-			.setThumbnail(embed_thumbnail.url);
+		const template = this.container.utils
+			.embed()
+			._color(embed_color)
+			._title(embed_title)
+			._description(embed_description)
+			._footer({ text: embed_footer })
+			._timestamp(embed_timestamp)
+			._thumbnail(embed_thumbnail.url);
 		const paginatedMessage = new RadonPaginatedMessageEmbedFields().setTemplate(template).setItems(embed_fields).setItemsPerPage(2).make();
 		await interaction.deferReply({
 			ephemeral: interaction.channel.visible()

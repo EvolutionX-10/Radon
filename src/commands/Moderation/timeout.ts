@@ -3,7 +3,7 @@ import { PermissionLevels } from '#lib/types';
 import { severity, runAllChecks, generateModLogDescription } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import { Constants, GuildMember, MessageEmbed } from 'discord.js';
+import { Constants, GuildMember } from 'discord.js';
 import ms from 'ms';
 import hd from 'humanize-duration';
 
@@ -51,17 +51,20 @@ export class UserCommand extends RadonCommand {
 				})
 				.catch(() => (content += `\n${vars.emojis.cross} Couldn't DM the member!`));
 		}
-		const embed = new MessageEmbed().setColor(severity.timeout).setAuthor({
-			name: interaction.user.tag,
-			iconURL: interaction.user.displayAvatarURL({ dynamic: true })
-		});
+		const embed = this.container.utils
+			.embed()
+			._color(severity.timeout)
+			._author({
+				name: interaction.user.tag,
+				iconURL: interaction.user.displayAvatarURL({ dynamic: true })
+			});
 		const des = generateModLogDescription({
 			member,
 			action: 'Timeout',
 			reason,
 			duration: new Timestamp(Date.now() + duration)
 		});
-		embed.setDescription(des);
+		embed._description(des);
 
 		if (interaction.guild && (await interaction.guild.settings?.modlogs.modLogs_exist()) && duration !== 0) {
 			await interaction.guild.settings?.modlogs.sendModLog(embed);

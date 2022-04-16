@@ -3,7 +3,7 @@ import { PermissionLevels } from '#lib/types';
 import { generateModLogDescription, runAllChecks, sec, severity } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import { Constants, GuildMember, MessageEmbed } from 'discord.js';
+import { Constants, GuildMember } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
 	cooldownDelay: sec(10),
 	cooldownLimit: 3,
@@ -34,16 +34,19 @@ export class UserCommand extends RadonCommand {
 			reason: reason ?? undefined
 		});
 		await interaction.guild.members.unban(id, reason ?? undefined);
-		const embed = new MessageEmbed().setColor(severity.softban).setAuthor({
-			name: interaction.user.tag,
-			iconURL: interaction.user.displayAvatarURL({ dynamic: true })
-		});
+		const embed = this.container.utils
+			.embed()
+			._color(severity.softban)
+			._author({
+				name: interaction.user.tag,
+				iconURL: interaction.user.displayAvatarURL({ dynamic: true })
+			});
 		const description = generateModLogDescription({
 			member,
 			action: 'Soft Ban',
 			reason: reason ?? undefined
 		});
-		embed.setDescription(description);
+		embed._description(description);
 		if (interaction.guild && (await interaction.guild.settings?.modlogs.modLogs_exist())) {
 			await interaction.guild.settings?.modlogs.sendModLog(embed);
 		}

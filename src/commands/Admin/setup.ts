@@ -7,7 +7,7 @@ import { guildSettingsDB } from '#models';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import { container } from '@sapphire/framework';
-import { ButtonInteraction, Message, MessageActionRow, MessageButton, MessageEmbed, OverwriteResolvable, Permissions, Role } from 'discord.js';
+import { ButtonInteraction, Message, OverwriteResolvable, Permissions, Role } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
 	cooldownDelay: sec(60),
 	cooldownLimit: 3,
@@ -18,7 +18,7 @@ import { ButtonInteraction, Message, MessageActionRow, MessageButton, MessageEmb
 export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		if (!interaction.guild) return;
-		const row = new MessageActionRow();
+		const row = this.container.utils.row();
 		if (
 			interaction.channel?.type === 'GUILD_TEXT' &&
 			interaction.channel.permissionsFor(interaction.guild?.roles.everyone as Role).has('VIEW_CHANNEL')
@@ -34,9 +34,9 @@ export class UserCommand extends RadonCommand {
 			embeds: [this.welcome()],
 			fetchReply: true,
 			components: [
-				row.setComponents([
-					new MessageButton().setCustomId('not-ready').setLabel('I am not ready for this maze').setStyle('SECONDARY'),
-					new MessageButton().setCustomId('start').setLabel("Let's get started!").setStyle('PRIMARY')
+				row._components([
+					this.container.utils.button()._customId('not-ready')._label('I am not ready for this maze')._style('SECONDARY'),
+					this.container.utils.button()._customId('start')._label("Let's get started!")._style('PRIMARY')
 				])
 			]
 		})) as Message;
@@ -140,8 +140,7 @@ export class UserCommand extends RadonCommand {
 								await i.followUp({
 									content:
 										`I couldn't create the modlog channel due to insufficient permissions!\nPlease try again after granting ` +
-										`\`Manage Channels\` [Creation of Channel], \`Manage Roles\` [To configure channel permissions], \`Embed Links and Send Messages\` [To send modlogs] permissions to me!\n
-                                        ` +
+										`\`Manage Channels\` [Creation of Channel], \`Manage Roles\` [To configure channel permissions], \`Embed Links and Send Messages\` [To send modlogs] permissions to me!\n` +
 										`Note: I need a role higher than @everyone with the mentioned permissions!` +
 										`If you are still having issues run \`/invite\` and join our support server!`,
 									ephemeral: true
@@ -169,11 +168,12 @@ export class UserCommand extends RadonCommand {
 						upsert: true
 					}
 				);
-				const final = new MessageEmbed()
-					.setColor(color.Admin)
-					.setTitle('Overview')
-					.setDescription('Here is a quick overview of your setup!')
-					.addFields([
+				const final = this.container.utils
+					.embed()
+					._color(color.Admin)
+					._title('Overview')
+					._description('Here is a quick overview of your setup!')
+					._fields([
 						{
 							name: 'Moderator Roles',
 							value: modRoles.map((m) => `<@&${m}>`).join(', '),
@@ -193,12 +193,12 @@ export class UserCommand extends RadonCommand {
 							value: `\`${answers.includes('community')}\``
 						}
 					])
-					.setTimestamp()
-					.setAuthor({
+					._timestamp()
+					._author({
 						name: interaction.user.username,
-						iconURL: interaction.user.displayAvatarURL()
+						iconURL: interaction.user.displayAvatarURL({ dynamic: true })
 					})
-					.setFooter({
+					._footer({
 						text: `${data ? 'Saved Successfully' : 'Created Successfully'}`
 					});
 				await msg.edit({
@@ -272,6 +272,7 @@ export class UserCommand extends RadonCommand {
 			collector2.stop('done');
 		});
 		async function makeModlog(is_private: boolean) {
+			//TODO change the string and use enums according to v14
 			let permissionOverwrites: OverwriteResolvable[] = [];
 			if (is_private) {
 				permissionOverwrites = [
@@ -338,18 +339,19 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private welcome() {
-		return new MessageEmbed()
-			.setColor(color.Admin)
-			.setThumbnail(this.container.client.user?.displayAvatarURL() ?? '')
-			.setTimestamp()
-			.setTitle('Welcome to Radon!')
-			.setDescription(`This is the setup wizard for Radon.\nThis will guide you through the process of setting up Radon.`);
+		return this.container.utils
+			.embed()
+			._color(color.Admin)
+			._thumbnail(this.container.client.user?.displayAvatarURL() ?? '')
+			._timestamp()
+			._title('Welcome to Radon!')
+			._description(`This is the setup wizard for Radon.\nThis will guide you through the process of setting up Radon.`);
 	}
 	/**
 	 * is this guild a community guild or not?
 	 */
 	private async step1(btnInt: ButtonInteraction, prevMessage: Message, _stage: number) {
-		const row = new MessageActionRow();
+		const row = this.container.utils.row();
 		prevMessage.embeds[0].description = '';
 		prevMessage.embeds[0].setFields([
 			{
@@ -361,9 +363,9 @@ export class UserCommand extends RadonCommand {
 		await prevMessage.edit({
 			embeds: [prevMessage.embeds[0]],
 			components: [
-				row.setComponents([
-					new MessageButton().setCustomId('community').setLabel('Yes').setStyle('PRIMARY'),
-					new MessageButton().setCustomId('casual').setLabel('No').setStyle('PRIMARY')
+				row._components([
+					this.container.utils.button()._customId('community')._label('Yes')._style('PRIMARY'),
+					this.container.utils.button()._customId('casual')._label('No')._style('PRIMARY')
 				])
 			]
 		});
@@ -373,7 +375,7 @@ export class UserCommand extends RadonCommand {
 	 * enter mod roles
 	 */
 	private async step2(_btnInt: ButtonInteraction, prevMessage: Message, _stage: number) {
-		const row = new MessageActionRow();
+		const row = this.container.utils.row();
 		prevMessage.embeds[0].setFields([
 			{
 				name: `What are the moderator roles? [Min: 1, Max: 3]`,
@@ -391,9 +393,9 @@ export class UserCommand extends RadonCommand {
 		return prevMessage.edit({
 			embeds: [prevMessage.embeds[0]],
 			components: [
-				row.setComponents([
-					new MessageButton().setCustomId('retry_mod').setLabel('Retry').setStyle('SECONDARY'),
-					new MessageButton().setCustomId('confirm_modRoles').setLabel('Confirm').setStyle('SUCCESS')
+				row._components([
+					this.container.utils.button()._customId('retry_mod')._label('Retry')._style('SECONDARY'),
+					this.container.utils.button()._customId('confirm_modRoles')._label('Confirm')._style('SUCCESS')
 				])
 			]
 		});
@@ -402,7 +404,7 @@ export class UserCommand extends RadonCommand {
 	 * enter admin roles
 	 */
 	private async step3(_btnInt: ButtonInteraction, prevMessage: Message, _stage: number) {
-		const row = new MessageActionRow();
+		const row = this.container.utils.row();
 		prevMessage.embeds[0].setFields([
 			{
 				name: `What are the administration roles? [Max: 2]`,
@@ -421,9 +423,9 @@ export class UserCommand extends RadonCommand {
 		return prevMessage.edit({
 			embeds: [prevMessage.embeds[0]],
 			components: [
-				row.setComponents([
-					new MessageButton().setCustomId('retry_admin').setLabel('Retry').setStyle('SECONDARY'),
-					new MessageButton().setCustomId('confirm_adminRoles').setLabel('Confirm').setStyle('SUCCESS')
+				row._components([
+					this.container.utils.button()._customId('retry_admin')._label('Retry')._style('SECONDARY'),
+					this.container.utils.button()._customId('confirm_adminRoles')._label('Confirm')._style('SUCCESS')
 				])
 			]
 		});
@@ -432,7 +434,7 @@ export class UserCommand extends RadonCommand {
 	 * enter modlog channel
 	 */
 	private async step4(_btnInt: ButtonInteraction, prevMessage: Message, _stage: number) {
-		const row = new MessageActionRow();
+		const row = this.container.utils.row();
 		prevMessage.embeds[0].setFields([
 			{
 				name: `Where should moderation logs be sent?`,
@@ -450,10 +452,10 @@ export class UserCommand extends RadonCommand {
 		return prevMessage.edit({
 			embeds: [prevMessage.embeds[0]],
 			components: [
-				row.setComponents([
-					new MessageButton().setCustomId('retry_modlog').setLabel('Retry').setStyle('SECONDARY'),
-					new MessageButton().setCustomId('make_modlog').setLabel('Make a new Modlog').setStyle('PRIMARY'),
-					new MessageButton().setCustomId('confirm_modlog').setLabel('Confirm').setStyle('SUCCESS')
+				row._components([
+					this.container.utils.button()._customId('retry_modlog')._label('Retry')._style('SECONDARY'),
+					this.container.utils.button()._customId('make_modlog')._label('Make a new modlog')._style('PRIMARY'),
+					this.container.utils.button()._customId('confirm_modlog')._label('Confirm')._style('SUCCESS')
 				])
 			]
 		});
@@ -462,7 +464,7 @@ export class UserCommand extends RadonCommand {
 	 * is modlog private or public?
 	 */
 	private async step5(_btnInt: ButtonInteraction, prevMessage: Message, _stage: number) {
-		const row = new MessageActionRow();
+		const row = this.container.utils.row();
 		prevMessage.embeds[0].setFields([
 			{
 				name: `What should be the visibility of the modlog?`,
@@ -479,9 +481,9 @@ export class UserCommand extends RadonCommand {
 		return prevMessage.edit({
 			embeds: [prevMessage.embeds[0]],
 			components: [
-				row.setComponents([
-					new MessageButton().setCustomId('private_modlog').setLabel('Private').setStyle('PRIMARY'),
-					new MessageButton().setCustomId('public_modlog').setLabel('Public').setStyle('PRIMARY')
+				row._components([
+					this.container.utils.button()._customId('private_modlog')._label('Private')._style('PRIMARY'),
+					this.container.utils.button()._customId('public_modlog')._label('Public')._style('PRIMARY')
 				])
 			]
 		});

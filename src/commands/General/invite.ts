@@ -3,7 +3,7 @@ import { PermissionLevels } from '#lib/types';
 import { color } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import { MessageActionRow, MessageButton } from 'discord.js';
+
 @ApplyOptions<RadonCommand.Options>({
 	permissionLevel: PermissionLevels.Everyone,
 	description: `Invite Radon to your server!`
@@ -12,24 +12,22 @@ export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const invite = this.container.client.generateInvite({
 			scopes: ['applications.commands', 'bot'],
-			permissions: BigInt(543276137727)
+			permissions: 543276137727n
 		});
-		const row = new MessageActionRow().addComponents(
-			new MessageButton().setLabel(`Invite Link`).setStyle('LINK').setURL(invite),
+		const row = this.container.utils
+			.row()
+			._components(
+				this.container.utils.button()._label(`Invite Link`)._style('LINK')._url(invite),
+				this.container.utils.button()._label(`Support`)._style('LINK')._url(`https://discord.gg/YBFaDggpvt`)
+			);
 
-			new MessageButton().setLabel(`Support`).setStyle('LINK').setURL(`https://discord.gg/YBFaDggpvt`)
-		);
-		await interaction.reply({
-			embeds: [
-				{
-					title: 'Invite Radon to your server!',
-					color: color.General,
-					thumbnail: {
-						url: this.container.client.user?.avatarURL() ?? undefined
-					}
-				}
-			],
-			ephemeral: true,
+		const title = `Invite Radon to your server!`;
+		const thumbnail = this.container.client.user!.displayAvatarURL();
+		//TODO Add a proper embed and merge ping/invite/stats into about
+		const embed = this.container.utils.embed()._title(title)._color(color.General)._thumbnail(thumbnail);
+
+		return interaction.reply({
+			embeds: [embed],
 			components: [row]
 		});
 	}

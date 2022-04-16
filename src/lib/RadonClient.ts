@@ -3,7 +3,7 @@ import { client_config } from '#config';
 import mongoose from 'mongoose';
 import { config as dotenv } from 'dotenv-cra';
 import { envParseBoolean } from '#lib/env';
-import type { Settings } from '#lib/structures';
+import type { Settings, Utils } from '#lib/structures';
 
 dotenv({
 	debug: process.env.DOTENV_DEBUG_ENABLED ? envParseBoolean('DOTENV_DEBUG_ENABLED') : undefined
@@ -22,8 +22,7 @@ export class RadonClient extends SapphireClient {
 		return super.destroy();
 	}
 	private async connect() {
-		await mongoose.connect(process.env.MONGO as string);
-		return mongoose;
+		return mongoose.connect(process.env.MONGO!);
 	}
 }
 
@@ -31,5 +30,6 @@ declare module '@sapphire/pieces' {
 	interface Container {
 		database: typeof mongoose;
 		settings: Settings;
+		utils: Utils;
 	}
 }

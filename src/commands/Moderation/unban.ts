@@ -3,7 +3,7 @@ import { PermissionLevels } from '#lib/types';
 import { generateModLogDescription, sec, severity } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import { Constants, MessageEmbed } from 'discord.js';
+import { Constants } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
 	cooldownDelay: sec(10),
 	cooldownLimit: 3,
@@ -33,16 +33,19 @@ export class UserCommand extends RadonCommand {
 				content: `You have been unbanned from ${interaction.guild.name}` + `\n${reason ? `Reason: ${reason}` : ''}`
 			})
 			.catch(() => (content += `\n${vars.emojis.cross} Couldn't DM user!`));
-		const embed = new MessageEmbed().setColor(severity.unban).setAuthor({
-			name: interaction.user.tag,
-			iconURL: interaction.user.displayAvatarURL({ dynamic: true })
-		});
+		const embed = this.container.utils
+			.embed()
+			._color(severity.unban)
+			._author({
+				name: interaction.user.tag,
+				iconURL: interaction.user.displayAvatarURL({ dynamic: true })
+			});
 		const description = generateModLogDescription({
 			member: user,
 			action: 'Unban',
 			reason: reason ?? undefined
 		});
-		embed.setDescription(description);
+		embed._description(description);
 		if (interaction.guild && (await interaction.guild.settings?.modlogs.modLogs_exist())) {
 			await interaction.guild.settings?.modlogs.sendModLog(embed);
 		}

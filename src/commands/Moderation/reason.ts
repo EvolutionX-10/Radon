@@ -43,7 +43,7 @@ export class UserCommand extends RadonCommand {
 			embeds: message.embeds
 		});
 		if (message.embeds[0].description.includes('**Action**: Warn')) {
-			//todo add a check for the warn id and update reason
+			//TODO add a check for the warn id and update reason
 		}
 		return interaction.editReply({
 			content: `Successfully updated the reason!`

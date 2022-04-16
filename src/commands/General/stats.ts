@@ -5,7 +5,7 @@ import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import { version as sapphireVersion } from '@sapphire/framework';
 import { roundNumber } from '@sapphire/utilities';
-import { MessageEmbed, version } from 'discord.js';
+import { version } from 'discord.js';
 import { uptime } from 'node:os';
 
 @ApplyOptions<RadonCommand.Options>({
@@ -48,11 +48,20 @@ export class UserCommand extends RadonCommand {
 			serverUsage: `**Heap**: ${usage.ramUsed}MB (Total: ${usage.ramTotal}MB)`
 		};
 
-		return new MessageEmbed()
-			.setColor(color.General)
-			.addField(titles.stats, fields.stats)
-			.addField(titles.uptime, fields.uptime)
-			.addField(titles.serverUsage, fields.serverUsage);
+		return this.container.utils.embed()._color(color.General)._fields(
+			{
+				name: titles.stats,
+				value: fields.stats
+			},
+			{
+				name: titles.uptime,
+				value: fields.uptime
+			},
+			{
+				name: titles.serverUsage,
+				value: fields.serverUsage
+			}
+		);
 	}
 
 	private get generalStatistics(): StatsGeneral {

@@ -3,7 +3,7 @@ import { PermissionLevels } from '#lib/types';
 import { generateModLogDescription, runAllChecks, sec, severity } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import { Constants, GuildMember, MessageEmbed } from 'discord.js';
+import { Constants, GuildMember } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
 	description: `Kick a member`,
 	permissionLevel: PermissionLevels.Moderator,
@@ -37,16 +37,19 @@ export class UserCommand extends RadonCommand {
 			content,
 			ephemeral: true
 		});
-		const embed = new MessageEmbed().setColor(severity.kick).setAuthor({
-			name: interaction.user.tag,
-			iconURL: interaction.user.displayAvatarURL({ dynamic: true })
-		});
+		const embed = this.container.utils
+			.embed()
+			._color(severity.kick)
+			._author({
+				name: interaction.user.tag,
+				iconURL: interaction.user.displayAvatarURL({ dynamic: true })
+			});
 		const description = generateModLogDescription({
 			member,
 			action: 'Kick',
 			reason: reason ?? undefined
 		});
-		embed.setDescription(description);
+		embed._description(description);
 		if (interaction.guild && (await interaction.guild.settings?.modlogs.modLogs_exist()) && kicked) {
 			await interaction.guild.settings?.modlogs.sendModLog(embed);
 		}

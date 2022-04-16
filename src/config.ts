@@ -1,12 +1,18 @@
 process.env.NODE_ENV ??= 'development';
 
-import type { BitFieldResolvable, ClientOptions, IntentsString, MessageMentionOptions, PartialTypes } from 'discord.js';
+import { BitFieldResolvable, ClientOptions, IntentsString, MessageMentionOptions, PartialTypes, Intents } from 'discord.js';
 import { BucketScope, ClientLoggerOptions, CooldownOptions, LogLevel } from '@sapphire/framework';
 import { Time } from '@sapphire/time-utilities';
 import { vars } from '#vars';
 
 export const config: config = {
-	intents: ['GUILDS', 'GUILD_MEMBERS', 'GUILD_MESSAGES', 'GUILD_BANS', 'DIRECT_MESSAGES'],
+	intents: [
+		Intents.FLAGS.GUILDS,
+		Intents.FLAGS.GUILD_MEMBERS,
+		Intents.FLAGS.GUILD_MESSAGES,
+		Intents.FLAGS.GUILD_BANS,
+		Intents.FLAGS.DIRECT_MESSAGES
+	],
 	cooldown_options: {
 		delay: Time.Second * 10,
 		filteredUsers: vars.owners,
