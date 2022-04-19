@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.7.0](https://github.com/EvolutionX-10/Radon/compare/v1.6.1...v1.7.0) (2022-04-19)
+
+
+### Features
+
+* switch to ESM ([7066d46](https://github.com/EvolutionX-10/Radon/commit/7066d466e93ccbf25d5f98419d9338e39b85d161))
+
 ### [1.6.1](https://github.com/EvolutionX-10/Radon/compare/v1.6.0...v1.6.1) (2022-04-16)
 
 
