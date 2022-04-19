@@ -5,7 +5,7 @@ import type {
 	RadonEnvBoolean,
 	RadonEnvInteger,
 	RadonEnvString
-} from './types';
+} from './types.js';
 
 export function envParseInteger(key: RadonEnvInteger, defaultValue?: number): number {
 	const value = process.env[key];

@@ -1,8 +1,8 @@
 import type { Guild } from 'discord.js';
-import { Blacklist } from './Blacklist';
-import { Modlogs } from './Modlogs';
-import { RolesConfig } from './RolesConf';
-import { Warn } from './Warn';
+import { Blacklist } from './Blacklist.js';
+import { Modlogs } from './Modlogs.js';
+import { RolesConfig } from './RolesConf.js';
+import { Warn } from './Warn.js';
 
 export class GuildSettings {
 	blacklists: Blacklist;

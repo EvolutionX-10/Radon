@@ -1,4 +1,4 @@
-import type { RadonEnv } from './types';
+import type { RadonEnv } from './types.js';
 
 declare global {
 	namespace NodeJS {

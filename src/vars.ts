@@ -1,3 +1,5 @@
+process.env.NODE_ENV ??= 'development';
+
 export const vars = {
 	emojis: {
 		cross: '<:redCross:957909502911471636>',

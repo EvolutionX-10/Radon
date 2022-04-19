@@ -1,4 +1,4 @@
-process.env.NODE_ENV ??= 'development';
+process.env.NODE_ENV ??= 'development'; //TODO see if this is loaded first
 
 import { BitFieldResolvable, ClientOptions, IntentsString, MessageMentionOptions, PartialTypes, Intents } from 'discord.js';
 import { BucketScope, ClientLoggerOptions, CooldownOptions, LogLevel } from '@sapphire/framework';

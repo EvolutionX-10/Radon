@@ -1,4 +1,5 @@
-import { buildSchema, modelOptions, prop, Severity } from '@typegoose/typegoose';
+import pkg from '@typegoose/typegoose';
+const { buildSchema, modelOptions, prop, Severity } = pkg;
 import { container } from '@sapphire/framework';
 @modelOptions({
 	schemaOptions: { timestamps: true },

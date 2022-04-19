@@ -1,5 +1,6 @@
 import { container } from '@sapphire/framework';
-import { buildSchema, modelOptions, prop, Severity } from '@typegoose/typegoose';
+import pkg from '@typegoose/typegoose';
+const { buildSchema, modelOptions, prop, Severity } = pkg;
 
 class warns {
 	@prop({ required: true })

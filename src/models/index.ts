@@ -1,4 +1,4 @@
-export { default as modesDB } from './modes';
-export { default as blacklistDB } from './blacklist';
-export { default as guildSettingsDB } from './guildSettings';
-export { default as warnsDB } from './warns';
+export { default as modesDB } from './modes.js';
+export { default as blacklistDB } from './blacklist.js';
+export { default as guildSettingsDB } from './guildSettings.js';
+export { default as warnsDB } from './warns.js';

@@ -1,5 +1,6 @@
 import { container } from '@sapphire/framework';
-import { buildSchema, modelOptions, prop } from '@typegoose/typegoose';
+import pkg from '@typegoose/typegoose';
+const { buildSchema, modelOptions, prop } = pkg;
 
 @modelOptions({ schemaOptions: { timestamps: true } })
 class modesClass {

@@ -9,7 +9,8 @@ import gradient from 'gradient-string';
 import axios from 'axios';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
-import { version } from '../../../package.json';
+import p from '../../../package.json' assert { type: 'json' };
+const { version } = p;
 @ApplyOptions<Listener.Options>({
 	event: Events.ClientReady,
 	once: true

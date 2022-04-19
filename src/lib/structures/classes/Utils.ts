@@ -14,10 +14,10 @@ import {
 	mins,
 	sec
 } from '#lib/utility';
-import { Button } from './Button';
-import { Embed } from './Embed';
-import { Row } from './Row';
-import { Select } from './Select';
+import { Button } from './Button.js';
+import { Embed } from './Embed.js';
+import { Row } from './Row.js';
+import { Select } from './Select.js';
 export class Utils {
 	public formatDuration;
 	public generateModLogDescription;

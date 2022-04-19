@@ -1,4 +1,4 @@
-import { Blacklist } from './Blacklist';
+import { Blacklist } from './Blacklist.js';
 
 export class Settings {
 	constructor() {

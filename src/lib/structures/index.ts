@@ -1,3 +1,3 @@
-export * from './commands/RadonCommand';
-export * from './preconditions/index';
-export * from './classes/index';
+export * from './commands/RadonCommand.js';
+export * from './preconditions/index.js';
+export * from './classes/index.js';

@@ -16,7 +16,8 @@
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
 		"suppressImplicitAnyIndexErrors": true,
-		"skipLibCheck": true
+		"skipLibCheck": true,
+		"module": "ESNext"
 	},
 	"include": ["../package.json", ".", "./**/*.json"],
 	"exclude": ["./tsconfig.json"]
