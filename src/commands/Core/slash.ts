@@ -1,13 +1,14 @@
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
-import type { MessageCommand } from '@sapphire/framework';
 import { send } from '@sapphire/plugin-editable-commands';
+
 @ApplyOptions<RadonCommand.Options>({
 	aliases: ['slashies'],
 	permissionLevel: PermissionLevels.BotOwner,
 	hidden: true,
 	guarded: true,
+	flags: true,
 	runIn: 'GUILD_ANY',
 	subCommands: [
 		{
@@ -21,31 +22,56 @@ import { send } from '@sapphire/plugin-editable-commands';
 	]
 })
 export class UserCommand extends RadonCommand {
-	public async default(...[message]: Parameters<MessageCommand['messageRun']>) {
+	public async default(message: RadonCommand.Message, args: RadonCommand.Args) {
 		if (!message.guild) return;
-		const global = await this.container.client.application?.commands.fetch();
-		const guild = await message.guild.commands.fetch();
-		let content = ``;
-		content += `**Global** Slashies\n\n`;
+
+		let filtered: string;
+		let cmds: string;
+
+		switch (true) {
+			case args.getFlags('user'):
+				filtered = 'USER';
+				cmds = 'User Context Menu Commands';
+				break;
+			case args.getFlags('msg', 'message', 'm'):
+				filtered = 'MESSAGE';
+				cmds = 'Message Context Menu Commands';
+				break;
+			default:
+				filtered = 'CHAT_INPUT';
+				cmds = 'Slashies';
+		}
+
+		const global = (await this.container.client.application?.commands.fetch())?.filter((c) => c.type === filtered);
+		const guild = (await message.guild.commands.fetch()).filter((c) => c.type === filtered);
+
+		let content = `**Global** ${cmds}\n\n`;
+
 		global?.forEach((cmd) => {
-			content += `${cmd.name} (${cmd.id})\n`;
+			content += `${cmd.name} *(${cmd.id})*\n`;
 		});
-		content += `\n**Guild** Slashies \`[${message.guild.name}]\`\n\n`;
+		content += `\n**Guild** ${cmds} \`[${message.guild.name}]\`\n\n`;
 		guild?.forEach((cmd) => {
-			content += `${cmd.name} (${cmd.id})\n`;
+			content += `${cmd.name} *(${cmd.id})*\n`;
 		});
+
+		//TODO Paginate it
 		return send(message, content);
 	}
+
 	public async delete(message: RadonCommand.Message, args: RadonCommand.Args) {
 		if (!message.guild) return;
+
 		const global = await this.container.client.application?.commands.fetch();
 		const guild = await message.guild.commands.fetch();
+
 		const cmd_name = await args.pick('string').catch(() => null);
 		if (!cmd_name) return;
 		const cmd = global?.find((c) => c.name === cmd_name) || guild?.find((c) => c.name === cmd_name);
 		if (!cmd) return;
+
 		await cmd.delete();
-		await message.channel.send({
+		return message.channel.send({
 			content: `Successfully deleted ${cmd.name} (${cmd.id})`
 		});
 	}
