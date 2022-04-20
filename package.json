@@ -4,7 +4,6 @@
 	"description": "An advanced moderation discord bot",
 	"main": "./dist/index.js",
 	"type": "module",
-	"private": true,
 	"imports": {
 		"#lib/RadonClient": "./dist/lib/RadonClient.js",
 		"#lib/types": "./dist/lib/types/index.js",
