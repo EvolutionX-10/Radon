@@ -19,6 +19,6 @@
 		"skipLibCheck": true,
 		"module": "ESNext"
 	},
-	"include": ["../package.json", ".", "./**/*.json"],
+	"include": [".", "./**/*.json"],
 	"exclude": ["./tsconfig.json"]
 }

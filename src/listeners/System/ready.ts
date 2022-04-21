@@ -7,10 +7,7 @@ import { blue, gray, green, magentaBright, white, yellow, greenBright, blueBrigh
 import figlet from 'figlet';
 import gradient from 'gradient-string';
 import axios from 'axios';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//@ts-ignore
-import p from '../../../package.json' assert { type: 'json' };
-const { version } = p;
+
 @ApplyOptions<Listener.Options>({
 	event: Events.ClientReady,
 	once: true
@@ -45,7 +42,7 @@ export class UserListener extends Listener {
 		console.log(
 			String.raw`
 ${gradient.pastel.multiline(figlet.textSync(this.container.client.user?.username ?? 'Err'))}
-${pad}${blc(`${process.env.CLIENT_NAME} [${version}]`)}
+${pad}${blc(`${process.env.CLIENT_NAME} [${process.env.npm_package_version}]`)}
 ${pad}[${success}] Gateway
 ${this.isDev ? ` ${pad}${blc('<')}${llc('/')}${blc('>')} ${llc('DEVELOPMENT MODE')}` : ''}
 		`.trim()
