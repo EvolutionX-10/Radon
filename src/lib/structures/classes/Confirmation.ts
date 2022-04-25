@@ -1,5 +1,5 @@
 import { vars } from '#vars';
-import { ButtonInteraction, Collection, ColorResolvable, CommandInteraction, Message, User } from 'discord.js';
+import { ButtonInteraction, Collection, ColorResolvable, CommandInteraction, EmojiIdentifierResolvable, Message, User } from 'discord.js';
 import { Button } from './Button.js';
 import { Embed } from './Embed.js';
 import { Row } from './Row.js';
@@ -7,8 +7,12 @@ import { Row } from './Row.js';
 export class Confirmation {
 	public options: ConfirmationOptions;
 
+	public buttons: Button[];
+
 	public constructor(options: ConfirmationOptions) {
 		this.options = options;
+		this.buttons = [];
+
 		if (options.emojis && options?.emojis?.length < 2) {
 			throw new Error('Confirmation requires at least 2 emojis');
 		}
@@ -17,9 +21,23 @@ export class Confirmation {
 		}
 	}
 
-	public setButtons(buttons: Button[]) {
-		this.options.buttonLabels = buttons.map((b) => b.label!);
-		this.options.emojis = buttons.map((b) => b.emoji! as unknown as string);
+	public setButtons(buttons: ButtonPrompt[]) {
+		if (buttons.length < 2) {
+			throw new Error('Confirmation requires at least 2 buttons');
+		}
+
+		this.buttons = [
+			new Button()
+				._customId(buttons[0].customId)
+				._label(buttons[0].label ?? '')
+				._emoji(buttons[0].emoji ?? '')
+				._style(buttons[0].style),
+			new Button()
+				._customId(buttons[1].customId)
+				._label(buttons[1].label ?? '')
+				._emoji(buttons[1].emoji ?? '')
+				._style(buttons[1].style)
+		];
 		return this;
 	}
 
@@ -40,7 +58,9 @@ export class Confirmation {
 		const yes_button = new Button()._customId('yes')._label(buttonLabels[0])._emoji(emojis[0])._style('SUCCESS');
 
 		const no_button = new Button()._customId('no')._label(buttonLabels[1])._emoji(emojis[1])._style('DANGER');
-		row._components([yes_button, no_button]);
+		this.buttons = this.buttons.length ? this.buttons : [yes_button, no_button];
+
+		row._components(this.buttons);
 		let msg: Message<boolean>;
 		if (message instanceof Message) {
 			msg = await message.channel.send({
@@ -72,9 +92,9 @@ export class Confirmation {
 				return;
 			}
 			await msg.edit({ components: [row] });
-			if (i.customId === 'yes') {
+			if (i.customId === this.buttons[0].customId) {
 				this.options.onConfirm({ i, msg });
-			} else if (i.customId === 'no') {
+			} else if (i.customId === this.buttons[1].customId) {
 				this.options.onCancel({ i, msg });
 			}
 		});
@@ -118,4 +138,11 @@ interface payload {
 interface endPayload {
 	collection: Collection<string, ButtonInteraction>;
 	msg: Message;
+}
+
+interface ButtonPrompt {
+	customId: string;
+	label?: string;
+	emoji?: EmojiIdentifierResolvable;
+	style: 'SUCCESS' | 'DANGER' | 'PRIMARY' | 'SECONDARY';
 }
