@@ -7,14 +7,12 @@ import { ApplyOptions } from '@sapphire/decorators';
 export class UserCommand extends RadonCommand {
 	public override async messageRun(message: RadonCommand.Message) {
 		await new Confirmation({
-			onConfirm: async ({ i }) => {
-				await i.update({ content: 'Confirmed!', embeds: [] });
+			onConfirm: ({ i, msg }) => {
+				return i.update({ embeds: [msg.embeds[0].setDescription('Confirmed!')] });
 			},
-			onCancel: async ({ i }) => {
-				await i.update({ content: 'Cancelled!', embeds: [] });
-			},
-			time: 5000,
-			color: 'GOLD'
+			onCancel: ({ i, msg }) => {
+				return i.update({ embeds: [msg.embeds[0].setDescription(`Cancelled!`)] });
+			}
 		}).run(message);
 	}
 }
