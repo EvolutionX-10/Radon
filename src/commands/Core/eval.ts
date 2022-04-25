@@ -10,8 +10,9 @@ import { Stopwatch } from '@sapphire/stopwatch';
 import { Type } from '@sapphire/type';
 import { codeBlock, isThenable } from '@sapphire/utilities';
 import type { Message } from 'discord.js';
-import { inspect } from 'util';
+import { inspect } from 'node:util';
 import axios from 'axios';
+import { clean } from '#lib/utility';
 @ApplyOptions<RadonCommand.Options>({
 	aliases: ['ev'],
 	quotes: [],
@@ -37,11 +38,15 @@ export class UserCommand extends RadonCommand {
 			};
 		});
 		const footer = codeBlock('ts', type);
+
+		if (typeof result !== 'string') return;
+
 		if (args.getFlags('haste')) {
 			const url = await this.getHaste(result).catch(() => undefined);
 			if (url) {
 				return send(message, `Here's the result: <${url}>\n\n${footer}\n${time}`);
-			} else return send(message, `Failed to get haste url`);
+			}
+			return send(message, `Failed to get haste url`);
 		}
 		if (args.getFlags('silent', 's')) {
 			if (!success && result) {
@@ -66,6 +71,7 @@ export class UserCommand extends RadonCommand {
 
 		return send(message, `${codeBlock('ts', result)}\n${footer}\n${time}`);
 	}
+
 	private async eval(message: Message, code: string, flags: flags) {
 		const stopwatch = new Stopwatch();
 		if (code.includes('await')) flags.async = true;
@@ -73,42 +79,67 @@ export class UserCommand extends RadonCommand {
 		const last = ar.pop();
 		if (flags.async) code = `(async () => {\n${ar.join(';\n')}\nreturn ${last?.trim() ?? 'void'}})();`;
 		// @ts-ignore
-		const msg = message,
-			client = this.container.client,
-			guild = message.guild,
-			channel = message.channel;
+		const msg = message;
+		// @ts-ignore
+		const { client } = this.container;
+		// @ts-ignore
+		const { guild } = message;
+		// @ts-ignore
+		const { channel } = message;
 
-		let success = true;
-		let result = null;
+		let success: boolean;
+		let result: unknown;
+		let asyncTime = ``;
+		let syncTime = ``;
+		let type: Type;
+		let thenable = false;
+
 		try {
+			// eslint-disable-next-line no-eval
 			result = eval(code);
+			syncTime = stopwatch.toString();
+			type = new Type(result);
 		} catch (error) {
+			if (!syncTime.length) syncTime = stopwatch.toString();
+			if (thenable && !asyncTime.length) asyncTime = stopwatch.toString();
+			if (!type!) type = new Type(error);
 			success = false;
 			result = error;
 		}
 		stopwatch.stop();
-		const type = new Type(result).toString();
-		if (isThenable(result)) result = await result;
+
+		if (isThenable(result)) {
+			thenable = true;
+			stopwatch.restart();
+			result = await result;
+			asyncTime = stopwatch.toString();
+		}
+		success = true;
+		stopwatch.stop();
+
 		if (typeof result !== 'string') {
 			result = inspect(result, {
 				depth: flags.depth,
 				showHidden: flags.showHidden
 			});
 		}
-		const time = this.formatTime(stopwatch.toString());
-		return { result, success, type, time };
+		const time = this.formatTime(syncTime, asyncTime ?? '');
+
+		return { result: clean(result as string), success, type, time };
 	}
+
 	private formatTime(syncTime: string, asyncTime?: string) {
 		return asyncTime ? `⏱ ${asyncTime}<${syncTime}>` : `⏱ ${syncTime}`;
 	}
+
 	private async getHaste(result: string, language = 'js') {
 		const { data } = await axios.post('https://hastebin.skyra.pw/documents', result);
 		return `https://hastebin.skyra.pw/${data.key}.${language}`;
 	}
 }
 
-type flags = {
+interface flags {
 	async: boolean;
 	depth: number;
 	showHidden: boolean;
-};
+}
