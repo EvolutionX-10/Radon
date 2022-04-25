@@ -9,3 +9,4 @@ export * from './Utils.js';
 export * from './Embed.js';
 export * from './Button.js';
 export * from './Select.js';
+export * from './Confirmation.js';
