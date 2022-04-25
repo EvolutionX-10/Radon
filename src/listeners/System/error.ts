@@ -4,7 +4,7 @@ import { Events, Listener, ListenerOptions } from '@sapphire/framework';
 	event: Events.ClientReady
 })
 export class UserListener extends Listener {
-	public override async run() {
+	public override run() {
 		process.on('unhandledRejection', (reason, p) => {
 			this.container.logger.warn(' [antiCrash] :: Unhandled Rejection/Catch');
 			this.container.logger.error(reason, p);

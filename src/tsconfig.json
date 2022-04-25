@@ -1,5 +1,5 @@
 {
-	"extends": "../tsconfig.base.json",
+	"extends": "../tsconfig.eslint.json",
 	"compilerOptions": {
 		"allowJs": true,
 		"outDir": "../dist",

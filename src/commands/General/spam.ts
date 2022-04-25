@@ -13,7 +13,8 @@ export class UserCommand extends RadonCommand {
 		}
 	}
 }
+
 async function wait(ms: number) {
-	const wait = (await import('util')).promisify(setTimeout);
+	const wait = (await import('node:util')).promisify(setTimeout);
 	return wait(ms);
 }

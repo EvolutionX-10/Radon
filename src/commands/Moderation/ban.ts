@@ -25,11 +25,12 @@ export class UserCommand extends RadonCommand {
 		const days = interaction.options.getInteger('days');
 		const { content: ctn, result } = runAllChecks(interaction.member as GuildMember, member, 'ban');
 		if (!result) return interaction.reply({ content: ctn, ephemeral: true });
-		let content =
-			`${vars.emojis.confirm} ${member} [${member.user.username}] has ` + `been banned ${reason ? `for the following reason: ${reason}` : ''}`;
+		let content = `${vars.emojis.confirm} ${member} [${member.user.username}] has been banned ${
+			reason ? `for the following reason: ${reason}` : ''
+		}`;
 		await member
 			.send({
-				content: `You have been banned from ${interaction.guild.name}` + `\n${reason ? `Reason: ${reason}` : ''}`
+				content: `You have been banned from ${interaction.guild.name}\n${reason ? `Reason: ${reason}` : ''}`
 			})
 			.catch(() => (content += `\n${vars.emojis.cross} Couldn't DM member!`));
 		await member.ban({
@@ -57,7 +58,8 @@ export class UserCommand extends RadonCommand {
 			ephemeral: true
 		});
 	}
-	public override async registerApplicationCommands(registry: RadonCommand.Registry) {
+
+	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
 			{
 				name: this.name,

@@ -1,18 +1,18 @@
 import { GuildChannel, NewsChannel, TextChannel, ThreadChannel } from 'discord.js';
 
-TextChannel.prototype.visible = function (): boolean {
+TextChannel.prototype.visible = function visible(): boolean {
 	return this.permissionsFor(this.guild.roles.everyone).has('VIEW_CHANNEL');
 };
 
-ThreadChannel.prototype.visible = function (): boolean {
+ThreadChannel.prototype.visible = function visible(): boolean {
 	return this.permissionsFor(this.guild.roles.everyone).has('VIEW_CHANNEL');
 };
 
-NewsChannel.prototype.visible = function (): boolean {
+NewsChannel.prototype.visible = function visible(): boolean {
 	return this.permissionsFor(this.guild.roles.everyone).has('VIEW_CHANNEL');
 };
 
-GuildChannel.prototype.visible = function (): boolean {
+GuildChannel.prototype.visible = function visible(): boolean {
 	return this.permissionsFor(this.guild.roles.everyone).has('VIEW_CHANNEL');
 };
 

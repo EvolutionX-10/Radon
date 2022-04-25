@@ -14,22 +14,28 @@ import axios from 'axios';
 })
 export class UserListener extends Listener {
 	private readonly style = this.isDev ? yellow : blue;
+
 	public override async run(client: RadonClient) {
 		this.container.settings = new Settings();
 		this.container.utils = new Utils();
+
 		await client.guilds.fetch();
+
 		this.container.client = client;
-		this.container.logger.info(`Logged in as ${greenBright(client.user?.tag as string)}`);
+		this.container.logger.info(`Logged in as ${greenBright(client.user!.tag!)}`);
 		this.printBanner();
 		this.printStoreDebugInformation();
 		this.container.logger.info(`${greenBright('ws            [')}${blueBright('READY')}${greenBright(']')}`);
+
 		const guilds = client.guilds.cache;
 		guilds.forEach((guild) => (guild.settings = new GuildSettings(guild)));
 		if (process.env.NODE_ENV === 'production') await this.postServerCount();
 	}
+
 	private get isDev() {
 		return process.env.NODE_ENV === 'development';
 	}
+
 	private printBanner() {
 		const success = green('+');
 
@@ -48,6 +54,7 @@ ${this.isDev ? ` ${pad}${blc('<')}${llc('/')}${blc('>')} ${llc('DEVELOPMENT MODE
 		`.trim()
 		);
 	}
+
 	private printStoreDebugInformation() {
 		const { client, logger } = this.container;
 		const stores = [...client.stores.values()];

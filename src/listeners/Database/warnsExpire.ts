@@ -11,7 +11,7 @@ export class UserListener extends Listener {
 			const now = new Date();
 			const data = await warnsDB.find();
 
-			data.forEach(async (warnData) => {
+			data.forEach((warnData) => {
 				if (warnData.warnlist.length) {
 					warnData.warnlist.forEach((warnlist) => {
 						warnlist.warns.forEach(async (warn) => {
@@ -33,6 +33,6 @@ export class UserListener extends Listener {
 			});
 			setTimeout(expire, 5000);
 		};
-		expire();
+		await expire();
 	}
 }

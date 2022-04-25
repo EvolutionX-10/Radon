@@ -6,10 +6,10 @@ export class UserListener extends Listener<typeof Events.ChatInputCommandError> 
 			return interaction.editReply({
 				content: error.message
 			});
-		} else
-			return interaction.reply({
-				content: error.message,
-				ephemeral: true
-			});
+		}
+		return interaction.reply({
+			content: error.message,
+			ephemeral: true
+		});
 	}
 }

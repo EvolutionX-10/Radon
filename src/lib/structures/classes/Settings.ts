@@ -1,8 +1,9 @@
 import { Blacklist } from './Blacklist.js';
 
 export class Settings {
-	constructor() {
+	public blacklists: Blacklist;
+
+	public constructor() {
 		this.blacklists = new Blacklist();
 	}
-	blacklists: Blacklist;
 }

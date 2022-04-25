@@ -12,7 +12,7 @@ export class UserListener extends Listener {
 	public override async run() {
 		const mode = await modesDB.findById('61cf428394b75db75b5dafb4');
 		const ownerMode = mode?.ownerMode;
-		const check = async () => {
+		const check = () => {
 			const current = this.container.client.user?.presence.status;
 			const newstatus: status = ownerMode ? 'invisible' : 'dnd';
 			const activity: activity = {
@@ -31,22 +31,25 @@ export class UserListener extends Listener {
 			});
 			setTimeout(check, 1000);
 		};
-		await check();
+		check();
+
 		this.container.client.fetchPrefix = (message: Message) => {
 			if (!message.guild) {
 				if (vars.owners.includes(message.author.id)) {
 					return vars.owner_prefixes;
-				} else return null;
+				}
+				return null;
 			}
 			if (vars.owners.includes(message.author.id)) {
 				return vars.owner_prefixes;
-			} else return null;
+			}
+			return null;
 		};
 	}
 }
 
 type status = 'idle' | 'online' | 'invisible' | 'dnd';
-type activity = {
+interface activity {
 	name: string;
 	type: ExcludeEnum<typeof ActivityTypes, 'CUSTOM'>;
-};
+}

@@ -4,9 +4,10 @@ export class Timestamp {
 	 * @param timestamp The timestamp to convert to a readable string
 	 * @requires [UNIX](https://en.wikipedia.org/wiki/Unix_time) timestamp in `milliseconds`
 	 */
-	constructor(private readonly timestamp: number) {
+	public constructor(private readonly timestamp: number) {
 		if (this.timestamp < 0) throw new Error('Timestamp must be a positive number');
 	}
+
 	/**
 	 * @example
 	 * ```ts
@@ -19,6 +20,7 @@ export class Timestamp {
 	public getRelativeTime(): string {
 		return `<t:${Math.floor(this.timestamp / 1000)}:R>`;
 	}
+
 	/**
 	 * @example
 	 * ```ts
@@ -31,6 +33,7 @@ export class Timestamp {
 	public getShortDateTime(): string {
 		return `<t:${Math.floor(this.timestamp / 1000)}:f>`;
 	}
+
 	/**
 	 * @example
 	 * ```ts
@@ -43,6 +46,7 @@ export class Timestamp {
 	public getLongDateTime(): string {
 		return `<t:${Math.floor(this.timestamp / 1000)}:F>`;
 	}
+
 	/**
 	 * @example
 	 * ```ts
@@ -55,6 +59,7 @@ export class Timestamp {
 	public getShortDate(): string {
 		return `<t:${Math.floor(this.timestamp / 1000)}:d>`;
 	}
+
 	/**
 	 * @example
 	 * ```ts
@@ -67,6 +72,7 @@ export class Timestamp {
 	public getLongDate(): string {
 		return `<t:${Math.floor(this.timestamp / 1000)}:D>`;
 	}
+
 	/**
 	 * @example
 	 * ```ts
@@ -79,6 +85,7 @@ export class Timestamp {
 	public getShortTime(): string {
 		return `<t:${Math.floor(this.timestamp / 1000)}:t>`;
 	}
+
 	/**
 	 * @example
 	 * ```ts

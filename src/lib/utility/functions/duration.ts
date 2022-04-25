@@ -30,14 +30,5 @@ export function hours(hours: number): number {
 }
 
 export function time({ unit, time }: { unit: 'sec' | 'mins' | 'hours'; time: number }) {
-	switch (unit) {
-		case 'sec':
-			return sec(time);
-		case 'mins':
-			return mins(time);
-		case 'hours':
-			return hours(time);
-		default:
-			throw new Error('Invalid unit');
-	}
+	return { sec, mins, hours }[unit](time);
 }

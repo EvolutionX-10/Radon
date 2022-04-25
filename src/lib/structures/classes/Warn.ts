@@ -2,9 +2,10 @@ import { warnsDB } from '#models';
 import type { Guild, GuildMember } from 'discord.js';
 
 export class Warn {
-	constructor(private readonly guild: Guild) {
+	public constructor(private readonly guild: Guild) {
 		this.guild = guild;
 	}
+
 	public async add({
 		warnid,
 		member,
@@ -49,33 +50,32 @@ export class Warn {
 						}
 					}
 				)) as warnsData;
-			} else {
-				return warnsDB.findOneAndUpdate(
-					{
-						_id: this.guild.id
-					},
-					{
-						$push: {
-							warnlist: {
-								_id: member.id,
-								warns: [
-									{
-										_id: warnid,
-										reason,
-										mod: mod.id,
-										severity,
-										date: new Date(),
-										expiration
-									}
-								]
-							}
-						}
-					},
-					{
-						upsert: true
-					}
-				);
 			}
+			return warnsDB.findOneAndUpdate(
+				{
+					_id: this.guild.id
+				},
+				{
+					$push: {
+						warnlist: {
+							_id: member.id,
+							warns: [
+								{
+									_id: warnid,
+									reason,
+									mod: mod.id,
+									severity,
+									date: new Date(),
+									expiration
+								}
+							]
+						}
+					}
+				},
+				{
+					upsert: true
+				}
+			);
 		}
 		const data = await warnsDB.findOneAndUpdate(
 			{
@@ -104,6 +104,7 @@ export class Warn {
 		);
 		return data as warnsData;
 	}
+
 	public async remove({ warnid, member }: { warnid: string; member: GuildMember }) {
 		const exist = await warnsDB.findOne({
 			_id: this.guild.id
@@ -134,6 +135,7 @@ export class Warn {
 		}
 		return null;
 	}
+
 	public async get({ member }: { member: GuildMember }): Promise<{ person: warnlist; exist: warnsData } | null> {
 		const exist = await warnsDB.findOne({
 			_id: this.guild.id

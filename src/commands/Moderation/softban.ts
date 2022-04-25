@@ -28,7 +28,7 @@ export class UserCommand extends RadonCommand {
 		const content =
 			`${vars.emojis.confirm} ${member} [${member.user.username}] has ` +
 			`been soft banned ${reason ? `for the following reason: ${reason}` : ''}`;
-		const id = member.id;
+		const { id } = member;
 		await member.ban({
 			days: days ?? 1,
 			reason: reason ?? undefined
@@ -52,7 +52,8 @@ export class UserCommand extends RadonCommand {
 		}
 		return interaction.editReply(content);
 	}
-	public override async registerApplicationCommands(registry: RadonCommand.Registry) {
+
+	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
 			{
 				name: this.name,

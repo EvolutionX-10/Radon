@@ -6,7 +6,7 @@ export function isAdmin(member: GuildMember): boolean {
 }
 
 export function isModerator(member: GuildMember): boolean {
-	return isAdmin(member) || !!member.roles.cache.find((r) => r.name.toLowerCase().includes('moderator'));
+	return isAdmin(member) || Boolean(member.roles.cache.find((r) => r.name.toLowerCase().includes('moderator')));
 }
 
 export function isGuildOwner(member: GuildMember): boolean {

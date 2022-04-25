@@ -5,6 +5,7 @@ import type { GuildMessage } from '#lib/types';
 export class UserPermissionsPrecondition extends PermissionsPrecondition {
 	public override async handle(message: GuildMessage): PermissionsPrecondition.AsyncResult {
 		const roles = (await message.guild.settings?.roles.admins) ?? [];
+
 		return isAdmin(message.member)
 			? this.ok()
 			: message.member.roles.cache.some((r) => roles.includes(r.id))

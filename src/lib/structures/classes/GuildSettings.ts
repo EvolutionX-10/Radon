@@ -5,11 +5,11 @@ import { RolesConfig } from './RolesConf.js';
 import { Warn } from './Warn.js';
 
 export class GuildSettings {
-	blacklists: Blacklist;
-	modlogs: Modlogs;
-	roles: RolesConfig;
-	warns: Warn;
-	constructor(private readonly guild: Guild) {
+	public blacklists: Blacklist;
+	public modlogs: Modlogs;
+	public roles: RolesConfig;
+	public warns: Warn;
+	public constructor(private readonly guild: Guild) {
 		this.blacklists = new Blacklist();
 		this.modlogs = new Modlogs(this.guild);
 		this.roles = new RolesConfig(this.guild);

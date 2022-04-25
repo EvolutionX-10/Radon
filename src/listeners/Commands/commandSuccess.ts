@@ -5,7 +5,7 @@ import { ApplyOptions } from '@sapphire/decorators';
 	event: Events.MessageCommandSuccess
 })
 export class UserListener extends Listener<typeof Events.MessageCommandSuccess> {
-	run({ message, command }: MessageCommandAcceptedPayload) {
+	public override run({ message, command }: MessageCommandAcceptedPayload) {
 		message.author.spam = 0;
 		const commandName = command.name;
 		const author = `${message.author.username}[${message.author.id}]`;

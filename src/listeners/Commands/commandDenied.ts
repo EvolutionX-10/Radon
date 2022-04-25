@@ -13,7 +13,7 @@ export class UserListener extends Listener {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const time = (error.context as any).remaining;
 			const msg = `Take a breathe! It can be used again in ${hd(Math.ceil(time), { round: true })}.`;
-			message.author.spam = message.author.spam + 1;
+			message.author.spam += 1;
 			if (message.author.spam === 5) {
 				return send(message, {
 					content: `<@${message.author.id}> stop spamming commands else you'll be blacklisted!`,

@@ -1,31 +1,35 @@
 import { modesDB } from '#models';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import { AllFlowsPrecondition, Precondition } from '@sapphire/framework';
+import { Precondition } from '@sapphire/framework';
+import type { CommandInteraction, ContextMenuInteraction, Message } from 'discord.js';
 
 @ApplyOptions<Precondition.Options>({
 	position: 1
 })
 export class UserPrecondition extends Precondition {
-	public override async messageRun(...[message]: Parameters<AllFlowsPrecondition['messageRun']>) {
+	public override async messageRun(message: Message) {
 		return this.inOwnerMode(message.author.id);
 	}
-	public override async chatInputRun(...[interaction]: Parameters<AllFlowsPrecondition['chatInputRun']>) {
+
+	public override async chatInputRun(interaction: CommandInteraction) {
 		return this.inOwnerMode(interaction.user.id);
 	}
-	public override async contextMenuRun(...[interaction]: Parameters<AllFlowsPrecondition['contextMenuRun']>) {
+
+	public override async contextMenuRun(interaction: ContextMenuInteraction) {
 		return this.inOwnerMode(interaction.user.id);
 	}
+
 	private async inOwnerMode(id: string) {
 		const database = await modesDB.findById('61cf428394b75db75b5dafb4');
 		const mode = database?.ownerMode;
 		if (!mode) return this.ok();
-		else
-			return vars.owners.includes(id)
-				? this.ok()
-				: this.error({
-						message: `I am in bot owner mode`,
-						context: { silent: true }
-				  });
+
+		return vars.owners.includes(id)
+			? this.ok()
+			: this.error({
+					message: `I am in bot owner mode`,
+					context: { silent: true }
+			  });
 	}
 }

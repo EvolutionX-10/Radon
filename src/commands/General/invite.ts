@@ -9,7 +9,7 @@ import { ApplyOptions } from '@sapphire/decorators';
 	description: `Invite Radon to your server!`
 })
 export class UserCommand extends RadonCommand {
-	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
+	public override chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const invite = this.container.client.generateInvite({
 			scopes: ['applications.commands', 'bot'],
 			permissions: 543276137727n
@@ -23,7 +23,7 @@ export class UserCommand extends RadonCommand {
 
 		const title = `Invite Radon to your server!`;
 		const thumbnail = this.container.client.user!.displayAvatarURL();
-		//TODO Add a proper embed and merge ping/invite/stats into about
+		// TODO Add a proper embed and merge ping/invite/stats into about
 		const embed = this.container.utils.embed()._title(title)._color(color.General)._thumbnail(thumbnail);
 
 		return interaction.reply({
@@ -31,7 +31,8 @@ export class UserCommand extends RadonCommand {
 			components: [row]
 		});
 	}
-	public override async registerApplicationCommands(registry: RadonCommand.Registry) {
+
+	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
 			{
 				name: this.name,

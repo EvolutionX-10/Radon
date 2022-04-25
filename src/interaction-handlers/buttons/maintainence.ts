@@ -20,11 +20,12 @@ export class ButtonHandler extends InteractionHandler {
 				}
 			]
 		});
-		const msg = result.msg;
+		const { msg } = result;
 		return msg?.edit({
 			embeds: [msg.embeds[0].setDescription(result.description)]
 		});
 	}
+
 	public override async parse(interaction: ButtonInteraction) {
 		if (interaction.customId !== 'radon-maintenance') return this.none();
 		await interaction.deferUpdate({ fetchReply: true });
@@ -40,7 +41,7 @@ export class ButtonHandler extends InteractionHandler {
 				ownerMode: true
 			});
 		}
-		const description = ownerMode ? '```\n' + 'Status: Disabled' + '\n' + '```' : '```\n' + 'Status: Enabled' + '\n' + '```';
+		const description = ownerMode ? '```\nStatus: Disabled\n```' : '```\nStatus: Enabled\n```';
 		const msg = interaction.message as Message;
 		return this.some({ ownerMode, msg, description });
 	}

@@ -33,18 +33,6 @@ export class Utils {
 	public hours;
 	public mins;
 	public sec;
-	public embed() {
-		return new Embed();
-	}
-	public button() {
-		return new Button();
-	}
-	public select() {
-		return new Select();
-	}
-	public row() {
-		return new Row();
-	}
 	public constructor() {
 		this.formatDuration = formatDuration;
 		this.generateModLogDescription = generateModLogDescription;
@@ -60,5 +48,21 @@ export class Utils {
 		this.hours = hours;
 		this.mins = mins;
 		this.sec = sec;
+	}
+
+	public embed() {
+		return new Embed();
+	}
+
+	public button() {
+		return new Button();
+	}
+
+	public select() {
+		return new Select();
+	}
+
+	public row() {
+		return new Row();
 	}
 }

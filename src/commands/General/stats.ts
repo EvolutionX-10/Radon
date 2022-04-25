@@ -13,14 +13,14 @@ import { uptime } from 'node:os';
 	permissionLevel: PermissionLevels.Everyone
 })
 export class UserCommand extends RadonCommand {
-	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
+	public override chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		return interaction.reply({
 			embeds: [this.buildEmbed()],
 			ephemeral: true
 		});
 	}
 
-	public override async registerApplicationCommands(registry: RadonCommand.Registry) {
+	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
 			{
 				name: this.name,
@@ -32,6 +32,7 @@ export class UserCommand extends RadonCommand {
 			}
 		);
 	}
+
 	private buildEmbed() {
 		const titles = {
 			stats: 'Statistics',

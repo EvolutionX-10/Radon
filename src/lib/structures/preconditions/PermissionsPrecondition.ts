@@ -34,6 +34,7 @@ export abstract class PermissionsPrecondition extends Precondition {
 		// Run the specific precondition's logic:
 		return this.handle(message, command, context);
 	}
+
 	public override async chatInputRun(
 		interaction: CommandInteraction,
 		command: ChatInputCommand,
@@ -44,6 +45,7 @@ export abstract class PermissionsPrecondition extends Precondition {
 		}
 		return this.handle(interaction, command, context);
 	}
+
 	public override async contextMenuRun(
 		interaction: ContextMenuInteraction,
 		command: ContextMenuCommand,
@@ -54,6 +56,7 @@ export abstract class PermissionsPrecondition extends Precondition {
 		}
 		return this.handle(interaction, command, context);
 	}
+
 	public abstract handle(
 		message: Message | CommandInteraction | ContextMenuInteraction,
 		command: RadonCommand | ChatInputCommand | ContextMenuCommand,

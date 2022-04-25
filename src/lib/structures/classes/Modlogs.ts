@@ -2,14 +2,16 @@ import { guildSettingsDB } from '#models';
 import type { Guild, MessageEmbed } from 'discord.js';
 
 export class Modlogs {
-	constructor(private readonly guild: Guild) {
+	public constructor(private readonly guild: Guild) {
 		this.guild = guild;
 	}
+
 	public async modLogs_exist() {
 		const data = await guildSettingsDB.findById(this.guild.id);
 		if (data && data.modLogChannel) return data.modLogChannel;
-		else return null;
+		return null;
 	}
+
 	public async sendModLog(embed: MessageEmbed) {
 		const data = await guildSettingsDB.findById(this.guild.id);
 		if (data && data.modLogChannel) {

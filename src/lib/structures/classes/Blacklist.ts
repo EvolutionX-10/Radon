@@ -14,9 +14,11 @@ export class Blacklist {
 		if (!doc) return null;
 		return doc as document;
 	}
-	public async isBlacklisted(id: string) {
-		return blacklistDB.findById(id).then((doc) => !!doc);
+
+	public isBlacklisted(id: string) {
+		return blacklistDB.findById(id).then((doc) => Boolean(doc));
 	}
+
 	public async remove(id: string) {
 		const doc = await blacklistDB.findByIdAndDelete(id);
 		const reason = doc?.reason;

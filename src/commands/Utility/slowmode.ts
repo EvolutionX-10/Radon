@@ -24,11 +24,11 @@ export class UserCommand extends RadonCommand {
 				}`
 			});
 		}
-		if (!isNaN(+time)) time = time + 's';
+		if (!isNaN(Number(time))) time += 's';
 		const duration = ms(time);
 		if (isNaN(duration))
 			return interaction.reply({
-				content: 'Invalid duration! Valid examples: `1h`, `1m`, `1s`, `2 hours`\nTo remove slowmode' + ' just put `0` as the duration.',
+				content: 'Invalid duration! Valid examples: `1h`, `1m`, `1s`, `2 hours`\nTo remove slowmode just put `0` as the duration.',
 				ephemeral: true
 			});
 		if (duration > 21600000) {
@@ -41,14 +41,15 @@ export class UserCommand extends RadonCommand {
 			content = `${vars.emojis.confirm} Removed slowmode from ${interaction.channel}`;
 		}
 		const reason =
-			(interaction.options.getString('reason', false) ? interaction.options.getString('reason', false) + ` (${interaction.user.tag})` : null) ??
+			(interaction.options.getString('reason', false) ? `${interaction.options.getString('reason', false)} (${interaction.user.tag})` : null) ??
 			`Done by ${interaction.user.tag}`;
 		await (interaction.channel as TextChannel).setRateLimitPerUser(Math.floor(duration / 1000), reason);
 		await interaction.reply({
 			content
 		});
 	}
-	public override async registerApplicationCommands(registry: RadonCommand.Registry) {
+
+	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
 			{
 				name: this.name,

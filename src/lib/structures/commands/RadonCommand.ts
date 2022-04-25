@@ -43,13 +43,16 @@ export abstract class RadonCommand extends SubCommandPluginCommand<RadonCommand.
 			(this.hidden = options.hidden ?? false),
 			(this.permissionLevel = options.permissionLevel ?? PermissionLevels.Everyone);
 	}
+
 	protected error(identifier: string | UserError, context?: unknown): never {
 		throw typeof identifier === 'string' ? new UserError({ identifier, context }) : identifier;
 	}
+
 	protected parseConstructorPreConditions(options: RadonCommand.Options): void {
 		super.parseConstructorPreConditions(options);
 		this.parseConstructorPreConditionsPermissionLevel(options);
 	}
+
 	protected parseConstructorPreConditionsPermissionLevel(options: RadonCommand.Options): void {
 		if (options.permissionLevel === PermissionLevels.BotOwner) {
 			this.preconditions.append('BotOwner');

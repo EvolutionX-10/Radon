@@ -82,249 +82,7 @@ export class UserCommand extends RadonCommand {
 		await interaction.respond(choices.filter((choice) => choice.name.toLowerCase().includes((focus.value as string).toLowerCase())).slice(0, 24));
 	}
 
-	private async add(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const member = interaction.options.getMember('user') as GuildMember;
-		const reason = interaction.options.getString('reason', true);
-		if (!member) {
-			return interaction.reply({
-				content: 'Please provide a valid member',
-				ephemeral: true
-			});
-		}
-		const { content: ctn, result } = runAllChecks(interaction.member as GuildMember, member, 'warn');
-		if (!result || member.user.bot)
-			return interaction.reply({
-				content: ctn || `${vars.emojis.cross} I can't warn bots!`,
-				ephemeral: true
-			});
-		const deleteMsg = interaction.options.getBoolean('delete_messages') ?? false;
-		const severity = interaction.options.getInteger('severity') ?? 1;
-		const expires = interaction.options.getString('expiration') ?? this.autoSeverity(severity);
-		const silent = interaction.options.getBoolean('silent') ?? false;
-		if (isNaN(ms(expires))) {
-			return interaction.reply({
-				content: 'Invalid duration! Valid examples: `1 week`, `1h`, `10 days`, `5 hours`',
-				ephemeral: true
-			});
-		}
-		const expiration = new Date(Date.now() + ms(expires));
-		if (expiration.getTime() > Date.now() + ms('28 days')) {
-			return interaction.reply({
-				content: 'Expiration cannot be more than 28 days',
-				ephemeral: true
-			});
-		}
-		if (expiration.getTime() < Date.now() + ms('1 hour')) {
-			return interaction.reply({
-				content: 'Expiration cannot be less than 1 hour. Please use a longer duration.',
-				ephemeral: true
-			});
-		}
-		const warnId = uid();
-		const warn = await interaction.guild?.settings?.warns.add({
-			expiration,
-			reason,
-			severity,
-			warnid: warnId,
-			member,
-			mod: interaction.member as GuildMember
-		});
-		if (typeof warn === 'undefined') {
-			return interaction.reply({
-				content: `It seems you've already reached the limit of active warns on ${member}`,
-				ephemeral: true
-			});
-		}
-		const prevWarns_size = warn?.warnlist?.filter((e) => e?._id === member?.id)?.[0]?.warns?.length ?? 0;
-		const totalwarns = prevWarns_size + 1;
-		let content =
-			`${member} (${member.user.tag}) has been warned for __${reason}__\nWarn ID: \`${warnId}\`` + `\n*They now have ${totalwarns} warning(s)*`;
-		if (!silent) {
-			await member
-				.send({
-					content: `You have been warned in ${member.guild.name} for __${reason}__\nWarn ID: \`${warnId}\``
-				})
-				.catch(() => {
-					content += `\n||${vars.emojis.cross} Couldn't DM ${member}||`;
-				});
-		}
-		await interaction.reply({
-			content,
-			ephemeral: true
-		});
-		await (interaction.channel as TextChannel).send({
-			embeds: [
-				{
-					description: `${member} (${member.user.tag}) has been warned`,
-					timestamp: new Date(),
-					color: color.Moderation
-				}
-			]
-		});
-		const embed = this.container.utils
-			.embed()
-			._color(sev.warn)
-			._author({
-				name: interaction.user.tag,
-				iconURL: interaction.user.displayAvatarURL({
-					dynamic: true
-				})
-			});
-		const des = generateModLogDescription({
-			member,
-			action: 'Warn',
-			reason,
-			duration: new Timestamp(expiration.getTime()),
-			warnId
-		});
-		embed._description(des);
-
-		if (interaction.guild && (await interaction.guild.settings?.modlogs.modLogs_exist())) {
-			await interaction.guild.settings?.modlogs.sendModLog(embed);
-		}
-		if (deleteMsg) {
-			if (!interaction.guild?.me?.permissions.has('MANAGE_MESSAGES')) {
-				return interaction.followUp({
-					content: "I don't have the `MANAGE_MESSAGES` permission, so I couldn't delete messages.",
-					ephemeral: true
-				});
-			}
-			interaction.guild?.channels.cache
-				.filter((c) => c.type === 'GUILD_TEXT')
-				?.forEach(async (c) => {
-					if (c.permissionsFor(interaction.guild!.me!).has('MANAGE_MESSAGES')) {
-						const messages = await (c as TextChannel).messages.fetch({ limit: 15 }).catch(() => null);
-						if (!messages) return;
-						const msg = messages.filter((m) => m.author.id === member.id);
-						if (msg && msg.size > 0) {
-							msg.forEach(async (m) => {
-								if (m.deletable && m.createdTimestamp > Date.now() - mins(15)) {
-									await m.delete().catch(() => null);
-								}
-							});
-						}
-					}
-				});
-		}
-	}
-
-	private async remove(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const member = interaction.options.getMember('user') as GuildMember;
-		const warnid = interaction.options.getString('warn_id', true);
-		const reason = interaction.options.getString('reason') ?? 'No reason provided';
-		if (!member) {
-			return interaction.reply({
-				content: 'Please provide a valid member',
-				ephemeral: true
-			});
-		}
-		const warn = await interaction.guild?.settings?.warns.remove({
-			warnid,
-			member
-		});
-		if (!warn) {
-			return interaction.reply({
-				content:
-					`That warning does not exist on ${member.user.tag}\n` +
-					`Possible reasons: \n` +
-					`- The warning ID is incorrect\n` +
-					`- The user has not been warned`,
-				ephemeral: true
-			});
-		}
-		const prevWarns_size = warn?.warnlist?.filter((e) => e?._id === member?.id)?.[0]?.warns?.length ?? 0;
-		const totalwarns = prevWarns_size - 1;
-		const content = `${member} (${member.user.tag}) has had their warning removed` + `\n*They now have ${totalwarns} warning(s)*`;
-		await interaction.reply({
-			content,
-			ephemeral: false
-		});
-		const embed = this.container.utils
-			.embed()
-			._color(sev.warn_removal)
-			._author({
-				name: interaction.user.tag,
-				iconURL: interaction.user.displayAvatarURL({
-					dynamic: true
-				})
-			});
-		const des = generateModLogDescription({
-			member,
-			action: 'Warn Removal',
-			reason,
-			warnId: warnid
-		});
-		embed._description(des);
-
-		if (interaction.guild && (await interaction.guild.settings?.modlogs.modLogs_exist())) {
-			await interaction.guild.settings?.modlogs.sendModLog(embed);
-		}
-	}
-
-	private async list(interaction: RadonCommand.ChatInputCommandInteraction | RadonCommand.ContextMenuCommandInteraction) {
-		if (!interaction.channel?.isText() || interaction.channel?.type === 'DM') return;
-		const member = interaction.options.getMember('user') as GuildMember;
-		if (!member) {
-			return interaction.reply({
-				content: 'Please provide a valid member',
-				ephemeral: true
-			});
-		}
-		const data = await interaction.guild?.settings?.warns.get({
-			member
-		});
-		if (!data?.exist || !data.person.warns.length) {
-			return interaction.reply({
-				content: `${member} has no warnings`,
-				ephemeral: true
-			});
-		}
-		const warns = data!.exist;
-		const warns_size = warns.warnlist.filter((e) => e?._id === member?.id)[0].warns.length;
-		const embed_color = color.Moderation;
-		const embed_title = `${member.user.tag}'s Warnings`;
-		const embed_description = `${member} has ${warns_size} warning(s)`;
-		const embed_fields = await Promise.all(
-			warns.warnlist
-				.filter((e) => e?._id === member?.id)[0]
-				.warns.map(async (e) => {
-					const mod = await this.container.client.users.fetch(e.mod);
-					const expiration = new Timestamp(e.expiration.getTime());
-					const time = new Timestamp(e.date.getTime());
-					return {
-						name: `Warn ID: ${e._id}`,
-						value:
-							`> Reason: ${e.reason}\n> Given on ${time.getShortDateTime()} (${time.getRelativeTime()})` +
-							`\n> Severity: \`${e.severity}\`` +
-							`\n> Expires ${expiration.getRelativeTime()} (${expiration.getShortDateTime()})` +
-							`\n> Moderator: ${mod} (\`${mod.id}\`)`,
-						inline: false
-					};
-				})
-		);
-		const embed_footer = `Active warnings of ${member.user.tag}`;
-		const embed_timestamp = new Date();
-		const embed_thumbnail = {
-			url: member.user.displayAvatarURL({
-				dynamic: true
-			})
-		};
-		const template = this.container.utils
-			.embed()
-			._color(embed_color)
-			._title(embed_title)
-			._description(embed_description)
-			._footer({ text: embed_footer })
-			._timestamp(embed_timestamp)
-			._thumbnail(embed_thumbnail.url);
-		const paginatedMessage = new RadonPaginatedMessageEmbedFields().setTemplate(template).setItems(embed_fields).setItemsPerPage(2).make();
-		await interaction.deferReply({
-			ephemeral: interaction.channel.visible()
-		});
-		await paginatedMessage.run(interaction, interaction.user).catch(() => null);
-	}
-
-	public override async registerApplicationCommands(registry: RadonCommand.Registry) {
+	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
 			{
 				name: this.name,
@@ -451,6 +209,247 @@ export class UserCommand extends RadonCommand {
 				idHints: ['960410679070851122', '958685725358977024']
 			}
 		);
+	}
+
+	private async add(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const member = interaction.options.getMember('user') as GuildMember;
+		const reason = interaction.options.getString('reason', true);
+		if (!member) {
+			return interaction.reply({
+				content: 'Please provide a valid member',
+				ephemeral: true
+			});
+		}
+		const { content: ctn, result } = runAllChecks(interaction.member as GuildMember, member, 'warn');
+		if (!result || member.user.bot)
+			return interaction.reply({
+				content: ctn || `${vars.emojis.cross} I can't warn bots!`,
+				ephemeral: true
+			});
+		const deleteMsg = interaction.options.getBoolean('delete_messages') ?? false;
+		const severity = interaction.options.getInteger('severity') ?? 1;
+		const expires = interaction.options.getString('expiration') ?? this.autoSeverity(severity);
+		const silent = interaction.options.getBoolean('silent') ?? false;
+		if (isNaN(ms(expires))) {
+			return interaction.reply({
+				content: 'Invalid duration! Valid examples: `1 week`, `1h`, `10 days`, `5 hours`',
+				ephemeral: true
+			});
+		}
+		const expiration = new Date(Date.now() + ms(expires));
+		if (expiration.getTime() > Date.now() + ms('28 days')) {
+			return interaction.reply({
+				content: 'Expiration cannot be more than 28 days',
+				ephemeral: true
+			});
+		}
+		if (expiration.getTime() < Date.now() + ms('1 hour')) {
+			return interaction.reply({
+				content: 'Expiration cannot be less than 1 hour. Please use a longer duration.',
+				ephemeral: true
+			});
+		}
+		const warnId = uid();
+		const warn = await interaction.guild?.settings?.warns.add({
+			expiration,
+			reason,
+			severity,
+			warnid: warnId,
+			member,
+			mod: interaction.member as GuildMember
+		});
+		if (typeof warn === 'undefined') {
+			return interaction.reply({
+				content: `It seems you've already reached the limit of active warns on ${member}`,
+				ephemeral: true
+			});
+		}
+		const prevWarns_size = warn?.warnlist?.filter((e) => e?._id === member?.id)?.[0]?.warns?.length ?? 0;
+		const totalwarns = prevWarns_size + 1;
+		let content = `${member} (${member.user.tag}) has been warned for __${reason}__\nWarn ID: \`${warnId}\`\n*They now have ${totalwarns} warning(s)*`;
+		if (!silent) {
+			await member
+				.send({
+					content: `You have been warned in ${member.guild.name} for __${reason}__\nWarn ID: \`${warnId}\``
+				})
+				.catch(() => {
+					content += `\n||${vars.emojis.cross} Couldn't DM ${member}||`;
+				});
+		}
+		await interaction.reply({
+			content,
+			ephemeral: true
+		});
+		await (interaction.channel as TextChannel).send({
+			embeds: [
+				{
+					description: `${member} (${member.user.tag}) has been warned`,
+					timestamp: new Date(),
+					color: color.Moderation
+				}
+			]
+		});
+		const embed = this.container.utils
+			.embed()
+			._color(sev.warn)
+			._author({
+				name: interaction.user.tag,
+				iconURL: interaction.user.displayAvatarURL({
+					dynamic: true
+				})
+			});
+		const des = generateModLogDescription({
+			member,
+			action: 'Warn',
+			reason,
+			duration: new Timestamp(expiration.getTime()),
+			warnId
+		});
+		embed._description(des);
+
+		if (interaction.guild && (await interaction.guild.settings?.modlogs.modLogs_exist())) {
+			await interaction.guild.settings?.modlogs.sendModLog(embed);
+		}
+		if (deleteMsg) {
+			if (!interaction.guild?.me?.permissions.has('MANAGE_MESSAGES')) {
+				return interaction.followUp({
+					content: "I don't have the `MANAGE_MESSAGES` permission, so I couldn't delete messages.",
+					ephemeral: true
+				});
+			}
+			interaction.guild?.channels.cache
+				.filter((c) => c.type === 'GUILD_TEXT')
+				?.forEach(async (c) => {
+					if (c.permissionsFor(interaction.guild!.me!).has('MANAGE_MESSAGES')) {
+						const messages = await (c as TextChannel).messages.fetch({ limit: 15 }).catch(() => null);
+						if (!messages) return;
+						const msg = messages.filter((m) => m.author.id === member.id);
+						if (msg && msg.size > 0) {
+							msg.forEach(async (m) => {
+								if (m.deletable && m.createdTimestamp > Date.now() - mins(15)) {
+									await m.delete().catch(() => null);
+								}
+							});
+						}
+					}
+				});
+		}
+	}
+
+	private async remove(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const member = interaction.options.getMember('user') as GuildMember;
+		const warnid = interaction.options.getString('warn_id', true);
+		const reason = interaction.options.getString('reason') ?? 'No reason provided';
+		if (!member) {
+			return interaction.reply({
+				content: 'Please provide a valid member',
+				ephemeral: true
+			});
+		}
+		const warn = await interaction.guild?.settings?.warns.remove({
+			warnid,
+			member
+		});
+		if (!warn) {
+			return interaction.reply({
+				content:
+					`That warning does not exist on ${member.user.tag}\n` +
+					`Possible reasons: \n` +
+					`- The warning ID is incorrect\n` +
+					`- The user has not been warned`,
+				ephemeral: true
+			});
+		}
+		const prevWarns_size = warn?.warnlist?.filter((e) => e?._id === member?.id)?.[0]?.warns?.length ?? 0;
+		const totalwarns = prevWarns_size - 1;
+		const content = `${member} (${member.user.tag}) has had their warning removed\n*They now have ${totalwarns} warning(s)*`;
+		await interaction.reply({
+			content,
+			ephemeral: false
+		});
+		const embed = this.container.utils
+			.embed()
+			._color(sev.warn_removal)
+			._author({
+				name: interaction.user.tag,
+				iconURL: interaction.user.displayAvatarURL({
+					dynamic: true
+				})
+			});
+		const des = generateModLogDescription({
+			member,
+			action: 'Warn Removal',
+			reason,
+			warnId: warnid
+		});
+		embed._description(des);
+
+		if (interaction.guild && (await interaction.guild.settings?.modlogs.modLogs_exist())) {
+			await interaction.guild.settings?.modlogs.sendModLog(embed);
+		}
+	}
+
+	private async list(interaction: RadonCommand.ChatInputCommandInteraction | RadonCommand.ContextMenuCommandInteraction) {
+		if (!interaction.channel?.isText() || interaction.channel?.type === 'DM') return;
+		const member = interaction.options.getMember('user') as GuildMember;
+		if (!member) {
+			return interaction.reply({
+				content: 'Please provide a valid member',
+				ephemeral: true
+			});
+		}
+		const data = await interaction.guild?.settings?.warns.get({
+			member
+		});
+		if (!data?.exist || !data.person.warns.length) {
+			return interaction.reply({
+				content: `${member} has no warnings`,
+				ephemeral: true
+			});
+		}
+		const warns = data!.exist;
+		const warns_size = warns.warnlist.filter((e) => e?._id === member?.id)[0].warns.length;
+		const embed_color = color.Moderation;
+		const embed_title = `${member.user.tag}'s Warnings`;
+		const embed_description = `${member} has ${warns_size} warning(s)`;
+		const embed_fields = await Promise.all(
+			warns.warnlist
+				.filter((e) => e?._id === member?.id)[0]
+				.warns.map(async (e) => {
+					const mod = await this.container.client.users.fetch(e.mod);
+					const expiration = new Timestamp(e.expiration.getTime());
+					const time = new Timestamp(e.date.getTime());
+					return {
+						name: `Warn ID: ${e._id}`,
+						value:
+							`> Reason: ${e.reason}\n> Given on ${time.getShortDateTime()} (${time.getRelativeTime()})` +
+							`\n> Severity: \`${e.severity}\`` +
+							`\n> Expires ${expiration.getRelativeTime()} (${expiration.getShortDateTime()})` +
+							`\n> Moderator: ${mod} (\`${mod.id}\`)`,
+						inline: false
+					};
+				})
+		);
+		const embed_footer = `Active warnings of ${member.user.tag}`;
+		const embed_timestamp = new Date();
+		const embed_thumbnail = {
+			url: member.user.displayAvatarURL({
+				dynamic: true
+			})
+		};
+		const template = this.container.utils
+			.embed()
+			._color(embed_color)
+			._title(embed_title)
+			._description(embed_description)
+			._footer({ text: embed_footer })
+			._timestamp(embed_timestamp)
+			._thumbnail(embed_thumbnail.url);
+		const paginatedMessage = new RadonPaginatedMessageEmbedFields().setTemplate(template).setItems(embed_fields).setItemsPerPage(2).make();
+		await interaction.deferReply({
+			ephemeral: interaction.channel.visible()
+		});
+		await paginatedMessage.run(interaction, interaction.user).catch(() => null);
 	}
 
 	private autoSeverity(num: number) {

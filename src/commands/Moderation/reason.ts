@@ -43,14 +43,14 @@ export class UserCommand extends RadonCommand {
 			embeds: message.embeds
 		});
 		if (message.embeds[0].description.includes('**Action**: Warn')) {
-			//TODO add a check for the warn id and update reason
+			// TODO add a check for the warn id and update reason
 		}
 		return interaction.editReply({
 			content: `Successfully updated the reason!`
 		});
 	}
 
-	public override async registerApplicationCommands(registry: RadonCommand.Registry) {
+	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
 			{
 				name: this.name,

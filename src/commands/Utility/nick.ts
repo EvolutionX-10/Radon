@@ -28,115 +28,12 @@ export class UserCommand extends RadonCommand {
 				});
 		}
 	}
+
 	public override async contextMenuRun(interaction: RadonCommand.ContextMenuCommandInteraction) {
 		return this.decancer(interaction);
 	}
-	private async decancer(interaction: RadonCommand.ChatInputCommandInteraction | RadonCommand.ContextMenuCommandInteraction) {
-		const member = (interaction.options.getMember('member') || interaction.options.getMember('user')) as GuildMember;
-		if (!member) {
-			return interaction.reply({
-				content: 'No member found',
-				ephemeral: true
-			});
-		}
-		const reason = `Done by ${interaction.user.tag}`;
-		if (member.id === interaction.guild?.ownerId) {
-			return interaction.reply({
-				content: 'I cannot decancer the owner of the server',
-				ephemeral: true
-			});
-		}
-		const { result, content } = runAllChecks(interaction.member as GuildMember, member, 'nickname decancer');
-		if (!result) {
-			return interaction.reply({
-				content,
-				ephemeral: true
-			});
-		}
-		const name = member.displayName;
-		let nickname = banish(name).replace(/([^a-z ]+)/gim, '');
-		if (!nickname.length) nickname = 'Moderated Nickname';
-		if (nickname === name) {
-			return interaction.reply({
-				content: 'Nothing to decancer',
-				ephemeral: true
-			});
-		}
-		await member.setNickname(nickname, reason);
-		return interaction.reply(`${member.user.tag}'s display name has been decancered!`);
-	}
-	private async set(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const member = interaction.options.getMember('member') as GuildMember;
-		if (!member) {
-			return interaction.reply({
-				content: 'No member found',
-				ephemeral: true
-			});
-		}
-		const nickname = interaction.options.getString('nickname', true);
-		const reason =
-			(interaction.options.getString('reason', false) ? interaction.options.getString('reason', false) + ` (${interaction.user.tag})` : null) ??
-			`Done by ${interaction.user.tag}`;
-		if (member.id === interaction.guild?.ownerId) {
-			return interaction.reply({
-				content: 'I cannot set the nickname of the guild owner',
-				ephemeral: true
-			});
-		}
-		const { result, content } = runAllChecks(interaction.member as GuildMember, member, 'nickname set');
-		if (!result) {
-			return interaction.reply({
-				content,
-				ephemeral: true
-			});
-		}
-		if (member.displayName === nickname) {
-			return interaction.reply({
-				content: `${member}'s display name is already set to ${nickname}`,
-				ephemeral: true
-			});
-		}
-		await member.setNickname(nickname, reason);
-		return interaction.reply({
-			content: `Nickname \`${nickname}\` set for ${member.user.tag}`
-		});
-	}
-	private async clear(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const member = interaction.options.getMember('member') as GuildMember;
-		if (!member) {
-			return interaction.reply({
-				content: 'No member found',
-				ephemeral: true
-			});
-		}
-		const reason =
-			(interaction.options.getString('reason', false) ? interaction.options.getString('reason', false) + ` (${interaction.user.tag})` : null) ??
-			`Done by ${interaction.user.tag}`;
-		if (member.id === interaction.guild?.ownerId) {
-			return interaction.reply({
-				content: 'I cannot clear the nickname of the guild owner',
-				ephemeral: true
-			});
-		}
-		const { result, content } = runAllChecks(interaction.member as GuildMember, member, 'nickname clear');
-		if (!result) {
-			return interaction.reply({
-				content,
-				ephemeral: true
-			});
-		}
-		if (!member.nickname) {
-			return interaction.reply({
-				content: `${member} does not have a nickname`,
-				ephemeral: true
-			});
-		}
-		await member.setNickname(null, reason);
-		return interaction.reply({
-			content: `Nickname cleared for ${member.user.tag}`
-		});
-	}
-	public override async registerApplicationCommands(registry: RadonCommand.Registry) {
+
+	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
 			{
 				name: this.name,
@@ -216,5 +113,113 @@ export class UserCommand extends RadonCommand {
 				idHints: ['954251739077431346', '954249587047170048']
 			}
 		);
+	}
+
+	private async decancer(interaction: RadonCommand.ChatInputCommandInteraction | RadonCommand.ContextMenuCommandInteraction) {
+		const member = (interaction.options.getMember('member') || interaction.options.getMember('user')) as GuildMember;
+		if (!member) {
+			return interaction.reply({
+				content: 'No member found',
+				ephemeral: true
+			});
+		}
+		const reason = `Done by ${interaction.user.tag}`;
+		if (member.id === interaction.guild?.ownerId) {
+			return interaction.reply({
+				content: 'I cannot decancer the owner of the server',
+				ephemeral: true
+			});
+		}
+		const { result, content } = runAllChecks(interaction.member as GuildMember, member, 'nickname decancer');
+		if (!result) {
+			return interaction.reply({
+				content,
+				ephemeral: true
+			});
+		}
+		const name = member.displayName;
+		let nickname = banish(name).replace(/([^a-z ]+)/gim, '');
+		if (!nickname.length) nickname = 'Moderated Nickname';
+		if (nickname === name) {
+			return interaction.reply({
+				content: 'Nothing to decancer',
+				ephemeral: true
+			});
+		}
+		await member.setNickname(nickname, reason);
+		return interaction.reply(`${member.user.tag}'s display name has been decancered!`);
+	}
+
+	private async set(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const member = interaction.options.getMember('member') as GuildMember;
+		if (!member) {
+			return interaction.reply({
+				content: 'No member found',
+				ephemeral: true
+			});
+		}
+		const nickname = interaction.options.getString('nickname', true);
+		const reason =
+			(interaction.options.getString('reason', false) ? `${interaction.options.getString('reason', false)} (${interaction.user.tag})` : null) ??
+			`Done by ${interaction.user.tag}`;
+		if (member.id === interaction.guild?.ownerId) {
+			return interaction.reply({
+				content: 'I cannot set the nickname of the guild owner',
+				ephemeral: true
+			});
+		}
+		const { result, content } = runAllChecks(interaction.member as GuildMember, member, 'nickname set');
+		if (!result) {
+			return interaction.reply({
+				content,
+				ephemeral: true
+			});
+		}
+		if (member.displayName === nickname) {
+			return interaction.reply({
+				content: `${member}'s display name is already set to ${nickname}`,
+				ephemeral: true
+			});
+		}
+		await member.setNickname(nickname, reason);
+		return interaction.reply({
+			content: `Nickname \`${nickname}\` set for ${member.user.tag}`
+		});
+	}
+
+	private async clear(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const member = interaction.options.getMember('member') as GuildMember;
+		if (!member) {
+			return interaction.reply({
+				content: 'No member found',
+				ephemeral: true
+			});
+		}
+		const reason =
+			(interaction.options.getString('reason', false) ? `${interaction.options.getString('reason', false)} (${interaction.user.tag})` : null) ??
+			`Done by ${interaction.user.tag}`;
+		if (member.id === interaction.guild?.ownerId) {
+			return interaction.reply({
+				content: 'I cannot clear the nickname of the guild owner',
+				ephemeral: true
+			});
+		}
+		const { result, content } = runAllChecks(interaction.member as GuildMember, member, 'nickname clear');
+		if (!result) {
+			return interaction.reply({
+				content,
+				ephemeral: true
+			});
+		}
+		if (!member.nickname) {
+			return interaction.reply({
+				content: `${member} does not have a nickname`,
+				ephemeral: true
+			});
+		}
+		await member.setNickname(null, reason);
+		return interaction.reply({
+			content: `Nickname cleared for ${member.user.tag}`
+		});
 	}
 }

@@ -5,6 +5,7 @@ import { isModerator } from '#lib/utility';
 export class UserPermissionsPrecondition extends PermissionsPrecondition {
 	public override async handle(message: GuildMessage): PermissionsPrecondition.AsyncResult {
 		const roles = (await message.guild.settings?.roles.mods) ?? [];
+
 		return isModerator(message.member)
 			? this.ok()
 			: message.member.roles.cache.some((r) => roles.includes(r.id))

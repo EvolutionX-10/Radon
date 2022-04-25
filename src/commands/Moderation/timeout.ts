@@ -28,11 +28,11 @@ export class UserCommand extends RadonCommand {
 				content: ctn || `${vars.emojis.cross} I can't perform timeout on bots!`
 			});
 		let time = interaction.options.getString('duration', true);
-		if (!isNaN(+time)) time = time + 's';
+		if (!isNaN(Number(time))) time += 's';
 		const duration = ms(time);
 		if (isNaN(duration))
 			return interaction.editReply({
-				content: 'Invalid duration! Valid examples: `1d`, `1h`, `1m`, `1s`\nTo remove a timeout' + ' just put `0` as the duration.'
+				content: 'Invalid duration! Valid examples: `1d`, `1h`, `1m`, `1s`\nTo remove a timeout just put `0` as the duration.'
 			});
 		if (duration > 2419200000) {
 			return interaction.editReply({
@@ -73,7 +73,7 @@ export class UserCommand extends RadonCommand {
 		return interaction.editReply({ content });
 	}
 
-	public override async registerApplicationCommands(registry: RadonCommand.Registry) {
+	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
 			{
 				name: this.name,

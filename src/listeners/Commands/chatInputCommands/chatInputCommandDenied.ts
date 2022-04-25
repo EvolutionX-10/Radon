@@ -11,18 +11,19 @@ export class UserListener extends Listener<typeof Events.ChatInputCommandDenied>
 		}
 		return this.reply(interaction, content);
 	}
+
 	private async reply(interaction: CommandInteraction, content: string) {
 		if (interaction.deferred || interaction.replied) {
 			return interaction.editReply({
 				content
 			});
-		} else
-			return interaction.reply({
-				content,
-				ephemeral: true
-			});
+		}
+		return interaction.reply({
+			content,
+			ephemeral: true
+		});
 	}
 }
-type CooldownContext = {
+interface CooldownContext {
 	remaining: number;
-};
+}

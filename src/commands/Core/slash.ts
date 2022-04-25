@@ -1,4 +1,4 @@
-import { RadonCommand } from '#lib/structures';
+import { Confirmation, RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
 import { send } from '@sapphire/plugin-editable-commands';
@@ -55,7 +55,7 @@ export class UserCommand extends RadonCommand {
 			content += `${cmd.name} *(${cmd.id})*\n`;
 		});
 
-		//TODO Paginate it
+		// TODO Paginate it
 		return send(message, content);
 	}
 
@@ -69,10 +69,15 @@ export class UserCommand extends RadonCommand {
 		if (!cmd_name) return;
 		const cmd = global?.find((c) => c.name === cmd_name) || guild?.find((c) => c.name === cmd_name);
 		if (!cmd) return;
-
-		await cmd.delete();
-		return message.channel.send({
-			content: `Successfully deleted ${cmd.name} (${cmd.id})`
-		});
+		await new Confirmation({
+			onConfirm: async ({ i }) => {
+				await cmd.delete();
+				return i.update(`Deleted ${cmd.name}`);
+			},
+			onCancel: ({ i }) => {
+				return i.update(`Cancelled deletion of ${cmd.name} *(${cmd.id})*`);
+			},
+			content: `Are you sure you want to delete ${cmd.name} *(${cmd.id})*?`
+		}).run(message);
 	}
 }

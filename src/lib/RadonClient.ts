@@ -12,15 +12,18 @@ export class RadonClient extends SapphireClient {
 	public constructor() {
 		super(client_config);
 	}
+
 	public override async login(token?: string): Promise<string> {
 		ApplicationCommandRegistries.setDefaultBehaviorWhenNotIdentical(RegisterBehavior.Overwrite);
 		container.database = await this.connect();
 		return super.login(token);
 	}
+
 	public override async destroy(): Promise<void> {
 		await container.database.connection.close();
 		return super.destroy();
 	}
+
 	private async connect() {
 		return mongoose.connect(process.env.MONGO!);
 	}

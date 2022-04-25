@@ -24,13 +24,12 @@ export class UserCommand extends RadonCommand {
 				ephemeral: true
 			});
 
-		let content =
-			`${vars.emojis.confirm} ${user} [${user.username}] has ` + `been unbanned ${reason ? `for the following reason: ${reason}` : ''}`;
+		let content = `${vars.emojis.confirm} ${user} [${user.username}] has been unbanned ${reason ? `for the following reason: ${reason}` : ''}`;
 		await interaction.guild.bans.remove(user, reason);
 		//* Sending DM to the user
 		await user
 			.send({
-				content: `You have been unbanned from ${interaction.guild.name}` + `\n${reason ? `Reason: ${reason}` : ''}`
+				content: `You have been unbanned from ${interaction.guild.name}\n${reason ? `Reason: ${reason}` : ''}`
 			})
 			.catch(() => (content += `\n${vars.emojis.cross} Couldn't DM user!`));
 		const embed = this.container.utils
@@ -55,7 +54,8 @@ export class UserCommand extends RadonCommand {
 			ephemeral: true
 		});
 	}
-	public override async registerApplicationCommands(registry: RadonCommand.Registry) {
+
+	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
 			{
 				name: this.name,

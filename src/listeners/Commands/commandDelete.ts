@@ -7,7 +7,7 @@ import { ApplyOptions } from '@sapphire/decorators';
 	event: Events.MessageDelete
 })
 export class UserListener extends Listener<typeof Events.MessageDelete> {
-	async run(message: Message) {
+	public override async run(message: Message) {
 		if (!message.guild) return;
 
 		const response = get(message);

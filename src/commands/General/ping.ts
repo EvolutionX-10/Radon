@@ -31,7 +31,7 @@ export class UserCommand extends RadonCommand {
 		});
 	}
 
-	public override async registerApplicationCommands(registry: RadonCommand.Registry) {
+	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
 			{
 				name: this.name,

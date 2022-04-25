@@ -20,11 +20,11 @@ export class UserCommand extends RadonCommand {
 		const contains = interaction.options.getString('contains', false);
 		const user = interaction.options.getUser('user', false);
 		let dels = 0;
-		const content = `No messages were deleted! Try filtering correctly\n` + `Note that the messages are older than 2 weeks will NOT be deleted!`;
+		const content = `No messages were deleted! Try filtering correctly\nNote that the messages are older than 2 weeks will NOT be deleted!`;
 		if (count > 100) {
 			const arr = summableArray(count, 100);
-			const p = new Promise((resolve: (value: void) => void) => {
-				arr.forEach(async (num, i, ar) => {
+			const p = new Promise((resolve: (value: unknown) => void) => {
+				arr.forEach((num, i, ar) => {
 					setTimeout(async () => {
 						const messages = (
 							await channel.messages.fetch({
@@ -36,11 +36,12 @@ export class UserCommand extends RadonCommand {
 							.filter((m) => (user ? m.author.id === user.id : true));
 						const { size } = await channel.bulkDelete(messages, true);
 						dels += size;
-						if (i === ar.length - 1) resolve();
+						if (i === ar.length - 1) resolve('done');
 					}, 5000 * i);
 				});
 			});
-			p.then(async () => {
+
+			void p.then(async () => {
 				if (dels === 0) {
 					await interaction.editReply(content);
 				} else
@@ -67,7 +68,8 @@ export class UserCommand extends RadonCommand {
 				});
 		}
 	}
-	public override async registerApplicationCommands(registry: RadonCommand.Registry) {
+
+	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
 			{
 				name: this.name,

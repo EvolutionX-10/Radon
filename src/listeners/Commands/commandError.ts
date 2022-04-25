@@ -5,7 +5,7 @@ import { send } from '@sapphire/plugin-editable-commands';
 	event: Events.MessageCommandError
 })
 export class UserListener extends Listener<typeof Events.MessageCommandError> {
-	async run(error: UserError, { message }: MessageCommandErrorPayload) {
+	public override async run(error: UserError, { message }: MessageCommandErrorPayload) {
 		if (error instanceof UserError) {
 			if (!Reflect.get(Object(error.context), 'silent'))
 				return send(message, {

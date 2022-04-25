@@ -12,6 +12,7 @@ export class UserListener extends Listener {
 		const isvoted = await this.hasVoted(interaction);
 		if (!isvoted && chance(40)) await this.addVoteMsg(interaction);
 	}
+
 	private async hasVoted(interaction: CommandInteraction) {
 		const { data }: { data: vote } = await axios({
 			url: `https://top.gg/api/bots/944833303226236989/check?userId=${interaction.user.id}`,
@@ -21,8 +22,9 @@ export class UserListener extends Listener {
 			}
 		});
 		if (data.voted === 0) return false;
-		else return true;
+		return true;
 	}
+
 	private async addVoteMsg(interaction: CommandInteraction) {
 		const embed = new MessageEmbed()
 			.setColor(color.General)

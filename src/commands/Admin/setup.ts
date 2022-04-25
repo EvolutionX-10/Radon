@@ -8,6 +8,7 @@ import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import { container } from '@sapphire/framework';
 import { ButtonInteraction, Message, OverwriteResolvable, Permissions, Role } from 'discord.js';
+
 @ApplyOptions<RadonCommand.Options>({
 	cooldownDelay: sec(60),
 	cooldownLimit: 3,
@@ -19,6 +20,7 @@ export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		if (!interaction.guild) return;
 		const row = this.container.utils.row();
+
 		if (
 			interaction.channel?.type === 'GUILD_TEXT' &&
 			interaction.channel.permissionsFor(interaction.guild?.roles.everyone as Role).has('VIEW_CHANNEL')
@@ -29,6 +31,7 @@ export class UserCommand extends RadonCommand {
 			});
 			return;
 		}
+
 		let stage = 0;
 		let msg = (await interaction.reply({
 			embeds: [this.welcome()],
@@ -40,18 +43,22 @@ export class UserCommand extends RadonCommand {
 				])
 			]
 		})) as Message;
+
 		const collector = msg.createMessageComponentCollector({
 			time: mins(3),
 			componentType: 'BUTTON'
 		});
-		//--------------------------------------
+
+		// --------------------------------------
 		const answers: string[] = [];
 		const modRoles: string[] = [];
 		const adminRoles: string[] = [];
 		let modLogChannel = '';
-		//------------------------------------
+		// --------------------------------------
+
 		collector.on('collect', async (i) => {
 			await i.deferUpdate({ fetchReply: true });
+
 			if (i.user.id !== interaction.user.id) {
 				await i.followUp({
 					content: `This isn't for you mate`,
@@ -59,6 +66,7 @@ export class UserCommand extends RadonCommand {
 				});
 				return;
 			}
+
 			switch (i.customId) {
 				case 'not-ready':
 					await msg.edit({
@@ -68,10 +76,12 @@ export class UserCommand extends RadonCommand {
 					});
 					collector.stop('not-ready');
 					return;
+
 				case 'start':
 					collector.resetTimer();
 					await this.step1(i, msg, stage);
 					break;
+
 				case 'community':
 				case 'casual':
 					answers.push(i.customId);
@@ -79,11 +89,13 @@ export class UserCommand extends RadonCommand {
 					stage = 1;
 					msg = await this.step2(i, msg, stage);
 					break;
+
 				case 'retry_mod':
 					collector.resetTimer();
 					modRoles.length = 0;
 					msg = await this.step2(i, msg, stage);
 					break;
+
 				case 'confirm_modRoles':
 					if (modRoles.length === 0) {
 						await i.followUp({
@@ -98,28 +110,33 @@ export class UserCommand extends RadonCommand {
 					stage = 2;
 					msg = await this.step3(i, msg, stage);
 					break;
+
 				case 'retry_admin':
 					collector.resetTimer();
 					adminRoles.length = 0;
 					msg = await this.step3(i, msg, stage);
 					break;
+
 				case 'confirm_adminRoles':
 					collector.resetTimer();
 					stage = 3;
 					msg = await this.step4(i, msg, stage);
 					break;
+
 				case 'retry_modlog':
 					collector.resetTimer();
 					modLogChannel = '';
 					msg = await this.step4(i, msg, stage);
 					break;
+
 				case 'confirm_modlog':
 					stage = 4;
 					collector.stop('Complete');
 					break;
+
 				case 'make_modlog':
 					if (!interaction.guild?.me?.permissions.has(Permissions.FLAGS.MANAGE_CHANNELS)) {
-						i.followUp({
+						await i.followUp({
 							content: `I don't have the permissions to create channels!\nPlease give me the Manage Channels permission!`,
 							ephemeral: true
 						});
@@ -130,6 +147,7 @@ export class UserCommand extends RadonCommand {
 					stage = 4;
 					msg = await this.step5(i, msg, stage);
 					break;
+
 				case 'public_modlog':
 				case 'private_modlog':
 					modLogChannel =
@@ -149,11 +167,13 @@ export class UserCommand extends RadonCommand {
 						)?.id ?? '';
 					collector.stop('Complete');
 					stage = 5;
-					return;
+					break;
 			}
 		});
+
 		collector.on('end', async (_c, r) => {
 			if (r === 'not-ready') return;
+
 			if (r === 'Complete') {
 				const data = await guildSettingsDB.findByIdAndUpdate(
 					interaction.guildId,
@@ -201,6 +221,7 @@ export class UserCommand extends RadonCommand {
 					._footer({
 						text: `${data ? 'Saved Successfully' : 'Created Successfully'}`
 					});
+
 				await msg.edit({
 					content: `Setup completed!`,
 					embeds: [final],
@@ -208,17 +229,20 @@ export class UserCommand extends RadonCommand {
 				});
 				return;
 			}
+
 			await msg.edit({
 				content: `Setup failed!`,
 				embeds: [],
 				components: []
 			});
 		});
-		const collector2 = msg.channel.createMessageCollector({
+
+		const msg_collector = msg.channel.createMessageCollector({
 			filter: (m) => m.author.id === interaction.user.id,
 			time: mins(3)
 		});
-		collector2.on('collect', async (m) => {
+
+		msg_collector.on('collect', async (m) => {
 			if (stage === 1) {
 				const role = m.mentions.roles.first();
 				await m.delete().catch(() => null);
@@ -229,14 +253,15 @@ export class UserCommand extends RadonCommand {
 					msg.embeds[0].fields[1].value === 'None'
 						? (msg.embeds[0].fields[1].value = `${role}`)
 						: (msg.embeds[0].fields[1].value += `, ${role}`);
+
 					await msg.edit({
 						embeds: msg.embeds,
 						components: msg.components
 					});
 				}
-				collector2.resetTimer();
-				return;
+				return msg_collector.resetTimer();
 			}
+
 			if (stage === 2) {
 				const role = m.mentions.roles.first();
 				await m.delete().catch(() => null);
@@ -253,26 +278,26 @@ export class UserCommand extends RadonCommand {
 						components: msg.components
 					});
 				}
-				collector2.resetTimer();
-				return;
+				return msg_collector.resetTimer();
 			}
+
 			if (stage === 3) {
 				const channel = m.mentions.channels.first();
 				if (!channel || !channel.isText() || channel.type !== 'GUILD_TEXT') return;
 				await m.delete().catch(() => null);
 				modLogChannel = channel.id;
-				msg.embeds[0].fields[1].value = `${channel}`;
+				msg.embeds[0].fields[1].value = `<#${channel.id}>`;
 				await msg.edit({
 					embeds: msg.embeds,
 					components: msg.components
 				});
-				collector2.resetTimer();
-				return;
+				return msg_collector.resetTimer();
 			}
-			collector2.stop('done');
+			msg_collector.stop('done');
 		});
+
 		async function makeModlog(is_private: boolean) {
-			//TODO change the string and use enums according to v14
+			// TODO change the string and use enums according to v14
 			let permissionOverwrites: OverwriteResolvable[] = [];
 			if (is_private) {
 				permissionOverwrites = [
@@ -323,9 +348,9 @@ export class UserCommand extends RadonCommand {
 			});
 			return moglog;
 		}
-		return;
 	}
-	public override async registerApplicationCommands(registry: RadonCommand.Registry) {
+
+	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
 			{
 				name: this.name,
@@ -347,6 +372,7 @@ export class UserCommand extends RadonCommand {
 			._title('Welcome to Radon!')
 			._description(`This is the setup wizard for Radon.\nThis will guide you through the process of setting up Radon.`);
 	}
+
 	/**
 	 * is this guild a community guild or not?
 	 */
@@ -356,8 +382,7 @@ export class UserCommand extends RadonCommand {
 		prevMessage.embeds[0].setFields([
 			{
 				name: `Is this a community server?`,
-				value:
-					`If this server was made for a community or a server that was made for casual use cases\n` + `Please press the appropriate button`
+				value: 'If this server was made for a community or a server that was made for casual use cases\n Please press the appropriate button'
 			}
 		]);
 		await prevMessage.edit({
@@ -371,6 +396,7 @@ export class UserCommand extends RadonCommand {
 		});
 		return btnInt;
 	}
+
 	/**
 	 * enter mod roles
 	 */
@@ -400,6 +426,7 @@ export class UserCommand extends RadonCommand {
 			]
 		});
 	}
+
 	/**
 	 * enter admin roles
 	 */
@@ -430,6 +457,7 @@ export class UserCommand extends RadonCommand {
 			]
 		});
 	}
+
 	/**
 	 * enter modlog channel
 	 */
@@ -460,6 +488,7 @@ export class UserCommand extends RadonCommand {
 			]
 		});
 	}
+
 	/**
 	 * is modlog private or public?
 	 */

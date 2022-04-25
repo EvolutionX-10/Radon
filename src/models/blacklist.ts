@@ -5,6 +5,7 @@ import { container } from '@sapphire/framework';
 class blacklist {
 	@prop({ required: true })
 	public _id!: string;
+
 	@prop({ required: true })
 	public reason!: string;
 }
