@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.8.0](https://github.com/EvolutionX-10/Radon/compare/v1.7.0...v1.8.0) (2022-04-25)
+
+
+### Features
+
+* confirmations, easy button handling ([f67efe7](https://github.com/EvolutionX-10/Radon/commit/f67efe7002f708880efcc7004acbf749104546fd))
+* **confirmations:** now supports custom buttons with custom values ([f69e47d](https://github.com/EvolutionX-10/Radon/commit/f69e47df2ca1d7500fe2c75163457f96d2a5dff7))
+* **eval:** hides sensitive info, improved results, better time display ([a6d0775](https://github.com/EvolutionX-10/Radon/commit/a6d0775d6bdbc51d524c178796d217ba249e4f16))
+* **slash:** added flags to improve response on slash commands, and other cmds ([e3baf74](https://github.com/EvolutionX-10/Radon/commit/e3baf748f7f7bf1cf6cdb41b3628444fdc1b7d67))
+
+
+### Bug Fixes
+
+* **eval:** comments are now properly parsed and does not disturb function ([070c325](https://github.com/EvolutionX-10/Radon/commit/070c325ab6a82717efba4a49dbf999e1d7b9c470))
+
 ## [1.7.0](https://github.com/EvolutionX-10/Radon/compare/v1.6.1...v1.7.0) (2022-04-19)
 
 
