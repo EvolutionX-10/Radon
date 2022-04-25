@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { regExpEsc, isNullishOrEmpty } from '@sapphire/utilities';
 
 let sensitivePattern: string | RegExp;
