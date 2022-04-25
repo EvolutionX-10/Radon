@@ -77,7 +77,7 @@ export class UserCommand extends RadonCommand {
 		if (code.includes('await')) flags.async = true;
 		const ar = code.split(';');
 		const last = ar.pop();
-		if (flags.async) code = `(async () => {\n${ar.join(';\n')}\nreturn ${last?.trim() ?? 'void'}})();`;
+		if (flags.async) code = `(async () => {\n${ar.join(';\n')}\nreturn ${last?.trim() ?? 'void'}\n\n})();`;
 		// @ts-ignore
 		const msg = message;
 		// @ts-ignore
