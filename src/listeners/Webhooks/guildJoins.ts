@@ -17,10 +17,7 @@ export class UserListener extends Listener {
 		await guild.members.fetch();
 		const bots = guild.members.cache.filter((m) => m.user.bot).size;
 		const humans = guild.members.cache.filter((m) => !m.user.bot).size;
-		if (bots >= humans && !guild.members.cache.has('697795666373640213')) {
-			await guild.leave();
-			return;
-		}
+
 		guild.settings = new GuildSettings(guild);
 		await this.container.client.guilds.fetch();
 		const channel = (await this.container.client.channels.fetch('950646167715328000').catch(() => null)) as TextChannel;
@@ -36,7 +33,7 @@ export class UserListener extends Listener {
 		const description =
 			`Guild name: ${guild.name} \`[${guild.id}]\`\n` +
 			`Created at ${createDate.getLongDateTime()} (${createDate.getRelativeTime()})\n` +
-			`Owner: ${owner} \`(${owner.id})\`\n` +
+			`Owner: ${owner} \`(${owner.id})\` [${owner.tag}]\n` +
 			`Total Members: ${guild.memberCount}\n` +
 			`Bots: ${bots}\n` +
 			`Users: ${humans}\n` +
