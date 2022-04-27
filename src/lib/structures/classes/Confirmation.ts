@@ -27,16 +27,15 @@ export class Confirmation {
 		}
 
 		// Thanks @jacoobes
-		this.buttons = ((x: number) =>
-			Array(x)
-				.fill(null)
-				.map((_, i) =>
-					new Button()
-						._customId(buttons[i].customId)
-						._label(buttons[i].label ?? '')
-						._emoji(buttons[i].emoji ?? '')
-						._style(buttons[i].style)
-				))(2);
+		this.buttons = Array(2)
+			.fill(null)
+			.map((_, i) =>
+				new Button()
+					._customId(buttons[i].customId)
+					._label(buttons[i].label ?? '')
+					._emoji(buttons[i].emoji ?? '')
+					._style(buttons[i].style)
+			);
 		return this;
 	}
 
