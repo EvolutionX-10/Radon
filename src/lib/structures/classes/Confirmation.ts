@@ -26,18 +26,17 @@ export class Confirmation {
 			throw new Error('Confirmation requires at least 2 buttons');
 		}
 
-		this.buttons = [
-			new Button()
-				._customId(buttons[0].customId)
-				._label(buttons[0].label ?? '')
-				._emoji(buttons[0].emoji ?? '')
-				._style(buttons[0].style),
-			new Button()
-				._customId(buttons[1].customId)
-				._label(buttons[1].label ?? '')
-				._emoji(buttons[1].emoji ?? '')
-				._style(buttons[1].style)
-		];
+		// Thanks @jacoobes
+		this.buttons = ((x: number) =>
+			Array(x)
+				.fill(null)
+				.map((_, i) =>
+					new Button()
+						._customId(buttons[i].customId)
+						._label(buttons[i].label ?? '')
+						._emoji(buttons[i].emoji ?? '')
+						._style(buttons[i].style)
+				))(2);
 		return this;
 	}
 
