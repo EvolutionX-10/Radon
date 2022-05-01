@@ -15,6 +15,12 @@ import { uptime } from 'node:os';
 export class UserCommand extends RadonCommand {
 	public override chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		return interaction.reply({
+			content: 'Use /about me instead!',
+			ephemeral: true
+		});
+		// @ts-ignore this method is deprecated
+		// eslint-disable-next-line no-unreachable
+		return interaction.reply({
 			embeds: [this.buildEmbed()],
 			ephemeral: true
 		});

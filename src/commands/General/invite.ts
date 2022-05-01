@@ -10,6 +10,12 @@ import { ApplyOptions } from '@sapphire/decorators';
 })
 export class UserCommand extends RadonCommand {
 	public override chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
+		return interaction.reply({
+			content: 'Use /about me instead!',
+			ephemeral: true
+		});
+		// @ts-ignore this method is deprecated
+		// eslint-disable-next-line no-unreachable
 		const invite = this.container.client.generateInvite({
 			scopes: ['applications.commands', 'bot'],
 			permissions: 543276137727n
