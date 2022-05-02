@@ -1,6 +1,6 @@
 process.env.NODE_ENV ??= 'development'; // TODO see if this is loaded first
 
-import { BitFieldResolvable, ClientOptions, IntentsString, MessageMentionOptions, PartialTypes, Intents } from 'discord.js';
+import { BitFieldResolvable, ClientOptions, IntentsString, MessageMentionOptions, PartialTypes, Intents, SweeperOptions } from 'discord.js';
 import { BucketScope, ClientLoggerOptions, CooldownOptions, LogLevel } from '@sapphire/framework';
 import { Time } from '@sapphire/time-utilities';
 import { vars } from '#vars';
@@ -25,6 +25,44 @@ export const config: config = {
 	partials: ['GUILD_MEMBER', 'MESSAGE', 'USER', 'CHANNEL'],
 	logger: {
 		level: process.env.NODE_ENV === 'development' ? LogLevel.Debug : LogLevel.Info
+	},
+	sweepers: {
+		bans: {
+			interval: 300,
+			filter: () => null
+		},
+		applicationCommands: {
+			interval: 300,
+			filter: () => null
+		},
+		emojis: {
+			interval: 60,
+			filter: () => null
+		},
+		invites: {
+			interval: 120,
+			filter: () => null
+		},
+		messages: {
+			interval: 120,
+			lifetime: 360
+		},
+		presences: {
+			interval: 5,
+			filter: () => null
+		},
+		reactions: {
+			interval: 5,
+			filter: () => null
+		},
+		voiceStates: {
+			interval: 60,
+			filter: () => null
+		},
+		threads: {
+			interval: 3600,
+			lifetime: 14400
+		}
 	}
 };
 interface config {
@@ -33,6 +71,7 @@ interface config {
 	mentions: MessageMentionOptions;
 	partials: PartialTypes[];
 	logger: ClientLoggerOptions;
+	sweepers: SweeperOptions;
 }
 export const client_config: ClientOptions = {
 	intents: config.intents,
