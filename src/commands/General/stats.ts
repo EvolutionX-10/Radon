@@ -26,6 +26,12 @@ export class UserCommand extends RadonCommand {
 		});
 	}
 
+	public override messageRun(message: RadonCommand.Message) {
+		return message.channel.send({
+			embeds: [this.buildEmbed()]
+		});
+	}
+
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
 			{
