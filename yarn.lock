@@ -187,13 +187,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@favware/zalgo@npm:3.1.3":
-  version: 3.1.3
-  resolution: "@favware/zalgo@npm:3.1.3"
-  checksum: 3e7b75d5f1bfc3cc5124ee095b97312f4df6cc2f0a4fcfc4535407a666a1f7866bb8cc15ec286efec43570b7da0c8140a2d2af91c20dada22eb5912f77405f53
-  languageName: node
-  linkType: hard
-
 "@gar/promisify@npm:^1.1.3":
   version: 1.1.3
   resolution: "@gar/promisify@npm:1.1.3"
@@ -1550,6 +1543,13 @@ __metadata:
     readable-stream: ^3.0.2
     typedarray: ^0.0.6
   checksum: d7f75d48f0ecd356c1545d87e22f57b488172811b1181d96021c7c4b14ab8855f5313280263dca44bb06e5222f274d047da3e290a38841ef87b59719bde967c7
+  languageName: node
+  linkType: hard
+
+"confusables@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "confusables@npm:1.1.0"
+  checksum: b7253c45a3f9502866e8feb665ada996d0226081a5afa6b50876b36fa402b307e3f28045bcb35cfd85050490b37e36a4f5852e3800ec49a3ffad188adeb72191
   languageName: node
   linkType: hard
 
@@ -4533,7 +4533,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "radon@workspace:."
   dependencies:
-    "@favware/zalgo": 3.1.3
     "@sapphire/decorators": 4.3.4
     "@sapphire/discord-utilities": 2.10.3
     "@sapphire/discord.js-utilities": 4.9.4
@@ -4561,6 +4560,7 @@ __metadata:
     "@typescript-eslint/parser": 5.18.0
     axios: 0.26.1
     colorette: 2.0.16
+    confusables: ^1.1.0
     cz-conventional-changelog: 3.3.0
     discord-api-types: 0.26.1
     discord.js: 13.6.0

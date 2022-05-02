@@ -4,7 +4,7 @@ import { runAllChecks } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Constants, GuildMember } from 'discord.js';
-import { banish } from '@favware/zalgo';
+import { clean } from 'confusables';
 @ApplyOptions<RadonCommand.Options>({
 	description: `Manage nicknames`,
 	requiredClientPermissions: ['MANAGE_NICKNAMES'],
@@ -138,11 +138,11 @@ export class UserCommand extends RadonCommand {
 			});
 		}
 		const name = member.displayName;
-		let nickname = banish(name).replace(/([^a-z ]+)/gim, '');
+		let nickname = clean(name).replace(/[^a-z 0-9]+/gi, '');
 		if (!nickname.length) nickname = 'Moderated Nickname';
 		if (nickname === name) {
 			return interaction.reply({
-				content: 'Nothing to decancer',
+				content: `No changes were made to ${name}`,
 				ephemeral: true
 			});
 		}
