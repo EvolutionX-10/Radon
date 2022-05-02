@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.9.0](https://github.com/EvolutionX-10/Radon/compare/v1.8.0...v1.9.0) (2022-05-02)
+
+
+### Features
+
+* **me:** about me is here! combines invite and stats ([ace9338](https://github.com/EvolutionX-10/Radon/commit/ace933863acaa84373e22d834a8301b45f6b3161))
+* **me:** deprecated use of /stats and /invite ([2545ce8](https://github.com/EvolutionX-10/Radon/commit/2545ce829bf90cd54ff4db6715ef3c662d6f29f0))
+
 ## [1.8.0](https://github.com/EvolutionX-10/Radon/compare/v1.7.0...v1.8.0) (2022-04-25)
 
 
