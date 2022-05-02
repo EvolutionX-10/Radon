@@ -75,7 +75,7 @@ export abstract class RadonCommand extends SubCommandPluginCommand<RadonCommand.
 				break;
 			default:
 				throw new Error(
-					`AviCommand[${this.name}]: "permissionLevel" was specified as an invalid permission level (${options.permissionLevel}).`
+					`RadonCommand[${this.name}]: "permissionLevel" was specified as an invalid permission level (${options.permissionLevel}).`
 				);
 		}
 
