@@ -30,6 +30,18 @@ export class UserListener extends Listener {
 			guild.me ??
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 			(await guild.members.fetch(this.container.client.user!.id));
+		let perms = me.permissions
+			.toArray()
+			.map((e) =>
+				e
+					.split(`_`)
+					.map((i) => i[0] + i.match(/\B(\w+)/)?.[1]?.toLowerCase())
+					.join(` `)
+			)
+			.filter((f) => f.match(/mem|mana|min|men/gim))
+			?.sort();
+		if (perms.includes('Administrator')) perms = ['Administrator'];
+
 		const description =
 			`Guild name: ${guild.name} \`[${guild.id}]\`\n` +
 			`Created at ${createDate.getLongDateTime()} (${createDate.getRelativeTime()})\n` +
@@ -40,7 +52,8 @@ export class UserListener extends Listener {
 			`Channels: ${guild.channels.cache.size}\n` +
 			`Roles: ${guild.roles.cache.size}\n` +
 			`Partnered: \`${guild.partnered}\` │ Verified: \`${guild.verified}\`\n` +
-			`Permissions: \`${me.permissions.bitfield}\``;
+			`Permissions: ${perms.map((p) => `\`${p}\``).join('|') || 'No key permissions!'}`;
+
 		await webhook.send({
 			username: 'Radon Joins',
 			avatarURL: this.container.client.user?.displayAvatarURL() ?? '',
@@ -57,10 +70,7 @@ export class UserListener extends Listener {
 					color: color.System,
 					timestamp: Date.now()
 				}
-			],
-			allowedMentions: {
-				parse: ['users']
-			}
+			]
 		});
 	}
 }
