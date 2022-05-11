@@ -91,7 +91,7 @@
 		"axios": "0.26.1",
 		"colorette": "2.0.16",
 		"confusables": "^1.1.0",
-		"discord-api-types": "0.26.1",
+		"discord-api-types": "0.32.1",
 		"discord.js": "13.6.0",
 		"dotenv-cra": "3.0.2",
 		"figlet": "1.5.2",
