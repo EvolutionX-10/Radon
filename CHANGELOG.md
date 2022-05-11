@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.10.0](https://github.com/EvolutionX-10/Radon/compare/v1.9.0...v1.10.0) (2022-05-11)
+
+
+### Features
+
+* completely removed stats and invite ([6de14a7](https://github.com/EvolutionX-10/Radon/commit/6de14a7151f7b332fac626d8307e75431d2d86fa))
+* **join:** now shows perms in readable manner ([67a7f96](https://github.com/EvolutionX-10/Radon/commit/67a7f962e843b515cc563fefa4042e597558def1))
+* **stats:** made stats an owner only command as msg cmd ([5c38a2a](https://github.com/EvolutionX-10/Radon/commit/5c38a2adb073c467b29913717d1a531a57270e08))
+
 ## [1.9.0](https://github.com/EvolutionX-10/Radon/compare/v1.8.0...v1.9.0) (2022-05-02)
 
 
