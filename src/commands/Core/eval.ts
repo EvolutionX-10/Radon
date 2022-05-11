@@ -86,6 +86,8 @@ export class UserCommand extends RadonCommand {
 		const { guild } = message;
 		// @ts-ignore
 		const { channel } = message;
+		// @ts-ignore
+		const { container: ctn } = this;
 
 		let success: boolean;
 		let result: unknown;
