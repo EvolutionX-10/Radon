@@ -1,7 +1,6 @@
 import { RadonCommand, Timestamp } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { color } from '#lib/utility';
-import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import { version as sapphireVersion } from '@sapphire/framework';
 import { roundNumber } from '@sapphire/utilities';
@@ -13,36 +12,10 @@ import { uptime } from 'node:os';
 	permissionLevel: PermissionLevels.Everyone
 })
 export class UserCommand extends RadonCommand {
-	public override chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
-		return interaction.reply({
-			content: 'Use /about me instead!',
-			ephemeral: true
-		});
-		// @ts-ignore this method is deprecated
-		// eslint-disable-next-line no-unreachable
-		return interaction.reply({
-			embeds: [this.buildEmbed()],
-			ephemeral: true
-		});
-	}
-
 	public override messageRun(message: RadonCommand.Message) {
 		return message.channel.send({
 			embeds: [this.buildEmbed()]
 		});
-	}
-
-	public override registerApplicationCommands(registry: RadonCommand.Registry) {
-		registry.registerChatInputCommand(
-			{
-				name: this.name,
-				description: this.description
-			},
-			{
-				guildIds: vars.guildIds,
-				idHints: ['950027999242256424', '951679298840965160']
-			}
-		);
 	}
 
 	private buildEmbed() {
