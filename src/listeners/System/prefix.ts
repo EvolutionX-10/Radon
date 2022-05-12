@@ -1,4 +1,3 @@
-import { modesDB } from '#models';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Events, Listener, ListenerOptions } from '@sapphire/framework';
 import type { ExcludeEnum, Message } from 'discord.js';
@@ -10,8 +9,8 @@ import type { ActivityTypes } from 'discord.js/typings/enums';
 })
 export class UserListener extends Listener {
 	public override async run() {
-		const mode = await modesDB.findById('61cf428394b75db75b5dafb4');
-		const ownerMode = mode?.ownerMode;
+		const ownerMode = (await this.container.db.get('ownerMode')) === 'true' ? true : false;
+
 		const check = () => {
 			const current = this.container.client.user?.presence.status;
 			const newstatus: status = ownerMode ? 'invisible' : 'dnd';

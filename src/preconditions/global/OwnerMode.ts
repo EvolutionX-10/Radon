@@ -1,4 +1,3 @@
-import { modesDB } from '#models';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Precondition } from '@sapphire/framework';
@@ -21,8 +20,7 @@ export class UserPrecondition extends Precondition {
 	}
 
 	private async inOwnerMode(id: string) {
-		const database = await modesDB.findById('61cf428394b75db75b5dafb4');
-		const mode = database?.ownerMode;
+		const mode = (await this.container.db.get('ownerMode')) === 'true' ? true : false;
 		if (!mode) return this.ok();
 
 		return vars.owners.includes(id)

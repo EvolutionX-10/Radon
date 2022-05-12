@@ -1,4 +1,3 @@
-import { modesDB } from '#models';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework';
@@ -29,18 +28,9 @@ export class ButtonHandler extends InteractionHandler {
 	public override async parse(interaction: ButtonInteraction) {
 		if (interaction.customId !== 'radon-maintenance') return this.none();
 		await interaction.deferUpdate({ fetchReply: true });
-		const id = '61cf428394b75db75b5dafb4';
-		const mode = await modesDB.findById(id);
-		const ownerMode = mode?.ownerMode as boolean;
-		if (ownerMode) {
-			await modesDB.findByIdAndUpdate(id, {
-				ownerMode: false
-			});
-		} else {
-			await modesDB.findByIdAndUpdate(id, {
-				ownerMode: true
-			});
-		}
+
+		const ownerMode = (await this.container.db.get('ownerMode')) === 'true' ? true : false;
+		ownerMode ? await this.container.db.set('ownerMode', 'false') : await this.container.db.set('ownerMode', 'true');
 		const description = ownerMode ? '```\nStatus: Disabled\n```' : '```\nStatus: Enabled\n```';
 		const msg = interaction.message as Message;
 		return this.some({ ownerMode, msg, description });
