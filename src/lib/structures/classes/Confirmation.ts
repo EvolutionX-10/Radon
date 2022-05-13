@@ -71,7 +71,8 @@ export class Confirmation {
 				content: this.options.content || null,
 				embeds: this.options?.content ? [] : [embed],
 				components: [row],
-				fetchReply: true
+				fetchReply: true,
+				ephemeral: this.options.ephemeral
 			})) as Message;
 		}
 
@@ -89,7 +90,7 @@ export class Confirmation {
 				});
 				return;
 			}
-			await msg.edit({ components: [row] });
+			await i.update({ components: [row] });
 			if (i.customId === this.buttons[0].customId) {
 				this.options.onConfirm({ i, msg });
 			} else if (i.customId === this.buttons[1].customId) {
@@ -122,6 +123,7 @@ interface ConfirmationOptions {
 	time?: number;
 	color?: ColorResolvable;
 	wrongUserResponse?: string;
+	ephemeral?: boolean;
 
 	onConfirm: (payload: payload) => void;
 	onCancel: (payload: payload) => void;
