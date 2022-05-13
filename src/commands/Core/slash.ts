@@ -72,10 +72,10 @@ export class UserCommand extends RadonCommand {
 		await new Confirmation({
 			onConfirm: async ({ i }) => {
 				await cmd.delete();
-				return i.update(`Deleted ${cmd.name}`);
+				return i.editReply(`Deleted ${cmd.name}`);
 			},
 			onCancel: ({ i }) => {
-				return i.update(`Cancelled deletion of ${cmd.name} *(${cmd.id})*`);
+				return i.editReply(`Cancelled deletion of ${cmd.name} *(${cmd.id})*`);
 			},
 			content: `Are you sure you want to delete ${cmd.name} *(${cmd.id})*?`
 		}).run(message);
