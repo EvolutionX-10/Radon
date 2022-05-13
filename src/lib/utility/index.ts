@@ -1,5 +1,4 @@
 export * from './functions/duration.js';
-export * from './functions/error.js';
 export * from './functions/pickRandom.js';
 export * from './functions/time.js';
 export * from './functions/permissions.js';
