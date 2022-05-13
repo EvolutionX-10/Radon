@@ -20,9 +20,6 @@ class guildSettings {
 
 	@prop({ required: false })
 	public modLogChannel?: string;
-
-	@prop({ required: true })
-	public isCommunity!: boolean;
 }
 const schema = buildSchema(guildSettings);
 export default container.database.model('guildSettings', schema, 'guildSettings');

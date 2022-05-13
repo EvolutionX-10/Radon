@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
@@ -11,7 +10,7 @@ import { ButtonInteraction, Message, OverwriteResolvable, Permissions, Role } fr
 
 @ApplyOptions<RadonCommand.Options>({
 	cooldownDelay: sec(60),
-	cooldownLimit: 3,
+	cooldownLimit: 2,
 	description: `Easy and interactive setup for Radon`,
 	permissionLevel: PermissionLevels.Administrator,
 	runIn: 'GUILD_ANY'
@@ -50,7 +49,6 @@ export class UserCommand extends RadonCommand {
 		});
 
 		// --------------------------------------
-		const answers: string[] = [];
 		const modRoles: string[] = [];
 		const adminRoles: string[] = [];
 		let modLogChannel = '';
@@ -79,21 +77,14 @@ export class UserCommand extends RadonCommand {
 
 				case 'start':
 					collector.resetTimer();
-					await this.step1(i, msg, stage);
-					break;
-
-				case 'community':
-				case 'casual':
-					answers.push(i.customId);
-					collector.resetTimer();
 					stage = 1;
-					msg = await this.step2(i, msg, stage);
+					await this.step1(i, msg, stage);
 					break;
 
 				case 'retry_mod':
 					collector.resetTimer();
 					modRoles.length = 0;
-					msg = await this.step2(i, msg, stage);
+					msg = await this.step1(i, msg, stage);
 					break;
 
 				case 'confirm_modRoles':
@@ -108,25 +99,25 @@ export class UserCommand extends RadonCommand {
 					}
 					collector.resetTimer();
 					stage = 2;
-					msg = await this.step3(i, msg, stage);
+					msg = await this.step2(i, msg, stage);
 					break;
 
 				case 'retry_admin':
 					collector.resetTimer();
 					adminRoles.length = 0;
-					msg = await this.step3(i, msg, stage);
+					msg = await this.step2(i, msg, stage);
 					break;
 
 				case 'confirm_adminRoles':
 					collector.resetTimer();
 					stage = 3;
-					msg = await this.step4(i, msg, stage);
+					msg = await this.step3(i, msg, stage);
 					break;
 
 				case 'retry_modlog':
 					collector.resetTimer();
 					modLogChannel = '';
-					msg = await this.step4(i, msg, stage);
+					msg = await this.step3(i, msg, stage);
 					break;
 
 				case 'confirm_modlog':
@@ -145,7 +136,7 @@ export class UserCommand extends RadonCommand {
 					collector.resetTimer();
 					modLogChannel = '';
 					stage = 4;
-					msg = await this.step5(i, msg, stage);
+					msg = await this.step4(i, msg, stage);
 					break;
 
 				case 'public_modlog':
@@ -181,8 +172,7 @@ export class UserCommand extends RadonCommand {
 						configured: true,
 						modRoles,
 						adminRoles,
-						modLogChannel,
-						isCommunity: answers.includes('community')
+						modLogChannel
 					},
 					{
 						upsert: true
@@ -207,10 +197,6 @@ export class UserCommand extends RadonCommand {
 						{
 							name: 'Moderation Log Channel',
 							value: modLogChannel.length ? `<#${modLogChannel}>` : 'None'
-						},
-						{
-							name: 'Community',
-							value: `\`${answers.includes('community')}\``
 						}
 					])
 					._timestamp()
@@ -374,33 +360,9 @@ export class UserCommand extends RadonCommand {
 	}
 
 	/**
-	 * is this guild a community guild or not?
-	 */
-	private async step1(btnInt: ButtonInteraction, prevMessage: Message, _stage: number) {
-		const row = this.container.utils.row();
-		prevMessage.embeds[0].description = '';
-		prevMessage.embeds[0].setFields([
-			{
-				name: `Is this a community server?`,
-				value: 'If this server was made for a community or a server that was made for casual use cases\n Please press the appropriate button'
-			}
-		]);
-		await prevMessage.edit({
-			embeds: [prevMessage.embeds[0]],
-			components: [
-				row._components([
-					this.container.utils.button()._customId('community')._label('Yes')._style('PRIMARY'),
-					this.container.utils.button()._customId('casual')._label('No')._style('PRIMARY')
-				])
-			]
-		});
-		return btnInt;
-	}
-
-	/**
 	 * enter mod roles
 	 */
-	private async step2(_btnInt: ButtonInteraction, prevMessage: Message, _stage: number) {
+	private async step1(_btnInt: ButtonInteraction, prevMessage: Message, _stage: number) {
 		const row = this.container.utils.row();
 		prevMessage.embeds[0].setFields([
 			{
@@ -430,7 +392,7 @@ export class UserCommand extends RadonCommand {
 	/**
 	 * enter admin roles
 	 */
-	private async step3(_btnInt: ButtonInteraction, prevMessage: Message, _stage: number) {
+	private async step2(_btnInt: ButtonInteraction, prevMessage: Message, _stage: number) {
 		const row = this.container.utils.row();
 		prevMessage.embeds[0].setFields([
 			{
@@ -461,7 +423,7 @@ export class UserCommand extends RadonCommand {
 	/**
 	 * enter modlog channel
 	 */
-	private async step4(_btnInt: ButtonInteraction, prevMessage: Message, _stage: number) {
+	private async step3(_btnInt: ButtonInteraction, prevMessage: Message, _stage: number) {
 		const row = this.container.utils.row();
 		prevMessage.embeds[0].setFields([
 			{
@@ -492,7 +454,7 @@ export class UserCommand extends RadonCommand {
 	/**
 	 * is modlog private or public?
 	 */
-	private async step5(_btnInt: ButtonInteraction, prevMessage: Message, _stage: number) {
+	private async step4(_btnInt: ButtonInteraction, prevMessage: Message, _stage: number) {
 		const row = this.container.utils.row();
 		prevMessage.embeds[0].setFields([
 			{
