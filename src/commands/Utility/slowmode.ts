@@ -3,8 +3,8 @@ import { PermissionLevels } from '#lib/types';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Constants, TextChannel } from 'discord.js';
-import hd from 'humanize-duration';
-import ms from 'ms';
+import { DurationFormatter, Duration } from '@sapphire/time-utilities';
+
 @ApplyOptions<RadonCommand.Options>({
 	description: 'View and Manage slowmode of current channel',
 	permissionLevel: PermissionLevels.Moderator,
@@ -19,13 +19,13 @@ export class UserCommand extends RadonCommand {
 			return interaction.editReply({
 				content: `Currently Slowmode is ${
 					(interaction.channel as TextChannel).rateLimitPerUser
-						? `${hd((interaction.channel as TextChannel).rateLimitPerUser * 1000)}`
+						? `${new DurationFormatter().format((interaction.channel as TextChannel).rateLimitPerUser * 1000)}`
 						: 'disabled'
 				}`
 			});
 		}
 		if (!isNaN(Number(time))) time += 's';
-		const duration = ms(time);
+		const duration = new Duration(time).offset;
 		if (isNaN(duration))
 			return interaction.reply({
 				content: 'Invalid duration! Valid examples: `1h`, `1m`, `1s`, `2 hours`\nTo remove slowmode just put `0` as the duration.',
@@ -36,7 +36,7 @@ export class UserCommand extends RadonCommand {
 				content: 'You cannot set slowmode for more than 6hrs!'
 			});
 		}
-		let content = `${vars.emojis.confirm} Set the slowmode for ${hd(duration, { round: true })} in ${interaction.channel}`;
+		let content = `${vars.emojis.confirm} Set the slowmode for ${new DurationFormatter().format(duration)} in ${interaction.channel}`;
 		if (duration === 0) {
 			content = `${vars.emojis.confirm} Removed slowmode from ${interaction.channel}`;
 		}

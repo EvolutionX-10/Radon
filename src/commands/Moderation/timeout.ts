@@ -4,8 +4,7 @@ import { severity, runAllChecks, generateModLogDescription } from '#lib/utility'
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Constants, GuildMember } from 'discord.js';
-import ms from 'ms';
-import hd from 'humanize-duration';
+import { Duration, DurationFormatter } from '@sapphire/time-utilities';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: `Temporarily mute a member`,
@@ -29,7 +28,7 @@ export class UserCommand extends RadonCommand {
 			});
 		let time = interaction.options.getString('duration', true);
 		if (!isNaN(Number(time))) time += 's';
-		const duration = ms(time);
+		const duration = new Duration(time).offset;
 		if (isNaN(duration))
 			return interaction.editReply({
 				content: 'Invalid duration! Valid examples: `1d`, `1h`, `1m`, `1s`\nTo remove a timeout just put `0` as the duration.'
@@ -39,15 +38,13 @@ export class UserCommand extends RadonCommand {
 				content: 'You cannot timeout a user for more than 28 days!'
 			});
 		}
-		let content = `${vars.emojis.confirm} ${member} [${member.user.tag}] has been timed out for ${hd(duration, { round: true })}`;
+		let content = `${vars.emojis.confirm} ${member} [${member.user.tag}] has been timed out for ${new DurationFormatter().format(duration)}`;
 		const reason = interaction.options.getString('reason') || undefined;
 		await member.timeout(duration, reason);
 		if (duration !== 0) {
 			await member
 				.send({
-					content: `You have been timed out for ${hd(duration, {
-						round: true
-					})}!\nServer: ${interaction.guild.name}`
+					content: `You have been timed out for ${new DurationFormatter().format(duration)}!\nServer: ${interaction.guild.name}`
 				})
 				.catch(() => (content += `\n${vars.emojis.cross} Couldn't DM the member!`));
 		}

@@ -2,7 +2,8 @@ import type { RadonCommand } from '#lib/structures';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener, Identifiers, UserError, MessageCommandDeniedPayload, ListenerOptions, Events, Args } from '@sapphire/framework';
 import { send } from '@sapphire/plugin-editable-commands';
-import hd from 'humanize-duration';
+import { DurationFormatter } from '@sapphire/time-utilities';
+
 @ApplyOptions<ListenerOptions>({
 	event: Events.MessageCommandDenied
 })
@@ -12,7 +13,7 @@ export class UserListener extends Listener {
 		if (error.identifier === Identifiers.PreconditionCooldown) {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const time = (error.context as any).remaining;
-			const msg = `Take a breathe! It can be used again in ${hd(Math.ceil(time), { round: true })}.`;
+			const msg = `Take a breathe! It can be used again in ${new DurationFormatter().format(Math.ceil(time))}.`;
 			message.author.spam += 1;
 			if (message.author.spam === 5) {
 				return send(message, {

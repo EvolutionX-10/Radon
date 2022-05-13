@@ -6,7 +6,7 @@ import { ApplyOptions } from '@sapphire/decorators';
 import { cutText } from '@sapphire/utilities';
 import type { APIApplicationCommandOptionChoice } from 'discord-api-types/v9';
 import { Constants, GuildMember, TextChannel } from 'discord.js';
-import ms from 'ms';
+import { Duration } from '@sapphire/time-utilities';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Manage warnings for a user',
@@ -230,20 +230,20 @@ export class UserCommand extends RadonCommand {
 		const severity = interaction.options.getInteger('severity') ?? 1;
 		const expires = interaction.options.getString('expiration') ?? this.autoSeverity(severity);
 		const silent = interaction.options.getBoolean('silent') ?? false;
-		if (isNaN(ms(expires))) {
+		if (isNaN(new Duration(expires).offset)) {
 			return interaction.reply({
 				content: 'Invalid duration! Valid examples: `1 week`, `1h`, `10 days`, `5 hours`',
 				ephemeral: true
 			});
 		}
-		const expiration = new Date(Date.now() + ms(expires));
-		if (expiration.getTime() > Date.now() + ms('28 days')) {
+		const expiration = new Date(Date.now() + new Duration(expires).offset);
+		if (expiration.getTime() > Date.now() + new Duration('28 days').offset) {
 			return interaction.reply({
 				content: 'Expiration cannot be more than 28 days',
 				ephemeral: true
 			});
 		}
-		if (expiration.getTime() < Date.now() + ms('1 hour')) {
+		if (expiration.getTime() < Date.now() + new Duration('1 hour').offset) {
 			return interaction.reply({
 				content: 'Expiration cannot be less than 1 hour. Please use a longer duration.',
 				ephemeral: true

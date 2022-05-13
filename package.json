@@ -55,8 +55,6 @@
 		"@sapphire/prettier-config": "1.4.3",
 		"@types/figlet": "1.5.4",
 		"@types/gradient-string": "1.1.2",
-		"@types/humanize-duration": "3.27.1",
-		"@types/ms": "0.7.31",
 		"@types/node": "17.0.21",
 		"@types/string-similarity": "4.0.0",
 		"@typescript-eslint/eslint-plugin": "5.18.0",
@@ -96,7 +94,6 @@
 		"dotenv-cra": "3.0.2",
 		"figlet": "1.5.2",
 		"gradient-string": "2.0.0",
-		"humanize-duration": "3.27.1",
 		"ioredis": "5.0.4",
 		"mongoose": "6.2.10"
 	},

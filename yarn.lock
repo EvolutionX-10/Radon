@@ -556,13 +556,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/humanize-duration@npm:3.27.1":
-  version: 3.27.1
-  resolution: "@types/humanize-duration@npm:3.27.1"
-  checksum: d3d69b64918d0cee4aa69580dd04d1b96e3385645d398e27b1535f8c6d0252b0235defb16619379a6196c6bbdfc7b6032f010b25cac44903a32b09db8aa06f30
-  languageName: node
-  linkType: hard
-
 "@types/json-schema@npm:^7.0.9":
   version: 7.0.11
   resolution: "@types/json-schema@npm:7.0.11"
@@ -581,13 +574,6 @@ __metadata:
   version: 1.2.2
   resolution: "@types/minimist@npm:1.2.2"
   checksum: b8da83c66eb4aac0440e64674b19564d9d86c80ae273144db9681e5eeff66f238ade9515f5006ffbfa955ceff8b89ad2bd8ec577d7caee74ba101431fb07045d
-  languageName: node
-  linkType: hard
-
-"@types/ms@npm:0.7.31":
-  version: 0.7.31
-  resolution: "@types/ms@npm:0.7.31"
-  checksum: daadd354aedde024cce6f5aa873fefe7b71b22cd0e28632a69e8b677aeb48ae8caa1c60e5919bb781df040d116b01cb4316335167a3fc0ef6a63fa3614c0f6da
   languageName: node
   linkType: hard
 
@@ -3114,13 +3100,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"humanize-duration@npm:3.27.1":
-  version: 3.27.1
-  resolution: "humanize-duration@npm:3.27.1"
-  checksum: dad9f1a1367e6da9ca7568629e689e66c1b28206ff72096b51c6963fd7319f660073201fdb9bd5349427b9ea7c0d5cdf33e787c157cf30f996eaec4795029c30
-  languageName: node
-  linkType: hard
-
 "humanize-ms@npm:^1.2.1":
   version: 1.2.1
   resolution: "humanize-ms@npm:1.2.1"
@@ -4617,8 +4596,6 @@ __metadata:
     "@typegoose/typegoose": 9.7.1
     "@types/figlet": 1.5.4
     "@types/gradient-string": 1.1.2
-    "@types/humanize-duration": 3.27.1
-    "@types/ms": 0.7.31
     "@types/node": 17.0.21
     "@types/string-similarity": 4.0.0
     "@typescript-eslint/eslint-plugin": 5.18.0
@@ -4635,7 +4612,6 @@ __metadata:
     eslint-plugin-prettier: 4.0.0
     figlet: 1.5.2
     gradient-string: 2.0.0
-    humanize-duration: 3.27.1
     husky: 7.0.4
     ioredis: 5.0.4
     lint-staged: 12.3.7
