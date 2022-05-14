@@ -9,3 +9,4 @@ export * from './functions/modperms.js';
 export * from './functions/generateDescription.js';
 export * from './functions/uid.js';
 export * from './functions/clean.js';
+export * from './functions/lines.js';

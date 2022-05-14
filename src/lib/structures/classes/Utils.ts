@@ -12,7 +12,8 @@ import {
 	uid,
 	hours,
 	mins,
-	sec
+	sec,
+	countlines
 } from '#lib/utility';
 import { Button } from './Button.js';
 import { Embed } from './Embed.js';
@@ -33,6 +34,7 @@ export class Utils {
 	public hours;
 	public mins;
 	public sec;
+	public countlines;
 	public constructor() {
 		this.formatDuration = formatDuration;
 		this.generateModLogDescription = generateModLogDescription;
@@ -48,6 +50,7 @@ export class Utils {
 		this.hours = hours;
 		this.mins = mins;
 		this.sec = sec;
+		this.countlines = countlines;
 	}
 
 	public embed() {
