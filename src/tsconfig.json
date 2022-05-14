@@ -1,5 +1,5 @@
 {
-	"extends": "../tsconfig.eslint.json",
+	"extends": "../tsconfig.base.json",
 	"compilerOptions": {
 		"allowJs": true,
 		"outDir": "../dist",
@@ -11,14 +11,8 @@
 			"#vars": ["./vars.ts"],
 			"#config": ["./config.ts"]
 		},
-		"composite": true,
-		"moduleResolution": "Node",
-		"experimentalDecorators": true,
-		"emitDecoratorMetadata": true,
-		"suppressImplicitAnyIndexErrors": true,
-		"skipLibCheck": true,
-		"module": "ESNext"
+		"noEmit": true,
+		"skipLibCheck": true
 	},
-	"include": [".", "./**/*.json"],
-	"exclude": ["./tsconfig.json"]
+	"include": ["."]
 }

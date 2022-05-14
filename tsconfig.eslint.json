@@ -1,7 +1,4 @@
 {
-	"extends": "@sapphire/ts-config",
-	"compilerOptions": {
-		"target": "ESNext",
-		"removeComments": true
-	}
+	"extends": "./tsconfig.base.json",
+	"include": ["src", "tsup.config.ts"]
 }
