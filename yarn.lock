@@ -2983,13 +2983,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gradient-string@npm:2.0.0":
-  version: 2.0.0
-  resolution: "gradient-string@npm:2.0.0"
+"gradient-string@npm:2.0.1":
+  version: 2.0.1
+  resolution: "gradient-string@npm:2.0.1"
   dependencies:
     chalk: ^4.1.2
     tinygradient: ^1.1.5
-  checksum: 829a55436d7859631c61d969d8a41be23cf4545ed813b4c285c33c1e2daf699a8d611497add823eebb0fab9692df65bb7b2b2acc8ecbf75c614772384261f02c
+  checksum: 889b099ed8f9fe50d3622ec5dcbceb2d5f9d48cd51ec91cadd10d4a4bd407cabcce88ee3cce8761961a2bd37f56991c3c94124771add0683e0b341c09455a1b1
   languageName: node
   linkType: hard
 
@@ -4626,7 +4626,7 @@ __metadata:
     eslint-config-prettier: 8.5.0
     eslint-plugin-prettier: 4.0.0
     figlet: 1.5.2
-    gradient-string: 2.0.0
+    gradient-string: 2.0.1
     husky: 7.0.4
     ioredis: 5.0.4
     lint-staged: 12.3.7

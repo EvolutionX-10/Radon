@@ -94,7 +94,7 @@
 		"discord.js": "13.7.0",
 		"dotenv-cra": "3.0.2",
 		"figlet": "1.5.2",
-		"gradient-string": "2.0.0",
+		"gradient-string": "2.0.1",
 		"ioredis": "5.0.4",
 		"mongoose": "6.2.10"
 	},
