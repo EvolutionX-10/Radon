@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.11.0](https://github.com/EvolutionX-10/Radon/compare/v1.10.0...v1.11.0) (2022-05-14)
+
+
+### Features
+
+* added redis connection ([c4bfa14](https://github.com/EvolutionX-10/Radon/commit/c4bfa149043241d35bf3eb3096c59404df69e2dd))
+* **ban:** ban confirmations are now available ([9c15e42](https://github.com/EvolutionX-10/Radon/commit/9c15e42567502568d4141502828a86e7361e0506))
+* **setup:** remove community question ([30e77a4](https://github.com/EvolutionX-10/Radon/commit/30e77a43ccc21078992e4855bac88ff0457d2a09))
+* **tsup:** switch to tsup ([9e68272](https://github.com/EvolutionX-10/Radon/commit/9e6827270fd0c5ad8fa9b59c74dd9d7e86861974))
+* update to discord.js v13.7 ([4ff13f3](https://github.com/EvolutionX-10/Radon/commit/4ff13f35fe781abbb5e0d5d07bbfe0d95dc72b16))
+
+
+### Bug Fixes
+
+* **confirmation:** use interaction instead of message for ephemerals ([bcbf74a](https://github.com/EvolutionX-10/Radon/commit/bcbf74ad5fcd6bb00c0e4390cf982f06a00afefe))
+* remove any ([fd4f9db](https://github.com/EvolutionX-10/Radon/commit/fd4f9db6e8d1afad76e5f4738982f1b6de2f25b3))
+
 ## [1.10.0](https://github.com/EvolutionX-10/Radon/compare/v1.9.0...v1.10.0) (2022-05-11)
 
 
