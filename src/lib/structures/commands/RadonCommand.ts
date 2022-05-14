@@ -37,6 +37,7 @@ export abstract class RadonCommand extends SubCommandPluginCommand<RadonCommand.
 		super(context, {
 			generateDashLessAliases: true,
 			requiredClientPermissions: perms,
+			subCommands: [],
 			...options
 		});
 		(this.guarded = options.guarded ?? false),
