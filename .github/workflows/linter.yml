@@ -28,12 +28,5 @@ jobs:
       - name: Install Node.js dependencies
         run: yarn --immutable
 
-      - name: Run linters
-        uses: wearerequired/lint-action@42567b31ed576cdd5a431d77ca5bc8822430d1d0 # tag=v1
-        with:
-          eslint: true
-          prettier: true
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          auto_fix: false
-          eslint_extensions: ts
-          commit_message: "style(auto): fix code style issues with ${linter}"
+      - name: Run Prettier
+        run: yarn pretty
