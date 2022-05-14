@@ -40,6 +40,45 @@ export class UserCommand extends RadonCommand {
 		);
 	}
 
+	public buildEmbed() {
+		const titles = {
+			stats: 'Statistics',
+			uptime: 'Uptime',
+			serverUsage: 'Server Usage',
+			misc: 'Misc'
+		};
+		const stats = this.generalStatistics;
+		const uptime = this.uptimeStatistics;
+		const usage = this.usageStatistics;
+		const misc = this.miscStatistics;
+
+		const fields = {
+			stats: `• **Users**: ${stats.users}\n• **Servers**: ${stats.guilds}\n• **Channels**: ${stats.channels}\n• **Discord.js**: ${stats.version}\n• **Node.js**: ${stats.nodeJs}\n• **Framework**: ${stats.sapphireVersion}`,
+			uptime: `• **Host**: ${uptime.host}\n• **Total**: ${uptime.total}\n• **Client**: ${uptime.client}`,
+			serverUsage: `• **Heap**: ${usage.ramUsed}MB (Total: ${usage.ramTotal}MB)`,
+			misc: `• **Lines of code**: ${misc.lines}\n• **Files**: ${misc.files}`
+		};
+
+		return this.container.utils.embed()._color(color.General)._fields(
+			{
+				name: titles.stats,
+				value: fields.stats
+			},
+			{
+				name: titles.uptime,
+				value: fields.uptime
+			},
+			{
+				name: titles.serverUsage,
+				value: fields.serverUsage
+			},
+			{
+				name: titles.misc,
+				value: fields.misc
+			}
+		);
+	}
+
 	private async me(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const row = this.container.utils.row();
 		const stats = this.container.utils
@@ -132,38 +171,6 @@ export class UserCommand extends RadonCommand {
 		return embed;
 	}
 
-	private buildEmbed() {
-		const titles = {
-			stats: 'Statistics',
-			uptime: 'Uptime',
-			serverUsage: 'Server Usage'
-		};
-		const stats = this.generalStatistics;
-		const uptime = this.uptimeStatistics;
-		const usage = this.usageStatistics;
-
-		const fields = {
-			stats: `• **Users**: ${stats.users}\n• **Servers**: ${stats.guilds}\n• **Channels**: ${stats.channels}\n• **Discord.js**: ${stats.version}\n• **Node.js**: ${stats.nodeJs}\n• **Framework**: ${stats.sapphireVersion}`,
-			uptime: `• **Host**: ${uptime.host}\n• **Total**: ${uptime.total}\n• **Client**: ${uptime.client}`,
-			serverUsage: `**Heap**: ${usage.ramUsed}MB (Total: ${usage.ramTotal}MB)`
-		};
-
-		return this.container.utils.embed()._color(color.General)._fields(
-			{
-				name: titles.stats,
-				value: fields.stats
-			},
-			{
-				name: titles.uptime,
-				value: fields.uptime
-			},
-			{
-				name: titles.serverUsage,
-				value: fields.serverUsage
-			}
-		);
-	}
-
 	private get generalStatistics(): StatsGeneral {
 		const { client } = this.container;
 		return {
@@ -192,6 +199,14 @@ export class UserCommand extends RadonCommand {
 			ramUsed: `${(usage.heapUsed / 1048576).toFixed(2)}`
 		};
 	}
+
+	private get miscStatistics(): StatsMisc {
+		const { linesOfCode, numOfFiles } = this.container.utils.countlines('dist');
+		return {
+			lines: `${linesOfCode}`,
+			files: `${numOfFiles}`
+		};
+	}
 }
 
 interface StatsGeneral {
@@ -212,6 +227,11 @@ interface StatsUptime {
 interface StatsUsage {
 	ramTotal: string;
 	ramUsed: string;
+}
+
+interface StatsMisc {
+	lines: string;
+	files: string;
 }
 
 type Ids = 'back' | 'stats';
