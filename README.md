@@ -7,7 +7,7 @@
 [![GitHub stars]][stars]
 [![GitHub issues]][issues]
 ![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FEvolutionX-10%2FRadon&count_bg=%234900FF&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)
-[![Lint](https://github.com/EvolutionX-10/Radon/actions/workflows/linter.yml/badge.svg)](https://github.com/EvolutionX-10/Radon/actions/workflows/linter.yml)
+[![Continuous Integration](https://github.com/EvolutionX-10/Radon/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/EvolutionX-10/Radon/actions/workflows/continuous-integration.yml)
 
 </div>
 
