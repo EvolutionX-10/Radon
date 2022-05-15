@@ -14,15 +14,12 @@
 ## Table of Contents
 
 -   [Invite](#invite-radon-to-your-server-click-here)
--   [License](#license-here)
 -   [Beta Testing](#beta-testing-for-radon)
 -   [Developing on Radon](#developing-on-radon)
 -   [Contributing](#contributing)
--   [Changelog](#changelog-here)
+-   [Project Stats](#project-stats)
 
 ## Invite Radon to your server [`Click here`][invite]
-
-## License [`here`][apache]
 
 ## Beta Testing for Radon
 
@@ -56,13 +53,14 @@ To contribute to this repository, feel free to fork the repository and make your
 5. Push your changes.
 6. Submit a pull request [here][pr].
 
-## Changelog [`here`][changelog]
-
 <div align="center">
 <a href="https://top.gg/bot/944833303226236989">
   <img src="https://top.gg/api/widget/944833303226236989.svg">
 </a>
 </div>
+
+## Project Stats
+[![Radon](https://repobeats.axiom.co/api/embed/21ef11d4b9a4424c6a715b92bdba323c5eaf37ff.svg "All kinds Contributions are welcomed!")](https://top.gg/bot/944833303226236989)
 
 <!-- REFERENCES -->
 
