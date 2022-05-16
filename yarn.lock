@@ -107,7 +107,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@devtomio/plugin-botlist@npm:^1.2.0":
+"@devtomio/plugin-botlist@npm:1.2.0":
   version: 1.2.0
   resolution: "@devtomio/plugin-botlist@npm:1.2.0"
   dependencies:
@@ -4865,7 +4865,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "radon@workspace:."
   dependencies:
-    "@devtomio/plugin-botlist": ^1.2.0
+    "@devtomio/plugin-botlist": 1.2.0
     "@sapphire/decorators": 4.3.4
     "@sapphire/discord-utilities": 2.10.3
     "@sapphire/discord.js-utilities": 4.10.0
