@@ -5,6 +5,7 @@ import { BucketScope, ClientLoggerOptions, CooldownOptions, LogLevel } from '@sa
 import { Time } from '@sapphire/time-utilities';
 import { vars } from '#vars';
 import type { BotList } from '@devtomio/plugin-botlist';
+import type { HMROptions } from '@sapphire/plugin-hmr';
 
 export const config: config = {
 	intents: [
@@ -37,6 +38,10 @@ export const config: config = {
 			enabled: process.env.NODE_ENV === 'production',
 			interval: Time.Hour * 12
 		}
+	},
+	hmr: {
+		enabled: process.env.NODE_ENV === 'development',
+		silent: true
 	},
 	sweepers: {
 		bans: {
@@ -85,6 +90,7 @@ interface config {
 	logger: ClientLoggerOptions;
 	sweepers: SweeperOptions;
 	botlist: BotList.Options;
+	hmr: HMROptions;
 }
 export const client_config: ClientOptions = {
 	intents: config.intents,
@@ -96,10 +102,7 @@ export const client_config: ClientOptions = {
 	logger: config.logger,
 	loadMessageCommandListeners: true,
 	typing: false,
-	hmr: {
-		enabled: process.env.NODE_ENV === 'development',
-		silent: true
-	},
+	hmr: config.hmr,
 	shards: 'auto',
 	disableMentionPrefix: process.env.NODE_ENV === 'production',
 	preventFailedToFetchLogForGuildIds: ['733135938347073576'],
