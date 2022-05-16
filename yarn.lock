@@ -107,6 +107,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@devtomio/plugin-botlist@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "@devtomio/plugin-botlist@npm:1.2.0"
+  dependencies:
+    "@sapphire/fetch": ^2.3.0
+    tiny-typed-emitter: ^2.1.0
+    tslib: ^2.3.1
+  checksum: 9aefff1d6f3a418f70f3fb57feb8627a9c285f03c05f93a9dd0fda0c4eb13e11bfcdc830f151536ec38957b834b3d3ef7ed650f39445f53bc64fa43d00f6c59e
+  languageName: node
+  linkType: hard
+
 "@discordjs/builders@npm:^0.13.0":
   version: 0.13.0
   resolution: "@discordjs/builders@npm:0.13.0"
@@ -306,6 +317,15 @@ __metadata:
     prettier: ^2.6.2
     typescript: ^4.6.3
   checksum: f45bbbf5900d91472ae2798e313fe5fede12da0a341fe841f49540a7926228058e3a34280005d0004073f42a6e3abaf4db3bd823c9f5375845d488e2307e26e3
+  languageName: node
+  linkType: hard
+
+"@sapphire/fetch@npm:^2.3.0":
+  version: 2.3.1
+  resolution: "@sapphire/fetch@npm:2.3.1"
+  dependencies:
+    cross-fetch: ^3.1.5
+  checksum: 3cb6d2a74fd107901d6902b8949ae7b3780da7efb519fc411fee1496d4d0d72cec1a68e19fc6ac47984f37f509567dbbc4ce82bea5c1ff437f119fc0afa8359d
   languageName: node
   linkType: hard
 
@@ -1855,6 +1875,15 @@ __metadata:
   version: 1.1.1
   resolution: "create-require@npm:1.1.1"
   checksum: a9a1503d4390d8b59ad86f4607de7870b39cad43d929813599a23714831e81c520bddf61bcdd1f8e30f05fd3a2b71ae8538e946eb2786dc65c2bbc520f692eff
+  languageName: node
+  linkType: hard
+
+"cross-fetch@npm:^3.1.5":
+  version: 3.1.5
+  resolution: "cross-fetch@npm:3.1.5"
+  dependencies:
+    node-fetch: 2.6.7
+  checksum: f6b8c6ee3ef993ace6277fd789c71b6acf1b504fd5f5c7128df4ef2f125a429e29cd62dc8c127523f04a5f2fa4771ed80e3f3d9695617f441425045f505cf3bb
   languageName: node
   linkType: hard
 
@@ -4319,7 +4348,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.5":
+"node-fetch@npm:2.6.7, node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.5":
   version: 2.6.7
   resolution: "node-fetch@npm:2.6.7"
   dependencies:
@@ -4836,6 +4865,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "radon@workspace:."
   dependencies:
+    "@devtomio/plugin-botlist": ^1.2.0
     "@sapphire/decorators": 4.3.4
     "@sapphire/discord-utilities": 2.10.3
     "@sapphire/discord.js-utilities": 4.10.0
@@ -5710,6 +5740,13 @@ __metadata:
   version: 2.3.8
   resolution: "through@npm:2.3.8"
   checksum: a38c3e059853c494af95d50c072b83f8b676a9ba2818dcc5b108ef252230735c54e0185437618596c790bbba8fcdaef5b290405981ffa09dce67b1f1bf190cbd
+  languageName: node
+  linkType: hard
+
+"tiny-typed-emitter@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "tiny-typed-emitter@npm:2.1.0"
+  checksum: 709bca410054e08df4dc29d5ea0916328bb2900d60245c6a743068ea223887d9fd2c945b6070eb20336275a557a36c2808e5c87d2ed4b60633458632be4a3e10
   languageName: node
   linkType: hard
 
