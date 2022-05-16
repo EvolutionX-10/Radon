@@ -9,7 +9,7 @@ import type { ActivityTypes } from 'discord.js/typings/enums';
 })
 export class UserListener extends Listener {
 	public override async run() {
-		const ownerMode = (await this.container.db.get('ownerMode')) === 'true' ? true : false;
+		const ownerMode = Boolean(await this.container.db.get('ownerMode'));
 
 		const check = () => {
 			const current = this.container.client.user?.presence.status;
