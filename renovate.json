@@ -1,7 +1,7 @@
 {
 	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
 	"extends": ["config:base", "helpers:pinGitHubActionDigests"],
-	"labels": ["Dependencies"],
+	"labels": ["Type: Dependencies"],
 	"automerge": true,
 	"automergeStrategy": "squash",
 	"automergeComment": "Renovate: Auto Merged dependencies",
@@ -26,7 +26,9 @@
 	"schedule": ["before 6pm every weekday"],
 	"lockFileMaintenance": {
 		"enabled": true,
-		"automerge": true
+		"automerge": true,
+		"automergeStrategy": "squash",
+		"automergeComment": "Automerging PR for lock file maintenance"
 	},
 	"packageRules": [
 		{
