@@ -20,7 +20,7 @@ export class UserPrecondition extends Precondition {
 	}
 
 	private async inOwnerMode(id: string) {
-		const mode = Boolean(await this.container.db.get('ownerMode'));
+		const mode = Boolean(Number(await this.container.db.get('ownerMode'))!);
 		if (!mode) return this.ok();
 
 		return vars.owners.includes(id)

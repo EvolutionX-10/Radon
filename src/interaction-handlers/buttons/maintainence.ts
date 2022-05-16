@@ -28,8 +28,8 @@ export class ButtonHandler extends InteractionHandler {
 	public override async parse(interaction: ButtonInteraction) {
 		if (interaction.customId !== 'radon-maintenance') return this.none();
 		await interaction.deferUpdate({ fetchReply: true });
+		const ownerMode = Boolean(Number(await this.container.db.get('ownerMode'))!);
 
-		const ownerMode = Boolean(await this.container.db.get('ownerMode'));
 		ownerMode ? await this.container.db.set('ownerMode', 0) : await this.container.db.set('ownerMode', 1);
 		const description = ownerMode ? '```\nStatus: Disabled\n```' : '```\nStatus: Enabled\n```';
 		const msg = interaction.message as Message;
