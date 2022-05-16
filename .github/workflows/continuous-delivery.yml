@@ -1,9 +1,9 @@
 name: Continuous Delivery
 on:
   push:
-    branches: 
+    branches:
       - main
-    paths: 
+    paths:
       - 'src/**'
       - '.github/workflows/continuous-delivery.yml'
       - 'package.json'
@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
       - name: Use Node.js v17
         uses: actions/setup-node@1f8c6b94b26d0feae1e387ca63ccbdc44d27b561 # tag=v2
-        with: 
+        with:
           node-version: "17.x"
           cache: yarn
       - name: Install dependencies
@@ -34,7 +34,7 @@ jobs:
     needs: [Building]
     steps:
       - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
-      - uses: akhileshns/heroku-deploy@79ef2ae4ff9b897010907016b268fd0f88561820 # tag=v3.12.12 
+      - uses: akhileshns/heroku-deploy@79ef2ae4ff9b897010907016b268fd0f88561820 # tag=v3.12.12
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: "radon-dev"
@@ -46,7 +46,7 @@ jobs:
     needs: [Building]
     steps:
       - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3
-      - uses: akhileshns/heroku-deploy@79ef2ae4ff9b897010907016b268fd0f88561820 # tag=v3.12.12 
+      - uses: akhileshns/heroku-deploy@79ef2ae4ff9b897010907016b268fd0f88561820 # tag=v3.12.12
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY2}}
           heroku_app_name: "radon-dev2"
