@@ -293,7 +293,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/discord.js-utilities@npm:4.10.0, @sapphire/discord.js-utilities@npm:^4.10.0":
+"@sapphire/discord.js-utilities@npm:4.11.0":
+  version: 4.11.0
+  resolution: "@sapphire/discord.js-utilities@npm:4.11.0"
+  dependencies:
+    "@sapphire/discord-utilities": ^2.10.3
+    "@sapphire/time-utilities": ^1.7.4
+    "@sapphire/utilities": ^3.6.2
+    tslib: ^2.4.0
+  checksum: 93f72b75297e5fa5edd60eef9e0455e808a2322865b03911b875ca62b265af9a49448357e9110ea77ce3556d39d2ce3701549b15eb28739a65345a58dd9e8bc9
+  languageName: node
+  linkType: hard
+
+"@sapphire/discord.js-utilities@npm:^4.10.0":
   version: 4.10.0
   resolution: "@sapphire/discord.js-utilities@npm:4.10.0"
   dependencies:
@@ -4965,7 +4977,7 @@ __metadata:
     "@devtomio/plugin-botlist": 1.2.0
     "@sapphire/decorators": 4.3.4
     "@sapphire/discord-utilities": 2.10.3
-    "@sapphire/discord.js-utilities": 4.10.0
+    "@sapphire/discord.js-utilities": 4.11.0
     "@sapphire/eslint-config": 4.3.5
     "@sapphire/framework": 3.0.0-next.8803fa8.0
     "@sapphire/pieces": 3.3.1
