@@ -4,7 +4,7 @@ import { sec } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import { BucketScope } from '@sapphire/framework';
-import { Constants, GuildChannel, Role, TextChannel } from 'discord.js';
+import { CategoryChannel, Constants, GuildChannel, Role, TextChannel } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Lock!',
@@ -24,6 +24,8 @@ export class UserCommand extends RadonCommand {
 				return this.lockText(interaction);
 			case 'voice':
 				return this.lockVoice(interaction);
+			case 'category':
+				return this.lockCategory(interaction);
 		}
 	}
 
@@ -72,12 +74,38 @@ export class UserCommand extends RadonCommand {
 								required: false
 							}
 						]
+					},
+					{
+						name: 'category',
+						description: 'Lock all channels under category',
+						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
+						options: [
+							{
+								name: 'category',
+								description: "The category who's channels to lock",
+								type: Constants.ApplicationCommandOptionTypes.CHANNEL,
+								channelTypes: ['GUILD_CATEGORY'],
+								required: true
+							},
+							{
+								name: 'role',
+								description: 'The role to lock the channel for (defaults to @everyone)',
+								type: Constants.ApplicationCommandOptionTypes.ROLE,
+								required: false
+							},
+							{
+								name: 'threads',
+								description: 'Whether to lock all threads in the category (defaults to false)',
+								type: Constants.ApplicationCommandOptionTypes.BOOLEAN,
+								required: false
+							}
+						]
 					}
 				]
 			},
 			{
-				guildIds: vars.radonGuildId,
-				idHints: ['975669603403444224', '975667690498834482']
+				guildIds: vars.radonGuildId.concat(['953175228899553312']),
+				idHints: ['975669603403444224', '975667690498834482', '976055923191734312']
 			}
 		);
 	}
@@ -89,16 +117,24 @@ export class UserCommand extends RadonCommand {
 			return interaction.reply('I do not have permission to lock channels!');
 
 		const role = (interaction.options.getRole('role') ?? interaction.guild!.roles.everyone!) as Role;
-
+		if (!this.checkRole(role)) {
+			return interaction.reply('This role is integrated to a bot! Action cancelled.');
+		}
 		if (this.isLocked(channel, role)) return interaction.reply(`<#${channel.id}> is already locked for ${role}!`);
 
 		const update = await channel.permissionOverwrites
-			.edit(role, {
-				SEND_MESSAGES: false,
-				ADD_REACTIONS: false,
-				CREATE_PUBLIC_THREADS: false,
-				CREATE_PRIVATE_THREADS: false
-			})
+			.edit(
+				role,
+				{
+					SEND_MESSAGES: false,
+					ADD_REACTIONS: false,
+					CREATE_PUBLIC_THREADS: false,
+					CREATE_PRIVATE_THREADS: false
+				},
+				{
+					reason: `Requested by ${interaction.user.tag} (${interaction.user.id})`
+				}
+			)
 			.catch(() => null);
 		if (!update) return interaction.reply(`Failed to lock channel for ${role}!`);
 
@@ -112,18 +148,72 @@ export class UserCommand extends RadonCommand {
 			return interaction.reply('I do not have permission to lock channels!');
 
 		const role = (interaction.options.getRole('role') ?? interaction.guild!.roles.everyone!) as Role;
-
+		if (!this.checkRole(role)) {
+			return interaction.reply('This role is integrated to a bot! Action cancelled.');
+		}
 		if (this.isLocked(channel, role)) return interaction.reply(`<#${channel.id}> is already locked for ${role}!`);
 
 		const update = await channel.permissionOverwrites
-			.edit(role, {
-				CONNECT: false,
-				SPEAK: false
-			})
+			.edit(
+				role,
+				{
+					CONNECT: false,
+					SPEAK: false
+				},
+				{
+					reason: `Requested by ${interaction.user.tag} (${interaction.user.id})`
+				}
+			)
 			.catch(() => null);
 		if (!update) return interaction.reply('Failed to lock channel!');
 
 		return interaction.reply(`Locked <#${channel.id}> for ${role}!`);
+	}
+
+	private async lockCategory(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const category = interaction.options.getChannel('category', true) as CategoryChannel;
+		if (!category) return interaction.reply('Invalid category!');
+		if (!category.permissionsFor(this.container.client.user!)!.has('MANAGE_CHANNELS'))
+			return interaction.reply('I do not have permission to lock channels!');
+
+		const role = (interaction.options.getRole('role') ?? interaction.guild!.roles.everyone!) as Role;
+		if (!this.checkRole(role)) {
+			return interaction.reply('This role is integrated to a bot! Action cancelled.');
+		}
+		const threads = interaction.options.getBoolean('threads') ?? false;
+
+		await interaction.deferReply();
+
+		let content = `Successfully locked __${category.name}__ for ${role}!\n\nIssues Found:`;
+
+		for await (const channel of category.children.values()) {
+			if (this.isLocked(channel, role)) continue;
+			await wait(1_000);
+
+			await channel.permissionOverwrites
+				.edit(
+					role,
+					{
+						SEND_MESSAGES: false,
+						ADD_REACTIONS: false,
+						CONNECT: false,
+						SPEAK: false,
+						CREATE_PUBLIC_THREADS: threads ? false : undefined,
+						CREATE_PRIVATE_THREADS: threads ? false : undefined,
+						USE_PUBLIC_THREADS: threads ? false : undefined,
+						USE_PRIVATE_THREADS: threads ? false : undefined,
+						SEND_MESSAGES_IN_THREADS: threads ? false : undefined
+					},
+					{
+						reason: `Requested by ${interaction.user.tag} (${interaction.user.id})`
+					}
+				)
+				.catch(() => (content += `\n> Missing permissions to lock <#${channel.id}>!`));
+		}
+
+		content.endsWith(':') ? (content += ' None 🎉') : null;
+
+		return interaction.editReply({ content });
 	}
 
 	private isLocked(channel: GuildChannel, role: Role) {
@@ -131,6 +221,16 @@ export class UserCommand extends RadonCommand {
 		if (channel.isVoice() && channel.permissionsFor(role).has('CONNECT')) return false;
 		return true;
 	}
+
+	private checkRole(role: Role) {
+		if (role.tags?.botId) return false;
+		return true;
+	}
 }
 
-type subcmd = 'text' | 'voice';
+type subcmd = 'text' | 'voice' | 'category';
+
+async function wait(ms: number) {
+	const wait = (await import('node:util')).promisify(setTimeout);
+	return wait(ms);
+}
