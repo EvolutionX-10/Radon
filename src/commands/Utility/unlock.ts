@@ -4,7 +4,7 @@ import { sec } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import { BucketScope } from '@sapphire/framework';
-import { CategoryChannel, Constants, GuildChannel, Role, TextChannel } from 'discord.js';
+import { CategoryChannel, Constants, GuildChannel, Role, TextChannel, ThreadChannel } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Unlock!',
@@ -26,6 +26,8 @@ export class UserCommand extends RadonCommand {
 				return this.unlockVoice(interaction);
 			case 'category':
 				return this.unlockCategory(interaction);
+			case 'thread':
+				return this.unlockThread(interaction);
 		}
 	}
 
@@ -100,6 +102,20 @@ export class UserCommand extends RadonCommand {
 								required: false
 							}
 						]
+					},
+					{
+						name: 'thread',
+						description: 'Unlock a thread',
+						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
+						options: [
+							{
+								name: 'channel',
+								description: 'The channel to unlock',
+								type: Constants.ApplicationCommandOptionTypes.CHANNEL,
+								required: true,
+								channelTypes: ['GUILD_PUBLIC_THREAD', 'GUILD_PRIVATE_THREAD']
+							}
+						]
 					}
 				]
 			},
@@ -118,7 +134,7 @@ export class UserCommand extends RadonCommand {
 
 		const role = (interaction.options.getRole('role') ?? interaction.guild!.roles.everyone!) as Role;
 		if (!this.checkRole(role)) {
-			return interaction.reply('This role is integrated to a bot! Action cancelled.');
+			return interaction.reply('This role is integrated to a bot or higher than my highest role! Action cancelled.');
 		}
 
 		if (!this.isLocked(channel, role)) return interaction.reply(`<#${channel.id}> is not locked for ${role}!`);
@@ -150,7 +166,7 @@ export class UserCommand extends RadonCommand {
 
 		const role = (interaction.options.getRole('role') ?? interaction.guild!.roles.everyone!) as Role;
 		if (!this.checkRole(role)) {
-			return interaction.reply('This role is integrated to a bot! Action cancelled.');
+			return interaction.reply('This role is integrated to a bot or higher than my highest role! Action cancelled.');
 		}
 
 		if (!this.isLocked(channel, role)) return interaction.reply(`<#${channel.id}> is already unlocked for ${role}!`);
@@ -181,7 +197,7 @@ export class UserCommand extends RadonCommand {
 		const role = (interaction.options.getRole('role') ?? interaction.guild!.roles.everyone!) as Role;
 
 		if (!this.checkRole(role)) {
-			return interaction.reply('This role is integrated to a bot! Action cancelled.');
+			return interaction.reply('This role is integrated to a bot or higher than my highest role! Action cancelled.');
 		}
 		const threads = interaction.options.getBoolean('threads') ?? false;
 
@@ -218,19 +234,38 @@ export class UserCommand extends RadonCommand {
 		return interaction.editReply({ content });
 	}
 
-	private isLocked(channel: GuildChannel, role: Role) {
-		if (channel.isText() && channel.permissionsFor(role).has('SEND_MESSAGES')) return false;
-		if (channel.isVoice() && channel.permissionsFor(role).has('CONNECT')) return false;
+	private async unlockThread(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const thread = interaction.options.getChannel('channel', true) as ThreadChannel;
+		if (!thread) return interaction.reply('Invalid thread!');
+
+		if (!thread.manageable) return interaction.reply('I do not have permission to unlock this thread!');
+
+		if (!this.isLocked(thread)) return interaction.reply(`<#${thread.id}> is already unlocked!`);
+
+		const archive = await thread.setArchived(false, `Requested by ${interaction.user.tag} (${interaction.user.id})`).catch(() => null);
+
+		const lock = await thread.setLocked(false, `Requested by ${interaction.user.tag} (${interaction.user.id})`).catch(() => null);
+
+		if ((!lock && !archive) || !archive) return interaction.reply('Failed to unlock thread!');
+
+		return interaction.reply(`Unlocked <#${thread.id}>!`);
+	}
+
+	private isLocked(channel: GuildChannel | ThreadChannel, role?: Role) {
+		if (channel.isThread() && channel.locked) return true;
+		if (channel.isText() && channel.permissionsFor(role!).has('SEND_MESSAGES')) return false;
+		if (channel.isVoice() && channel.permissionsFor(role!).has('CONNECT')) return false;
 		return true;
 	}
 
 	private checkRole(role: Role) {
 		if (role.tags?.botId) return false;
+		if (role.position > role.guild.me!.roles.highest.position) return false;
 		return true;
 	}
 }
 
-type subcmd = 'text' | 'voice' | 'category';
+type subcmd = 'text' | 'voice' | 'category' | 'thread';
 
 async function wait(ms: number) {
 	const wait = (await import('node:util')).promisify(setTimeout);
