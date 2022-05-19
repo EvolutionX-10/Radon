@@ -101,7 +101,7 @@
 		"figlet": "1.5.2",
 		"gradient-string": "2.0.1",
 		"ioredis": "5.0.5",
-		"mongoose": "6.3.3"
+		"mongoose": "6.3.4"
 	},
 	"config": {
 		"commitizen": {
