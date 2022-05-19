@@ -4,7 +4,18 @@ import { sec } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import { BucketScope } from '@sapphire/framework';
-import { CategoryChannel, Constants, GuildChannel, Role, TextChannel, ThreadChannel } from 'discord.js';
+import {
+	CategoryChannel,
+	Constants,
+	GuildChannel,
+	MessageActionRow,
+	Modal,
+	ModalActionRowComponent,
+	Role,
+	TextChannel,
+	TextInputComponent,
+	ThreadChannel
+} from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Lock!',
@@ -83,7 +94,7 @@ export class UserCommand extends RadonCommand {
 						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
 						options: [
 							{
-								name: 'category',
+								name: 'channel',
 								description: "The category who's channels to lock",
 								type: Constants.ApplicationCommandOptionTypes.CHANNEL,
 								channelTypes: ['GUILD_CATEGORY'],
@@ -126,10 +137,10 @@ export class UserCommand extends RadonCommand {
 		);
 	}
 
-	private async lockText(interaction: RadonCommand.ChatInputCommandInteraction) {
+	private lockText(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const channel = interaction.options.getChannel('channel', true) as TextChannel;
 		if (!channel) return interaction.reply('Invalid channel!');
-		if (!channel.permissionsFor(this.container.client.user!)!.has('MANAGE_CHANNELS'))
+		if (!channel.permissionsFor(this.container.client.user!)!.has('MANAGE_ROLES'))
 			return interaction.reply('I do not have permission to lock channels!');
 
 		const role = (interaction.options.getRole('role') ?? interaction.guild!.roles.everyone!) as Role;
@@ -138,23 +149,25 @@ export class UserCommand extends RadonCommand {
 		}
 		if (this.isLocked(channel, role)) return interaction.reply(`<#${channel.id}> is already locked for ${role}!`);
 
-		const update = await channel.permissionOverwrites
-			.edit(
-				role,
-				{
-					SEND_MESSAGES: false,
-					ADD_REACTIONS: false,
-					CREATE_PUBLIC_THREADS: false,
-					CREATE_PRIVATE_THREADS: false
-				},
-				{
-					reason: `Requested by ${interaction.user.tag} (${interaction.user.id})`
-				}
-			)
-			.catch(() => null);
-		if (!update) return interaction.reply(`Failed to lock channel for ${role}!`);
+		const modal = new Modal();
+		const ReasonInput = new TextInputComponent()
+			.setCustomId('reason')
+			.setLabel('Reason for lock')
+			.setPlaceholder(`This will be sent in #${channel.name} (OPTIONAL)`)
+			.setRequired(false)
+			.setStyle('PARAGRAPH');
 
-		return interaction.reply(`Locked <#${channel.id}> for ${role}!`);
+		const row = new MessageActionRow<ModalActionRowComponent>().setComponents(ReasonInput);
+
+		modal.setTitle('Lock').setComponents(row).setCustomId('@lock/text');
+
+		interaction.user.data = {
+			content: `Locked channel <#${channel.id}> for ${role}`,
+			channel,
+			role
+		};
+
+		return interaction.showModal(modal);
 	}
 
 	private async lockVoice(interaction: RadonCommand.ChatInputCommandInteraction) {
@@ -186,8 +199,8 @@ export class UserCommand extends RadonCommand {
 		return interaction.reply(`Locked <#${channel.id}> for ${role}!`);
 	}
 
-	private async lockCategory(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const category = interaction.options.getChannel('category', true) as CategoryChannel;
+	private lockCategory(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const category = interaction.options.getChannel('channel', true) as CategoryChannel;
 		if (!category) return interaction.reply('Invalid category!');
 		if (!category.permissionsFor(this.container.client.user!)!.has('MANAGE_CHANNELS'))
 			return interaction.reply('I do not have permission to lock channels!');
@@ -198,41 +211,31 @@ export class UserCommand extends RadonCommand {
 		}
 		const threads = interaction.options.getBoolean('threads') ?? false;
 
-		await interaction.deferReply();
+		const content = `Successfully locked __${category.name}__ for ${role}!\n\nIssues Found:`;
 
-		let content = `Successfully locked __${category.name}__ for ${role}!\n\nIssues Found:`;
+		const modal = new Modal();
+		const ReasonInput = new TextInputComponent()
+			.setCustomId('reason')
+			.setLabel('Reason for lock')
+			.setPlaceholder(`This will be sent in ${category.name} (OPTIONAL)`)
+			.setRequired(false)
+			.setStyle('PARAGRAPH');
 
-		for await (const channel of category.children.values()) {
-			if (this.isLocked(channel, role)) continue;
-			await wait(1_000);
+		const row = new MessageActionRow<ModalActionRowComponent>().setComponents(ReasonInput);
 
-			await channel.permissionOverwrites
-				.edit(
-					role,
-					{
-						SEND_MESSAGES: false,
-						ADD_REACTIONS: false,
-						CONNECT: false,
-						SPEAK: false,
-						CREATE_PUBLIC_THREADS: threads ? false : undefined,
-						CREATE_PRIVATE_THREADS: threads ? false : undefined,
-						USE_PUBLIC_THREADS: threads ? false : undefined,
-						USE_PRIVATE_THREADS: threads ? false : undefined,
-						SEND_MESSAGES_IN_THREADS: threads ? false : undefined
-					},
-					{
-						reason: `Requested by ${interaction.user.tag} (${interaction.user.id})`
-					}
-				)
-				.catch(() => (content += `\n> Missing permissions to lock <#${channel.id}>!`));
-		}
+		modal.setTitle('Lock').setComponents(row).setCustomId('@lock/category');
 
-		content.endsWith(':') ? (content += ' None 🎉') : null;
+		interaction.user.data = {
+			content,
+			category,
+			role,
+			threads
+		};
 
-		return interaction.editReply({ content });
+		return interaction.showModal(modal);
 	}
 
-	private async lockThread(interaction: RadonCommand.ChatInputCommandInteraction) {
+	private lockThread(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const thread = interaction.options.getChannel('channel', true) as ThreadChannel;
 		if (!thread) return interaction.reply('Invalid thread!');
 
@@ -240,19 +243,30 @@ export class UserCommand extends RadonCommand {
 
 		if (this.isLocked(thread)) return interaction.reply(`<#${thread.id}> is already locked!`);
 
-		const lock = await thread.setLocked(true, `Requested by ${interaction.user.tag} (${interaction.user.id})`).catch(() => null);
+		const modal = new Modal();
+		const ReasonInput = new TextInputComponent()
+			.setCustomId('reason')
+			.setLabel('Reason for lock')
+			.setPlaceholder(`This will be sent in #${thread.name} (OPTIONAL)`)
+			.setRequired(false)
+			.setStyle('PARAGRAPH');
 
-		const archive = await thread.setArchived(true, `Requested by ${interaction.user.tag} (${interaction.user.id})`).catch(() => null);
+		const row = new MessageActionRow<ModalActionRowComponent>().setComponents(ReasonInput);
 
-		if ((!lock && !archive) || !archive) return interaction.reply('Failed to lock thread!');
+		modal.setTitle('Lock').setComponents(row).setCustomId('@lock/thread');
 
-		return interaction.reply(`Locked <#${thread.id}>!`);
+		interaction.user.data = {
+			content: `Locked thread <#${thread.id}>!`,
+			thread
+		};
+
+		return interaction.showModal(modal);
 	}
 
 	private isLocked(channel: GuildChannel | ThreadChannel, role?: Role) {
-		if (channel.isThread() && channel.locked) return true;
-		if (channel.isText() && channel.permissionsFor(role!).has('SEND_MESSAGES')) return false;
-		if (channel.isVoice() && channel.permissionsFor(role!).has('CONNECT')) return false;
+		if (channel.isThread() && !channel.locked) return false;
+		if (channel.isText() && channel.permissionsFor(role!)?.has('SEND_MESSAGES')) return false;
+		if (channel.isVoice() && channel.permissionsFor(role!)?.has('CONNECT')) return false;
 		return true;
 	}
 
@@ -265,7 +279,8 @@ export class UserCommand extends RadonCommand {
 
 type subcmd = 'text' | 'voice' | 'category' | 'thread';
 
-async function wait(ms: number) {
-	const wait = (await import('node:util')).promisify(setTimeout);
-	return wait(ms);
+declare module 'discord.js' {
+	interface User {
+		data: unknown;
+	}
 }
