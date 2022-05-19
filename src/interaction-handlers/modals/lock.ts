@@ -18,6 +18,8 @@ export class ModalHandler extends InteractionHandler {
 				return this.category(interaction, result);
 			case '@lock/thread':
 				return this.thread(interaction, result);
+			case '@lock/all/text':
+				return this.allText(interaction, result);
 		}
 	}
 
@@ -133,6 +135,45 @@ export class ModalHandler extends InteractionHandler {
 		return interaction.editReply(content);
 	}
 
+	private async allText(interaction: ModalSubmitInteraction, result: InteractionHandler.ParseResult<this>) {
+		let { content, role } = interaction.user.data as TextAllData;
+		const options = {
+			SEND_MESSAGES: false,
+			ADD_REACTIONS: false,
+			CREATE_PUBLIC_THREADS: false,
+			CREATE_PRIVATE_THREADS: false
+		};
+		const embeds: Embed[] = [];
+
+		if (result.reason?.length) {
+			embeds.push(
+				this.container.utils
+					.embed()
+					._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
+					._title('Channel Locked')
+					._color(color.Utility)
+					._description(result.reason)
+					._timestamp()
+			);
+		}
+		const channels = interaction.guild!.channels.cache.filter((c) => c.type === 'GUILD_TEXT');
+		for await (const channel of channels.values()) {
+			if (this.isLocked(channel, role) || channel.type !== 'GUILD_TEXT') continue;
+			await wait(1_000);
+
+			channel.permissionOverwrites
+				.edit(role, options, {
+					reason: `Requested by ${interaction.user.tag} (${interaction.user.id})`
+				})
+				.then((c) => (c.isText() && embeds.length ? c.send({ embeds }) : null))
+				.catch(() => (content += `\n> Missing permissions to lock <#${channel.id}>!`));
+		}
+
+		content.endsWith(':') ? (content += ' None 🎉') : null;
+
+		return interaction.editReply(content);
+	}
+
 	private isLocked(channel: GuildChannel | ThreadChannel, role?: Role) {
 		if (channel.isThread() && channel.locked) return true;
 		if (channel.isText() && channel.permissionsFor(role!).has('SEND_MESSAGES')) return false;
@@ -164,4 +205,9 @@ interface ThreadData {
 	thread: ThreadChannel;
 }
 
-type LockReasonModalId = '@lock/text' | '@lock/category' | '@lock/thread';
+interface TextAllData {
+	content: string;
+	role: Role;
+}
+
+type LockReasonModalId = '@lock/text' | '@lock/category' | '@lock/thread' | '@lock/all/text';

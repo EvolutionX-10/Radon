@@ -29,7 +29,13 @@ import {
 export class UserCommand extends RadonCommand {
 	public override chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const subCmd = interaction.options.getSubcommand();
-
+		const grp = interaction.options.getSubcommandGroup(false);
+		if (grp) {
+			switch (subCmd as group) {
+				case 'text':
+					return this.lockAllText(interaction);
+			}
+		}
 		switch (subCmd as subcmd) {
 			case 'text':
 				return this.lockText(interaction);
@@ -125,6 +131,26 @@ export class UserCommand extends RadonCommand {
 								type: Constants.ApplicationCommandOptionTypes.CHANNEL,
 								required: true,
 								channelTypes: ['GUILD_PUBLIC_THREAD', 'GUILD_NEWS_THREAD', 'GUILD_PRIVATE_THREAD']
+							}
+						]
+					},
+					{
+						name: 'all',
+						description: 'Lock all channels',
+						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND_GROUP,
+						options: [
+							{
+								name: 'text',
+								description: 'Lock all text channels',
+								type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
+								options: [
+									{
+										name: 'role',
+										description: 'The role to lock the channel for (defaults to @everyone)',
+										type: Constants.ApplicationCommandOptionTypes.ROLE,
+										required: false
+									}
+								]
 							}
 						]
 					}
@@ -263,6 +289,34 @@ export class UserCommand extends RadonCommand {
 		return interaction.showModal(modal);
 	}
 
+	private lockAllText(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const role = (interaction.options.getRole('role') ?? interaction.guild!.roles.everyone!) as Role;
+		if (!this.checkRole(role)) {
+			return interaction.reply('This role is integrated to a bot or higher than my highest role! Action cancelled.');
+		}
+
+		const content = `Successfully locked all text channels for ${role}!\n\nIssues Found:`;
+
+		const modal = new Modal();
+		const ReasonInput = new TextInputComponent()
+			.setCustomId('reason')
+			.setLabel('Reason for lock')
+			.setPlaceholder(`This will be sent in all text channels (OPTIONAL)`)
+			.setRequired(false)
+			.setStyle('PARAGRAPH');
+
+		const row = new MessageActionRow<ModalActionRowComponent>().setComponents(ReasonInput);
+
+		modal.setTitle('Lock').setComponents(row).setCustomId('@lock/all/text');
+
+		interaction.user.data = {
+			content,
+			role
+		};
+
+		return interaction.showModal(modal);
+	}
+
 	private isLocked(channel: GuildChannel | ThreadChannel, role?: Role) {
 		if (channel.isThread() && !channel.locked) return false;
 		if (channel.isText() && channel.permissionsFor(role!)?.has('SEND_MESSAGES')) return false;
@@ -278,6 +332,7 @@ export class UserCommand extends RadonCommand {
 }
 
 type subcmd = 'text' | 'voice' | 'category' | 'thread';
+type group = 'text';
 
 declare module 'discord.js' {
 	interface User {
