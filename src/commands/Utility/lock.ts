@@ -320,14 +320,12 @@ export class UserCommand extends RadonCommand {
 	private isLocked(channel: GuildChannel | ThreadChannel, role?: Role) {
 		if (channel.isThread() && !channel.locked) return false;
 		if (channel.isText() && channel.permissionsFor(role!)?.has('SEND_MESSAGES')) return false;
-		if (channel.isVoice() && channel.permissionsFor(role!)?.has('CONNECT')) return false;
-		return true;
+		return !(channel.isVoice() && channel.permissionsFor(role!)?.has('CONNECT'));
 	}
 
 	private checkRole(role: Role) {
 		if (role.tags?.botId) return false;
-		if (role.position > role.guild.me!.roles.highest.position) return false;
-		return true;
+		return role.position <= role.guild.me!.roles.highest.position;
 	}
 }
 
