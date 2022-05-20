@@ -34,6 +34,8 @@ export class UserCommand extends RadonCommand {
 			switch (subCmd as group) {
 				case 'text':
 					return this.lockAllText(interaction);
+				case 'voice':
+					return this.lockAllVoice(interaction);
 			}
 		}
 		switch (subCmd as subcmd) {
@@ -142,6 +144,19 @@ export class UserCommand extends RadonCommand {
 							{
 								name: 'text',
 								description: 'Lock all text channels',
+								type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
+								options: [
+									{
+										name: 'role',
+										description: 'The role to lock the channel for (defaults to @everyone)',
+										type: Constants.ApplicationCommandOptionTypes.ROLE,
+										required: false
+									}
+								]
+							},
+							{
+								name: 'voice',
+								description: 'Lock all voice channels',
 								type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
 								options: [
 									{
@@ -317,6 +332,38 @@ export class UserCommand extends RadonCommand {
 		return interaction.showModal(modal);
 	}
 
+	private async lockAllVoice(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const role = (interaction.options.getRole('role') ?? interaction.guild!.roles.everyone!) as Role;
+		if (!this.checkRole(role)) {
+			return interaction.reply('This role is integrated to a bot or higher than my highest role! Action cancelled.');
+		}
+		await interaction.deferReply();
+		let content = `Successfully locked all voice channels for ${role}!\n\nIssues Found:`;
+		const channels = interaction.guild!.channels.cache.filter((c) => c.type === 'GUILD_VOICE');
+
+		for await (const channel of channels.values()) {
+			if (this.isLocked(channel, role) || channel.type !== 'GUILD_VOICE') continue;
+			await wait(500);
+
+			channel.permissionOverwrites
+				.edit(
+					role,
+					{
+						CONNECT: false,
+						SPEAK: false
+					},
+					{
+						reason: `Requested by ${interaction.user.tag} (${interaction.user.id})`
+					}
+				)
+				.catch(() => (content += `\n> Missing permissions to lock <#${channel.id}>!`));
+		}
+
+		content.endsWith(':') ? (content += ' None 🎉') : null;
+
+		return interaction.editReply(content);
+	}
+
 	private isLocked(channel: GuildChannel | ThreadChannel, role?: Role) {
 		if (channel.isThread() && !channel.locked) return false;
 		if (channel.isText() && channel.permissionsFor(role!)?.has('SEND_MESSAGES')) return false;
@@ -329,8 +376,13 @@ export class UserCommand extends RadonCommand {
 	}
 }
 
+async function wait(ms: number) {
+	const wait = (await import('node:util')).promisify(setTimeout);
+	return wait(ms);
+}
+
 type subcmd = 'text' | 'voice' | 'category' | 'thread';
-type group = 'text';
+type group = 'text' | 'voice';
 
 declare module 'discord.js' {
 	interface User {
