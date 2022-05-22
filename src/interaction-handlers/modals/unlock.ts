@@ -3,6 +3,7 @@ import { color } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework';
 import type { CategoryChannel, GuildChannel, ModalSubmitInteraction, Role, TextChannel, ThreadChannel } from 'discord.js';
+
 @ApplyOptions<InteractionHandler.Options>({
 	interactionHandlerType: InteractionHandlerTypes.ModalSubmit
 })
@@ -20,6 +21,8 @@ export class ModalHandler extends InteractionHandler {
 				return this.thread(interaction, result);
 			case '@unlock/all/text':
 				return this.allText(interaction, result);
+			case '@unlock/all/thread':
+				return this.allThread(interaction, result);
 		}
 	}
 
@@ -172,11 +175,54 @@ export class ModalHandler extends InteractionHandler {
 		return interaction.editReply(content);
 	}
 
+	private async allThread(interaction: ModalSubmitInteraction, result: InteractionHandler.ParseResult<this>) {
+		let { content, role } = interaction.user.data as TextAllData;
+		const options = {
+			CREATE_PUBLIC_THREADS: null,
+			CREATE_PRIVATE_THREADS: null,
+			USE_PUBLIC_THREADS: null,
+			USE_PRIVATE_THREADS: null,
+			SEND_MESSAGES_IN_THREADS: null
+		};
+		const embeds: Embed[] = [];
+
+		if (result.reason?.length) {
+			embeds.push(
+				this.container.utils
+					.embed()
+					._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
+					._title('Channel Unlocked')
+					._color(color.Utility)
+					._description(result.reason)
+					._timestamp()
+			);
+		}
+		const channels = interaction.guild!.channels.cache.filter((c) => c.type === 'GUILD_TEXT');
+		for await (const channel of channels.values()) {
+			if (channel.type !== 'GUILD_TEXT') continue;
+			await wait(1_000);
+
+			channel.permissionOverwrites
+				.edit(role, options, {
+					reason: `Requested by ${interaction.user.tag} (${interaction.user.id})`
+				})
+				.then((c) =>
+					c.isText() && embeds.length
+						? c.threads.fetchActive().then((fetched) => fetched.threads.forEach((thread) => thread.send({ embeds }).catch(() => null)))
+						: null
+				)
+				.catch(() => (content += `\n> Missing permissions to unlock threads in <#${channel.id}>!`));
+		}
+
+		content.endsWith(':') ? (content += ' None 🎉') : null;
+
+		return interaction.editReply(content);
+	}
+
 	private isLocked(channel: GuildChannel | ThreadChannel, role?: Role) {
 		if (channel.isThread() && channel.locked) return true;
 		if (channel.isText() && channel.permissionsFor(role!).has('SEND_MESSAGES')) return false;
-		if (channel.isVoice() && channel.permissionsFor(role!).has('CONNECT')) return false;
-		return true;
+		return !(channel.isVoice() && channel.permissionsFor(role!).has('CONNECT'));
 	}
 }
 
@@ -208,4 +254,4 @@ interface TextAllData {
 	role: Role;
 }
 
-type LockReasonModalId = '@unlock/text' | '@unlock/category' | '@unlock/thread' | '@unlock/all/text';
+type LockReasonModalId = '@unlock/text' | '@unlock/category' | '@unlock/thread' | '@unlock/all/text' | '@unlock/all/thread';

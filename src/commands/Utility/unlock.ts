@@ -36,6 +36,8 @@ export class UserCommand extends RadonCommand {
 					return this.unlockAllText(interaction);
 				case 'voice':
 					return this.unlockAllVoice(interaction);
+				case 'thread':
+					return this.unlockAllThread(interaction);
 			}
 		}
 		switch (subCmd as subcmd) {
@@ -157,6 +159,19 @@ export class UserCommand extends RadonCommand {
 							{
 								name: 'voice',
 								description: 'Unlock all voice channels',
+								type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
+								options: [
+									{
+										name: 'role',
+										description: 'The role to unlock the channel for (defaults to @everyone)',
+										type: Constants.ApplicationCommandOptionTypes.ROLE,
+										required: false
+									}
+								]
+							},
+							{
+								name: 'thread',
+								description: 'Unlock all threads',
 								type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
 								options: [
 									{
@@ -367,6 +382,34 @@ export class UserCommand extends RadonCommand {
 		return interaction.editReply(content);
 	}
 
+	private unlockAllThread(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const role = (interaction.options.getRole('role') ?? interaction.guild!.roles.everyone!) as Role;
+		if (!this.checkRole(role)) {
+			return interaction.reply('This role is integrated to a bot or higher than my highest role! Action cancelled.');
+		}
+
+		const content = `Successfully unlocked all thread channels for ${role}!\n\nIssues Found:`;
+
+		const modal = new Modal();
+		const ReasonInput = new TextInputComponent()
+			.setCustomId('reason')
+			.setLabel('Reason for unlock')
+			.setPlaceholder(`This will be sent in all threads (OPTIONAL)`)
+			.setRequired(false)
+			.setStyle('PARAGRAPH');
+
+		const row = new MessageActionRow<ModalActionRowComponent>().setComponents(ReasonInput);
+
+		modal.setTitle('Unlock').setComponents(row).setCustomId('@unlock/all/thread');
+
+		interaction.user.data = {
+			content,
+			role
+		};
+
+		return interaction.showModal(modal);
+	}
+
 	private isLocked(channel: GuildChannel | ThreadChannel, role?: Role) {
 		if (channel.isThread() && !channel.locked) return false;
 		if (channel.isText() && channel.permissionsFor(role!).has('SEND_MESSAGES')) return false;
@@ -385,4 +428,4 @@ async function wait(ms: number) {
 }
 
 type subcmd = 'text' | 'voice' | 'category' | 'thread';
-type group = 'text' | 'voice';
+type group = Exclude<subcmd, 'category'>;
