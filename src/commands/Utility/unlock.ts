@@ -49,6 +49,8 @@ export class UserCommand extends RadonCommand {
 				return this.unlockCategory(interaction);
 			case 'thread':
 				return this.unlockThread(interaction);
+			case 'server':
+				return this.unlockServer(interaction);
 		}
 	}
 
@@ -181,6 +183,25 @@ export class UserCommand extends RadonCommand {
 										required: false
 									}
 								]
+							}
+						]
+					},
+					{
+						name: 'server',
+						description: 'Unlock all channels in the server',
+						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
+						options: [
+							{
+								name: 'role',
+								description: 'The role to unlock the server for (defaults to @everyone)',
+								type: Constants.ApplicationCommandOptionTypes.ROLE,
+								required: false
+							},
+							{
+								name: 'deep',
+								description: 'Whether to override channel overwrites, only use if lock was deep (defaults to false)',
+								type: Constants.ApplicationCommandOptionTypes.BOOLEAN,
+								required: false
 							}
 						]
 					}
@@ -410,6 +431,36 @@ export class UserCommand extends RadonCommand {
 		return interaction.showModal(modal);
 	}
 
+	private unlockServer(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const role = (interaction.options.getRole('role') ?? interaction.guild!.roles.everyone!) as Role;
+		const deep = interaction.options.getBoolean('deep') ?? false;
+		if (!this.checkRole(role)) {
+			return interaction.reply('This role is integrated to a bot or higher than my highest role! Action cancelled.');
+		}
+
+		const content = `Successfully unlocked server for ${role}!\n\nIssues Found:`;
+
+		const modal = new Modal();
+		const ReasonInput = new TextInputComponent()
+			.setCustomId('reason')
+			.setLabel('Reason for unlock')
+			.setPlaceholder(`This will be sent in all channels (OPTIONAL)`)
+			.setRequired(false)
+			.setStyle('PARAGRAPH');
+
+		const row = new MessageActionRow<ModalActionRowComponent>().setComponents(ReasonInput);
+
+		modal.setTitle('Lock').setComponents(row).setCustomId('@unlock/server');
+
+		interaction.user.data = {
+			content,
+			role,
+			deep
+		};
+
+		return interaction.showModal(modal);
+	}
+
 	private isLocked(channel: GuildChannel | ThreadChannel, role?: Role) {
 		if (channel.isThread() && !channel.locked) return false;
 		if (channel.isText() && channel.permissionsFor(role!).has('SEND_MESSAGES')) return false;
@@ -427,5 +478,5 @@ async function wait(ms: number) {
 	return wait(ms);
 }
 
-type subcmd = 'text' | 'voice' | 'category' | 'thread';
-type group = Exclude<subcmd, 'category'>;
+type subcmd = 'text' | 'voice' | 'category' | 'thread' | 'server';
+type group = Exclude<subcmd, 'category' | 'server'>;
