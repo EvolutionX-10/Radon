@@ -9,10 +9,6 @@ lerna-debug.log*
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
-# IDE
-.vscode
-.idea
-
 # Runtime data
 pids
 *.pid
@@ -111,6 +107,7 @@ dist
 
 # Extras
 .vscode/
+.idea/
 
 # Yarn files
 .yarn/install-state.gz
