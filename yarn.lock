@@ -294,7 +294,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/discord-utilities@npm:2.11.0, @sapphire/discord-utilities@npm:^2.10.3, @sapphire/discord-utilities@npm:^2.7.0":
+"@sapphire/discord-utilities@npm:2.11.0, @sapphire/discord-utilities@npm:^2.10.3":
   version: 2.11.0
   resolution: "@sapphire/discord-utilities@npm:2.11.0"
   dependencies:
