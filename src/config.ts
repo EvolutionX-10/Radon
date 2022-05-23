@@ -21,7 +21,7 @@ export const config: config = {
 		scope: BucketScope.User
 	},
 	mentions: {
-		parse: ['everyone', 'roles', 'users'],
+		parse: ['users'],
 		repliedUser: false
 	},
 	partials: ['GUILD_MEMBER', 'MESSAGE', 'USER', 'CHANNEL'],
