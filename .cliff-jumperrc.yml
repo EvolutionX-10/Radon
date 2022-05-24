@@ -1,4 +1,4 @@
-name: Radon
+name: radon
 packagePath: .
 commitMessageTemplate: 'chore(release): release {{new-version}}'
 tagTemplate: v{{new-version}}
