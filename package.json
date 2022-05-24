@@ -23,8 +23,8 @@
 		"heroku": "git push heroku main",
 		"backup": "heroku git:remote -a radon-dev2 && yarn heroku && heroku git:remote -a radon-dev",
 		"deploy": "yarn heroku && yarn backup",
-		"release": "standard-version",
-		"preview": "standard-version --dry-run",
+		"release": "cj",
+		"preview": "cj --dry-run",
 		"compile": "tsup",
 		"watch": "tsup --watch --onSuccess \"node ./dist/index.js\"",
 		"postinstall": "husky install",
@@ -54,6 +54,7 @@
 	},
 	"homepage": "https://github.com/EvolutionX-10/Radon#readme",
 	"devDependencies": {
+		"@favware/cliff-jumper": "^1.8.0",
 		"@sapphire/eslint-config": "4.3.5",
 		"@sapphire/prettier-config": "1.4.3",
 		"@swc/core": "1.2.189",

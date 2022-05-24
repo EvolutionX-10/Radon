@@ -1,0 +1,4 @@
+name: Radon
+packagePath: .
+commitMessageTemplate: 'chore(release): release {{new-version}}'
+tagTemplate: v{{new-version}}
