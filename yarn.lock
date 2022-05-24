@@ -168,7 +168,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@favware/cliff-jumper@npm:^1.8.0":
+"@favware/cliff-jumper@npm:1.8.0":
   version: 1.8.0
   resolution: "@favware/cliff-jumper@npm:1.8.0"
   dependencies:
@@ -4517,7 +4517,7 @@ __metadata:
   resolution: "radon@workspace:."
   dependencies:
     "@devtomio/plugin-botlist": 1.2.0
-    "@favware/cliff-jumper": ^1.8.0
+    "@favware/cliff-jumper": 1.8.0
     "@sapphire/decorators": 4.3.4
     "@sapphire/discord-utilities": 2.11.0
     "@sapphire/discord.js-utilities": 4.11.0
