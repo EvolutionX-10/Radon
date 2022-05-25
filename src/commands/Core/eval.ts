@@ -57,6 +57,10 @@ export class UserCommand extends RadonCommand {
 			return null;
 		}
 
+		if (args.getFlags('type', 't')) {
+			return send(message, footer);
+		}
+
 		if (result.length > 1900) {
 			return send(message, {
 				content: `Output was too long... sent the result as a file.\n\n${footer}`,
@@ -69,6 +73,10 @@ export class UserCommand extends RadonCommand {
 			});
 		}
 
+		if (args.getFlags('v', 'value')) {
+			return send(message, success ? result : 'Error occured');
+		}
+
 		return send(message, `${codeBlock('ts', result)}\n${footer}\n${time}`);
 	}
 
@@ -78,11 +86,9 @@ export class UserCommand extends RadonCommand {
 		const ar = code.split(';');
 		const last = ar.pop();
 		if (flags.async) code = `(async () => {\n${ar.join(';\n')}\nreturn ${last?.trim() ?? 'void'}\n\n})();`;
-		// @ts-ignore
 		const msg = message;
 		// @ts-ignore
-		const { guild, channel, member } = message;
-		// @ts-ignore
+		const { guild, channel, member } = msg;
 		const { container: ctn } = this;
 		// @ts-ignore
 		const { client } = ctn;
@@ -99,6 +105,7 @@ export class UserCommand extends RadonCommand {
 			result = eval(code);
 			syncTime = stopwatch.toString();
 			type = new Type(result);
+			success = true;
 		} catch (error) {
 			if (!syncTime.length) syncTime = stopwatch.toString();
 			if (thenable && !asyncTime.length) asyncTime = stopwatch.toString();
@@ -114,7 +121,6 @@ export class UserCommand extends RadonCommand {
 			result = await result;
 			asyncTime = stopwatch.toString();
 		}
-		success = true;
 		stopwatch.stop();
 
 		if (typeof result !== 'string') {
