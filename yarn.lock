@@ -4560,7 +4560,7 @@ __metadata:
     mongoose: 6.3.4
     prettier: 2.6.2
     pretty-quick: 3.1.3
-    tsup: 5.12.8
+    tsup: 5.12.9
     typescript: 4.7.2
   languageName: unknown
   linkType: soft
@@ -4759,7 +4759,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rollup@npm:^2.60.0":
+"rollup@npm:^2.74.1":
   version: 2.74.1
   resolution: "rollup@npm:2.74.1"
   dependencies:
@@ -5421,9 +5421,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsup@npm:5.12.8":
-  version: 5.12.8
-  resolution: "tsup@npm:5.12.8"
+"tsup@npm:5.12.9":
+  version: 5.12.9
+  resolution: "tsup@npm:5.12.9"
   dependencies:
     bundle-require: ^3.0.2
     cac: ^6.7.12
@@ -5435,19 +5435,25 @@ __metadata:
     joycon: ^3.0.1
     postcss-load-config: ^3.0.1
     resolve-from: ^5.0.0
-    rollup: ^2.60.0
+    rollup: ^2.74.1
     source-map: 0.8.0-beta.0
     sucrase: ^3.20.3
     tree-kill: ^1.2.2
   peerDependencies:
+    "@swc/core": ^1
+    postcss: ^8.4.12
     typescript: ^4.1.0
   peerDependenciesMeta:
+    "@swc/core":
+      optional: true
+    postcss:
+      optional: true
     typescript:
       optional: true
   bin:
     tsup: dist/cli-default.js
     tsup-node: dist/cli-node.js
-  checksum: 52629d44e3804a51e2136b37d9cc725d736007aaf19ef4795b1c3f8ede5a786386e6e4f4dcfb5e8e00496b014ed767352d1b77a2d48dd8f72a064b94617934e5
+  checksum: 872b7d1b523cb2feb6cdfaf9d0d45c1dee835b4b0a38d4f18dfd619ee5abc312421cf201edc8957cac8ba0d1061e697dd6ad1ccb2b45dc200a78ef7d0dd2569d
   languageName: node
   linkType: hard
 
