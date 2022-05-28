@@ -35,7 +35,7 @@
 		"typecheck": "tsc -b src"
 	},
 	"engines": {
-		"node": "17.9.0"
+		"node": "18.2.0"
 	},
 	"repository": {
 		"type": "git",
