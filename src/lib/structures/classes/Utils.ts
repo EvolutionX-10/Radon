@@ -1,3 +1,4 @@
+import type { RadonClient } from '#lib/RadonClient';
 import {
 	formatDuration,
 	generateModLogDescription,
@@ -13,7 +14,8 @@ import {
 	hours,
 	mins,
 	sec,
-	countlines
+	countlines,
+	getCache
 } from '#lib/utility';
 import { Button } from './Button.js';
 import { Embed } from './Embed.js';
@@ -35,7 +37,8 @@ export class Utils {
 	public mins;
 	public sec;
 	public countlines;
-	public constructor() {
+
+	public constructor(private readonly client: RadonClient) {
 		this.formatDuration = formatDuration;
 		this.generateModLogDescription = generateModLogDescription;
 		this.isAdmin = isAdmin;
@@ -67,5 +70,9 @@ export class Utils {
 
 	public row() {
 		return new Row();
+	}
+
+	public get cache() {
+		return getCache(this.client);
 	}
 }

@@ -16,7 +16,7 @@ export class UserListener extends Listener {
 
 	public override async run(client: RadonClient) {
 		this.container.settings = new Settings();
-		this.container.utils = new Utils();
+		this.container.utils = new Utils(client);
 
 		await client.guilds.fetch();
 
