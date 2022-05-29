@@ -6,6 +6,7 @@ import { Time } from '@sapphire/time-utilities';
 import { vars } from '#vars';
 import type { BotList } from '@devtomio/plugin-botlist';
 import type { HMROptions } from '@sapphire/plugin-hmr';
+import type { StatcordOptions } from '@kaname-png/plugin-statcord/dist/lib/types';
 
 export const config: config = {
 	intents: [
@@ -80,6 +81,13 @@ export const config: config = {
 			interval: 3600,
 			lifetime: 14400
 		}
+	},
+	statcord: {
+		client_id: '944833303226236989',
+		key: process.env.STATCORD_TOKEN!,
+		autopost: process.env.NODE_ENV === 'production',
+		debug: process.env.NODE_ENV === 'development',
+		sharding: false
 	}
 };
 interface config {
@@ -91,6 +99,7 @@ interface config {
 	sweepers: SweeperOptions;
 	botlist: BotList.Options;
 	hmr: HMROptions;
+	statcord: StatcordOptions;
 }
 export const client_config: ClientOptions = {
 	intents: config.intents,
@@ -107,5 +116,6 @@ export const client_config: ClientOptions = {
 	disableMentionPrefix: process.env.NODE_ENV === 'production',
 	preventFailedToFetchLogForGuildIds: ['733135938347073576'],
 	botList: config.botlist,
-	sweepers: config.sweepers
+	sweepers: config.sweepers,
+	statcord: config.statcord
 };

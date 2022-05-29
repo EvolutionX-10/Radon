@@ -243,6 +243,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@kaname-png/plugin-statcord@npm:^1.3.4":
+  version: 1.3.4
+  resolution: "@kaname-png/plugin-statcord@npm:1.3.4"
+  dependencies:
+    "@sapphire/fetch": ^2.3.1
+    systeminformation: ^5.11.14
+    tslib: ^2.4.0
+  checksum: 2870011a4d0c55eea916b734536fe7bd4ab1a8eb196ac7f13e757280bf93cc8a9fd994ecb007a51edac6d65e8be516d0de17be2734d31d8a4c5c662d888a8188
+  languageName: node
+  linkType: hard
+
 "@nodelib/fs.scandir@npm:2.1.5":
   version: 2.1.5
   resolution: "@nodelib/fs.scandir@npm:2.1.5"
@@ -342,7 +353,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/fetch@npm:^2.3.0":
+"@sapphire/fetch@npm:^2.3.0, @sapphire/fetch@npm:^2.3.1":
   version: 2.3.1
   resolution: "@sapphire/fetch@npm:2.3.1"
   dependencies:
@@ -4518,6 +4529,7 @@ __metadata:
   dependencies:
     "@devtomio/plugin-botlist": 1.2.0
     "@favware/cliff-jumper": 1.8.0
+    "@kaname-png/plugin-statcord": ^1.3.4
     "@sapphire/decorators": 4.3.4
     "@sapphire/discord-utilities": 2.11.0
     "@sapphire/discord.js-utilities": 4.11.0
@@ -5207,6 +5219,16 @@ __metadata:
   version: 1.0.0
   resolution: "supports-preserve-symlinks-flag@npm:1.0.0"
   checksum: 53b1e247e68e05db7b3808b99b892bd36fb096e6fba213a06da7fab22045e97597db425c724f2bbd6c99a3c295e1e73f3e4de78592289f38431049e1277ca0ae
+  languageName: node
+  linkType: hard
+
+"systeminformation@npm:^5.11.14":
+  version: 5.11.15
+  resolution: "systeminformation@npm:5.11.15"
+  bin:
+    systeminformation: lib/cli.js
+  checksum: 29bfd93cd6b733a2730a40daba415ecccb030b1dd965f872d0d0b272a935d31ab35c092ad273ce174f10f123899de03d95295336e5f9c68df0eb4a93b8eaed21
+  conditions: (os=darwin | os=linux | os=win32 | os=freebsd | os=openbsd | os=netbsd | os=sunos | os=android)
   languageName: node
   linkType: hard
 

@@ -39,4 +39,5 @@ export interface RadonEnv {
 
 	VOID_BOT_TOKEN?: string;
 	TOP_BOT_TOKEN?: string;
+	STATCORD_TOKEN?: string;
 }
