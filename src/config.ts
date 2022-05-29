@@ -114,7 +114,7 @@ export const client_config: ClientOptions = {
 	hmr: config.hmr,
 	shards: 'auto',
 	disableMentionPrefix: process.env.NODE_ENV === 'production',
-	preventFailedToFetchLogForGuildIds: ['733135938347073576'],
+	preventFailedToFetchLogForGuildIds: ['733135938347073576', '979342238951800882'],
 	botList: config.botlist,
 	sweepers: config.sweepers,
 	statcord: config.statcord
