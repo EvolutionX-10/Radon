@@ -243,7 +243,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kaname-png/plugin-statcord@npm:^1.3.4":
+"@kaname-png/plugin-statcord@npm:1.3.4":
   version: 1.3.4
   resolution: "@kaname-png/plugin-statcord@npm:1.3.4"
   dependencies:
@@ -4529,7 +4529,7 @@ __metadata:
   dependencies:
     "@devtomio/plugin-botlist": 1.2.0
     "@favware/cliff-jumper": 1.8.0
-    "@kaname-png/plugin-statcord": ^1.3.4
+    "@kaname-png/plugin-statcord": 1.3.4
     "@sapphire/decorators": 4.3.4
     "@sapphire/discord-utilities": 2.11.0
     "@sapphire/discord.js-utilities": 4.11.0
