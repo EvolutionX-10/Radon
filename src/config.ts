@@ -7,6 +7,12 @@ import { vars } from '#vars';
 import type { BotList } from '@devtomio/plugin-botlist';
 import type { HMROptions } from '@sapphire/plugin-hmr';
 import type { StatcordOptions } from '@kaname-png/plugin-statcord/dist/lib/types';
+import { config as dotenv } from 'dotenv-cra';
+import { envParseBoolean } from '#lib/env';
+
+dotenv({
+	debug: process.env.DOTENV_DEBUG_ENABLED ? envParseBoolean('DOTENV_DEBUG_ENABLED') : undefined
+});
 
 export const config: config = {
 	intents: [
@@ -86,7 +92,7 @@ export const config: config = {
 		client_id: '944833303226236989',
 		key: process.env.STATCORD_TOKEN!,
 		autopost: process.env.NODE_ENV === 'production',
-		debug: process.env.NODE_ENV === 'development',
+		debug: true,
 		sharding: false
 	}
 };
@@ -114,7 +120,7 @@ export const client_config: ClientOptions = {
 	hmr: config.hmr,
 	shards: 'auto',
 	disableMentionPrefix: process.env.NODE_ENV === 'production',
-	preventFailedToFetchLogForGuildIds: ['733135938347073576', '979342238951800882'],
+	preventFailedToFetchLogForGuildIds: ['733135938347073576', '979342238951800882', '608711879858192479'],
 	botList: config.botlist,
 	sweepers: config.sweepers,
 	statcord: config.statcord

@@ -2,13 +2,8 @@ import { SapphireClient, container, ApplicationCommandRegistries, RegisterBehavi
 import { client_config } from '#config';
 import mongoose from 'mongoose';
 import Redis from 'ioredis';
-import { config as dotenv } from 'dotenv-cra';
-import { envParseBoolean } from '#lib/env';
 import type { Settings, Utils } from '#lib/structures';
 
-dotenv({
-	debug: process.env.DOTENV_DEBUG_ENABLED ? envParseBoolean('DOTENV_DEBUG_ENABLED') : undefined
-});
 export class RadonClient extends SapphireClient {
 	public constructor() {
 		super(client_config);
