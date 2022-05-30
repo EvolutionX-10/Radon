@@ -39,21 +39,31 @@ export class ModalHandler extends InteractionHandler {
 	}
 
 	private async text(interaction: ModalSubmitInteraction, result: InteractionHandler.ParseResult<this>) {
-		const { channel, content, role } = interaction.user.data as TextData;
+		let { channel, content, role } = interaction.user.data as TextData;
 		const options = {
 			SEND_MESSAGES: false,
 			ADD_REACTIONS: false,
 			CREATE_PUBLIC_THREADS: false,
 			CREATE_PRIVATE_THREADS: false
 		};
-		const update = await channel.permissionOverwrites
-			.edit(role, options, {
-				reason: `Requested by ${interaction.user.tag} (${interaction.user.id})`
-			})
-			.catch(() => null);
 
-		if (!update) return interaction.editReply(`Failed to lock channel for ${role}!`);
+		const roptions = {
+			SEND_MESSAGES: true,
+			ADD_REACTIONS: true,
+			CREATE_PUBLIC_THREADS: true,
+			CREATE_PRIVATE_THREADS: true
+		};
+
+		await channel.permissionOverwrites
+			.edit(channel.guild.me!, roptions, {
+				reason: `Creating self permissions to avoid lock out`
+			})
+			.catch(() => (content += `\n> Something went wrong while creating self permissions! Please report this to my developers`));
+
 		if (!result.reason?.length) {
+			await channel.permissionOverwrites.edit(role, options, {
+				reason: `Requested by ${interaction.user.tag} (${interaction.user.id})`
+			});
 			return interaction.editReply(content);
 		}
 
@@ -65,7 +75,16 @@ export class ModalHandler extends InteractionHandler {
 			._description(result.reason)
 			._timestamp();
 
-		await channel.send({ embeds: [embed] });
+		await channel
+			.send({ embeds: [embed] })
+			.catch(
+				() =>
+					(content = `<#${channel.id}> was locked successfully for ${role}!\n\nIssues Found:\n> Couldn't send a message due to missing permission!`)
+			);
+
+		await channel.permissionOverwrites.edit(role, options, {
+			reason: `Requested by ${interaction.user.tag} (${interaction.user.id})`
+		});
 		return interaction.editReply(content);
 	}
 
@@ -89,6 +108,25 @@ export class ModalHandler extends InteractionHandler {
 		for await (const channel of category.children.values()) {
 			if (this.isLocked(channel, role)) continue;
 			await wait(1_000);
+
+			const roptions = {
+				SEND_MESSAGES: true,
+				ADD_REACTIONS: true,
+				CONNECT: true,
+				SPEAK: true,
+				CREATE_PUBLIC_THREADS: threads ? true : undefined,
+				CREATE_PRIVATE_THREADS: threads ? true : undefined,
+				USE_PUBLIC_THREADS: threads ? true : undefined,
+				USE_PRIVATE_THREADS: threads ? true : undefined,
+				SEND_MESSAGES_IN_THREADS: threads ? true : undefined
+			};
+
+			channel.permissionOverwrites
+				.edit(channel.guild.me!, roptions, {
+					reason: `Creating self permissions to avoid lock out`
+				})
+				.catch(() => null);
+			await wait(100);
 
 			channel.permissionOverwrites
 				.edit(
@@ -120,6 +158,7 @@ export class ModalHandler extends InteractionHandler {
 	private async thread(interaction: ModalSubmitInteraction, result: InteractionHandler.ParseResult<this>) {
 		const { thread, content } = interaction.user.data as ThreadData;
 
+		// TODO: check if thread (all) locks out itself during missing permissions
 		if (result.reason?.length) {
 			const embed = this.container.utils
 				.embed()
@@ -149,6 +188,13 @@ export class ModalHandler extends InteractionHandler {
 			CREATE_PUBLIC_THREADS: false,
 			CREATE_PRIVATE_THREADS: false
 		};
+		const roptions = {
+			SEND_MESSAGES: true,
+			ADD_REACTIONS: true,
+			CREATE_PUBLIC_THREADS: true,
+			CREATE_PRIVATE_THREADS: true
+		};
+
 		const embeds: Embed[] = [];
 
 		if (result.reason?.length) {
@@ -167,6 +213,12 @@ export class ModalHandler extends InteractionHandler {
 			if (this.isLocked(channel, role) || channel.type !== 'GUILD_TEXT') continue;
 			await wait(1_000);
 
+			channel.permissionOverwrites
+				.edit(channel.guild.me!, roptions, {
+					reason: `Creating self permissions to avoid lock out`
+				})
+				.catch(() => null);
+			await wait(100);
 			channel.permissionOverwrites
 				.edit(role, options, {
 					reason: `Requested by ${interaction.user.tag} (${interaction.user.id})`
@@ -237,6 +289,17 @@ export class ModalHandler extends InteractionHandler {
 			CONNECT: false,
 			SPEAK: false
 		};
+		const roptions = {
+			SEND_MESSAGES: true,
+			ADD_REACTIONS: true,
+			CREATE_PUBLIC_THREADS: true,
+			CREATE_PRIVATE_THREADS: true,
+			USE_PUBLIC_THREADS: true,
+			USE_PRIVATE_THREADS: true,
+			SEND_MESSAGES_IN_THREADS: true,
+			CONNECT: true,
+			SPEAK: true
+		};
 		const embeds: Embed[] = [];
 
 		if (result.reason?.length) {
@@ -252,11 +315,12 @@ export class ModalHandler extends InteractionHandler {
 		}
 
 		if (!deep) {
-			const channels = interaction.guild!.channels.cache.filter((c) => c.type === 'GUILD_TEXT');
+			const channels = interaction.guild!.channels.cache;
+			let i = 0;
 			for await (const channel of channels.values()) {
 				if (this.isLocked(channel, role) || channel.type !== 'GUILD_TEXT') continue;
 				await wait(1_000);
-				embeds.length ? await channel.send({ embeds }) : null;
+				embeds.length ? channel.send({ embeds }).catch(() => i++) : null;
 			}
 			const perms = role.permissions.remove([
 				PermissionFlagsBits.SendMessages,
@@ -266,6 +330,8 @@ export class ModalHandler extends InteractionHandler {
 				PermissionFlagsBits.SendMessagesInThreads,
 				PermissionFlagsBits.Speak
 			]);
+			if (i !== 0) content += `\n> Couldn't send messages in ${i} channels due to missing permissions!`;
+
 			role.setPermissions(perms.bitfield, `Requested by ${interaction.user.tag} (${interaction.user.id})`).catch(
 				() => (content += `\n> Missing permissions to edit role ${role}`)
 			);
@@ -277,6 +343,13 @@ export class ModalHandler extends InteractionHandler {
 		for await (const channel of channels.values()) {
 			if (this.isLocked(channel, role) || channel instanceof ThreadChannel) continue;
 			await wait(1_000);
+
+			channel.permissionOverwrites
+				.edit(channel.guild.me!, roptions, {
+					reason: `Creating permissions to avoid self lock out`
+				})
+				.catch(() => null);
+			await wait(100);
 			channel.permissionOverwrites
 				.edit(role, options, {
 					reason: `Requested by ${interaction.user.tag} (${interaction.user.id})`

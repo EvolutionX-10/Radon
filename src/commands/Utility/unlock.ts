@@ -22,7 +22,7 @@ import {
 	permissionLevel: PermissionLevels.Moderator,
 	cooldownDelay: sec(30),
 	cooldownScope: BucketScope.Guild,
-	requiredClientPermissions: ['MANAGE_CHANNELS', 'MANAGE_ROLES'],
+	requiredClientPermissions: ['MANAGE_ROLES'],
 	runIn: ['GUILD_ANY'],
 	cooldownLimit: 3
 })
@@ -208,7 +208,7 @@ export class UserCommand extends RadonCommand {
 				]
 			},
 			{
-				guildIds: vars.guildIds,
+				guildIds: vars.guildIds.concat('953175228899553312'),
 				idHints: ['978320032541081662', '975667692465950770']
 			}
 		);
@@ -217,7 +217,7 @@ export class UserCommand extends RadonCommand {
 	private unlockText(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const channel = interaction.options.getChannel('channel', true) as TextChannel;
 		if (!channel) return interaction.reply('Invalid channel!');
-		if (!channel.permissionsFor(this.container.client.user!)!.has('MANAGE_CHANNELS'))
+		if (!channel.permissionsFor(this.container.client.user!)!.has('MANAGE_ROLES'))
 			return interaction.reply('I do not have permission to unlock channels!');
 
 		const role = (interaction.options.getRole('role') ?? interaction.guild!.roles.everyone!) as Role;
@@ -251,7 +251,7 @@ export class UserCommand extends RadonCommand {
 	private async unlockVoice(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const channel = interaction.options.getChannel('channel', true) as GuildChannel;
 		if (!channel) return interaction.reply('Invalid channel!');
-		if (!channel.permissionsFor(this.container.client.user!)!.has('MANAGE_CHANNELS'))
+		if (!channel.permissionsFor(this.container.client.user!)!.has('MANAGE_ROLES'))
 			return interaction.reply('I do not have permission to lock channels!');
 
 		const role = (interaction.options.getRole('role') ?? interaction.guild!.roles.everyone!) as Role;
@@ -281,7 +281,7 @@ export class UserCommand extends RadonCommand {
 	private unlockCategory(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const category = interaction.options.getChannel('channel', true) as CategoryChannel;
 		if (!category) return interaction.reply('Invalid category!');
-		if (!category.permissionsFor(this.container.client.user!)!.has('MANAGE_CHANNELS'))
+		if (!category.permissionsFor(this.container.client.user!)!.has('MANAGE_ROLES'))
 			return interaction.reply('I do not have permission to unlock channels!');
 
 		const role = (interaction.options.getRole('role') ?? interaction.guild!.roles.everyone!) as Role;
