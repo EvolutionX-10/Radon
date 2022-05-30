@@ -1,7 +1,7 @@
 name: Bug Report
 description: File a bug report here
 title: 'bug: '
-labels: ['Bug: Unverified']
+labels: ['Bug: Unverified', 'Bug: Need Repro']
 body:
   - type: markdown
     attributes:
