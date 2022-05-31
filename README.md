@@ -61,7 +61,7 @@ To contribute to this repository, feel free to fork the repository and make your
 
 ## Project Stats
 
-[![Radon](https://repobeats.axiom.co/api/embed/21ef11d4b9a4424c6a715b92bdba323c5eaf37ff.svg 'All kinds Contributions are welcomed!')](https://top.gg/bot/944833303226236989)
+[![Radon](https://repobeats.axiom.co/api/embed/2dfcb3b8b5cbc2d7e8ecf7928bac05b966076c7f.svg 'All kinds Contributions are welcomed!')](https://top.gg/bot/944833303226236989)
 
 <!-- REFERENCES -->
 
