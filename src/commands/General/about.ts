@@ -106,7 +106,14 @@ export class UserCommand extends RadonCommand {
 			._style('LINK')
 			._emoji('<:voidbots:742925293907607624>')
 			._url('https://voidbots.net/bot/944833303226236989/vote');
-		const votes = [vote_top, vote_void];
+		const vote_labs = this.container.utils
+			.button()
+			._label('Vote on Discord Labs')
+			._style('LINK')
+			._emoji('<:discordlabsicon:621472531735642130>')
+			._url('https://bots.discordlabs.org/bot/944833303226236989?vote');
+
+		const votes = [vote_top, vote_void, vote_labs];
 		const voteRow = this.container.utils.row()._components(votes);
 
 		const invite = this.container.client.generateInvite({
