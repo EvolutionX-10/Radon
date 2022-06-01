@@ -760,14 +760,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=12":
-  version: 17.0.36
-  resolution: "@types/node@npm:17.0.36"
-  checksum: 11055fde0a1e1421113849b5e32c7022911efc0be670729947bf0162970e79962d804b1eb8a9afb291380cac97cf0e684511415d586ae5fe1560322c940fe188
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:17.0.38":
+"@types/node@npm:*, @types/node@npm:17.0.38, @types/node@npm:>=12":
   version: 17.0.38
   resolution: "@types/node@npm:17.0.38"
   checksum: 9db1c39d603850ced665ab60b8f8ebce674ff9d762dfff0f776d520e71e4d73fdcd4c7f69213b804d878cf3e726911b09cae4ee66e35ae2724538de9f4838681
@@ -3194,9 +3187,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ioredis@npm:5.0.6":
-  version: 5.0.6
-  resolution: "ioredis@npm:5.0.6"
+"ioredis@npm:5.0.5":
+  version: 5.0.5
+  resolution: "ioredis@npm:5.0.5"
   dependencies:
     "@ioredis/commands": ^1.1.1
     cluster-key-slot: ^1.1.0
@@ -3207,7 +3200,7 @@ __metadata:
     redis-errors: ^1.2.0
     redis-parser: ^3.0.0
     standard-as-callback: ^2.1.0
-  checksum: 24ae1fecec197e9e5d3e73e81e12134ace56a76b5e972a01cb9fa7f3853940f5a679bbd9f4aea2fd9848be9e035d996229cdadf5c5f997f21cf2a322edf1406e
+  checksum: a5dafe330165cc3c06ee7595e49247653f7a3d38995aa3ed40c816a04010e8d649e88239780cba271c2be59d42f255a6059bd305ef1a642358500adde8b8c361
   languageName: node
   linkType: hard
 
@@ -4498,7 +4491,7 @@ __metadata:
     figlet: 1.5.2
     gradient-string: 2.0.1
     husky: 8.0.1
-    ioredis: 5.0.6
+    ioredis: 5.0.5
     lint-staged: 13.0.0
     mongoose: 6.3.5
     prettier: 2.6.2
@@ -4703,8 +4696,8 @@ __metadata:
   linkType: hard
 
 "rollup@npm:^2.74.1":
-  version: 2.75.3
-  resolution: "rollup@npm:2.75.3"
+  version: 2.75.5
+  resolution: "rollup@npm:2.75.5"
   dependencies:
     fsevents: ~2.3.2
   dependenciesMeta:
@@ -4712,7 +4705,7 @@ __metadata:
       optional: true
   bin:
     rollup: dist/bin/rollup
-  checksum: ac33a2336df049f21dea64e4c9faee2551bddf2920944ea6214b2ed214f3861c9a4e1a8b7a32d2af6632f649a25a2bf4da8fad9f84f5093f2bf4d7e77933756b
+  checksum: fa3e61959efbc88cda75315dc22f035489be9dda3ae7d45a3a474f19efc3661ef6f9849486c7ca51e1a3e2aedef91f4e3223e8123bbeaf155913533d071994d1
   languageName: node
   linkType: hard
 
@@ -4886,13 +4879,13 @@ __metadata:
   linkType: hard
 
 "socks-proxy-agent@npm:^6.1.1":
-  version: 6.2.0
-  resolution: "socks-proxy-agent@npm:6.2.0"
+  version: 6.2.1
+  resolution: "socks-proxy-agent@npm:6.2.1"
   dependencies:
     agent-base: ^6.0.2
     debug: ^4.3.3
     socks: ^2.6.2
-  checksum: 6723fd64fb50334e2b340fd0a80fd8488ffc5bc43d85b7cf1d25612044f814dd7d6ea417fd47602159941236f7f4bd15669fa5d7e1f852598a31288e1a43967b
+  checksum: 9ca089d489e5ee84af06741135c4b0d2022977dad27ac8d649478a114cdce87849e8d82b7c22b51501a4116e231241592946fc7fae0afc93b65030ee57084f58
   languageName: node
   linkType: hard
 
@@ -5154,11 +5147,11 @@ __metadata:
   linkType: hard
 
 "systeminformation@npm:^5.11.14":
-  version: 5.11.15
-  resolution: "systeminformation@npm:5.11.15"
+  version: 5.11.16
+  resolution: "systeminformation@npm:5.11.16"
   bin:
     systeminformation: lib/cli.js
-  checksum: 29bfd93cd6b733a2730a40daba415ecccb030b1dd965f872d0d0b272a935d31ab35c092ad273ce174f10f123899de03d95295336e5f9c68df0eb4a93b8eaed21
+  checksum: 4e4fb4c9c86c658c7e07a7661ac85a102bfb0a134f76cc5c5e7daf7ba13f9b43895d4ce4d80e55275a3395d254d20a84c53f036f1baececf5b94028ec93242c4
   conditions: (os=darwin | os=linux | os=win32 | os=freebsd | os=openbsd | os=netbsd | os=sunos | os=android)
   languageName: node
   linkType: hard
