@@ -55,7 +55,7 @@
 	"homepage": "https://github.com/EvolutionX-10/Radon#readme",
 	"devDependencies": {
 		"@favware/cliff-jumper": "1.8.0",
-		"@sapphire/eslint-config": "4.3.5",
+		"@sapphire/eslint-config": "4.3.6",
 		"@sapphire/prettier-config": "1.4.3",
 		"@swc/core": "1.2.196",
 		"@types/figlet": "1.5.4",
