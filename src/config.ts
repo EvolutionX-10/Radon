@@ -33,7 +33,7 @@ export const config: config = {
 	},
 	partials: ['GUILD_MEMBER', 'MESSAGE', 'USER', 'CHANNEL'],
 	logger: {
-		level: process.env.NODE_ENV === 'development' ? LogLevel.Debug : LogLevel.Info
+		level: process.env.NODE_ENV === 'development' ? LogLevel.Debug : LogLevel.Debug
 	},
 	botlist: {
 		keys: {
