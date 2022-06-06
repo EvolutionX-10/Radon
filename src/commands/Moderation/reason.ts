@@ -1,7 +1,8 @@
 import { RadonCommand } from '#lib/structures';
+import { warnsDB } from '#models';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import { Constants, TextChannel } from 'discord.js';
+import { Constants, GuildMember, Message, TextChannel } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
 	description: `Change the reason for the action`,
 	runIn: `GUILD_ANY`
@@ -30,7 +31,7 @@ export class UserCommand extends RadonCommand {
 				content: `The message seems to be deleted or the ID is invalid!`
 			});
 		}
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
 		if (message.author.id !== this.container.client.user!.id) {
 			return interaction.editReply({
 				content: `This message isn't from me!`
@@ -43,7 +44,11 @@ export class UserCommand extends RadonCommand {
 			embeds: message.embeds
 		});
 		if (message.embeds[0].description.includes('**Action**: Warn')) {
-			// TODO add a check for the warn id and update reason
+			const id = this.getID(message);
+			const member = await interaction.guild.members.fetch(id!.memberID!).catch(() => null);
+			if (member) {
+				await this.updateReason(member, id!.warnID!, reason);
+			}
 		}
 		return interaction.editReply({
 			content: `Successfully updated the reason!`
@@ -75,5 +80,48 @@ export class UserCommand extends RadonCommand {
 				idHints: ['952460616696741938', '952277309015093288']
 			}
 		);
+	}
+
+	private async updateReason(member: GuildMember, id: string, reason: string) {
+		const warns = await member.guild.settings?.warns.get({ member });
+		if (!warns || !warns?.exist || !warns?.person) return;
+
+		return warnsDB.findOneAndUpdate(
+			{
+				_id: member.guild.id,
+				'warnlist.warns': {
+					$elemMatch: {
+						_id: id
+					}
+				}
+			},
+			{
+				$set: {
+					'warnlist.$.warns.$[warns].reason': reason
+				}
+			},
+			{
+				arrayFilters: [
+					{
+						'warns._id': id
+					}
+				]
+			}
+		);
+	}
+
+	private getID(message: Message) {
+		const embed = message.embeds[0];
+		if (!embed) return;
+		const regexForMember = /`(?<MemberID>\d{17,19})`/gm;
+		const regexForId = /(?:\*\*Warn ID\*\*: `)(?<warnID>.{17})(?:`)/gm;
+		const match = regexForMember.exec(embed.description as string);
+		const match2 = regexForId.exec(embed.description as string);
+
+		if (!match?.length || !match2?.length) return;
+		return {
+			warnID: match2.groups?.warnID,
+			memberID: match.groups?.MemberID
+		};
 	}
 }
