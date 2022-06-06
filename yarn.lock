@@ -152,14 +152,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kaname-png/plugin-statcord@npm:1.3.4":
-  version: 1.3.4
-  resolution: "@kaname-png/plugin-statcord@npm:1.3.4"
+"@kaname-png/plugin-statcord@npm:1.3.5":
+  version: 1.3.5
+  resolution: "@kaname-png/plugin-statcord@npm:1.3.5"
   dependencies:
-    "@sapphire/fetch": ^2.3.1
-    systeminformation: ^5.11.14
+    "@sapphire/fetch": ^2.4.0
+    systeminformation: ^5.11.16
     tslib: ^2.4.0
-  checksum: 2870011a4d0c55eea916b734536fe7bd4ab1a8eb196ac7f13e757280bf93cc8a9fd994ecb007a51edac6d65e8be516d0de17be2734d31d8a4c5c662d888a8188
+  checksum: 3e41da9e9e136892ed7192279799f9005ef810160f1fcb1c7dc11e85ee212658679dd343806e9041c2a8cef991a7427bde02ed825f622d8add0823f42651fefa
   languageName: node
   linkType: hard
 
@@ -283,12 +283,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/fetch@npm:^2.3.0, @sapphire/fetch@npm:^2.3.1":
+"@sapphire/fetch@npm:^2.3.0":
   version: 2.3.1
   resolution: "@sapphire/fetch@npm:2.3.1"
   dependencies:
     cross-fetch: ^3.1.5
   checksum: 3cb6d2a74fd107901d6902b8949ae7b3780da7efb519fc411fee1496d4d0d72cec1a68e19fc6ac47984f37f509567dbbc4ce82bea5c1ff437f119fc0afa8359d
+  languageName: node
+  linkType: hard
+
+"@sapphire/fetch@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "@sapphire/fetch@npm:2.4.0"
+  dependencies:
+    cross-fetch: ^3.1.5
+  checksum: be03ec367ef1b49b38bfe06c3cf7fa507eefb4635bcccf3c5330857bddefd40c7a98c15e102deae8d78ebfbd816a94b5c9040d77b30a7742fd17506186f993b7
   languageName: node
   linkType: hard
 
@@ -3885,7 +3894,7 @@ __metadata:
   dependencies:
     "@devtomio/plugin-botlist": 1.2.0
     "@favware/cliff-jumper": 1.8.2
-    "@kaname-png/plugin-statcord": 1.3.4
+    "@kaname-png/plugin-statcord": 1.3.5
     "@sapphire/decorators": 4.3.4
     "@sapphire/discord-utilities": 2.11.1
     "@sapphire/discord.js-utilities": 4.11.1
@@ -4490,7 +4499,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"systeminformation@npm:^5.11.14":
+"systeminformation@npm:^5.11.16":
   version: 5.11.16
   resolution: "systeminformation@npm:5.11.16"
   bin:
