@@ -133,9 +133,8 @@ export class UserCommand extends RadonCommand {
 			fetchReply: true
 		})) as RadonCommand.Message;
 
-		// TODO switch to interaction handler
 		const collector = m.createMessageComponentCollector({
-			time: this.container.utils.sec(120)
+			time: this.container.utils.sec(30)
 		});
 		collector.on('collect', (i) => {
 			switch (i.customId as Ids) {
@@ -154,7 +153,7 @@ export class UserCommand extends RadonCommand {
 			}
 		});
 
-		collector.on('end', async (_collected) => {
+		collector.on('end', async () => {
 			m.components[0].components.forEach((b) => b.setDisabled());
 			await m.edit({ components: m.components });
 		});
