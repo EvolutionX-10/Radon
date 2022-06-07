@@ -1,11 +1,8 @@
-import { ApplyOptions } from '@sapphire/decorators';
-import { Listener, UserError, MessageCommandDeniedPayload, ListenerOptions, Events } from '@sapphire/framework';
+import type { RadonEvents } from '#lib/types';
+import { Listener, UserError, MessageCommandDeniedPayload } from '@sapphire/framework';
 import { send } from '@sapphire/plugin-editable-commands';
 
-@ApplyOptions<ListenerOptions>({
-	event: Events.MessageCommandDenied
-})
-export class UserListener extends Listener {
+export class UserListener extends Listener<typeof RadonEvents.MessageCommandDenied> {
 	public override async run(error: UserError, { message }: MessageCommandDeniedPayload) {
 		if (Reflect.get(Object(error.context), 'silent')) return;
 

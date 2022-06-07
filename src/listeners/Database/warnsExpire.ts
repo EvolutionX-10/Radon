@@ -1,11 +1,8 @@
+import type { RadonEvents } from '#lib/types';
 import { warnsDB } from '#models';
-import { ApplyOptions } from '@sapphire/decorators';
-import { Events, Listener, container } from '@sapphire/framework';
-@ApplyOptions<Listener.Options>({
-	event: Events.ClientReady,
-	once: false
-})
-export class UserListener extends Listener {
+import { Listener, container } from '@sapphire/framework';
+
+export class UserListener extends Listener<typeof RadonEvents.ClientReady> {
 	public override async run() {
 		const expire = async () => {
 			const now = new Date();

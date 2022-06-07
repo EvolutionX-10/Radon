@@ -1,12 +1,9 @@
+import type { RadonEvents } from '#lib/types';
 import { color, isOwner } from '#lib/utility';
-import { ApplyOptions } from '@sapphire/decorators';
-import { Events, Listener } from '@sapphire/framework';
+import { Listener } from '@sapphire/framework';
 import axios from 'axios';
 import { CommandInteraction, MessageEmbed } from 'discord.js';
-@ApplyOptions<Listener.Options>({
-	event: Events.ChatInputCommandFinish
-})
-export class UserListener extends Listener {
+export class UserListener extends Listener<typeof RadonEvents.ChatInputCommandFinish> {
 	public override async run(interaction: CommandInteraction) {
 		if (isOwner(interaction.user)) return;
 		const isvoted = await this.hasVoted(interaction);

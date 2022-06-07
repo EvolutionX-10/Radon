@@ -1,13 +1,11 @@
 import { GuildSettings, Timestamp } from '#lib/structures';
+import type { RadonEvents } from '#lib/types';
 import { color } from '#lib/utility';
 import { blacklistDB } from '#models';
-import { ApplyOptions } from '@sapphire/decorators';
-import { Events, Listener } from '@sapphire/framework';
+import { Listener } from '@sapphire/framework';
 import type { Guild, TextChannel } from 'discord.js';
-@ApplyOptions<Listener.Options>({
-	event: Events.GuildCreate
-})
-export class UserListener extends Listener {
+
+export class UserListener extends Listener<typeof RadonEvents.GuildCreate> {
 	public override async run(guild: Guild) {
 		const isBlacklisted = await blacklistDB.findById(guild.id);
 		if (isBlacklisted) {

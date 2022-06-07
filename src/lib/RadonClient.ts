@@ -4,25 +4,21 @@ import mongoose from 'mongoose';
 import Redis from 'ioredis';
 import type { Settings, Utils } from '#lib/structures';
 
-export class RadonClient extends SapphireClient {
+export class RadonClient<Ready extends boolean = boolean> extends SapphireClient<Ready> {
 	public constructor() {
 		super(client_config);
 	}
 
 	public override async login(token?: string): Promise<string> {
 		ApplicationCommandRegistries.setDefaultBehaviorWhenNotIdentical(RegisterBehavior.Overwrite);
-		container.database = await this.connect();
+		container.database = await mongoose.connect(process.env.MONGO!);
 		container.db = new Redis(process.env.REDIS_URL!);
 		return super.login(token);
 	}
 
-	public override async destroy(): Promise<void> {
-		await container.database.connection.close();
+	public override destroy(): void {
+		container.database.connection.close().catch(() => null);
 		return super.destroy();
-	}
-
-	private async connect() {
-		return mongoose.connect(process.env.MONGO!);
 	}
 }
 

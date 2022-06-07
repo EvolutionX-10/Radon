@@ -1,8 +1,9 @@
 import { Timestamp } from '#lib/structures';
-import { Events, Identifiers, Listener, UserError, type ChatInputCommandDeniedPayload } from '@sapphire/framework';
+import type { RadonEvents } from '#lib/types';
+import { Identifiers, Listener, UserError, type ChatInputCommandDeniedPayload } from '@sapphire/framework';
 import type { CommandInteraction } from 'discord.js';
 
-export class UserListener extends Listener<typeof Events.ChatInputCommandDenied> {
+export class UserListener extends Listener<typeof RadonEvents.ChatInputCommandDenied> {
 	public run({ context, message: content, identifier }: UserError, { interaction }: ChatInputCommandDeniedPayload) {
 		if (Reflect.get(Object(context), 'silent')) return;
 		if (identifier === Identifiers.PreconditionCooldown) {

@@ -1,12 +1,9 @@
-import { Events, Listener, ListenerOptions } from '@sapphire/framework';
+import { Listener } from '@sapphire/framework';
 import type { Message } from 'discord.js';
 import { get } from '@sapphire/plugin-editable-commands';
-import { ApplyOptions } from '@sapphire/decorators';
+import type { RadonEvents } from '#lib/types';
 
-@ApplyOptions<ListenerOptions>({
-	event: Events.MessageDelete
-})
-export class UserListener extends Listener<typeof Events.MessageDelete> {
+export class UserListener extends Listener<typeof RadonEvents.MessageDelete> {
 	public override run(message: Message) {
 		if (!message.guild) return;
 

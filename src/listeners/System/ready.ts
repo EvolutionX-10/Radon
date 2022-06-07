@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { RadonClient } from '#lib/RadonClient';
 import { GuildSettings, Settings, Utils } from '#lib/structures';
+import type { RadonEvents } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
-import { Events, Listener, Store } from '@sapphire/framework';
+import { Listener, Store } from '@sapphire/framework';
 import { blue, gray, green, magentaBright, white, yellow, greenBright, blueBright } from 'colorette';
 import figlet from 'figlet';
 import gradient from 'gradient-string';
 
 @ApplyOptions<Listener.Options>({
-	event: Events.ClientReady,
 	once: true
 })
-export class UserListener extends Listener {
+export class UserListener extends Listener<typeof RadonEvents.ClientReady> {
 	private readonly style = this.isDev ? yellow : blue;
 
 	public override async run(client: RadonClient) {
@@ -56,7 +56,6 @@ ${this.isDev ? ` ${pad}${blc('<')}${llc('/')}${blc('>')} ${llc('DEVELOPMENT MODE
 	private printStoreDebugInformation() {
 		const { client, logger } = this.container;
 		const stores = [...client.stores.values()];
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		const last = stores.pop()!;
 
 		for (const store of stores) logger.info(this.styleStore(store, false));
