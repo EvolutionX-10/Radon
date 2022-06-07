@@ -1,6 +1,6 @@
 import { RadonCommand } from '#lib/structures';
-import { PermissionLevels } from '#lib/types';
-import { generateModLogDescription, runAllChecks, sec, severity } from '#lib/utility';
+import { BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
+import { runAllChecks, sec } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Constants, GuildMember } from 'discord.js';
@@ -34,22 +34,18 @@ export class UserCommand extends RadonCommand {
 			reason: reason ?? undefined
 		});
 		await interaction.guild.members.unban(id, reason ?? undefined);
-		const embed = this.container.utils
-			.embed()
-			._color(severity.softban)
-			._author({
-				name: interaction.user.tag,
-				iconURL: interaction.user.displayAvatarURL({ dynamic: true })
-			});
-		const description = generateModLogDescription({
-			member,
-			action: 'Soft Ban',
+
+		const data: BaseModActionData = {
+			action: 'softban',
+			moderator: interaction.member as GuildMember,
+			target: member,
 			reason: reason ?? undefined
-		});
-		embed._description(description);
-		if (interaction.guild && (await interaction.guild.settings?.modlogs.modLogs_exist())) {
-			await interaction.guild.settings?.modlogs.sendModLog(embed);
+		};
+
+		if (await interaction.guild.settings?.modlogs.modLogs_exist()) {
+			this.container.client.emit(RadonEvents.ModAction, data);
 		}
+
 		return interaction.editReply(content);
 	}
 

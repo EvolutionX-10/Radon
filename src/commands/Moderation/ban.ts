@@ -1,5 +1,5 @@
 import { Confirmation, RadonCommand } from '#lib/structures';
-import { PermissionLevels } from '#lib/types';
+import { BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
 import { generateModLogDescription, runAllChecks, sec, severity } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
@@ -91,6 +91,13 @@ export class UserCommand extends RadonCommand {
 			reason
 		});
 
+		const data: BaseModActionData = {
+			moderator: interaction.member as GuildMember,
+			target: member,
+			reason,
+			action: 'ban'
+		};
+
 		const embed = this.container.utils
 			.embed()
 			._color(severity.ban)
@@ -106,7 +113,7 @@ export class UserCommand extends RadonCommand {
 		embed._description(description);
 
 		if (await interaction.guild!.settings?.modlogs.modLogs_exist()) {
-			await interaction.guild!.settings?.modlogs.sendModLog(embed);
+			this.container.client.emit(RadonEvents.ModAction, data);
 		}
 
 		return interaction.editReply({

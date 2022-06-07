@@ -7,14 +7,14 @@ export class Warn {
 	}
 
 	public async add({
-		warnid,
+		warnId,
 		member,
 		reason,
 		severity,
 		expiration,
 		mod
 	}: {
-		warnid: string;
+		warnId: string;
 		member: GuildMember;
 		reason: string;
 		severity: number;
@@ -40,7 +40,7 @@ export class Warn {
 					{
 						$push: {
 							'warnlist.$.warns': {
-								_id: warnid,
+								_id: warnId,
 								reason,
 								mod: mod.id,
 								severity,
@@ -61,7 +61,7 @@ export class Warn {
 							_id: member.id,
 							warns: [
 								{
-									_id: warnid,
+									_id: warnId,
 									reason,
 									mod: mod.id,
 									severity,
@@ -87,7 +87,7 @@ export class Warn {
 						_id: member.id,
 						warns: [
 							{
-								_id: warnid,
+								_id: warnId,
 								reason,
 								mod: mod.id,
 								severity,
@@ -105,14 +105,14 @@ export class Warn {
 		return data as warnsData;
 	}
 
-	public async remove({ warnid, member }: { warnid: string; member: GuildMember }) {
+	public async remove({ warnId, member }: { warnId: string; member: GuildMember }) {
 		const exist = await warnsDB.findOne({
 			_id: this.guild.id
 		});
 		if (exist as warnsData) {
 			const person = exist?.warnlist.filter((e) => e._id === member.id)?.[0];
 			if (person) {
-				if (person.warns.filter((e) => e._id === warnid).length) {
+				if (person.warns.filter((e) => e._id === warnId).length) {
 					return (await warnsDB.findOneAndUpdate(
 						{
 							_id: this.guild.id,
@@ -125,7 +125,7 @@ export class Warn {
 						{
 							$pull: {
 								'warnlist.$.warns': {
-									_id: warnid
+									_id: warnId
 								}
 							}
 						}

@@ -22,7 +22,7 @@ export class UserListener extends Listener {
 									if (member) {
 										await guild.settings?.warns.remove({
 											member,
-											warnid: warn._id
+											warnId: warn._id
 										});
 									}
 								}

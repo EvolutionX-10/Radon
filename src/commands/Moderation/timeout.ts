@@ -1,6 +1,6 @@
 import { RadonCommand, Timestamp } from '#lib/structures';
-import { PermissionLevels } from '#lib/types';
-import { severity, runAllChecks, generateModLogDescription } from '#lib/utility';
+import { PermissionLevels, RadonEvents, TimeoutActionData } from '#lib/types';
+import { runAllChecks } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Constants, GuildMember } from 'discord.js';
@@ -48,24 +48,19 @@ export class UserCommand extends RadonCommand {
 				})
 				.catch(() => (content += `\n${vars.emojis.cross} Couldn't DM the member!`));
 		}
-		const embed = this.container.utils
-			.embed()
-			._color(severity.timeout)
-			._author({
-				name: interaction.user.tag,
-				iconURL: interaction.user.displayAvatarURL({ dynamic: true })
-			});
-		const des = generateModLogDescription({
-			member,
-			action: 'Timeout',
-			reason,
-			duration: new Timestamp(Date.now() + duration)
-		});
-		embed._description(des);
 
-		if (interaction.guild && (await interaction.guild.settings?.modlogs.modLogs_exist()) && duration !== 0) {
-			await interaction.guild.settings?.modlogs.sendModLog(embed);
+		const data: TimeoutActionData = {
+			moderator: interaction.member as GuildMember,
+			target: member,
+			reason,
+			action: 'timeout',
+			duration: new Timestamp(Date.now() + duration)
+		};
+
+		if ((await interaction.guild.settings?.modlogs.modLogs_exist()) && duration !== 0) {
+			this.container.client.emit(RadonEvents.ModAction, data);
 		}
+
 		if (duration === 0) content = `${vars.emojis.confirm} Removed timeout from ${member} [${member.user.tag}]`;
 		return interaction.editReply({ content });
 	}

@@ -1,6 +1,6 @@
 import { RadonCommand, RadonPaginatedMessageEmbedFields, Timestamp } from '#lib/structures';
-import { PermissionLevels } from '#lib/types';
-import { color, generateModLogDescription, mins, runAllChecks, uid, severity as sev, warnSeverity, sec } from '#lib/utility';
+import { PermissionLevels, RadonEvents, WarnActionData } from '#lib/types';
+import { color, mins, runAllChecks, uid, warnSeverity, sec } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import { cutText } from '@sapphire/utilities';
@@ -227,7 +227,7 @@ export class UserCommand extends RadonCommand {
 				ephemeral: true
 			});
 		const deleteMsg = interaction.options.getBoolean('delete_messages') ?? false;
-		const severity = interaction.options.getInteger('severity') ?? 1;
+		const severity = (interaction.options.getInteger('severity') ?? 1) as warnSeverityNum;
 		const expires = interaction.options.getString('expiration') ?? this.autoSeverity(severity);
 		const silent = interaction.options.getBoolean('silent') ?? false;
 		if (isNaN(new Duration(expires).offset)) {
@@ -254,7 +254,7 @@ export class UserCommand extends RadonCommand {
 			expiration,
 			reason,
 			severity,
-			warnid: warnId,
+			warnId,
 			member,
 			mod: interaction.member as GuildMember
 		});
@@ -289,27 +289,21 @@ export class UserCommand extends RadonCommand {
 				}
 			]
 		});
-		const embed = this.container.utils
-			.embed()
-			._color(sev.warn)
-			._author({
-				name: interaction.user.tag,
-				iconURL: interaction.user.displayAvatarURL({
-					dynamic: true
-				})
-			});
-		const des = generateModLogDescription({
-			member,
-			action: 'Warn',
-			reason,
-			duration: new Timestamp(expiration.getTime()),
-			warnId
-		});
-		embed._description(des);
 
-		if (interaction.guild && (await interaction.guild.settings?.modlogs.modLogs_exist())) {
-			await interaction.guild.settings?.modlogs.sendModLog(embed);
+		const data: WarnActionData = {
+			warnId,
+			target: member,
+			moderator: interaction.member as GuildMember,
+			duration: new Timestamp(expiration.getTime()),
+			reason,
+			severity,
+			action: 'warn'
+		};
+
+		if (await interaction.guild!.settings!.modlogs.modLogs_exist()) {
+			this.container.client.emit(RadonEvents.ModAction, data);
 		}
+
 		if (deleteMsg) {
 			if (!interaction.guild?.me?.permissions.has('MANAGE_MESSAGES')) {
 				return interaction.followUp({
@@ -338,7 +332,7 @@ export class UserCommand extends RadonCommand {
 
 	private async remove(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const member = interaction.options.getMember('user') as GuildMember;
-		const warnid = interaction.options.getString('warn_id', true);
+		const warnId = interaction.options.getString('warn_id', true);
 		const reason = interaction.options.getString('reason') ?? 'No reason provided';
 		if (!member) {
 			return interaction.reply({
@@ -347,7 +341,7 @@ export class UserCommand extends RadonCommand {
 			});
 		}
 		const warn = await interaction.guild?.settings?.warns.remove({
-			warnid,
+			warnId,
 			member
 		});
 		if (!warn) {
@@ -367,25 +361,17 @@ export class UserCommand extends RadonCommand {
 			content,
 			ephemeral: false
 		});
-		const embed = this.container.utils
-			.embed()
-			._color(sev.warn_removal)
-			._author({
-				name: interaction.user.tag,
-				iconURL: interaction.user.displayAvatarURL({
-					dynamic: true
-				})
-			});
-		const des = generateModLogDescription({
-			member,
-			action: 'Warn Removal',
-			reason,
-			warnId: warnid
-		});
-		embed._description(des);
 
-		if (interaction.guild && (await interaction.guild.settings?.modlogs.modLogs_exist())) {
-			await interaction.guild.settings?.modlogs.sendModLog(embed);
+		const data: WarnActionData<'remove'> = {
+			warnId,
+			target: member,
+			moderator: interaction.member as GuildMember,
+			reason,
+			action: 'warn-remove'
+		};
+
+		if (await interaction.guild!.settings!.modlogs.modLogs_exist()) {
+			this.container.client.emit(RadonEvents.ModAction, data);
 		}
 	}
 
