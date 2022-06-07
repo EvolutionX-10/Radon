@@ -1,8 +1,12 @@
-import type { BaseModActionData, RadonEvents, TimeoutActionData, WarnActionData } from '#lib/types';
+import { BaseModActionData, RadonEvents, TimeoutActionData, WarnActionData } from '#lib/types';
 import { generateModLogDescription, severity } from '#lib/utility';
+import { ApplyOptions } from '@sapphire/decorators';
 import { Listener } from '@sapphire/framework';
 
-export class UserListener extends Listener<typeof RadonEvents.ModAction> {
+@ApplyOptions<Listener.Options>({
+	event: RadonEvents.ModAction
+})
+export class UserListener extends Listener {
 	public override run(data: BaseModActionData) {
 		switch (data.action) {
 			case 'warn':

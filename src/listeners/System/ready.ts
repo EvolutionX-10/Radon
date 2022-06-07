@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { RadonClient } from '#lib/RadonClient';
 import { GuildSettings, Settings, Utils } from '#lib/structures';
-import type { RadonEvents } from '#lib/types';
+import { RadonEvents } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener, Store } from '@sapphire/framework';
 import { blue, gray, green, magentaBright, white, yellow, greenBright, blueBright } from 'colorette';
@@ -9,9 +9,10 @@ import figlet from 'figlet';
 import gradient from 'gradient-string';
 
 @ApplyOptions<Listener.Options>({
+	event: RadonEvents.ClientReady,
 	once: true
 })
-export class UserListener extends Listener<typeof RadonEvents.ClientReady> {
+export class UserListener extends Listener {
 	private readonly style = this.isDev ? yellow : blue;
 
 	public override async run(client: RadonClient) {

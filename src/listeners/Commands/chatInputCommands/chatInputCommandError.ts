@@ -1,7 +1,11 @@
-import type { RadonEvents } from '#lib/types';
+import { RadonEvents } from '#lib/types';
+import { ApplyOptions } from '@sapphire/decorators';
 import { Listener, type ChatInputCommandErrorPayload } from '@sapphire/framework';
 
-export class UserListener extends Listener<typeof RadonEvents.ChatInputCommandError> {
+@ApplyOptions<Listener.Options>({
+	event: RadonEvents.ChatInputCommandError
+})
+export class UserListener extends Listener {
 	public override async run(error: Error, { interaction }: ChatInputCommandErrorPayload) {
 		if (interaction.deferred || interaction.replied) {
 			return interaction.editReply({

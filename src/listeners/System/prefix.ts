@@ -2,9 +2,13 @@ import { Listener } from '@sapphire/framework';
 import type { ExcludeEnum, Message } from 'discord.js';
 import { vars } from '#vars';
 import type { ActivityTypes } from 'discord.js/typings/enums';
-import type { RadonEvents } from '#lib/types';
+import { RadonEvents } from '#lib/types';
+import { ApplyOptions } from '@sapphire/decorators';
 
-export class UserListener extends Listener<typeof RadonEvents.ClientReady> {
+@ApplyOptions<Listener.Options>({
+	event: RadonEvents.ClientReady
+})
+export class UserListener extends Listener {
 	public override async run() {
 		const ownerMode = Boolean(Number(await this.container.db.get('ownerMode'))!);
 

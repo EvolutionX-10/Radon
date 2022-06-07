@@ -1,7 +1,11 @@
-import type { RadonEvents } from '#lib/types';
+import { RadonEvents } from '#lib/types';
+import { ApplyOptions } from '@sapphire/decorators';
 import { Listener } from '@sapphire/framework';
 
-export class UserListener extends Listener<typeof RadonEvents.ClientReady> {
+@ApplyOptions<Listener.Options>({
+	event: RadonEvents.ClientReady
+})
+export class UserListener extends Listener {
 	public override run() {
 		process.on('unhandledRejection', (reason, p) => {
 			this.container.logger.warn(' [antiCrash] :: Unhandled Rejection/Catch');

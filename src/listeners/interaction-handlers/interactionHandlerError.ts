@@ -1,7 +1,11 @@
-import type { RadonEvents } from '#lib/types';
+import { RadonEvents } from '#lib/types';
+import { ApplyOptions } from '@sapphire/decorators';
 import { Listener, type InteractionHandlerError } from '@sapphire/framework';
 
-export class UserListener extends Listener<typeof RadonEvents.InteractionHandlerError> {
+@ApplyOptions<Listener.Options>({
+	event: RadonEvents.InteractionHandlerError
+})
+export class UserListener extends Listener {
 	public run(error: Error, payload: InteractionHandlerError) {
 		console.log(error, payload);
 	}
