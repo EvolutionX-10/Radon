@@ -13,5 +13,5 @@ export const vars = {
 	owners: ['697795666373640213'],
 	owner_prefixes: process.env.NODE_ENV === 'development' ? ['$', ''] : ['$', '.'],
 	radonGuildId: ['944833697251721246'],
-	guildIds: process.env.NODE_ENV === 'development' ? ['944833697251721246'] : []
+	guildIds: process.env.NODE_ENV === 'development' ? ['944833697251721246', '953175228899553312'] : []
 };
