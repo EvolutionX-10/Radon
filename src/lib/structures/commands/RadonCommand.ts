@@ -27,6 +27,10 @@ export abstract class RadonCommand extends SubCommandPluginCommand<RadonCommand.
 	 * The permission level required to run the command.
 	 */
 	public readonly permissionLevel?: PermissionLevels;
+	/**
+	 * Whether the command is only for community servers.
+	 */
+	public readonly community?: boolean;
 
 	public constructor(context: PieceContext, options: RadonCommand.Options) {
 		const perms = new Permissions(options.requiredClientPermissions).add(
@@ -42,7 +46,8 @@ export abstract class RadonCommand extends SubCommandPluginCommand<RadonCommand.
 		});
 		(this.guarded = options.guarded ?? false),
 			(this.hidden = options.hidden ?? false),
-			(this.permissionLevel = options.permissionLevel ?? PermissionLevels.Everyone);
+			(this.permissionLevel = options.permissionLevel ?? PermissionLevels.Everyone),
+			(this.community = options.community ?? false);
 	}
 
 	protected error(identifier: string | UserError, context?: unknown): never {
@@ -52,6 +57,9 @@ export abstract class RadonCommand extends SubCommandPluginCommand<RadonCommand.
 	protected parseConstructorPreConditions(options: RadonCommand.Options): void {
 		super.parseConstructorPreConditions(options);
 		this.parseConstructorPreConditionsPermissionLevel(options);
+		if (options.community) {
+			this.preconditions.append('Community');
+		}
 	}
 
 	protected parseConstructorPreConditionsPermissionLevel(options: RadonCommand.Options): void {
@@ -100,6 +108,10 @@ export namespace RadonCommand {
 		 * The permission level required to run the command.
 		 */
 		permissionLevel?: number;
+		/**
+		 * Whether the command is only for community servers.
+		 */
+		community?: boolean;
 	};
 	export type MessageContext = MessageCommandContext;
 	export type ChatInputCommandInteraction = CommandInteraction;
@@ -123,6 +135,7 @@ declare module '@sapphire/framework' {
 		Moderator: never;
 		Administrator: never;
 		ServerOwner: never;
+		Community: never;
 	}
 
 	interface DetailedDescriptionCommandObject {
