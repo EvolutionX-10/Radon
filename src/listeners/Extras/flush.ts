@@ -2,7 +2,7 @@ import { GuildMessage, RadonEvents } from '#lib/types';
 import { sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener } from '@sapphire/framework';
-import type { GuildBasedChannel, GuildChannel, TextChannel, Collection } from 'discord.js';
+import type { GuildBasedChannel, GuildChannel, Collection } from 'discord.js';
 
 @ApplyOptions<Listener.Options>({
 	event: RadonEvents.ClientReady
@@ -21,12 +21,7 @@ export class UserListener extends Listener {
 						m.channel.rateLimitPerUser
 					) {
 						m.channel.spam.splice(m.channel.spam.indexOf(m), 1);
-						m.channel
-							.setRateLimitPerUser(--m.channel.rateLimitPerUser)
-							.then((e) => m.channel.send(`less slowmode ${(e as TextChannel).rateLimitPerUser ?? '0'}`))
-							.catch(() => null);
-
-						console.log(`Spliced some shit, new length -> ${m.channel.spam.length}`);
+						m.channel.setRateLimitPerUser(--m.channel.rateLimitPerUser).catch(() => null);
 					}
 				});
 			});
