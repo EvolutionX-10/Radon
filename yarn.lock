@@ -1397,10 +1397,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"colorette@npm:2.0.18":
-  version: 2.0.18
-  resolution: "colorette@npm:2.0.18"
-  checksum: e44ad7771f246ce59552b09106d0758b7d3ebfb07c9d37c4e45e5f50cf2df73c4b1eb7e5d7898d33c2eb760df0ceb74e3f3cc1999f15fd99a53d68ac88b99bef
+"colorette@npm:2.0.19":
+  version: 2.0.19
+  resolution: "colorette@npm:2.0.19"
+  checksum: 888cf5493f781e5fcf54ce4d49e9d7d698f96ea2b2ef67906834bb319a392c667f9ec69f4a10e268d2946d13a9503d2d19b3abaaaf174e3451bfe91fb9d82427
   languageName: node
   linkType: hard
 
@@ -3818,7 +3818,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": 5.27.1
     "@typescript-eslint/parser": 5.27.1
     axios: 0.27.2
-    colorette: 2.0.18
+    colorette: 2.0.19
     confusables: 1.1.0
     discord-api-types: 0.30.0
     discord.js: 13.8.0
