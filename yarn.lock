@@ -224,12 +224,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/decorators@npm:4.3.5":
-  version: 4.3.5
-  resolution: "@sapphire/decorators@npm:4.3.5"
+"@sapphire/decorators@npm:4.3.6":
+  version: 4.3.6
+  resolution: "@sapphire/decorators@npm:4.3.6"
   dependencies:
     tslib: ^2.4.0
-  checksum: 4294e98da198664deb030281432ee642b2cda5603a21d3c36175efb8670392c1ed51c16f7586def72bde3b558cb9d4ab58695b405aa65742c38388459b2d70d9
+  checksum: 4a9b273e1dc2a86895df07c7ef169db293b15f331ecda10a9c15f96c2f50be94adb2896564944eacb0a99128fbe30c2e126128518b788df2c49bcc8e95617388
   languageName: node
   linkType: hard
 
@@ -3809,7 +3809,7 @@ __metadata:
     "@devtomio/plugin-botlist": 1.2.0
     "@favware/cliff-jumper": 1.8.3
     "@kaname-png/plugin-statcord": 1.3.5
-    "@sapphire/decorators": 4.3.5
+    "@sapphire/decorators": 4.3.6
     "@sapphire/discord-utilities": 2.11.2
     "@sapphire/discord.js-utilities": 4.11.2
     "@sapphire/eslint-config": 4.3.7
