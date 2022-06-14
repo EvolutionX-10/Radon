@@ -82,7 +82,6 @@
 		"@sapphire/framework": "3.0.0-next.1f76366.0",
 		"@sapphire/pieces": "3.3.3",
 		"@sapphire/plugin-editable-commands": "1.2.0",
-		"@sapphire/plugin-hmr": "1.2.0",
 		"@sapphire/plugin-logger": "2.2.1",
 		"@sapphire/plugin-subcommands": "2.2.0",
 		"@sapphire/stopwatch": "1.4.1",
