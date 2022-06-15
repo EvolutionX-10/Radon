@@ -40,6 +40,10 @@
 		{
 			"matchPackagePatterns": ["discord-api-types"],
 			"enabled": false
+		},
+		{
+			"matchPackagePatterns": ["discord.js"],
+			"enabled": false
 		}
 	]
 }
