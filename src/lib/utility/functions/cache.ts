@@ -18,7 +18,7 @@ export function getCache(client: RadonClient) {
 	const totalChannelCacheSize = client.channels.cache.size;
 	const memberCacheSize = client.guilds.cache.reduce((c, g) => c + g.members.cache.size, 0);
 	const bansCacheSize = client.guilds.cache.reduce((c, g) => c + g.bans.cache.size, 0);
-	const presenceCacheSize = client.guilds.cache.reduce((c, g) => c + g.members.cache.filter((m) => m.presence?.status !== 'offline').size, 0);
+	const presenceCacheSize = client.guilds.cache.reduce((c, g) => c + g.members.cache.filter((m) => Boolean(m.presence?.status)).size, 0);
 	const reactionCacheSize = client.channels.cache
 		.filter((c) => c.isText())
 		.reduce((c, g) => c + (g as TextBasedChannel).messages.cache.reduce((c, m) => c + m.reactions.cache.size, 0), 0);
