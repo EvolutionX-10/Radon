@@ -18,12 +18,14 @@ export class UserCommand extends RadonCommand {
 		const sensitivity = (interaction.options.getString('sensitivity') ?? 'medium') as SlowmodeSensitivity;
 		let content: string;
 		const data: [string] = [`${channelId}|${sensitivity}`];
-		if (!vars.owners.includes(interaction.user.id)) {
-			return interaction.reply({
-				content: `This feature is in beta stage and is not available for this server.\nHowever this will be coming to community servers soon!`,
-				ephemeral: true
-			});
-		}
+
+		// if (!vars.owners.includes(interaction.user.id)) {
+		// 	return interaction.reply({
+		// 		content: `This feature is in beta stage and is not available for this server.\nHowever this will be coming to community servers soon!`,
+		// 		ephemeral: true
+		// 	});
+		// }
+
 		if (status) {
 			const members = await this.container.db.smembers(guildId!);
 			const member = members.find((m) => m.startsWith(channelId));
