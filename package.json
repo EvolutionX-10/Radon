@@ -99,7 +99,7 @@
 		"figlet": "1.5.2",
 		"gradient-string": "2.0.1",
 		"ioredis": "5.0.5",
-		"mongoose": "6.3.8"
+		"mongoose": "6.4.0"
 	},
 	"config": {
 		"commitizen": {
