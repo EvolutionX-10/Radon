@@ -23,8 +23,7 @@ export class UserListener extends Listener {
 				Authorization: process.env.TOP_BOT_TOKEN as string
 			}
 		});
-		if (data.voted === 0) return false;
-		return true;
+		return Boolean(data.voted);
 	}
 
 	private async addVoteMsg(interaction: CommandInteraction) {
