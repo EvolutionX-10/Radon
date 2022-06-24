@@ -16,7 +16,7 @@ export class UserCommand extends RadonCommand {
 		await interaction.deferReply({ ephemeral: true });
 		const count = interaction.options.getInteger('count', true);
 		const channel = interaction.channel as TextChannel;
-		const pinned = interaction.options.getBoolean('skip_pinned', false) ?? false;
+		const pinned = interaction.options.getBoolean('skip_pinned', false) ?? true;
 		const contains = interaction.options.getString('contains', false);
 		const user = interaction.options.getUser('user', false);
 		let dels = 0;
@@ -85,7 +85,7 @@ export class UserCommand extends RadonCommand {
 					},
 					{
 						name: 'skip_pinned',
-						description: 'Whether to skip pinned messages [default: false]',
+						description: 'Whether to skip pinned messages [default: true]',
 						type: Constants.ApplicationCommandOptionTypes.BOOLEAN,
 						required: false
 					},
