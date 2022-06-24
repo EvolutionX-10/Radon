@@ -2,7 +2,8 @@ import { RadonCommand, Timestamp } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import { Constants, GuildMember, Role } from 'discord.js';
+import { BufferResolvable, ColorResolvable, Constants, GuildMember, Role } from 'discord.js';
+import { all } from 'colornames';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Manage Roles',
@@ -20,8 +21,23 @@ export class UserCommand extends RadonCommand {
 			case 'remove':
 				return this.remove(interaction);
 			case 'info':
-				return this.list(interaction);
+				return this.info(interaction);
+			case 'create':
+				return this.create(interaction);
 		}
+	}
+
+	public override autocompleteRun(interaction: RadonCommand.AutoComplete) {
+		const focus = interaction.options.getFocused(true);
+		if (focus.name !== 'color') return;
+
+		let choices = all().map((color) => ({
+			name: color.name.toUpperCase(),
+			value: color.value
+		}));
+		choices = choices.filter((choice) => choice.name.toLowerCase().includes(focus.value as string)).slice(0, 10);
+
+		return interaction.respond(choices);
 	}
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {
@@ -90,6 +106,50 @@ export class UserCommand extends RadonCommand {
 								description: 'Role to display information about',
 								type: Constants.ApplicationCommandOptionTypes.ROLE,
 								required: true
+							}
+						]
+					},
+					{
+						name: 'create',
+						description: 'Create a role',
+						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
+						options: [
+							{
+								name: 'name',
+								description: 'Name of the role',
+								type: Constants.ApplicationCommandOptionTypes.STRING,
+								required: true
+							},
+							{
+								name: 'color',
+								description: 'Hex color of the role',
+								type: Constants.ApplicationCommandOptionTypes.STRING,
+								autocomplete: true,
+								required: false
+							},
+							{
+								name: 'hoisted',
+								description: 'Should the role be hoisted? [default: false]',
+								type: Constants.ApplicationCommandOptionTypes.BOOLEAN,
+								required: false
+							},
+							{
+								name: 'mentionable',
+								description: 'Should the role be mentionable by @everyone? [default: false]',
+								type: Constants.ApplicationCommandOptionTypes.BOOLEAN,
+								required: false
+							},
+							{
+								name: 'icon',
+								description: 'Icon for the role, only for servers having role icons feature!',
+								type: Constants.ApplicationCommandOptionTypes.ATTACHMENT,
+								required: false
+							},
+							{
+								name: 'reason',
+								description: 'Reason for the creation of role',
+								type: Constants.ApplicationCommandOptionTypes.STRING,
+								required: false
 							}
 						]
 					}
@@ -164,7 +224,7 @@ export class UserCommand extends RadonCommand {
 		});
 	}
 
-	private list(interaction: RadonCommand.ChatInputCommandInteraction) {
+	private info(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const role = interaction.options.getRole('role', true) as Role;
 		const date = new Timestamp(role.createdTimestamp);
 
@@ -197,8 +257,8 @@ export class UserCommand extends RadonCommand {
 				name: 'Role Information'
 			})
 			._color(role.color)
+			._description(role.toString())
 			._timestamp()
-			._title(role.name)
 			._thumbnail(role.iconURL() ?? '')
 			._footer({
 				text: `Requested by ${interaction.user.username}`,
@@ -217,6 +277,37 @@ export class UserCommand extends RadonCommand {
 
 		return interaction.reply({ embeds: [embed] });
 	}
+
+	private async create(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const name = interaction.options.getString('name', true);
+		const hoist = interaction.options.getBoolean('hoisted') ?? false;
+		const mentionable = interaction.options.getBoolean('mentionable') ?? false;
+		let color: string | ColorResolvable | undefined = interaction.options.getString('color') ?? undefined;
+		const icon = (interaction.options.getAttachment('icon')?.attachment as BufferResolvable) ?? undefined;
+		const reason = interaction.options.getString('reason') ?? undefined;
+		let content = `${name} role is created successfully!`;
+
+		const regex = /^#(?:[0-9a-fA-F]{3}){1,2}$/gim;
+		if (color && !color.match(regex)) {
+			color = 'RANDOM';
+			content += `\n> Warning: Looks like you entered invalid color, a random color was taken!`;
+		}
+
+		const role = await interaction
+			.guild!.roles.create({
+				name,
+				color: color as ColorResolvable | undefined,
+				hoist,
+				mentionable,
+				icon,
+				reason
+			})
+			.catch(() => (content = 'Role creation failed due to missing permissions'));
+
+		content = content.replace(name, role.toString());
+
+		return interaction.reply(content);
+	}
 }
 
-type SubCommands = 'add' | 'remove' | 'info';
+type SubCommands = 'add' | 'remove' | 'info' | 'create';

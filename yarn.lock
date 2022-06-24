@@ -593,6 +593,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/colornames@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "@types/colornames@npm:1.1.2"
+  checksum: 85f7519985fe82e3f4f373f9c8caeb8257b30f9ff75b01d44c5c8b37eff1b6eaf4bcc5a5097d5c372bf30cfb6bc95d51e109571b30c29a17536a0450893539d2
+  languageName: node
+  linkType: hard
+
 "@types/figlet@npm:1.5.4":
   version: 1.5.4
   resolution: "@types/figlet@npm:1.5.4"
@@ -1402,6 +1409,13 @@ __metadata:
   version: 2.0.19
   resolution: "colorette@npm:2.0.19"
   checksum: 888cf5493f781e5fcf54ce4d49e9d7d698f96ea2b2ef67906834bb319a392c667f9ec69f4a10e268d2946d13a9503d2d19b3abaaaf174e3451bfe91fb9d82427
+  languageName: node
+  linkType: hard
+
+"colornames@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "colornames@npm:1.1.1"
+  checksum: a97df66bde2a0efb592870f790bae2ffcbf2f9e30c0064783a2941be6713f0ac2acfa3bf1baf70bb423d99526f4fc761bf311fac94aa18ed642d77932352f864
   languageName: node
   linkType: hard
 
@@ -3797,6 +3811,7 @@ __metadata:
     "@sapphire/utilities": 3.6.2
     "@swc/core": 1.2.207
     "@typegoose/typegoose": 9.9.0
+    "@types/colornames": ^1.1.2
     "@types/figlet": 1.5.4
     "@types/gradient-string": 1.1.2
     "@types/node": 17.0.43
@@ -3805,7 +3820,12 @@ __metadata:
     "@typescript-eslint/parser": 5.30.0
     axios: 0.27.2
     colorette: 2.0.19
+<<<<<<< HEAD
     confusables: 1.1.1
+=======
+    colornames: ^1.1.1
+    confusables: 1.1.0
+>>>>>>> 776cc06 (feat(role): refactor and add create subcmd)
     discord-api-types: 0.33.5
     discord.js: 13.8.0
     dotenv-cra: 3.0.2
