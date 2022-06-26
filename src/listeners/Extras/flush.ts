@@ -1,4 +1,4 @@
-import { GuildMessage, RadonEvents } from '#lib/types';
+import { RadonEvents } from '#lib/types';
 import { sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener } from '@sapphire/framework';
@@ -13,8 +13,8 @@ export class UserListener extends Listener {
 			let channels = this.container.client.channels.cache.filter((c) => c.isText() && c.type !== 'DM') as Collection<string, GuildChannel>;
 			channels = channels.filter((c) => Boolean((c as GuildBasedChannel).spam && (c as GuildBasedChannel).spam.length));
 			channels.forEach((c) => {
-				// @ts-ignore - this is a hack to get around the fact that the type of `c` is `GuildChannel`
-				c.spam.forEach((m: GuildMessage) => {
+				c.spam.forEach((m) => {
+					if (m.channel.type === 'DM') return;
 					if (
 						m.createdTimestamp + sec(slowModeSensitivity[m.channel.slowModeSensitivity]) < Date.now() &&
 						m.channel.spam.length &&
