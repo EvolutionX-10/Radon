@@ -24,6 +24,8 @@ export class UserCommand extends RadonCommand {
 				return this.info(interaction);
 			case 'create':
 				return this.create(interaction);
+			case 'delete':
+				return this.delete(interaction);
 		}
 	}
 
@@ -148,6 +150,25 @@ export class UserCommand extends RadonCommand {
 							{
 								name: 'reason',
 								description: 'Reason for the creation of role',
+								type: Constants.ApplicationCommandOptionTypes.STRING,
+								required: false
+							}
+						]
+					},
+					{
+						name: 'delete',
+						description: 'Delete a role',
+						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
+						options: [
+							{
+								name: 'role',
+								description: 'Role to delete',
+								type: Constants.ApplicationCommandOptionTypes.ROLE,
+								required: true
+							},
+							{
+								name: 'reason',
+								description: 'Reason for action',
 								type: Constants.ApplicationCommandOptionTypes.STRING,
 								required: false
 							}
@@ -415,9 +436,14 @@ export class UserCommand extends RadonCommand {
 			await role.setPermissions(perms as PermissionResolvable);
 		});
 	}
-}
 
-type SubCommands = 'add' | 'remove' | 'info' | 'create';
+	private async delete(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const role = interaction.options.getRole('role', true) as Role;
+		const reason = interaction.options.getString('reason') ?? undefined;
+		await role.delete(reason);
+		return interaction.reply(`Role *${role.name}* deleted!`);
+	}
+}
 
 function summableArray(maximum: number, part: number) {
 	const arr = [];
@@ -447,4 +473,5 @@ function formatNames(array: string[]) {
 		});
 }
 
+type SubCommands = 'add' | 'remove' | 'info' | 'create' | 'delete';
 type SelectMenuCustomIds = '@role/perms/menu/0' | '@role/perms/menu/1';
