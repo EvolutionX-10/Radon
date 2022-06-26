@@ -1,8 +1,8 @@
-import { RadonCommand, Timestamp } from '#lib/structures';
+import { RadonCommand, Select, Timestamp } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import { BufferResolvable, ColorResolvable, Constants, GuildMember, Role } from 'discord.js';
+import { BufferResolvable, ColorResolvable, Constants, GuildMember, MessageSelectOptionData, PermissionResolvable, Role } from 'discord.js';
 import { all } from 'colornames';
 
 @ApplyOptions<RadonCommand.Options>({
@@ -279,12 +279,15 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private async create(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const message = (await interaction.deferReply({ fetchReply: true })) as RadonCommand.Message;
+
 		const name = interaction.options.getString('name', true);
 		const hoist = interaction.options.getBoolean('hoisted') ?? false;
 		const mentionable = interaction.options.getBoolean('mentionable') ?? false;
 		let color: string | ColorResolvable | undefined = interaction.options.getString('color') ?? undefined;
 		const icon = (interaction.options.getAttachment('icon')?.attachment as BufferResolvable) ?? undefined;
 		const reason = interaction.options.getString('reason') ?? undefined;
+
 		let content = `${name} role is created successfully!`;
 
 		const regex = /^#(?:[0-9a-fA-F]{3}){1,2}$/gim;
@@ -300,14 +303,148 @@ export class UserCommand extends RadonCommand {
 				hoist,
 				mentionable,
 				icon,
-				reason
+				reason,
+				permissions: []
 			})
 			.catch(() => (content = 'Role creation failed due to missing permissions'));
 
 		content = content.replace(name, role.toString());
 
-		return interaction.reply(content);
+		let perms = (await interaction.guild!.me?.fetch())?.permissions.toArray() ?? [];
+		if (perms.includes('ADMINISTRATOR')) perms = (await interaction.guild!.fetchOwner()).permissions.toArray();
+
+		const menus = this.gimmeMenu(perms);
+		const rows = Array(menus.length)
+			.fill(null)
+			.map((_, i) => this.container.utils.row()._components(menus[i]));
+
+		const save = this.container.utils.button()._customId('save')._label('Save Selection')._style('SUCCESS');
+
+		const row = this.container.utils.row()._components(save);
+
+		await interaction.editReply({
+			content,
+			components: rows.concat(row)
+		});
+
+		return this.collector(message, role as Role, interaction);
+	}
+
+	private gimmeMenu(array: string[]) {
+		const newarray = summableArray(array.length, 25);
+		const menus: Select[] = [];
+
+		newarray.forEach((amount, index) => {
+			const perms = array.splice(0, amount).sort();
+			const formatted = formatNames(perms);
+
+			const options: MessageSelectOptionData[] = Array(amount)
+				.fill(null)
+				.map((_, i) => {
+					return {
+						label: formatted[i],
+						value: perms[i]
+					};
+				});
+
+			const menu = this.container.utils
+				.select()
+				._customId(`@role/perms/menu/${index}`)
+				._label('Select some permissions!')
+				._min(0)
+				._max(amount)
+				._options(...options);
+
+			menus.push(menu);
+		});
+		return menus;
+	}
+
+	private collector(message: RadonCommand.Message, role: Role, interaction: RadonCommand.ChatInputCommandInteraction) {
+		const collector = message.createMessageComponentCollector({
+			time: this.container.utils.mins(1)
+		});
+
+		let perms: string[] = [];
+		let perms1: string[] = [];
+		let perms2: string[] = [];
+
+		collector.on('collect', async (i) => {
+			if (i.user.id !== interaction.user.id) {
+				return i.reply({
+					content: 'Not for you!',
+					ephemeral: true
+				});
+			}
+
+			if (i.isSelectMenu()) {
+				switch (i.customId as SelectMenuCustomIds) {
+					case '@role/perms/menu/0':
+						perms1 = i.values;
+						break;
+					case '@role/perms/menu/1':
+						perms2 = i.values;
+						break;
+				}
+				perms = [...new Set(perms1.concat(perms2))];
+			}
+
+			await i.deferUpdate();
+			collector.resetTimer();
+
+			if (i.customId === 'save') {
+				message.components.forEach((r) => r.components.forEach((c) => c.setDisabled()));
+				await message.edit({
+					content: message.content.concat('\nSaved with selected Permissions!'),
+					components: message.components
+				});
+				collector.stop();
+			}
+		});
+
+		collector.on('end', async (c) => {
+			if (c.size === 0 || !perms.length) {
+				message.components.forEach((r) => r.components.forEach((c) => c.setDisabled()));
+				await message.edit({
+					content: message.content.concat('\nRole was created with no permissions!'),
+					components: message.components
+				});
+				return;
+			}
+
+			await role.setPermissions(perms as PermissionResolvable);
+		});
 	}
 }
 
 type SubCommands = 'add' | 'remove' | 'info' | 'create';
+
+function summableArray(maximum: number, part: number) {
+	const arr = [];
+	let current = 0;
+
+	while (current < maximum) {
+		const next = Math.min(part, maximum - current);
+		arr.push(next);
+		current += next;
+	}
+
+	return arr;
+}
+
+function formatNames(array: string[]) {
+	return array
+		.map((e) =>
+			e
+				.split(`_`)
+				.map((i) => i[0] + i.match(/\B(\w+)/)?.[1]?.toLowerCase())
+				.join(` `)
+		)
+		.map((s) => {
+			s = s.replace('Tts', 'TTS');
+			s = s.replace('Vad', 'VAD');
+			return s;
+		});
+}
+
+type SelectMenuCustomIds = '@role/perms/menu/0' | '@role/perms/menu/1';
