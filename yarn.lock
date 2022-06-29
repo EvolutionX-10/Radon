@@ -593,7 +593,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/colornames@npm:^1.1.2":
+"@types/colornames@npm:1.1.2":
   version: 1.1.2
   resolution: "@types/colornames@npm:1.1.2"
   checksum: 85f7519985fe82e3f4f373f9c8caeb8257b30f9ff75b01d44c5c8b37eff1b6eaf4bcc5a5097d5c372bf30cfb6bc95d51e109571b30c29a17536a0450893539d2
@@ -3811,7 +3811,7 @@ __metadata:
     "@sapphire/utilities": 3.6.2
     "@swc/core": 1.2.207
     "@typegoose/typegoose": 9.9.0
-    "@types/colornames": ^1.1.2
+    "@types/colornames": 1.1.2
     "@types/figlet": 1.5.4
     "@types/gradient-string": 1.1.2
     "@types/node": 17.0.43
