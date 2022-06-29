@@ -55,7 +55,7 @@ export class UserCommand extends RadonCommand {
 			name: color.name.toUpperCase(),
 			value: color.value
 		}));
-		choices = choices.filter((choice) => choice.name.toLowerCase().includes(focus.value as string)).slice(0, 10);
+		choices = choices.filter((choice) => choice.name.toLowerCase().startsWith((focus.value as string).toLowerCase())).slice(0, 10);
 
 		return interaction.respond(choices);
 	}
