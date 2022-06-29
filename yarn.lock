@@ -593,6 +593,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/colornames@npm:1.1.2":
+  version: 1.1.2
+  resolution: "@types/colornames@npm:1.1.2"
+  checksum: 85f7519985fe82e3f4f373f9c8caeb8257b30f9ff75b01d44c5c8b37eff1b6eaf4bcc5a5097d5c372bf30cfb6bc95d51e109571b30c29a17536a0450893539d2
+  languageName: node
+  linkType: hard
+
 "@types/figlet@npm:1.5.4":
   version: 1.5.4
   resolution: "@types/figlet@npm:1.5.4"
@@ -1405,6 +1412,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"colornames@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "colornames@npm:1.1.1"
+  checksum: a97df66bde2a0efb592870f790bae2ffcbf2f9e30c0064783a2941be6713f0ac2acfa3bf1baf70bb423d99526f4fc761bf311fac94aa18ed642d77932352f864
+  languageName: node
+  linkType: hard
+
 "combined-stream@npm:^1.0.8":
   version: 1.0.8
   resolution: "combined-stream@npm:1.0.8"
@@ -1457,10 +1471,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"confusables@npm:1.1.1":
-  version: 1.1.1
-  resolution: "confusables@npm:1.1.1"
-  checksum: 4114964e0996d8b6d6d3698de9cf7bfc910f8d4dd471f75f1e6c75b08cc1b169aee371f1e9d379eba530dd4676920f55bd60a9e4817564b505745f9ca53b3b24
+"confusables@npm:1.1.0":
+  version: 1.1.0
+  resolution: "confusables@npm:1.1.0"
+  checksum: b7253c45a3f9502866e8feb665ada996d0226081a5afa6b50876b36fa402b307e3f28045bcb35cfd85050490b37e36a4f5852e3800ec49a3ffad188adeb72191
   languageName: node
   linkType: hard
 
@@ -3797,6 +3811,7 @@ __metadata:
     "@sapphire/utilities": 3.6.2
     "@swc/core": 1.2.207
     "@typegoose/typegoose": 9.9.0
+    "@types/colornames": 1.1.2
     "@types/figlet": 1.5.4
     "@types/gradient-string": 1.1.2
     "@types/node": 17.0.43
@@ -3805,7 +3820,8 @@ __metadata:
     "@typescript-eslint/parser": 5.30.0
     axios: 0.27.2
     colorette: 2.0.19
-    confusables: 1.1.1
+    colornames: ^1.1.1
+    confusables: 1.1.0
     discord-api-types: 0.33.5
     discord.js: 13.8.0
     dotenv-cra: 3.0.2
