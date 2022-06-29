@@ -1,21 +1,39 @@
-import { RadonCommand, Select, Timestamp } from '#lib/structures';
+import { Confirmation, RadonCommand, Select, Timestamp } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { vars } from '#vars';
-import { ApplyOptions } from '@sapphire/decorators';
-import { BufferResolvable, ColorResolvable, Constants, GuildMember, MessageSelectOptionData, PermissionResolvable, Role } from 'discord.js';
+import { ApplyOptions, RequiresUserPermissions } from '@sapphire/decorators';
+import {
+	BufferResolvable,
+	Collection,
+	ColorResolvable,
+	Constants,
+	GuildMember,
+	MessageSelectOptionData,
+	PermissionResolvable,
+	Role
+} from 'discord.js';
 import { all } from 'colornames';
+import { Stopwatch } from '@sapphire/stopwatch';
+import { sec } from '#lib/utility';
+import { DurationFormatter } from '@sapphire/time-utilities';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Manage Roles',
 	permissionLevel: PermissionLevels.Moderator,
 	runIn: ['GUILD_ANY'],
-	requiredClientPermissions: ['MANAGE_ROLES']
+	requiredClientPermissions: ['MANAGE_ROLES'],
+	cooldownDelay: sec(30),
+	cooldownLimit: 2
 })
 export class UserCommand extends RadonCommand {
 	public override chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const subcmd = interaction.options.getSubcommand();
+		const subcmd = interaction.options.getSubcommand() as Subcommands;
 
-		switch (subcmd as SubCommands) {
+		const subcmdgroup = interaction.options.getSubcommandGroup(false);
+
+		if (subcmdgroup === 'bulk') return this.bulk(interaction, subcmd as bulkActions);
+
+		switch (subcmd) {
 			case 'add':
 				return this.add(interaction);
 			case 'remove':
@@ -171,6 +189,63 @@ export class UserCommand extends RadonCommand {
 								description: 'Reason for action',
 								type: Constants.ApplicationCommandOptionTypes.STRING,
 								required: false
+							}
+						]
+					},
+					{
+						name: 'bulk',
+						description: 'Bulk actions for roles',
+						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND_GROUP,
+						options: [
+							{
+								name: 'add',
+								description: 'Add role to multiple users',
+								type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
+								options: [
+									{
+										name: 'role',
+										description: 'Role to add',
+										type: Constants.ApplicationCommandOptionTypes.ROLE,
+										required: true
+									},
+									{
+										name: 'base_role',
+										description: 'Base role user should have for role to be added (defaults to @everyone)',
+										type: Constants.ApplicationCommandOptionTypes.ROLE,
+										required: false
+									},
+									{
+										name: 'reason',
+										description: 'Reason for action',
+										type: Constants.ApplicationCommandOptionTypes.STRING,
+										required: false
+									}
+								]
+							},
+							{
+								name: 'remove',
+								description: 'Remove role from multiple users',
+								type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
+								options: [
+									{
+										name: 'role',
+										description: 'Role to remove',
+										type: Constants.ApplicationCommandOptionTypes.ROLE,
+										required: true
+									},
+									{
+										name: 'base_role',
+										description: 'Base role user should have for role to be removed (defaults to @everyone)',
+										type: Constants.ApplicationCommandOptionTypes.ROLE,
+										required: false
+									},
+									{
+										name: 'reason',
+										description: 'Reason for action',
+										type: Constants.ApplicationCommandOptionTypes.STRING,
+										required: false
+									}
+								]
 							}
 						]
 					}
@@ -333,6 +408,9 @@ export class UserCommand extends RadonCommand {
 
 		let perms = (await interaction.guild!.me?.fetch())?.permissions.toArray() ?? [];
 		if (perms.includes('ADMINISTRATOR')) perms = (await interaction.guild!.fetchOwner()).permissions.toArray();
+		perms = perms.filter((perm) => (interaction.member as GuildMember).permissions.toArray().includes(perm));
+
+		if (!perms.length) return interaction.editReply(content);
 
 		const menus = this.gimmeMenu(perms);
 		const rows = Array(menus.length)
@@ -443,8 +521,80 @@ export class UserCommand extends RadonCommand {
 		await role.delete(reason);
 		return interaction.reply(`Role *${role.name}* deleted!`);
 	}
+
+	@RequiresUserPermissions('ADMINISTRATOR')
+	private async bulk(interaction: RadonCommand.ChatInputCommandInteraction, option: bulkActions) {
+		const role = interaction.options.getRole('role', true) as Role;
+		const reason = interaction.options.getString('reason') ?? undefined;
+		const base = (interaction.options.getRole('base_role') ?? interaction.guild!.roles.everyone) as Role;
+
+		if (role.id === interaction.guildId) return interaction.reply(`You can't add @everyone role`);
+		if (role.tags) return interaction.reply(`I cannot add roles which are linked to bots/server`);
+
+		if (role.position > interaction.guild!.me!.roles.highest!.position)
+			return interaction.reply({
+				content: `I can't add ${role} because its position is higher than my highest role!`
+			});
+
+		if (role.id === base.id) return interaction.reply(`You can't bulk ${option} same role as base role!`);
+
+		if (interaction.guild?.bulkRoleInProgress) return interaction.reply(`A bulk role process is already in progress!`);
+
+		await interaction.guild!.members.fetch();
+
+		let { members } = base;
+		members = members.filter((m) => (option === 'add' ? !m.roles.cache.has(role.id) : m.roles.cache.has(role.id)));
+
+		if (!members.size) return interaction.reply(`No members found for the action to proceed! Terminating...`);
+
+		// eslint-disable-next-line @typescript-eslint/unbound-method
+		const { bulkAction } = this;
+		const confirm = new Confirmation({
+			content: `Are you sure you want to ${option} ${role} ${option === 'add' ? 'to' : 'from'} every member ${
+				base.id === interaction.guildId ? 'in this server' : ` with ${base} role`
+			}?`,
+			async onConfirm() {
+				await bulkAction(interaction, members, option, role, reason);
+			},
+			async onCancel({ i }) {
+				await i.editReply('Process cancelled!');
+			}
+		});
+		return confirm.run(interaction);
+	}
+
+	private async bulkAction(
+		interaction: RadonCommand.ChatInputCommandInteraction,
+		members: Collection<string, GuildMember>,
+		option: bulkActions,
+		role: Role,
+		reason?: string
+	) {
+		const estimate = new DurationFormatter().format((members.size + 2) * 1000);
+		interaction.editReply(`Starting bulk role action...\nEstimated time: **~${estimate}**`);
+		interaction.guild!.bulkRoleInProgress = true;
+		let i = 0;
+		const stopwatch = new Stopwatch().start();
+		for (const member of members.values()) {
+			await wait(1000);
+			i++;
+			if (option === 'add') {
+				await member.roles.add(role, reason);
+			} else {
+				await member.roles.remove(role, reason);
+			}
+		}
+
+		const time = stopwatch.stop().toString();
+		interaction.guild!.bulkRoleInProgress = false;
+		return interaction.editReply({
+			content: `Process completed!\n\nTime taken: **${time}**\nMembers affected: **${i}**`,
+			components: []
+		});
+	}
 }
 
+// TODO: add all three in utils class
 function summableArray(maximum: number, part: number) {
 	const arr = [];
 	let current = 0;
@@ -473,5 +623,17 @@ function formatNames(array: string[]) {
 		});
 }
 
-type SubCommands = 'add' | 'remove' | 'info' | 'create' | 'delete';
+async function wait(ms: number) {
+	const wait = (await import('node:util')).promisify(setTimeout);
+	return wait(ms);
+}
+
+type Subcommands = 'add' | 'remove' | 'info' | 'create' | 'delete';
 type SelectMenuCustomIds = '@role/perms/menu/0' | '@role/perms/menu/1';
+type bulkActions = Extract<Subcommands, 'add' | 'remove'>;
+
+declare module 'discord.js' {
+	interface Guild {
+		bulkRoleInProgress?: boolean;
+	}
+}
