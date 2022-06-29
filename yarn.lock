@@ -1412,7 +1412,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"colornames@npm:^1.1.1":
+"colornames@npm:1.1.1":
   version: 1.1.1
   resolution: "colornames@npm:1.1.1"
   checksum: a97df66bde2a0efb592870f790bae2ffcbf2f9e30c0064783a2941be6713f0ac2acfa3bf1baf70bb423d99526f4fc761bf311fac94aa18ed642d77932352f864
@@ -3820,7 +3820,7 @@ __metadata:
     "@typescript-eslint/parser": 5.30.0
     axios: 0.27.2
     colorette: 2.0.19
-    colornames: ^1.1.1
+    colornames: 1.1.1
     confusables: 1.1.0
     discord-api-types: 0.33.5
     discord.js: 13.8.0
