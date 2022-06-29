@@ -92,9 +92,9 @@ export class Confirmation {
 			}
 			await i.update({ components: [row] });
 			if (i.customId === this.buttons[0].customId) {
-				this.options.onConfirm({ i, msg });
+				await this.options.onConfirm({ i, msg });
 			} else if (i.customId === this.buttons[1].customId) {
-				this.options.onCancel({ i, msg });
+				await this.options.onCancel({ i, msg });
 			}
 		});
 
@@ -116,17 +116,41 @@ export class Confirmation {
 }
 
 interface ConfirmationOptions {
+	/**
+	 * By default embed is present, but a custom embed is possible with this
+	 */
 	embed?: Embed;
+	/**
+	 * To use compact confirmation, use content which does not send embed but only text
+	 */
 	content?: string;
+	/**
+	 * Button labels are by default Yes and No, but can be customized
+	 */
 	buttonLabels?: string[];
+	/**
+	 * Radon uses default emojis for confirmation, but custom can be added
+	 */
 	emojis?: string[];
+	/**
+	 * Default time is 1 minute
+	 */
 	time?: number;
+	/**
+	 * Default embed color is 0x00ae86
+	 */
 	color?: ColorResolvable;
+	/**
+	 * If you want to use a custom response when user clicks on a wrong button
+	 */
 	wrongUserResponse?: string;
+	/**
+	 * If you want the confirmation to be ephemeral
+	 */
 	ephemeral?: boolean;
 
-	onConfirm: (payload: payload) => void;
-	onCancel: (payload: payload) => void;
+	onConfirm: (payload: payload) => Promise<void> | unknown;
+	onCancel: (payload: payload) => Promise<void> | unknown;
 	onEnd?: (payload: endPayload) => void;
 }
 
