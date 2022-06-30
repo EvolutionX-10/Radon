@@ -3,7 +3,7 @@ import { BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
 import { generateModLogDescription, runAllChecks, sec, severity } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import type { APIApplicationCommandOptionChoice } from 'discord-api-types/v10';
+import type { APIApplicationCommandOptionChoice } from 'discord-api-types/v9';
 import type { GuildMember, TextChannel } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
 	cooldownDelay: sec(10),
