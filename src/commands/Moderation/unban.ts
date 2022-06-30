@@ -66,7 +66,7 @@ export class UserCommand extends RadonCommand {
 						option //
 							.setName('reason')
 							.setDescription('The reason for the ban uplift')
-							.setRequired(true)
+							.setRequired(false)
 					),
 			{
 				guildIds: vars.guildIds,
