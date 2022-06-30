@@ -4,8 +4,8 @@ import { color, mins, runAllChecks, uid, warnSeverity, sec } from '#lib/utility'
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import { cutText } from '@sapphire/utilities';
-import type { APIApplicationCommandOptionChoice } from 'discord-api-types/v9';
-import { Constants, GuildMember, TextChannel } from 'discord.js';
+import { APIApplicationCommandOptionChoice, ApplicationCommandType } from 'discord-api-types/v9';
+import type { GuildMember, TextChannel } from 'discord.js';
 import { Duration } from '@sapphire/time-utilities';
 
 @ApplyOptions<RadonCommand.Options>({
@@ -16,6 +16,14 @@ import { Duration } from '@sapphire/time-utilities';
 	runIn: 'GUILD_ANY'
 })
 export class UserCommand extends RadonCommand {
+	readonly #SeverityChoices: APIApplicationCommandOptionChoice<warnSeverityNum>[] = [
+		{ name: '1 | 1 day', value: 1 },
+		{ name: '2 | 3 days', value: 2 },
+		{ name: '3 | 1 week', value: 3 },
+		{ name: '4 | 2 weeks', value: 4 },
+		{ name: '5 | 4 weeks', value: 5 }
+	];
+
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const subcmd = interaction.options.getSubcommand();
 		switch (subcmd) {
@@ -84,126 +92,97 @@ export class UserCommand extends RadonCommand {
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
-			{
-				name: this.name,
-				description: this.description,
-				options: [
-					{
-						name: 'add',
-						description: 'Warn a user',
-						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-						options: [
-							{
-								name: 'user',
-								description: 'The user to warn',
-								type: Constants.ApplicationCommandOptionTypes.USER,
-								required: true
-							},
-							{
-								name: 'reason',
-								description: 'The reason for the warn',
-								type: Constants.ApplicationCommandOptionTypes.STRING,
-								required: true
-							},
-							{
-								name: 'delete_messages',
-								description: "Should I delete user's messages? [Default: false]",
-								type: Constants.ApplicationCommandOptionTypes.BOOLEAN,
-								required: false
-							},
-							{
-								name: 'severity',
-								description: 'The severity of the warn [Default: 1]',
-								type: Constants.ApplicationCommandOptionTypes.INTEGER,
-								required: false,
-								choices: [
-									{
-										name: '1 | 1 day',
-										value: 1
-									},
-									{
-										name: '2 | 3 days',
-										value: 2
-									},
-									{
-										name: '3 | 1 week',
-										value: 3
-									},
-									{
-										name: '4 | 2 weeks',
-										value: 4
-									},
-									{
-										name: '5 | 4 weeks',
-										value: 5
-									}
-								]
-							},
-							{
-								name: 'expiration',
-								description: 'The expiration of the warn [Default: 1 day]',
-								type: Constants.ApplicationCommandOptionTypes.STRING,
-								required: false
-							},
-							{
-								name: 'silent',
-								description: 'Should I NOT inform the user? If true, no DM will be sent! [Default: false]',
-								type: Constants.ApplicationCommandOptionTypes.BOOLEAN,
-								required: false
-							}
-						]
-					},
-					{
-						name: 'remove',
-						description: 'Remove a warn from a user',
-						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-						options: [
-							{
-								name: 'user',
-								description: 'The user to remove the warn from',
-								type: Constants.ApplicationCommandOptionTypes.USER,
-								required: true
-							},
-							{
-								name: 'warn_id',
-								description: 'The ID of the warn to remove',
-								type: Constants.ApplicationCommandOptionTypes.STRING,
-								required: true,
-								autocomplete: true
-							},
-							{
-								name: 'reason',
-								description: 'The reason for the removal',
-								type: Constants.ApplicationCommandOptionTypes.STRING,
-								required: false
-							}
-						]
-					},
-					{
-						name: 'list',
-						description: 'List warns for a user',
-						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-						options: [
-							{
-								name: 'user',
-								description: 'The user to list warns for',
-								type: Constants.ApplicationCommandOptionTypes.USER,
-								required: true
-							}
-						]
-					}
-				]
-			},
+			(builder) =>
+				builder //
+					.setName(this.name)
+					.setDescription(this.description)
+					.addSubcommand((builder) =>
+						builder //
+							.setName('add')
+							.setDescription('Warn a user')
+							.addUserOption((option) =>
+								option //
+									.setName('user')
+									.setDescription('The user to warn')
+									.setRequired(true)
+							)
+							.addStringOption((option) =>
+								option //
+									.setName('reason')
+									.setDescription('The reason for the warn')
+									.setRequired(true)
+							)
+							.addBooleanOption((option) =>
+								option //
+									.setName('delete_messages')
+									.setDescription("Should I delete user's messages? [Default: false]")
+									.setRequired(false)
+							)
+							.addIntegerOption((option) =>
+								option //
+									.setName('severity')
+									.setDescription('The severity of the warn [Default: 1]')
+									.setRequired(false)
+									.addChoices(...this.#SeverityChoices)
+							)
+							.addStringOption((option) =>
+								option //
+									.setName('expiration')
+									.setDescription('The expiration of the warn [Default: 1 day]')
+									.setRequired(false)
+							)
+							.addBooleanOption((option) =>
+								option //
+									.setName('silent')
+									.setDescription('Should I NOT inform the user? If true, no DM will be sent! [Default: false]')
+									.setRequired(false)
+							)
+					)
+					.addSubcommand((builder) =>
+						builder //
+							.setName('remove')
+							.setDescription('Remove a warn from a user')
+							.addUserOption((option) =>
+								option //
+									.setName('user')
+									.setDescription('The user to remove the warn from')
+									.setRequired(true)
+							)
+							.addStringOption((option) =>
+								option //
+									.setName('warn_id')
+									.setDescription('The ID of the warn to remove')
+									.setRequired(true)
+									.setAutocomplete(true)
+							)
+							.addStringOption((option) =>
+								option //
+									.setName('reason')
+									.setDescription('The reason for the removal')
+									.setRequired(false)
+							)
+					)
+					.addSubcommand((builder) =>
+						builder //
+							.setName('list')
+							.setDescription('List warns for a user')
+							.addUserOption((option) =>
+								option //
+									.setName('user')
+									.setDescription('The user to list warns for')
+									.setRequired(true)
+							)
+					),
 			{
 				guildIds: vars.guildIds,
 				idHints: ['960410676797509702', '957277610788921374']
 			}
 		);
 		registry.registerContextMenuCommand(
-			{
-				name: 'Warn List',
-				type: Constants.ApplicationCommandTypes.USER
-			},
+			(builder) =>
+				builder //
+					.setName('Warn List')
+					.setType(ApplicationCommandType.User),
 			{
 				guildIds: vars.guildIds,
 				idHints: ['960410679070851122', '958685725358977024']
