@@ -140,7 +140,7 @@ export class UserCommand extends RadonCommand {
 							.setDescription('Lock all channels')
 							.addSubcommand((builder) =>
 								builder //
-									.setName('server')
+									.setName('text')
 									.setDescription('Lock all text channels')
 									.addRoleOption((option) =>
 										option //
@@ -175,12 +175,12 @@ export class UserCommand extends RadonCommand {
 					)
 					.addSubcommand((builder) =>
 						builder //
-							.setName('all')
+							.setName('server')
 							.setDescription('Lock all channels in the server')
 							.addRoleOption((option) =>
 								option //
 									.setName('role')
-									.setDescription('The role to lock the channel for (defaults to @everyone)')
+									.setDescription('The role to lock the server for (defaults to @everyone)')
 									.setRequired(false)
 							)
 							.addBooleanOption((option) =>

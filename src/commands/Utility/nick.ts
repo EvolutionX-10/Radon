@@ -54,7 +54,7 @@ export class UserCommand extends RadonCommand {
 					.addSubcommand((builder) =>
 						builder //
 							.setName('set')
-							.setDescription('Set the nickname for the member')
+							.setDescription('Set a nickname for the member')
 							.addUserOption((option) =>
 								option //
 									.setName('member')
