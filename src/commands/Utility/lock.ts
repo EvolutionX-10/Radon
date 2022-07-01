@@ -4,9 +4,9 @@ import { sec } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import { BucketScope } from '@sapphire/framework';
+import { ChannelType } from 'discord-api-types/v9';
 import {
 	CategoryChannel,
-	Constants,
 	GuildChannel,
 	MessageActionRow,
 	Modal,
@@ -56,157 +56,140 @@ export class UserCommand extends RadonCommand {
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
-			{
-				name: this.name,
-				description: this.description,
-				options: [
-					{
-						name: 'text',
-						description: 'Lock a text channel',
-						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-						options: [
-							{
-								name: 'channel',
-								description: 'The channel to lock',
-								type: Constants.ApplicationCommandOptionTypes.CHANNEL,
-								required: true,
-								channelTypes: ['GUILD_TEXT']
-							},
-							{
-								name: 'role',
-								description: 'The role to lock the channel for (defaults to @everyone)',
-								type: Constants.ApplicationCommandOptionTypes.ROLE,
-								required: false
-							}
-						]
-					},
-					{
-						name: 'voice',
-						description: 'Lock a voice channel',
-						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-						options: [
-							{
-								name: 'channel',
-								description: 'The channel to lock',
-								type: Constants.ApplicationCommandOptionTypes.CHANNEL,
-								required: true,
-								channelTypes: ['GUILD_VOICE']
-							},
-							{
-								name: 'role',
-								description: 'The role to lock the channel for (defaults to @everyone)',
-								type: Constants.ApplicationCommandOptionTypes.ROLE,
-								required: false
-							}
-						]
-					},
-					{
-						name: 'category',
-						description: 'Lock all channels under category',
-						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-						options: [
-							{
-								name: 'channel',
-								description: "The category who's channels to lock",
-								type: Constants.ApplicationCommandOptionTypes.CHANNEL,
-								channelTypes: ['GUILD_CATEGORY'],
-								required: true
-							},
-							{
-								name: 'role',
-								description: 'The role to lock the channel for (defaults to @everyone)',
-								type: Constants.ApplicationCommandOptionTypes.ROLE,
-								required: false
-							},
-							{
-								name: 'threads',
-								description: 'Whether to lock all threads in the category (defaults to false)',
-								type: Constants.ApplicationCommandOptionTypes.BOOLEAN,
-								required: false
-							}
-						]
-					},
-					{
-						name: 'thread',
-						description: 'Lock a thread',
-						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-						options: [
-							{
-								name: 'channel',
-								description: 'The channel to lock',
-								type: Constants.ApplicationCommandOptionTypes.CHANNEL,
-								required: true,
-								channelTypes: ['GUILD_PUBLIC_THREAD', 'GUILD_NEWS_THREAD', 'GUILD_PRIVATE_THREAD']
-							}
-						]
-					},
-					{
-						name: 'all',
-						description: 'Lock all channels',
-						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND_GROUP,
-						options: [
-							{
-								name: 'text',
-								description: 'Lock all text channels',
-								type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-								options: [
-									{
-										name: 'role',
-										description: 'The role to lock the channel for (defaults to @everyone)',
-										type: Constants.ApplicationCommandOptionTypes.ROLE,
-										required: false
-									}
-								]
-							},
-							{
-								name: 'voice',
-								description: 'Lock all voice channels',
-								type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-								options: [
-									{
-										name: 'role',
-										description: 'The role to lock the channel for (defaults to @everyone)',
-										type: Constants.ApplicationCommandOptionTypes.ROLE,
-										required: false
-									}
-								]
-							},
-							{
-								name: 'thread',
-								description: 'Lock all threads',
-								type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-								options: [
-									{
-										name: 'role',
-										description: 'The role to lock the channel for (defaults to @everyone)',
-										type: Constants.ApplicationCommandOptionTypes.ROLE,
-										required: false
-									}
-								]
-							}
-						]
-					},
-					{
-						name: 'server',
-						description: 'Lock all channels in the server',
-						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-						options: [
-							{
-								name: 'role',
-								description: 'The role to lock the server for (defaults to @everyone)',
-								type: Constants.ApplicationCommandOptionTypes.ROLE,
-								required: false
-							},
-							{
-								name: 'deep',
-								description: 'Whether to override channel overwrites, takes more time (defaults to false)',
-								type: Constants.ApplicationCommandOptionTypes.BOOLEAN,
-								required: false
-							}
-						]
-					}
-				]
-			},
+			(builder) =>
+				builder //
+					.setName(this.name)
+					.setDescription(this.description)
+					.addSubcommand((builder) =>
+						builder //
+							.setName('text')
+							.setDescription('Lock a text channel')
+							.addChannelOption((option) =>
+								option //
+									.setName('channel')
+									.setDescription('The channel to lock')
+									.setRequired(true)
+									.addChannelTypes(ChannelType.GuildText)
+							)
+							.addRoleOption((option) =>
+								option //
+									.setName('role')
+									.setDescription('The role to lock the channel for (defaults to @everyone)')
+									.setRequired(false)
+							)
+					)
+					.addSubcommand((builder) =>
+						builder //
+							.setName('voice')
+							.setDescription('Lock a voice channel')
+							.addChannelOption((option) =>
+								option //
+									.setName('channel')
+									.setDescription('The channel to lock')
+									.setRequired(true)
+									.addChannelTypes(ChannelType.GuildVoice)
+							)
+							.addRoleOption((option) =>
+								option //
+									.setName('role')
+									.setDescription('The role to lock the channel for (defaults to @everyone)')
+									.setRequired(false)
+							)
+					)
+					.addSubcommand((builder) =>
+						builder //
+							.setName('category')
+							.setDescription('Lock all channels under category')
+							.addChannelOption((option) =>
+								option //
+									.setName('channel')
+									.setDescription("The category who's channels to lock")
+									.setRequired(true)
+									.addChannelTypes(ChannelType.GuildCategory)
+							)
+							.addRoleOption((option) =>
+								option //
+									.setName('role')
+									.setDescription('The role to lock the channel for (defaults to @everyone)')
+									.setRequired(false)
+							)
+							.addBooleanOption((option) =>
+								option //
+									.setName('threads')
+									.setDescription('Whether to lock all threads in the category (defaults to false)')
+									.setRequired(false)
+							)
+					)
+					.addSubcommand((builder) =>
+						builder //
+							.setName('thread')
+							.setDescription('Lock a thread')
+							.addChannelOption((option) =>
+								option //
+									.setName('channel')
+									.setDescription('The channel to lock')
+									.setRequired(true)
+									.addChannelTypes(ChannelType.GuildNewsThread)
+									.addChannelTypes(ChannelType.GuildPublicThread)
+									.addChannelTypes(ChannelType.GuildPrivateThread)
+							)
+					)
+					.addSubcommandGroup((builder) =>
+						builder //
+							.setName('all')
+							.setDescription('Lock all channels')
+							.addSubcommand((builder) =>
+								builder //
+									.setName('server')
+									.setDescription('Lock all text channels')
+									.addRoleOption((option) =>
+										option //
+											.setName('role')
+											.setDescription('The role to lock the channel for (defaults to @everyone)')
+
+											.setRequired(false)
+									)
+							)
+							.addSubcommand((builder) =>
+								builder //
+									.setName('voice')
+									.setDescription('Lock all voice channels')
+									.addRoleOption((option) =>
+										option //
+											.setName('role')
+											.setDescription('The role to lock the channel for (defaults to @everyone)')
+											.setRequired(false)
+									)
+							)
+							.addSubcommand((builder) =>
+								builder //
+									.setName('thread')
+									.setDescription('Lock all threads')
+									.addRoleOption((option) =>
+										option //
+											.setName('role')
+											.setDescription('The role to lock the channel for (defaults to @everyone)')
+											.setRequired(false)
+									)
+							)
+					)
+					.addSubcommand((builder) =>
+						builder //
+							.setName('all')
+							.setDescription('Lock all channels in the server')
+							.addRoleOption((option) =>
+								option //
+									.setName('role')
+									.setDescription('The role to lock the channel for (defaults to @everyone)')
+									.setRequired(false)
+							)
+							.addBooleanOption((option) =>
+								option //
+									.setName('deep')
+									.setDescription('Whether to override channel overwrites, takes more time (defaults to false)')
+									.setRequired(false)
+							)
+					),
 			{
 				guildIds: vars.guildIds,
 				idHints: ['978320030452297769', '975667690498834482']
