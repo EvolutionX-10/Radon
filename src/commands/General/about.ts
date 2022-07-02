@@ -2,7 +2,7 @@ import { RadonCommand, Timestamp } from '#lib/structures';
 import { color } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import { Constants, version } from 'discord.js';
+import { version } from 'discord.js';
 import { version as sapphireVersion } from '@sapphire/framework';
 import { roundNumber } from '@sapphire/utilities';
 import { uptime } from 'node:os';
@@ -22,17 +22,15 @@ export class UserCommand extends RadonCommand {
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
-			{
-				name: this.name,
-				description: this.description,
-				options: [
-					{
-						name: 'me',
-						description: 'Show info about me!',
-						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND
-					}
-				]
-			},
+			(builder) =>
+				builder //
+					.setName(this.name)
+					.setDescription(this.description)
+					.addSubcommand((builder) =>
+						builder //
+							.setName('me')
+							.setDescription('Show info about me!')
+					),
 			{
 				guildIds: vars.guildIds,
 				idHints: ['970217477126643752', '969450739757883433']

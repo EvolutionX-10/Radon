@@ -33,10 +33,10 @@ export class UserCommand extends RadonCommand {
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
-			{
-				name: this.name,
-				description: this.description
-			},
+			(builder) =>
+				builder //
+					.setName(this.name)
+					.setDescription(this.description),
 			{
 				guildIds: vars.radonGuildId, // * Only run in Radon Support *
 				idHints: ['961940451135479888', '951679296689287239']

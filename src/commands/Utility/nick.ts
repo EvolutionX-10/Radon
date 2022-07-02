@@ -3,7 +3,8 @@ import { PermissionLevels } from '#lib/types';
 import { runAllChecks } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import { Constants, GuildMember } from 'discord.js';
+import { ApplicationCommandType } from 'discord-api-types/v9';
+import type { GuildMember } from 'discord.js';
 import { clean } from 'confusables';
 @ApplyOptions<RadonCommand.Options>({
 	description: `Manage nicknames`,
@@ -35,79 +36,71 @@ export class UserCommand extends RadonCommand {
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
-			{
-				name: this.name,
-				description: this.description,
-				options: [
-					{
-						name: 'decancer',
-						description: 'Decancer the username of the member',
-						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-						options: [
-							{
-								name: 'member',
-								description: "The member who's nickname to decancer",
-								type: Constants.ApplicationCommandOptionTypes.USER,
-								required: true
-							}
-						]
-					},
-					{
-						name: 'set',
-						description: 'Set a nickname for the member',
-						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-						options: [
-							{
-								name: 'member',
-								description: "The member who's nickname to set",
-								type: Constants.ApplicationCommandOptionTypes.USER,
-								required: true
-							},
-							{
-								name: 'nickname',
-								description: 'The nickname to set',
-								type: Constants.ApplicationCommandOptionTypes.STRING,
-								required: true
-							},
-							{
-								name: 'reason',
-								description: 'The reason for the nickname change',
-								type: Constants.ApplicationCommandOptionTypes.STRING,
-								required: false
-							}
-						]
-					},
-					{
-						name: 'clear',
-						description: 'Clear the nickname of the member',
-						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-						options: [
-							{
-								name: 'member',
-								description: "The member who's nickname to clear",
-								type: Constants.ApplicationCommandOptionTypes.USER,
-								required: true
-							},
-							{
-								name: 'reason',
-								description: 'The reason for the nickname clear',
-								type: Constants.ApplicationCommandOptionTypes.STRING,
-								required: false
-							}
-						]
-					}
-				]
-			},
+			(builder) =>
+				builder //
+					.setName(this.name)
+					.setDescription(this.description)
+					.addSubcommand((builder) =>
+						builder //
+							.setName('decancer')
+							.setDescription('Decancer the username of the member')
+							.addUserOption((option) =>
+								option //
+									.setName('member')
+									.setDescription("The member who's nickname to decancer")
+									.setRequired(true)
+							)
+					)
+					.addSubcommand((builder) =>
+						builder //
+							.setName('set')
+							.setDescription('Set a nickname for the member')
+							.addUserOption((option) =>
+								option //
+									.setName('member')
+									.setDescription("The member who's nickname to set")
+									.setRequired(true)
+							)
+							.addStringOption((option) =>
+								option //
+									.setName('nickname')
+									.setDescription('The nickname to set')
+									.setRequired(true)
+							)
+							.addStringOption((option) =>
+								option //
+									.setName('reason')
+									.setDescription('The reason for the nickname change')
+									.setRequired(false)
+							)
+					)
+					.addSubcommand((builder) =>
+						builder //
+							.setName('clear')
+							.setDescription('Clear the nickname of the member')
+							.addUserOption((option) =>
+								option //
+									.setName('member')
+									.setDescription("The member who's nickname to clear")
+									.setRequired(true)
+							)
+							.addStringOption((option) =>
+								option //
+									.setName('reason')
+									.setDescription('The reason for the nickname clear')
+									.setRequired(false)
+							)
+					),
 			{
 				guildIds: vars.guildIds,
 				idHints: ['954251737290661939', '954226414759055400']
 			}
 		);
 		registry.registerContextMenuCommand(
-			{
-				name: 'Decancer',
-				type: Constants.ApplicationCommandTypes.USER
-			},
+			(builder) =>
+				builder //
+					.setName('Decancer')
+					.setType(ApplicationCommandType.User),
 			{
 				guildIds: vars.guildIds,
 				idHints: ['954251739077431346', '954249587047170048']

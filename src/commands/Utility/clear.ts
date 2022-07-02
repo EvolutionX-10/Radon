@@ -3,7 +3,7 @@ import { PermissionLevels } from '#lib/types';
 import { sec } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import { Constants, TextChannel } from 'discord.js';
+import type { TextChannel } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
 	cooldownDelay: sec(15),
 	description: `Deletes messages from current channel`,
@@ -71,38 +71,36 @@ export class UserCommand extends RadonCommand {
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
-			{
-				name: this.name,
-				description: this.description,
-				options: [
-					{
-						name: 'count',
-						description: 'Number of messages to delete',
-						minValue: 1,
-						maxValue: 500,
-						type: Constants.ApplicationCommandOptionTypes.INTEGER,
-						required: true
-					},
-					{
-						name: 'skip_pinned',
-						description: 'Whether to skip pinned messages [default: true]',
-						type: Constants.ApplicationCommandOptionTypes.BOOLEAN,
-						required: false
-					},
-					{
-						name: 'contains',
-						description: `A string to search for in messages`,
-						type: Constants.ApplicationCommandOptionTypes.STRING,
-						required: false
-					},
-					{
-						name: 'user',
-						description: 'User to delete messages from',
-						type: Constants.ApplicationCommandOptionTypes.USER,
-						required: false
-					}
-				]
-			},
+			(builder) =>
+				builder //
+					.setName(this.name)
+					.setDescription(this.description)
+					.addIntegerOption((option) =>
+						option //
+							.setName('count')
+							.setDescription('Number of messages to delete')
+							.setRequired(true)
+							.setMinValue(1)
+							.setMaxValue(500)
+					)
+					.addBooleanOption((option) =>
+						option //
+							.setName('skip_pinned')
+							.setDescription('Skip pinned messages [default: true]')
+							.setRequired(false)
+					)
+					.addStringOption((option) =>
+						option //
+							.setName('contains')
+							.setDescription('A string to search for in messages')
+							.setRequired(false)
+					)
+					.addUserOption((option) =>
+						option //
+							.setName('user')
+							.setDescription('User to delete messages from')
+							.setRequired(false)
+					),
 			{
 				guildIds: vars.guildIds,
 				idHints: ['947723986521956433', '951679388976545852']

@@ -3,7 +3,7 @@ import { BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
 import { sec } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import { Constants, GuildMember } from 'discord.js';
+import type { GuildMember } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
 	cooldownDelay: sec(10),
 	cooldownLimit: 3,
@@ -52,24 +52,22 @@ export class UserCommand extends RadonCommand {
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
-			{
-				name: this.name,
-				description: this.description,
-				options: [
-					{
-						name: 'user',
-						description: 'The id of the user to unban',
-						type: Constants.ApplicationCommandOptionTypes.USER,
-						required: true
-					},
-					{
-						name: 'reason',
-						description: 'The reason for the ban uplift',
-						type: Constants.ApplicationCommandOptionTypes.STRING,
-						required: false
-					}
-				]
-			},
+			(builder) =>
+				builder //
+					.setName(this.name)
+					.setDescription(this.description)
+					.addUserOption((option) =>
+						option //
+							.setName('user')
+							.setDescription('The id of the user to unban')
+							.setRequired(true)
+					)
+					.addStringOption((option) =>
+						option //
+							.setName('reason')
+							.setDescription('The reason for the ban uplift')
+							.setRequired(false)
+					),
 			{
 				guildIds: vars.guildIds,
 				idHints: ['947830619386302525', '951679387084922930']

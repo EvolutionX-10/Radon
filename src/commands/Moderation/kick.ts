@@ -3,7 +3,7 @@ import { BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
 import { runAllChecks, sec } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import { Constants, GuildMember } from 'discord.js';
+import type { GuildMember } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
 	description: `Kick a member`,
 	permissionLevel: PermissionLevels.Moderator,
@@ -52,24 +52,22 @@ export class UserCommand extends RadonCommand {
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
-			{
-				name: this.name,
-				description: this.description,
-				options: [
-					{
-						name: 'member',
-						description: 'The member to kick',
-						type: Constants.ApplicationCommandOptionTypes.USER,
-						required: true
-					},
-					{
-						name: 'reason',
-						description: 'The reason for the kick',
-						type: Constants.ApplicationCommandOptionTypes.STRING,
-						required: false
-					}
-				]
-			},
+			(builder) =>
+				builder //
+					.setName(this.name)
+					.setDescription(this.description)
+					.addUserOption((option) =>
+						option //
+							.setName('member')
+							.setDescription('The member to kick')
+							.setRequired(true)
+					)
+					.addStringOption((option) =>
+						option //
+							.setName('reason')
+							.setDescription('The reason for the kick')
+							.setRequired(false)
+					),
 			{
 				guildIds: vars.guildIds,
 				idHints: ['947723984949092392', '951679380692828180']

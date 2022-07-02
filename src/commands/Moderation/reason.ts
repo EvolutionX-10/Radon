@@ -2,7 +2,7 @@ import { RadonCommand } from '#lib/structures';
 import { warnsDB } from '#models';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import { Constants, GuildMember, Message, TextChannel } from 'discord.js';
+import type { GuildMember, Message, TextChannel } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
 	description: `Change the reason for the action`,
 	runIn: `GUILD_ANY`
@@ -57,24 +57,22 @@ export class UserCommand extends RadonCommand {
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
-			{
-				name: this.name,
-				description: this.description,
-				options: [
-					{
-						name: 'id',
-						description: `The ID of the message in the modlogs`,
-						type: Constants.ApplicationCommandOptionTypes.STRING,
-						required: true
-					},
-					{
-						name: 'reason',
-						description: `The updated reason for the action`,
-						type: Constants.ApplicationCommandOptionTypes.STRING,
-						required: true
-					}
-				]
-			},
+			(builder) =>
+				builder //
+					.setName(this.name)
+					.setDescription(this.description)
+					.addStringOption((option) =>
+						option //
+							.setName('id')
+							.setDescription('The ID of the message in the modlogs')
+							.setRequired(true)
+					)
+					.addStringOption((option) =>
+						option //
+							.setName('reason')
+							.setDescription('The updated reason for the action')
+							.setRequired(true)
+					),
 			{
 				guildIds: vars.guildIds,
 				idHints: ['952460616696741938', '952277309015093288']

@@ -2,7 +2,7 @@ import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import { Constants, TextChannel } from 'discord.js';
+import type { TextChannel } from 'discord.js';
 import { DurationFormatter, Duration } from '@sapphire/time-utilities';
 
 @ApplyOptions<RadonCommand.Options>({
@@ -51,24 +51,22 @@ export class UserCommand extends RadonCommand {
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
-			{
-				name: this.name,
-				description: this.description,
-				options: [
-					{
-						name: 'duration',
-						description: 'The amount of time to set the slowmode to, enter 0 to turn off',
-						type: Constants.ApplicationCommandOptionTypes.STRING,
-						required: false
-					},
-					{
-						name: 'reason',
-						description: 'The reason for the slowmode',
-						type: Constants.ApplicationCommandOptionTypes.STRING,
-						required: false
-					}
-				]
-			},
+			(builder) =>
+				builder //
+					.setName(this.name)
+					.setDescription(this.description)
+					.addStringOption((option) =>
+						option //
+							.setName('duration')
+							.setDescription('The amount of time to set the slowmode to, enter 0 to turn off')
+							.setRequired(false)
+					)
+					.addStringOption((option) =>
+						option //
+							.setName('reason')
+							.setDescription('The reason for the slowmode')
+							.setRequired(false)
+					),
 			{
 				guildIds: vars.guildIds,
 				idHints: ['954799793559986296', '954796834038112276']

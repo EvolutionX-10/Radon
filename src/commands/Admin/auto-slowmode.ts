@@ -2,7 +2,7 @@ import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import { Constants } from 'discord.js';
+import type { APIApplicationCommandOptionChoice } from 'discord-api-types/v9';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Automate the Slowmode!',
@@ -12,6 +12,12 @@ import { Constants } from 'discord.js';
 	runIn: ['GUILD_ANY']
 })
 export class UserCommand extends RadonCommand {
+	readonly #SensitivityChoices: APIApplicationCommandOptionChoice<SlowmodeSensitivity>[] = [
+		{ name: 'High', value: 'high' },
+		{ name: 'Medium', value: 'medium' },
+		{ name: 'Low', value: 'low' }
+	];
+
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const { channelId, guildId } = interaction;
 		const status = interaction.options.getBoolean('enable', true);
@@ -56,29 +62,23 @@ export class UserCommand extends RadonCommand {
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
-			{
-				name: this.name,
-				description: this.description,
-				options: [
-					{
-						name: 'enable',
-						description: 'Enable the automation of slowmode',
-						required: true,
-						type: Constants.ApplicationCommandOptionTypes.BOOLEAN
-					},
-					{
-						name: 'sensitivity',
-						description: 'The sensitivity of the slowmode',
-						type: Constants.ApplicationCommandOptionTypes.STRING,
-						required: false,
-						choices: [
-							{ name: 'High', value: 'high' },
-							{ name: 'Medium', value: 'medium' },
-							{ name: 'Low', value: 'low' }
-						]
-					}
-				]
-			},
+			(builder) =>
+				builder //
+					.setName(this.name)
+					.setDescription(this.description)
+					.addBooleanOption((option) =>
+						option //
+							.setName('enable')
+							.setDescription('Enable the automation of slowmode')
+							.setRequired(true)
+					)
+					.addStringOption((option) =>
+						option //
+							.setName('sensitivity')
+							.setDescription('The sensitivity of the slowmode')
+							.setRequired(false)
+							.setChoices(...this.#SensitivityChoices)
+					),
 			{
 				guildIds: vars.guildIds,
 				idHints: ['985059429428916244', '983949086539530281']

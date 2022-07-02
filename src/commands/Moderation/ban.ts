@@ -3,7 +3,8 @@ import { BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
 import { generateModLogDescription, runAllChecks, sec, severity } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import { Constants, GuildMember, TextChannel } from 'discord.js';
+import type { APIApplicationCommandOptionChoice } from 'discord-api-types/v9';
+import type { GuildMember, TextChannel } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
 	cooldownDelay: sec(10),
 	cooldownLimit: 3,
@@ -13,6 +14,16 @@ import { Constants, GuildMember, TextChannel } from 'discord.js';
 	runIn: 'GUILD_ANY'
 })
 export class UserCommand extends RadonCommand {
+	readonly #DaysChoices: APIApplicationCommandOptionChoice<Days>[] = [
+		{ name: '1 Day', value: 1 },
+		{ name: '2 Days', value: 2 },
+		{ name: '3 Days', value: 3 },
+		{ name: '4 Days', value: 4 },
+		{ name: '5 Days', value: 5 },
+		{ name: '6 Days', value: 6 },
+		{ name: '7 Days', value: 7 }
+	];
+
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const member = interaction.options.getMember('member') as GuildMember;
 		if (!member)
@@ -43,32 +54,29 @@ export class UserCommand extends RadonCommand {
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
-			{
-				name: this.name,
-				description: this.description,
-				options: [
-					{
-						name: 'member',
-						description: 'The member to ban',
-						type: Constants.ApplicationCommandOptionTypes.USER,
-						required: true
-					},
-					{
-						name: 'reason',
-						description: 'The reason for the ban',
-						type: Constants.ApplicationCommandOptionTypes.STRING,
-						required: false
-					},
-					{
-						name: 'days',
-						description: 'The days of messages to delete (not a temp ban)',
-						type: Constants.ApplicationCommandOptionTypes.INTEGER,
-						maxValue: 7,
-						minValue: 1,
-						required: false
-					}
-				]
-			},
+			(builder) =>
+				builder //
+					.setName(this.name)
+					.setDescription(this.description)
+					.addUserOption((option) =>
+						option //
+							.setName('member')
+							.setDescription('The member to ban')
+							.setRequired(true)
+					)
+					.addStringOption((option) =>
+						option //
+							.setName('reason')
+							.setDescription('The reason for the ban')
+							.setRequired(false)
+					)
+					.addIntegerOption((option) =>
+						option //
+							.setName('days')
+							.setDescription('The days of messages to delete (not a temp ban)')
+							.setRequired(false)
+							.setChoices(...this.#DaysChoices)
+					),
 			{
 				guildIds: vars.guildIds,
 				idHints: ['947756361876389898', '951679301030387742']
@@ -121,3 +129,5 @@ export class UserCommand extends RadonCommand {
 		});
 	}
 }
+
+type Days = 1 | 2 | 3 | 4 | 5 | 6 | 7;

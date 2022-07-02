@@ -2,16 +2,7 @@ import { Confirmation, RadonCommand, Select, Timestamp } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { vars } from '#vars';
 import { ApplyOptions, RequiresUserPermissions } from '@sapphire/decorators';
-import {
-	BufferResolvable,
-	Collection,
-	ColorResolvable,
-	Constants,
-	GuildMember,
-	MessageSelectOptionData,
-	PermissionResolvable,
-	Role
-} from 'discord.js';
+import type { BufferResolvable, Collection, ColorResolvable, GuildMember, MessageSelectOptionData, PermissionResolvable, Role } from 'discord.js';
 import { all } from 'colornames';
 import { Stopwatch } from '@sapphire/stopwatch';
 import { sec } from '#lib/utility';
@@ -62,195 +53,177 @@ export class UserCommand extends RadonCommand {
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
-			{
-				name: this.name,
-				description: this.description,
-				options: [
-					{
-						name: 'add',
-						description: 'Add role to user',
-						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-						options: [
-							{
-								name: 'role',
-								description: 'Role to add',
-								type: Constants.ApplicationCommandOptionTypes.ROLE,
-								required: true
-							},
-							{
-								name: 'target',
-								description: 'Target you want to add role to',
-								type: Constants.ApplicationCommandOptionTypes.USER,
-								required: true
-							},
-							{
-								name: 'reason',
-								description: 'Reason for action',
-								type: Constants.ApplicationCommandOptionTypes.STRING,
-								required: false
-							}
-						]
-					},
-					{
-						name: 'remove',
-						description: 'Remove role from user',
-						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-						options: [
-							{
-								name: 'role',
-								description: 'Role to remove',
-								type: Constants.ApplicationCommandOptionTypes.ROLE,
-								required: true
-							},
-							{
-								name: 'target',
-								description: 'Target you want to remove role from',
-								type: Constants.ApplicationCommandOptionTypes.USER,
-								required: true
-							},
-							{
-								name: 'reason',
-								description: 'Reason for action',
-								type: Constants.ApplicationCommandOptionTypes.STRING,
-								required: false
-							}
-						]
-					},
-					{
-						name: 'info',
-						description: 'Shows information about role',
-						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-						options: [
-							{
-								name: 'role',
-								description: 'Role to display information about',
-								type: Constants.ApplicationCommandOptionTypes.ROLE,
-								required: true
-							}
-						]
-					},
-					{
-						name: 'create',
-						description: 'Create a role',
-						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-						options: [
-							{
-								name: 'name',
-								description: 'Name of the role',
-								type: Constants.ApplicationCommandOptionTypes.STRING,
-								required: true
-							},
-							{
-								name: 'color',
-								description: 'Hex color of the role',
-								type: Constants.ApplicationCommandOptionTypes.STRING,
-								autocomplete: true,
-								required: false
-							},
-							{
-								name: 'hoisted',
-								description: 'Should the role be hoisted? [default: false]',
-								type: Constants.ApplicationCommandOptionTypes.BOOLEAN,
-								required: false
-							},
-							{
-								name: 'mentionable',
-								description: 'Should the role be mentionable by @everyone? [default: false]',
-								type: Constants.ApplicationCommandOptionTypes.BOOLEAN,
-								required: false
-							},
-							{
-								name: 'icon',
-								description: 'Icon for the role, only for servers having role icons feature!',
-								type: Constants.ApplicationCommandOptionTypes.ATTACHMENT,
-								required: false
-							},
-							{
-								name: 'reason',
-								description: 'Reason for the creation of role',
-								type: Constants.ApplicationCommandOptionTypes.STRING,
-								required: false
-							}
-						]
-					},
-					{
-						name: 'delete',
-						description: 'Delete a role',
-						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-						options: [
-							{
-								name: 'role',
-								description: 'Role to delete',
-								type: Constants.ApplicationCommandOptionTypes.ROLE,
-								required: true
-							},
-							{
-								name: 'reason',
-								description: 'Reason for action',
-								type: Constants.ApplicationCommandOptionTypes.STRING,
-								required: false
-							}
-						]
-					},
-					{
-						name: 'bulk',
-						description: 'Bulk actions for roles',
-						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND_GROUP,
-						options: [
-							{
-								name: 'add',
-								description: 'Add role to multiple users',
-								type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-								options: [
-									{
-										name: 'role',
-										description: 'Role to add',
-										type: Constants.ApplicationCommandOptionTypes.ROLE,
-										required: true
-									},
-									{
-										name: 'base_role',
-										description: 'Base role user should have for role to be added (defaults to @everyone)',
-										type: Constants.ApplicationCommandOptionTypes.ROLE,
-										required: false
-									},
-									{
-										name: 'reason',
-										description: 'Reason for action',
-										type: Constants.ApplicationCommandOptionTypes.STRING,
-										required: false
-									}
-								]
-							},
-							{
-								name: 'remove',
-								description: 'Remove role from multiple users',
-								type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-								options: [
-									{
-										name: 'role',
-										description: 'Role to remove',
-										type: Constants.ApplicationCommandOptionTypes.ROLE,
-										required: true
-									},
-									{
-										name: 'base_role',
-										description: 'Base role user should have for role to be removed (defaults to @everyone)',
-										type: Constants.ApplicationCommandOptionTypes.ROLE,
-										required: false
-									},
-									{
-										name: 'reason',
-										description: 'Reason for action',
-										type: Constants.ApplicationCommandOptionTypes.STRING,
-										required: false
-									}
-								]
-							}
-						]
-					}
-				]
-			},
+			(builder) =>
+				builder //
+					.setName(this.name)
+					.setDescription(this.description)
+					.addSubcommand((builder) =>
+						builder //
+							.setName('add')
+							.setDescription('Add a role to a user')
+							.addRoleOption((option) =>
+								option //
+									.setName('role')
+									.setDescription('The role to add')
+									.setRequired(true)
+							)
+							.addUserOption((option) =>
+								option //
+									.setName('target')
+									.setDescription('Target you want to add role to')
+									.setRequired(true)
+							)
+							.addStringOption((option) =>
+								option //
+									.setName('reason')
+									.setDescription('Reason for action')
+									.setRequired(false)
+							)
+					)
+					.addSubcommand((builder) =>
+						builder //
+							.setName('remove')
+							.setDescription('Remove a role from a user')
+							.addRoleOption((option) =>
+								option //
+									.setName('role')
+									.setDescription('The role to remove')
+									.setRequired(true)
+							)
+							.addUserOption((option) =>
+								option //
+									.setName('target')
+									.setDescription('Target you want to remove role from')
+									.setRequired(true)
+							)
+							.addStringOption((option) =>
+								option //
+									.setName('reason')
+									.setDescription('Reason for action')
+									.setRequired(false)
+							)
+					)
+					.addSubcommand((builder) =>
+						builder //
+							.setName('info')
+							.setDescription('Get info about a role')
+							.addRoleOption((option) =>
+								option //
+									.setName('role')
+									.setDescription('The role to get info about')
+									.setRequired(true)
+							)
+					)
+					.addSubcommand((builder) =>
+						builder //
+							.setName('create')
+							.setDescription('Create a role')
+							.addStringOption((option) =>
+								option //
+									.setName('name')
+									.setDescription('Name of the role')
+									.setRequired(true)
+							)
+							.addStringOption((option) =>
+								option //
+									.setName('color')
+									.setDescription('Color of the role')
+									.setRequired(false)
+									.setAutocomplete(true)
+							)
+							.addBooleanOption((option) =>
+								option //
+									.setName('hoisted')
+									.setDescription('Should the role be hoisted? [default: false]')
+									.setRequired(false)
+							)
+							.addBooleanOption((option) =>
+								option //
+									.setName('mentionable')
+									.setDescription('Should the role be mentionable by @everyone? [default: false]')
+									.setRequired(false)
+							)
+							.addAttachmentOption((option) =>
+								option //
+									.setName('icon')
+									.setDescription('Icon for the role, only for servers having role icons feature!')
+									.setRequired(false)
+							)
+							.addStringOption((option) =>
+								option //
+									.setName('reason')
+									.setDescription('Reason for action')
+									.setRequired(false)
+							)
+					)
+					.addSubcommand((builder) =>
+						builder //
+							.setName('delete')
+							.setDescription('Delete a role')
+							.addRoleOption((option) =>
+								option //
+									.setName('role')
+									.setDescription('The role to delete')
+									.setRequired(true)
+							)
+							.addStringOption((option) =>
+								option //
+									.setName('reason')
+									.setDescription('Reason for action')
+									.setRequired(false)
+							)
+					)
+					.addSubcommandGroup((builder) =>
+						builder //
+							.setName('bulk')
+							.setDescription('Bulk actions for roles')
+							.addSubcommand((builder) =>
+								builder //
+									.setName('add')
+									.setDescription('Add roles to multiple users')
+									.addRoleOption((option) =>
+										option //
+											.setName('role')
+											.setDescription('The role to add')
+											.setRequired(true)
+									)
+									.addRoleOption((option) =>
+										option //
+											.setName('base_role')
+											.setDescription('Base role user should have for role to be added (defaults to @everyone)')
+											.setRequired(false)
+									)
+									.addStringOption((option) =>
+										option //
+											.setName('reason')
+											.setDescription('Reason for action')
+											.setRequired(false)
+									)
+							)
+							.addSubcommand((builder) =>
+								builder //
+									.setName('remove')
+									.setDescription('Remove roles from multiple users')
+									.addRoleOption((option) =>
+										option //
+											.setName('role')
+											.setDescription('The role to remove')
+											.setRequired(true)
+									)
+									.addRoleOption((option) =>
+										option //
+											.setName('base_role')
+											.setDescription('Base role user should have for role to be removed (defaults to @everyone)')
+											.setRequired(false)
+									)
+									.addStringOption((option) =>
+										option //
+											.setName('reason')
+											.setDescription('Reason for action')
+											.setRequired(false)
+									)
+							)
+					),
 			{
 				guildIds: vars.guildIds,
 				idHints: ['991634355069915176', '989778331396374580']
