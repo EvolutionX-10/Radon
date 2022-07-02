@@ -3,10 +3,10 @@ import { PermissionLevels } from '#lib/types';
 import { sec } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
+import { ChannelType } from 'discord-api-types/v9';
 import { BucketScope } from '@sapphire/framework';
 import {
 	CategoryChannel,
-	Constants,
 	GuildChannel,
 	MessageActionRow,
 	Modal,
@@ -56,157 +56,139 @@ export class UserCommand extends RadonCommand {
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
-			{
-				name: this.name,
-				description: this.description,
-				options: [
-					{
-						name: 'text',
-						description: 'Unlock a text channel',
-						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-						options: [
-							{
-								name: 'channel',
-								description: 'The channel to unlock',
-								type: Constants.ApplicationCommandOptionTypes.CHANNEL,
-								required: true,
-								channelTypes: ['GUILD_TEXT']
-							},
-							{
-								name: 'role',
-								description: 'The role to unlock the channel for (defaults to @everyone)',
-								type: Constants.ApplicationCommandOptionTypes.ROLE,
-								required: false
-							}
-						]
-					},
-					{
-						name: 'voice',
-						description: 'Unlock a voice channel',
-						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-						options: [
-							{
-								name: 'channel',
-								description: 'The channel to unlock',
-								type: Constants.ApplicationCommandOptionTypes.CHANNEL,
-								required: true,
-								channelTypes: ['GUILD_VOICE']
-							},
-							{
-								name: 'role',
-								description: 'The role to unlock the channel for (defaults to @everyone)',
-								type: Constants.ApplicationCommandOptionTypes.ROLE,
-								required: false
-							}
-						]
-					},
-					{
-						name: 'category',
-						description: 'Unlock all channels under category',
-						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-						options: [
-							{
-								name: 'channel',
-								description: "The category who's channels to unlock",
-								type: Constants.ApplicationCommandOptionTypes.CHANNEL,
-								channelTypes: ['GUILD_CATEGORY'],
-								required: true
-							},
-							{
-								name: 'role',
-								description: 'The role to unlock the channel for (defaults to @everyone)',
-								type: Constants.ApplicationCommandOptionTypes.ROLE,
-								required: false
-							},
-							{
-								name: 'threads',
-								description: 'Whether to unlock all threads in the category (defaults to false)',
-								type: Constants.ApplicationCommandOptionTypes.BOOLEAN,
-								required: false
-							}
-						]
-					},
-					{
-						name: 'thread',
-						description: 'Unlock a thread',
-						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-						options: [
-							{
-								name: 'channel',
-								description: 'The channel to unlock',
-								type: Constants.ApplicationCommandOptionTypes.CHANNEL,
-								required: true,
-								channelTypes: ['GUILD_PUBLIC_THREAD', 'GUILD_PRIVATE_THREAD']
-							}
-						]
-					},
-					{
-						name: 'all',
-						description: 'Unlock all channels',
-						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND_GROUP,
-						options: [
-							{
-								name: 'text',
-								description: 'Unlock all text channels',
-								type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-								options: [
-									{
-										name: 'role',
-										description: 'The role to unlock the channel for (defaults to @everyone)',
-										type: Constants.ApplicationCommandOptionTypes.ROLE,
-										required: false
-									}
-								]
-							},
-							{
-								name: 'voice',
-								description: 'Unlock all voice channels',
-								type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-								options: [
-									{
-										name: 'role',
-										description: 'The role to unlock the channel for (defaults to @everyone)',
-										type: Constants.ApplicationCommandOptionTypes.ROLE,
-										required: false
-									}
-								]
-							},
-							{
-								name: 'thread',
-								description: 'Unlock all threads',
-								type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-								options: [
-									{
-										name: 'role',
-										description: 'The role to unlock the channel for (defaults to @everyone)',
-										type: Constants.ApplicationCommandOptionTypes.ROLE,
-										required: false
-									}
-								]
-							}
-						]
-					},
-					{
-						name: 'server',
-						description: 'Unlock all channels in the server',
-						type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-						options: [
-							{
-								name: 'role',
-								description: 'The role to unlock the server for (defaults to @everyone)',
-								type: Constants.ApplicationCommandOptionTypes.ROLE,
-								required: false
-							},
-							{
-								name: 'deep',
-								description: 'Whether to override channel overwrites, only use if lock was deep (defaults to false)',
-								type: Constants.ApplicationCommandOptionTypes.BOOLEAN,
-								required: false
-							}
-						]
-					}
-				]
-			},
+			(builder) =>
+				builder //
+					.setName(this.name)
+					.setDescription(this.description)
+					.addSubcommand((builder) =>
+						builder //
+							.setName('text')
+							.setDescription('Unlock a text channel')
+							.addChannelOption((option) =>
+								option //
+									.setName('channel')
+									.setDescription('The channel to unlock')
+									.setRequired(true)
+									.addChannelTypes(ChannelType.GuildText)
+							)
+							.addRoleOption((option) =>
+								option //
+									.setName('role')
+									.setDescription('The role to unlock the channel for (defaults to @everyone)')
+									.setRequired(false)
+							)
+					)
+					.addSubcommand((builder) =>
+						builder //
+							.setName('voice')
+							.setDescription('Unlock a voice channel')
+							.addChannelOption((option) =>
+								option //
+									.setName('channel')
+									.setDescription('The channel to unlock')
+									.setRequired(true)
+									.addChannelTypes(ChannelType.GuildVoice)
+							)
+							.addRoleOption((option) =>
+								option //
+									.setName('role')
+									.setDescription('The role to unlock the channel for (defaults to @everyone)')
+									.setRequired(false)
+							)
+					)
+					.addSubcommand((builder) =>
+						builder //
+							.setName('category')
+							.setDescription('Unlock all channels under category')
+							.addChannelOption((option) =>
+								option //
+									.setName('channel')
+									.setDescription("The category who's channels to unlock")
+									.setRequired(true)
+									.addChannelTypes(ChannelType.GuildCategory)
+							)
+							.addRoleOption((option) =>
+								option //
+									.setName('role')
+									.setDescription('The role to unlock the channel for (defaults to @everyone)')
+									.setRequired(false)
+							)
+							.addBooleanOption((option) =>
+								option //
+									.setName('threads')
+									.setDescription('Whether to unlock all threads in the category (defaults to false)')
+									.setRequired(false)
+							)
+					)
+					.addSubcommand((builder) =>
+						builder //
+							.setName('thread')
+							.setDescription('Unlock a thread')
+							.addChannelOption((option) =>
+								option //
+									.setName('channel')
+									.setDescription('The channel to unlock')
+									.setRequired(true)
+									.addChannelTypes(ChannelType.GuildNewsThread)
+									.addChannelTypes(ChannelType.GuildPublicThread)
+									.addChannelTypes(ChannelType.GuildPrivateThread)
+							)
+					)
+					.addSubcommandGroup((builder) =>
+						builder //
+							.setName('all')
+							.setDescription('Unlock all channels')
+							.addSubcommand((builder) =>
+								builder //
+									.setName('text')
+									.setDescription('Unlock all text channels')
+									.addRoleOption((option) =>
+										option //
+											.setName('role')
+											.setDescription('The role to unlock the channel for (defaults to @everyone)')
+											.setRequired(false)
+									)
+							)
+							.addSubcommand((builder) =>
+								builder //
+									.setName('voice')
+									.setDescription('Unlock all voice channels')
+									.addRoleOption((option) =>
+										option //
+											.setName('role')
+											.setDescription('The role to unlock the channel for (defaults to @everyone)')
+											.setRequired(false)
+									)
+							)
+							.addSubcommand((builder) =>
+								builder //
+									.setName('thread')
+									.setDescription('Unlock all threads')
+									.addRoleOption((option) =>
+										option //
+											.setName('role')
+											.setDescription('The role to unlock the channel for (defaults to @everyone)')
+											.setRequired(false)
+									)
+							)
+					)
+					.addSubcommand((builder) =>
+						builder //
+							.setName('server')
+							.setDescription('Unlock all channels in the server')
+							.addRoleOption((option) =>
+								option //
+									.setName('role')
+									.setDescription('The role to unlock the server for (defaults to @everyone)')
+									.setRequired(false)
+							)
+							.addBooleanOption((option) =>
+								option //
+									.setName('deep')
+									.setDescription('Whether to override channel overwrites, takes more time (defaults to false)')
+									.setRequired(false)
+							)
+					),
 			{
 				guildIds: vars.guildIds,
 				idHints: ['978320032541081662', '975667692465950770']
