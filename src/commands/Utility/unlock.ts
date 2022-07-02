@@ -185,7 +185,7 @@ export class UserCommand extends RadonCommand {
 							.addBooleanOption((option) =>
 								option //
 									.setName('deep')
-									.setDescription('Whether to override channel overwrites, takes more time (defaults to false)')
+									.setDescription('Whether to override channel overwrites, only use if lock was deep (defaults to false)')
 									.setRequired(false)
 							)
 					),

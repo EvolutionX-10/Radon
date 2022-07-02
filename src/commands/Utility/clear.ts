@@ -86,7 +86,7 @@ export class UserCommand extends RadonCommand {
 					.addBooleanOption((option) =>
 						option //
 							.setName('skip_pinned')
-							.setDescription('Skip pinned messages')
+							.setDescription('Skip pinned messages [default: true]')
 							.setRequired(false)
 					)
 					.addStringOption((option) =>
