@@ -3835,7 +3835,7 @@ __metadata:
     mongoose: 6.4.1
     prettier: 2.7.1
     pretty-quick: 3.1.3
-    tsup: 6.1.2
+    tsup: 6.1.3
     typescript: 4.7.4
   languageName: unknown
   linkType: soft
@@ -4470,9 +4470,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsup@npm:6.1.2":
-  version: 6.1.2
-  resolution: "tsup@npm:6.1.2"
+"tsup@npm:6.1.3":
+  version: 6.1.3
+  resolution: "tsup@npm:6.1.3"
   dependencies:
     bundle-require: ^3.0.2
     cac: ^6.7.12
@@ -4502,7 +4502,7 @@ __metadata:
   bin:
     tsup: dist/cli-default.js
     tsup-node: dist/cli-node.js
-  checksum: 258cd2d25ce52b8eb1cabfc2355867e1978e419b19bcd16366b70fe717b12e7fb2d78a9101788aca365e3a33f1d9cfbf766afd6c58aa355bb3fae5b641f5d87b
+  checksum: c72639b76d4140cd0a6362196cf576ea486f9236384e3021ba7d4cdf394fbe55d1be408b3cc9c4432e3d4e7cb241c8bb65fd69773e61e011d5bf81129ad2cc00
   languageName: node
   linkType: hard
 
