@@ -90,7 +90,7 @@
 		"@sapphire/ts-config": "3.3.4",
 		"@sapphire/type": "2.2.4",
 		"@sapphire/utilities": "3.7.0",
-		"@typegoose/typegoose": "9.9.0",
+		"@typegoose/typegoose": "9.10.1",
 		"axios": "0.27.2",
 		"colorette": "2.0.19",
 		"colornames": "1.1.1",
