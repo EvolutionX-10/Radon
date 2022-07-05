@@ -85,13 +85,15 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private async ban(interaction: RadonCommand.ChatInputCommandInteraction, member: GuildMember, reason: string | undefined, days: number) {
-		let content = `${vars.emojis.confirm} ${member} [${member.user.username}] has been banned ${
+		let content = `${vars.emojis.confirm} ${member.user.tag} has been [banned](https://tenor.com/view/11035060) ${
 			reason ? `for the following reason: ${reason}` : ''
-		}\nhttps://tenor.com/view/11035060`;
+		}`;
 
 		await member
 			.send({
-				content: `You have been banned from ${interaction.guild!.name}\n${reason ? `Reason: ${reason}` : ''}`
+				content: `You have been [banned](https://tenor.com/view/11035060) from ${interaction.guild!.name}\n${
+					reason ? `Reason: ${reason}` : ''
+				}`
 			})
 			.catch(() => (content += `\n${vars.emojis.cross} Couldn't DM member!`));
 		await member.ban({

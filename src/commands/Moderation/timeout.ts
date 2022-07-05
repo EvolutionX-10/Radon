@@ -33,12 +33,15 @@ export class UserCommand extends RadonCommand {
 			return interaction.editReply({
 				content: 'Invalid duration! Valid examples: `1d`, `1h`, `1m`, `1s`\nTo remove a timeout just put `0` as the duration.'
 			});
-		if (duration > 2419200000) {
+
+		const MAX_TIMEOUT_DURATION = new Duration('28d').offset;
+
+		if (duration > MAX_TIMEOUT_DURATION) {
 			return interaction.editReply({
 				content: 'You cannot timeout a user for more than 28 days!'
 			});
 		}
-		let content = `${vars.emojis.confirm} ${member} [${member.user.tag}] has been timed out for ${new DurationFormatter().format(duration)}`;
+		let content = `${vars.emojis.confirm} ${member.user.tag} has been timed out for ${new DurationFormatter().format(duration)}`;
 		const reason = interaction.options.getString('reason') || undefined;
 		await member.timeout(duration, reason);
 		if (duration !== 0) {
@@ -61,8 +64,8 @@ export class UserCommand extends RadonCommand {
 			this.container.client.emit(RadonEvents.ModAction, data);
 		}
 
-		if (duration === 0) content = `${vars.emojis.confirm} Removed timeout from ${member} [${member.user.tag}]`;
-		return interaction.editReply({ content });
+		if (duration === 0) content = `${vars.emojis.confirm} Removed timeout from ${member.user.tag}`;
+		return interaction.editReply(content);
 	}
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {

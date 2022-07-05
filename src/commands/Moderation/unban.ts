@@ -20,11 +20,11 @@ export class UserCommand extends RadonCommand {
 		const ban = await interaction.guild.bans.fetch(user.id).catch(() => null);
 		if (!ban)
 			return interaction.reply({
-				content: `${vars.emojis.cross} ${user} [${user.username}] is not banned!`,
+				content: `${vars.emojis.cross} ${user.tag} is not banned!`,
 				ephemeral: true
 			});
 
-		let content = `${vars.emojis.confirm} ${user} [${user.username}] has been unbanned ${reason ? `for the following reason: ${reason}` : ''}`;
+		let content = `${vars.emojis.confirm} ${user.tag} has been unbanned ${reason ? `for the following reason: ${reason}` : ''}`;
 		await interaction.guild.bans.remove(user, reason);
 		//* Sending DM to the user
 		await user

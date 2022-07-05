@@ -6,8 +6,8 @@ import { ApplyOptions } from '@sapphire/decorators';
 import type { APIApplicationCommandOptionChoice } from 'discord-api-types/v9';
 import type { GuildMember } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
-	cooldownDelay: sec(10),
-	cooldownLimit: 3,
+	cooldownDelay: sec(15),
+	cooldownLimit: 2,
 	description: `Quickly bans and unbans, acts as a quick purge`,
 	permissionLevel: PermissionLevels.Moderator,
 	requiredClientPermissions: ['BAN_MEMBERS'],
@@ -36,14 +36,14 @@ export class UserCommand extends RadonCommand {
 		const days = interaction.options.getInteger('days');
 		const { content: ctn, result } = runAllChecks(interaction.member as GuildMember, member, 'soft ban');
 		if (!result) return interaction.editReply(ctn);
-		const content =
-			`${vars.emojis.confirm} ${member} [${member.user.username}] has ` +
-			`been soft banned ${reason ? `for the following reason: ${reason}` : ''}`;
+		const content = `${vars.emojis.confirm} ${member.user.tag} has been soft banned ${reason ? `for the following reason: ${reason}` : ''}`;
 		const { id } = member;
+
 		await member.ban({
 			days: days ?? 1,
 			reason: reason ?? undefined
 		});
+
 		await interaction.guild.members.unban(id, reason ?? undefined);
 
 		const data: BaseModActionData = {

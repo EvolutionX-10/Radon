@@ -19,14 +19,12 @@ export class UserCommand extends RadonCommand {
 		const reason = interaction.options.getString('reason') as string;
 		const { content: ctn, result } = runAllChecks(interaction.member as GuildMember, member, 'kick');
 		if (!result) return interaction.reply({ content: ctn, ephemeral: true });
-		let content = `${vars.emojis.confirm} ${member} [${member.user.username}] has been kicked ${
-			reason ? `for the following reason: ${reason}` : ''
-		}`;
+		let content = `${vars.emojis.confirm} ${member.user.tag} has been kicked ${reason ? `for the following reason: ${reason}` : ''}`;
 		await member
 			.send({
 				content: `You have been kicked from ${member.guild.name} ${reason ? `for the following reason: ${reason}` : ''}`
 			})
-			.catch(() => (content += `\n||${vars.emojis.cross} Couldn't DM ${member}||`));
+			.catch(() => (content += `\n${vars.emojis.cross} Couldn't DM ${member}`));
 		const kicked = await member.kick(reason).catch(() => null);
 		if (!kicked)
 			return interaction.reply({
