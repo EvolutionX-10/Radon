@@ -1,9 +1,9 @@
 import type { Timestamp } from '#lib/structures';
-import type { GuildMember } from 'discord.js';
+import type { GuildMember, User } from 'discord.js';
 
 export interface BaseModActionData {
 	moderator: GuildMember;
-	target: GuildMember;
+	target: GuildMember | User;
 	reason: string | undefined;
 	action: modAction;
 }

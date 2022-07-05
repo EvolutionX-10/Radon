@@ -18,26 +18,21 @@ export class UserCommand extends RadonCommand {
 		const user = interaction.options.getUser('user', true);
 		const reason = interaction.options.getString('reason') || undefined;
 		const ban = await interaction.guild.bans.fetch(user.id).catch(() => null);
+
 		if (!ban)
 			return interaction.reply({
 				content: `${vars.emojis.cross} ${user.tag} is not banned!`,
 				ephemeral: true
 			});
 
-		let content = `${vars.emojis.confirm} ${user.tag} has been unbanned ${reason ? `for the following reason: ${reason}` : ''}`;
+		const content = `${vars.emojis.confirm} ${user.tag} has been unbanned ${reason ? `for the following reason: ${reason}` : ''}`;
 		await interaction.guild.bans.remove(user, reason);
-		//* Sending DM to the user
-		await user
-			.send({
-				content: `You have been unbanned from ${interaction.guild.name}\n${reason ? `Reason: ${reason}` : ''}`
-			})
-			.catch(() => (content += `\n${vars.emojis.cross} Couldn't DM user!`));
 
 		const data: BaseModActionData = {
 			action: 'unban',
 			moderator: interaction.member as GuildMember,
 			reason,
-			target: await interaction.guild.members.fetch(user.id)
+			target: user
 		};
 
 		if (await interaction.guild.settings?.modlogs.modLogs_exist()) {
