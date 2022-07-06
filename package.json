@@ -58,7 +58,7 @@
 		"@favware/cliff-jumper": "1.8.5",
 		"@sapphire/eslint-config": "4.3.7",
 		"@sapphire/prettier-config": "1.4.3",
-		"@swc/core": "1.2.208",
+		"@swc/core": "1.2.210",
 		"@types/colornames": "1.1.2",
 		"@types/figlet": "1.5.4",
 		"@types/gradient-string": "1.1.2",
