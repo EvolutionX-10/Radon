@@ -220,12 +220,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/decorators@npm:4.3.6":
-  version: 4.3.6
-  resolution: "@sapphire/decorators@npm:4.3.6"
+"@sapphire/decorators@npm:4.3.7":
+  version: 4.3.7
+  resolution: "@sapphire/decorators@npm:4.3.7"
   dependencies:
     tslib: ^2.4.0
-  checksum: 4a9b273e1dc2a86895df07c7ef169db293b15f331ecda10a9c15f96c2f50be94adb2896564944eacb0a99128fbe30c2e126128518b788df2c49bcc8e95617388
+  checksum: 3e0e4eebb340b73a354a6457afc3e8d4f8f960b148c7497f6779898b3066d68f8c98811514de315b62a000b5e3a3bd7df3b3dba947b97558a72edec10bc80dfe
   languageName: node
   linkType: hard
 
@@ -308,33 +308,33 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/plugin-editable-commands@npm:1.2.0":
-  version: 1.2.0
-  resolution: "@sapphire/plugin-editable-commands@npm:1.2.0"
+"@sapphire/plugin-editable-commands@npm:1.2.1":
+  version: 1.2.1
+  resolution: "@sapphire/plugin-editable-commands@npm:1.2.1"
   dependencies:
     "@skyra/editable-commands": ^2.1.2
-    tslib: ^2.3.1
-  checksum: 52267b7c0633d9c80bc8f74565cac903e308ffbfe89a5f397bdff3f6b2a57ef80ba17ab527de39de1a89eb02df34a218d298f92cdb8ec16ad166af5b7b6533f1
+    tslib: ^2.4.0
+  checksum: e5b3b3c472042abf1bd29750d8ec5f28ac69155a75c6a23cf10af44a292f4f461ebb49f022039ddf09fca7fd042fafd3a1ee846a285e9b1bc8eb0bb270c212f6
   languageName: node
   linkType: hard
 
-"@sapphire/plugin-logger@npm:2.2.1":
+"@sapphire/plugin-logger@npm:2.2.2":
+  version: 2.2.2
+  resolution: "@sapphire/plugin-logger@npm:2.2.2"
+  dependencies:
+    "@sapphire/time-utilities": ^1.7.4
+    colorette: ^2.0.19
+    tslib: ^2.4.0
+  checksum: dce5d00a17747383274a5c33fa0befd645d6e2c48e795ce3e65e38648c547be985cddf616ba05bb32703512b6ac04d67ee86b2910b28c62e01672b9d47c06be8
+  languageName: node
+  linkType: hard
+
+"@sapphire/plugin-subcommands@npm:2.2.1":
   version: 2.2.1
-  resolution: "@sapphire/plugin-logger@npm:2.2.1"
+  resolution: "@sapphire/plugin-subcommands@npm:2.2.1"
   dependencies:
-    "@sapphire/time-utilities": ^1.7.3
-    colorette: ^2.0.16
-    tslib: ^2.3.1
-  checksum: 7c5e72a8fa762dfce35cc76d1265f678e0fbd4b899853a2fd80b7b4191192636c5de2bea74d16e980a3a3a19d82df7875934b6d0c4b20621d07f4c0534979fbb
-  languageName: node
-  linkType: hard
-
-"@sapphire/plugin-subcommands@npm:2.2.0":
-  version: 2.2.0
-  resolution: "@sapphire/plugin-subcommands@npm:2.2.0"
-  dependencies:
-    tslib: ^2.3.1
-  checksum: ac4d3c80fe311455510e7be74ff077ec3d455cd11e39adf0428bd722081bcc28c3d1809be8d78da67cc5b37db49a5d12a88a60150bac6269d783353fedfc3a30
+    tslib: ^2.4.0
+  checksum: 0ce9667c29ca40aed3965c17d2c1671583b187ac24c7e70efcda2be51559be875eb02cbc89eb2a8265570e0897ee4ce934aadba872477234db6c2b6bf88c8cd4
   languageName: node
   linkType: hard
 
@@ -386,7 +386,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/time-utilities@npm:1.7.4, @sapphire/time-utilities@npm:^1.7.3, @sapphire/time-utilities@npm:^1.7.4":
+"@sapphire/time-utilities@npm:1.7.4, @sapphire/time-utilities@npm:^1.7.4":
   version: 1.7.4
   resolution: "@sapphire/time-utilities@npm:1.7.4"
   dependencies:
@@ -1412,7 +1412,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"colorette@npm:2.0.19, colorette@npm:^2.0.16, colorette@npm:^2.0.19":
+"colorette@npm:2.0.19, colorette@npm:^2.0.19":
   version: 2.0.19
   resolution: "colorette@npm:2.0.19"
   checksum: 888cf5493f781e5fcf54ce4d49e9d7d698f96ea2b2ef67906834bb319a392c667f9ec69f4a10e268d2946d13a9503d2d19b3abaaaf174e3451bfe91fb9d82427
@@ -1478,10 +1478,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"confusables@npm:1.1.0":
-  version: 1.1.0
-  resolution: "confusables@npm:1.1.0"
-  checksum: b7253c45a3f9502866e8feb665ada996d0226081a5afa6b50876b36fa402b307e3f28045bcb35cfd85050490b37e36a4f5852e3800ec49a3ffad188adeb72191
+"confusables@npm:1.1.1":
+  version: 1.1.1
+  resolution: "confusables@npm:1.1.1"
+  checksum: 4114964e0996d8b6d6d3698de9cf7bfc910f8d4dd471f75f1e6c75b08cc1b169aee371f1e9d379eba530dd4676920f55bd60a9e4817564b505745f9ca53b3b24
   languageName: node
   linkType: hard
 
@@ -1669,9 +1669,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"discord.js@npm:13.8.0":
-  version: 13.8.0
-  resolution: "discord.js@npm:13.8.0"
+"discord.js@npm:13.8.1":
+  version: 13.8.1
+  resolution: "discord.js@npm:13.8.1"
   dependencies:
     "@discordjs/builders": ^0.14.0
     "@discordjs/collection": ^0.7.0
@@ -1682,7 +1682,7 @@ __metadata:
     form-data: ^4.0.0
     node-fetch: ^2.6.1
     ws: ^8.7.0
-  checksum: 9fb026f5d2bcc5339044b3f2df7efca815656064d593582ea5fb60beabdc0ae0381010949b94940496d91dd8c2aa2dc55bc8db48300da5b8d00eadcc04665dc2
+  checksum: 1311aa3be7e61e9173f4d41c0184c5614860145385a00a67840d7a1849c3cbbf248a2f6339200653e23c90f11acfab554b440a6018bb52d532cd688849618a5a
   languageName: node
   linkType: hard
 
@@ -3839,15 +3839,15 @@ __metadata:
   dependencies:
     "@devtomio/plugin-botlist": 1.2.0
     "@favware/cliff-jumper": 1.8.5
-    "@sapphire/decorators": 4.3.6
+    "@sapphire/decorators": 4.3.7
     "@sapphire/discord-utilities": 2.11.4
     "@sapphire/discord.js-utilities": 4.11.3
     "@sapphire/eslint-config": 4.3.7
     "@sapphire/framework": 3.0.0-next.961e0bf.0
     "@sapphire/pieces": 3.3.4
-    "@sapphire/plugin-editable-commands": 1.2.0
-    "@sapphire/plugin-logger": 2.2.1
-    "@sapphire/plugin-subcommands": 2.2.0
+    "@sapphire/plugin-editable-commands": 1.2.1
+    "@sapphire/plugin-logger": 2.2.2
+    "@sapphire/plugin-subcommands": 2.2.1
     "@sapphire/prettier-config": 1.4.3
     "@sapphire/stopwatch": 1.4.1
     "@sapphire/time-utilities": 1.7.4
@@ -3865,9 +3865,9 @@ __metadata:
     axios: 0.27.2
     colorette: 2.0.19
     colornames: 1.1.1
-    confusables: 1.1.0
+    confusables: 1.1.1
     discord-api-types: 0.33.5
-    discord.js: 13.8.0
+    discord.js: 13.8.1
     dotenv-cra: 3.0.2
     eslint: 8.19.0
     eslint-config-prettier: 8.5.0

@@ -257,7 +257,7 @@ export class ModalHandler extends InteractionHandler {
 					reason: `Requested by ${interaction.user.tag} (${interaction.user.id})`
 				})
 				.then((c) =>
-					c.isText() && embeds.length
+					c.isText() && embeds.length && c.type !== 'GUILD_VOICE'
 						? c.threads.fetchActive().then((fetched) => fetched.threads.forEach((thread) => thread.send({ embeds }).catch(() => null)))
 						: null
 				)
