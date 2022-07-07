@@ -519,16 +519,14 @@ export class UserCommand extends RadonCommand {
 
 		if (!members.size) return interaction.reply(`No members found for the action to proceed! Terminating...`);
 
-		// eslint-disable-next-line @typescript-eslint/unbound-method
-		const { bulkAction } = this;
 		const confirm = new Confirmation({
 			content: `Are you sure you want to ${option} ${role} ${option === 'add' ? 'to' : 'from'} every member ${
 				base.id === interaction.guildId ? 'in this server' : ` with ${base} role`
 			}?`,
-			async onConfirm() {
-				await bulkAction(interaction, members, option, role, reason);
+			onConfirm: async () => {
+				await this.bulkAction(interaction, members, option, role, reason);
 			},
-			async onCancel({ i }) {
+			onCancel: async ({ i }) => {
 				await i.editReply('Process cancelled!');
 			}
 		});
