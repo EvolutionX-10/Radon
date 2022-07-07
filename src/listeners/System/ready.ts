@@ -4,8 +4,7 @@ import { GuildSettings, Settings, Utils } from '#lib/structures';
 import { RadonEvents } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener, Store } from '@sapphire/framework';
-import { blue, gray, green, magentaBright, white, yellow, greenBright, blueBright } from 'colorette';
-import figlet from 'figlet';
+import { blue, gray, green, magentaBright, white, yellow, greenBright, blueBright, cyanBright } from 'colorette';
 import gradient from 'gradient-string';
 
 @ApplyOptions<Listener.Options>({
@@ -22,7 +21,7 @@ export class UserListener extends Listener {
 		await client.guilds.fetch();
 
 		this.container.client = client;
-		this.container.logger.info(`Logged in as ${greenBright(client.user!.tag!)}`);
+		this.container.logger.info(`Logged in as ${gradient.pastel(client.user!.username!)} ${cyanBright(`[${process.env.npm_package_version}]`)}`);
 		this.printBanner();
 		this.printStoreDebugInformation();
 		this.container.logger.info(`${greenBright('ws            [')}${blueBright('READY')}${greenBright(']')}`);
@@ -46,8 +45,6 @@ export class UserListener extends Listener {
 
 		console.log(
 			String.raw`
-${gradient.pastel.multiline(figlet.textSync(this.container.client.user?.username ?? 'Err'))}
-${pad}${blc(`${process.env.CLIENT_NAME} [${process.env.npm_package_version}]`)}
 ${pad}[${success}] Gateway
 ${this.isDev ? ` ${pad}${blc('<')}${llc('/')}${blc('>')} ${llc('DEVELOPMENT MODE')}` : ''}
 		`.trim()

@@ -60,7 +60,6 @@
 		"@sapphire/prettier-config": "1.4.3",
 		"@swc/core": "1.2.210",
 		"@types/colornames": "1.1.2",
-		"@types/figlet": "1.5.4",
 		"@types/gradient-string": "1.1.2",
 		"@types/node": "17.0.43",
 		"@types/string-similarity": "4.0.0",
@@ -98,7 +97,6 @@
 		"discord-api-types": "0.33.5",
 		"discord.js": "13.8.0",
 		"dotenv-cra": "3.0.2",
-		"figlet": "1.5.2",
 		"gradient-string": "2.0.1",
 		"ioredis": "5.1.0",
 		"mongoose": "6.4.3"

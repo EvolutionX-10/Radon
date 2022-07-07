@@ -614,13 +614,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/figlet@npm:1.5.4":
-  version: 1.5.4
-  resolution: "@types/figlet@npm:1.5.4"
-  checksum: 25390eaa1a24233b05ec85771cd1a134477ee56717cf564b625cd2133fda963dc78942cfd2303e364406ee0126e722e94761d8c577d74a25820e6b33090a0e32
-  languageName: node
-  linkType: hard
-
 "@types/gradient-string@npm:1.1.2":
   version: 1.1.2
   resolution: "@types/gradient-string@npm:1.1.2"
@@ -2318,13 +2311,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"figlet@npm:1.5.2":
-  version: 1.5.2
-  resolution: "figlet@npm:1.5.2"
-  checksum: cc860391669b44e119871d589e09a2814aa86351726a5791e0d3e2d098e4fc37171c85fcfed13f4e9000995bd004dc6dbf848da5fe458cf1477e776b7318986f
-  languageName: node
-  linkType: hard
-
 "file-entry-cache@npm:^6.0.1":
   version: 6.0.1
   resolution: "file-entry-cache@npm:6.0.1"
@@ -3871,7 +3857,6 @@ __metadata:
     "@swc/core": 1.2.210
     "@typegoose/typegoose": 9.10.1
     "@types/colornames": 1.1.2
-    "@types/figlet": 1.5.4
     "@types/gradient-string": 1.1.2
     "@types/node": 17.0.43
     "@types/string-similarity": 4.0.0
@@ -3887,7 +3872,6 @@ __metadata:
     eslint: 8.19.0
     eslint-config-prettier: 8.5.0
     eslint-plugin-prettier: 4.2.1
-    figlet: 1.5.2
     gradient-string: 2.0.1
     husky: 8.0.1
     ioredis: 5.1.0
