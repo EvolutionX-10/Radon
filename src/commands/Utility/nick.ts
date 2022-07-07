@@ -9,8 +9,7 @@ import { clean } from 'confusables';
 @ApplyOptions<RadonCommand.Options>({
 	description: `Manage nicknames`,
 	requiredClientPermissions: ['MANAGE_NICKNAMES'],
-	permissionLevel: PermissionLevels.Moderator,
-	runIn: 'GUILD_ANY'
+	permissionLevel: PermissionLevels.Moderator
 })
 export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {

@@ -7,7 +7,6 @@ import type { GuildMember } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
 	description: `Kick a member`,
 	permissionLevel: PermissionLevels.Moderator,
-	runIn: 'GUILD_ANY',
 	cooldownDelay: sec(10),
 	cooldownLimit: 3,
 	requiredClientPermissions: ['KICK_MEMBERS']

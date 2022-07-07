@@ -4,8 +4,7 @@ import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import type { GuildMember, Message, TextChannel } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
-	description: `Change the reason for the action`,
-	runIn: `GUILD_ANY`
+	description: `Change the reason for the action`
 })
 export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {

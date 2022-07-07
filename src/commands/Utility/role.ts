@@ -11,7 +11,6 @@ import { DurationFormatter } from '@sapphire/time-utilities';
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Manage Roles',
 	permissionLevel: PermissionLevels.Moderator,
-	runIn: ['GUILD_ANY'],
 	requiredClientPermissions: ['MANAGE_ROLES'],
 	cooldownDelay: sec(30),
 	cooldownLimit: 2

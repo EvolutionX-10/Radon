@@ -9,7 +9,6 @@ import { send } from '@sapphire/plugin-editable-commands';
 	hidden: true,
 	guarded: true,
 	flags: true,
-	runIn: 'GUILD_ANY',
 	subCommands: [
 		{
 			input: 'default',

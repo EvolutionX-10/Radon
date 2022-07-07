@@ -12,8 +12,7 @@ import { ButtonInteraction, Message, OverwriteResolvable, Permissions, Role } fr
 	cooldownDelay: sec(60),
 	cooldownLimit: 2,
 	description: `Easy and interactive setup for Radon`,
-	permissionLevel: PermissionLevels.Administrator,
-	runIn: 'GUILD_ANY'
+	permissionLevel: PermissionLevels.Administrator
 })
 export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {

@@ -8,8 +8,7 @@ import { DurationFormatter, Duration } from '@sapphire/time-utilities';
 @ApplyOptions<RadonCommand.Options>({
 	description: 'View and Manage slowmode of current channel',
 	permissionLevel: PermissionLevels.Moderator,
-	requiredClientPermissions: ['MANAGE_CHANNELS'],
-	runIn: ['GUILD_ANY']
+	requiredClientPermissions: ['MANAGE_CHANNELS']
 })
 export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {

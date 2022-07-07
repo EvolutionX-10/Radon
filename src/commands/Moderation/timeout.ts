@@ -9,8 +9,7 @@ import { Duration, DurationFormatter } from '@sapphire/time-utilities';
 @ApplyOptions<RadonCommand.Options>({
 	description: `Temporarily mute a member`,
 	permissionLevel: PermissionLevels.Moderator,
-	requiredClientPermissions: ['MODERATE_MEMBERS'],
-	runIn: 'GUILD_ANY'
+	requiredClientPermissions: ['MODERATE_MEMBERS']
 })
 export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {

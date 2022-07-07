@@ -8,8 +8,7 @@ import type { APIApplicationCommandOptionChoice } from 'discord-api-types/v9';
 	description: 'Automate the Slowmode!',
 	// community: true,
 	requiredClientPermissions: ['MANAGE_CHANNELS'],
-	permissionLevel: PermissionLevels.Administrator,
-	runIn: ['GUILD_ANY']
+	permissionLevel: PermissionLevels.Administrator
 })
 export class UserCommand extends RadonCommand {
 	readonly #SensitivityChoices: APIApplicationCommandOptionChoice<SlowmodeSensitivity>[] = [

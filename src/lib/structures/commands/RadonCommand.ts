@@ -4,6 +4,7 @@ import {
 	ApplicationCommandRegistry,
 	Args as SapphireArgs,
 	ChatInputCommandContext,
+	CommandOptionsRunTypeEnum,
 	ContextMenuCommandContext,
 	MessageCommandContext,
 	Piece,
@@ -42,6 +43,7 @@ export abstract class RadonCommand extends SubCommandPluginCommand<RadonCommand.
 			generateDashLessAliases: true,
 			requiredClientPermissions: perms,
 			subCommands: [],
+			runIn: [CommandOptionsRunTypeEnum.GuildAny],
 			...options
 		});
 		(this.guarded = options.guarded ?? false),

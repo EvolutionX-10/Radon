@@ -10,8 +10,7 @@ import type { GuildMember, TextChannel } from 'discord.js';
 	cooldownLimit: 3,
 	description: `Ban a member`,
 	permissionLevel: PermissionLevels.Moderator,
-	requiredClientPermissions: ['BAN_MEMBERS'],
-	runIn: 'GUILD_ANY'
+	requiredClientPermissions: ['BAN_MEMBERS']
 })
 export class UserCommand extends RadonCommand {
 	readonly #DaysChoices: APIApplicationCommandOptionChoice<Days>[] = [

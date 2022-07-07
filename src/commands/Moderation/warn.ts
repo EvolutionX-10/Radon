@@ -12,8 +12,7 @@ import { Duration } from '@sapphire/time-utilities';
 	description: 'Manage warnings for a user',
 	permissionLevel: PermissionLevels.Moderator,
 	cooldownDelay: sec(5),
-	cooldownLimit: 3,
-	runIn: 'GUILD_ANY'
+	cooldownLimit: 3
 })
 export class UserCommand extends RadonCommand {
 	readonly #SeverityChoices: APIApplicationCommandOptionChoice<warnSeverityNum>[] = [

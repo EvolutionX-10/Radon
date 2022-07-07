@@ -8,8 +8,7 @@ import type { TextChannel } from 'discord.js';
 	cooldownDelay: sec(15),
 	description: `Deletes messages from current channel`,
 	permissionLevel: PermissionLevels.Moderator,
-	requiredClientPermissions: ['MANAGE_MESSAGES'],
-	runIn: ['GUILD_ANY']
+	requiredClientPermissions: ['MANAGE_MESSAGES']
 })
 export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {

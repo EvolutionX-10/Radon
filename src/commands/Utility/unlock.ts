@@ -23,7 +23,6 @@ import {
 	cooldownDelay: sec(30),
 	cooldownScope: BucketScope.Guild,
 	requiredClientPermissions: ['MANAGE_ROLES'],
-	runIn: ['GUILD_ANY'],
 	cooldownLimit: 3
 })
 export class UserCommand extends RadonCommand {

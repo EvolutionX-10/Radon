@@ -10,8 +10,7 @@ import type { GuildMember } from 'discord.js';
 	cooldownLimit: 2,
 	description: `Quickly bans and unbans, acts as a quick purge`,
 	permissionLevel: PermissionLevels.Moderator,
-	requiredClientPermissions: ['BAN_MEMBERS'],
-	runIn: 'GUILD_ANY'
+	requiredClientPermissions: ['BAN_MEMBERS']
 })
 export class UserCommand extends RadonCommand {
 	readonly #DaysChoices: APIApplicationCommandOptionChoice<Days>[] = [
