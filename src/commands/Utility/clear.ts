@@ -21,7 +21,7 @@ export class UserCommand extends RadonCommand {
 		let dels = 0;
 		const content = `No messages were deleted! Try filtering correctly\nNote that the messages are older than 2 weeks will NOT be deleted!`;
 		if (count > 100) {
-			const arr = summableArray(count, 100);
+			const arr = this.container.utils.summableArray(count, 100);
 			const p = new Promise((resolve: (value: unknown) => void) => {
 				arr.forEach((num, i, ar) => {
 					setTimeout(async () => {
@@ -106,26 +106,4 @@ export class UserCommand extends RadonCommand {
 			}
 		);
 	}
-}
-// async function wait(ms: number) {
-//     const wait = (await import('util')).promisify(setTimeout);
-//     return wait(ms);
-// }
-/**
- * Creates an array of `part`s up to the `maximum`
- * @param maximum The maximum reached at which the function should stop adding new elements to the array.
- * @param part The value of which each element of the array should be, with the remainder up to the maximum being the last entry of the array.
- * @returns An array of `part`s with the remainder being whatever of a `part` did not fit within the boundaries set by `max`.
- */
-function summableArray(maximum: number, part: number) {
-	const arr = [];
-	let current = 0;
-
-	while (current < maximum) {
-		const next = Math.min(part, maximum - current);
-		arr.push(next);
-		current += next;
-	}
-
-	return arr;
 }

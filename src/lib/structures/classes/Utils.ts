@@ -15,46 +15,36 @@ import {
 	mins,
 	sec,
 	countlines,
-	getCache
+	getCache,
+	format,
+	summableArray,
+	wait
 } from '#lib/utility';
 import { Button } from './Button.js';
 import { Embed } from './Embed.js';
 import { Row } from './Row.js';
 import { Select } from './Select.js';
 export class Utils {
-	public formatDuration;
-	public generateModLogDescription;
-	public isAdmin;
-	public isGuildOwner;
-	public isModerator;
-	public isOwner;
-	public managable;
-	public pickRandom;
-	public runAllChecks;
-	public time;
-	public uid;
-	public hours;
-	public mins;
-	public sec;
-	public countlines;
+	public formatDuration = formatDuration;
+	public generateModLogDescription = generateModLogDescription;
+	public isAdmin = isAdmin;
+	public isGuildOwner = isGuildOwner;
+	public isModerator = isModerator;
+	public isOwner = isOwner;
+	public managable = managable;
+	public pickRandom = pickRandom;
+	public runAllChecks = runAllChecks;
+	public time = time;
+	public uid = uid;
+	public hours = hours;
+	public mins = mins;
+	public sec = sec;
+	public countlines = countlines;
+	public format = format;
+	public summableArray = summableArray;
+	public wait = wait;
 
-	public constructor(private readonly client: RadonClient) {
-		this.formatDuration = formatDuration;
-		this.generateModLogDescription = generateModLogDescription;
-		this.isAdmin = isAdmin;
-		this.isGuildOwner = isGuildOwner;
-		this.isModerator = isModerator;
-		this.isOwner = isOwner;
-		this.managable = managable;
-		this.pickRandom = pickRandom;
-		this.runAllChecks = runAllChecks;
-		this.time = time;
-		this.uid = uid;
-		this.hours = hours;
-		this.mins = mins;
-		this.sec = sec;
-		this.countlines = countlines;
-	}
+	public constructor(private readonly client: RadonClient) {}
 
 	public embed() {
 		return new Embed();

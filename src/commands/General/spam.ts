@@ -8,13 +8,8 @@ export class UserCommand extends RadonCommand {
 		const num = await args.pick('number').catch(() => null);
 		if (!num) return;
 		for (let i = 0; i < num; i++) {
-			await wait(100);
+			await this.container.utils.wait(500);
 			await message.channel.send(`${i + 1}`);
 		}
 	}
-}
-
-async function wait(ms: number) {
-	const wait = (await import('node:util')).promisify(setTimeout);
-	return wait(ms);
 }

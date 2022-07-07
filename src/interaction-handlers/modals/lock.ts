@@ -107,7 +107,7 @@ export class ModalHandler extends InteractionHandler {
 
 		for await (const channel of category.children.values()) {
 			if (this.isLocked(channel, role)) continue;
-			await wait(1_000);
+			await this.container.utils.wait(1_000);
 
 			const roptions = {
 				SEND_MESSAGES: true,
@@ -126,7 +126,7 @@ export class ModalHandler extends InteractionHandler {
 					reason: `Creating self permissions to avoid lock out`
 				})
 				.catch(() => null);
-			await wait(100);
+			await this.container.utils.wait(100);
 
 			channel.permissionOverwrites
 				.edit(
@@ -211,14 +211,14 @@ export class ModalHandler extends InteractionHandler {
 		const channels = interaction.guild!.channels.cache.filter((c) => c.type === 'GUILD_TEXT');
 		for await (const channel of channels.values()) {
 			if (this.isLocked(channel, role) || channel.type !== 'GUILD_TEXT') continue;
-			await wait(1_000);
+			await this.container.utils.wait(1_000);
 
 			channel.permissionOverwrites
 				.edit(channel.guild.me!, roptions, {
 					reason: `Creating self permissions to avoid lock out`
 				})
 				.catch(() => null);
-			await wait(100);
+			await this.container.utils.wait(100);
 			channel.permissionOverwrites
 				.edit(role, options, {
 					reason: `Requested by ${interaction.user.tag} (${interaction.user.id})`
@@ -257,7 +257,7 @@ export class ModalHandler extends InteractionHandler {
 		const channels = interaction.guild!.channels.cache.filter((c) => c.type === 'GUILD_TEXT');
 		for await (const channel of channels.values()) {
 			if (channel.type !== 'GUILD_TEXT') continue;
-			await wait(1_000);
+			await this.container.utils.wait(1_000);
 
 			channel.permissionOverwrites
 				.edit(role, options, {
@@ -319,7 +319,7 @@ export class ModalHandler extends InteractionHandler {
 			let i = 0;
 			for await (const channel of channels.values()) {
 				if (this.isLocked(channel, role) || channel.type !== 'GUILD_TEXT') continue;
-				await wait(1_000);
+				await this.container.utils.wait(1_000);
 				embeds.length ? channel.send({ embeds }).catch(() => i++) : null;
 			}
 			const perms = role.permissions.remove([
@@ -342,14 +342,14 @@ export class ModalHandler extends InteractionHandler {
 		const channels = interaction.guild!.channels.cache;
 		for await (const channel of channels.values()) {
 			if (this.isLocked(channel, role) || channel instanceof ThreadChannel) continue;
-			await wait(1_000);
+			await this.container.utils.wait(1_000);
 
 			channel.permissionOverwrites
 				.edit(channel.guild.me!, roptions, {
 					reason: `Creating permissions to avoid self lock out`
 				})
 				.catch(() => null);
-			await wait(100);
+			await this.container.utils.wait(100);
 			channel.permissionOverwrites
 				.edit(role, options, {
 					reason: `Requested by ${interaction.user.tag} (${interaction.user.id})`
@@ -368,11 +368,6 @@ export class ModalHandler extends InteractionHandler {
 		if (channel.isText() && channel.permissionsFor(role!).has('SEND_MESSAGES')) return false;
 		return !(channel.isVoice() && channel.permissionsFor(role!).has('CONNECT'));
 	}
-}
-
-async function wait(ms: number) {
-	const wait = (await import('node:util')).promisify(setTimeout);
-	return wait(ms);
 }
 
 interface TextData {

@@ -363,7 +363,7 @@ export class UserCommand extends RadonCommand {
 
 		for await (const channel of channels.values()) {
 			if (!this.isLocked(channel, role) || channel.type !== 'GUILD_VOICE') continue;
-			await wait(500);
+			await this.container.utils.wait(500);
 
 			channel.permissionOverwrites
 				.edit(
@@ -452,11 +452,6 @@ export class UserCommand extends RadonCommand {
 		if (role.tags?.botId) return false;
 		return role.position <= role.guild.me!.roles.highest.position;
 	}
-}
-
-async function wait(ms: number) {
-	const wait = (await import('node:util')).promisify(setTimeout);
-	return wait(ms);
 }
 
 type subcmd = 'text' | 'voice' | 'category' | 'thread' | 'server';

@@ -402,12 +402,12 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private gimmeMenu(array: string[]) {
-		const newarray = summableArray(array.length, 25);
+		const newarray = this.container.utils.summableArray(array.length, 25);
 		const menus: Select[] = [];
 
 		newarray.forEach((amount, index) => {
 			const perms = array.splice(0, amount).sort();
-			const formatted = formatNames(perms);
+			const formatted = this.container.utils.format(perms);
 
 			const options: MessageSelectOptionData[] = Array(amount)
 				.fill(null)
@@ -546,7 +546,7 @@ export class UserCommand extends RadonCommand {
 		let i = 0;
 		const stopwatch = new Stopwatch().start();
 		for (const member of members.values()) {
-			await wait(1000);
+			await this.container.utils.wait(1000);
 			i++;
 			if (option === 'add') {
 				await member.roles.add(role, reason);
@@ -562,40 +562,6 @@ export class UserCommand extends RadonCommand {
 			components: []
 		});
 	}
-}
-
-// TODO: add all three in utils class
-function summableArray(maximum: number, part: number) {
-	const arr = [];
-	let current = 0;
-
-	while (current < maximum) {
-		const next = Math.min(part, maximum - current);
-		arr.push(next);
-		current += next;
-	}
-
-	return arr;
-}
-
-function formatNames(array: string[]) {
-	return array
-		.map((e) =>
-			e
-				.split(`_`)
-				.map((i) => i[0] + i.match(/\B(\w+)/)?.[1]?.toLowerCase())
-				.join(` `)
-		)
-		.map((s) => {
-			s = s.replace('Tts', 'TTS');
-			s = s.replace('Vad', 'VAD');
-			return s;
-		});
-}
-
-async function wait(ms: number) {
-	const wait = (await import('node:util')).promisify(setTimeout);
-	return wait(ms);
 }
 
 type Subcommands = 'add' | 'remove' | 'info' | 'create' | 'delete';
