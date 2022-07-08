@@ -32,6 +32,7 @@ export class UserCommand extends RadonCommand {
 			});
 		const reason = interaction.options.getString('reason') ?? undefined;
 		const days = interaction.options.getInteger('days') ?? 0;
+		const dm = interaction.options.getBoolean('dm') ?? false;
 
 		const { content: ctn, result } = runAllChecks(interaction.member as GuildMember, member, 'ban');
 		if (!result) return interaction.reply({ content: ctn, ephemeral: true });
@@ -40,7 +41,7 @@ export class UserCommand extends RadonCommand {
 			content: `Are you sure you want to ban ${member.user.tag}?${reason ? `\nReason: ${reason}` : ''}`,
 			ephemeral: (interaction.channel as TextChannel).visible(),
 			onConfirm: async () => {
-				await this.ban(interaction, member, reason, days);
+				await this.ban(interaction, member, reason, days, dm);
 			},
 			onCancel: ({ i }) => {
 				return i.editReply({
@@ -69,10 +70,16 @@ export class UserCommand extends RadonCommand {
 							.setDescription('The reason for the ban')
 							.setRequired(false)
 					)
+					.addBooleanOption((option) =>
+						option //
+							.setName('dm')
+							.setDescription('Send a DM to the banned member (default: false)')
+							.setRequired(false)
+					)
 					.addIntegerOption((option) =>
 						option //
 							.setName('days')
-							.setDescription('The days of messages to delete (not a temp ban)')
+							.setDescription('The days of messages from member to delete (not a temp ban)')
 							.setRequired(false)
 							.setChoices(...this.#DaysChoices)
 					),
@@ -83,18 +90,27 @@ export class UserCommand extends RadonCommand {
 		);
 	}
 
-	private async ban(interaction: RadonCommand.ChatInputCommandInteraction, member: GuildMember, reason: string | undefined, days: number) {
+	private async ban(
+		interaction: RadonCommand.ChatInputCommandInteraction,
+		member: GuildMember,
+		reason: string | undefined,
+		days: number,
+		dm = false
+	) {
 		let content = `${vars.emojis.confirm} ${member.user.tag} has been [banned](https://tenor.com/view/11035060) ${
 			reason ? `for the following reason: ${reason}` : ''
 		}`;
 
-		await member
-			.send({
-				content: `You have been [banned](https://tenor.com/view/11035060) from ${interaction.guild!.name}\n${
-					reason ? `Reason: ${reason}` : ''
-				}`
-			})
-			.catch(() => (content += `\n${vars.emojis.cross} Couldn't DM member!`));
+		if (dm) {
+			await member
+				.send({
+					content: `You have been [banned](https://tenor.com/view/11035060) from ${interaction.guild!.name}\n${
+						reason ? `Reason: ${reason}` : ''
+					}`
+				})
+				.catch(() => (content += `\n${vars.emojis.cross} Couldn't DM member!`));
+		}
+
 		await member.ban({
 			days,
 			reason
