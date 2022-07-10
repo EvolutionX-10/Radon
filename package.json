@@ -99,7 +99,7 @@
 		"dotenv-cra": "3.0.2",
 		"gradient-string": "2.0.1",
 		"ioredis": "5.1.0",
-		"mongoose": "6.4.3"
+		"mongoose": "6.4.4"
 	},
 	"config": {
 		"commitizen": {
