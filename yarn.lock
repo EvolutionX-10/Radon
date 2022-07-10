@@ -279,9 +279,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/framework@npm:3.0.0-next.961e0bf.0":
-  version: 3.0.0-next.961e0bf.0
-  resolution: "@sapphire/framework@npm:3.0.0-next.961e0bf.0"
+"@sapphire/framework@npm:3.0.0-next.c6c1eee.0":
+  version: 3.0.0-next.c6c1eee.0
+  resolution: "@sapphire/framework@npm:3.0.0-next.c6c1eee.0"
   dependencies:
     "@discordjs/builders": ^0.15.0
     "@sapphire/discord-utilities": ^2.11.4
@@ -293,7 +293,7 @@ __metadata:
     "@sapphire/utilities": ^3.7.0
     lexure: ^0.17.0
     tslib: ^2.4.0
-  checksum: f93fc5900385dee8ab7fd4033535585bcf6989d0c70e44a4236c1dd29c789c4a448780f1bd2cbde4b4c2cc8fe9f9f83c285d806c4c6091d4948ffe98fb98ebb4
+  checksum: 0d4c13cb6969cd216dedd90064c15c729e3a71f9cd82d2731871794582b655b72330f3b2bae86a973cbea0de1f2d3e7dbf4b39f2336a53008a9a26a2b992e492
   languageName: node
   linkType: hard
 
@@ -3843,7 +3843,7 @@ __metadata:
     "@sapphire/discord-utilities": 2.11.4
     "@sapphire/discord.js-utilities": 4.11.3
     "@sapphire/eslint-config": 4.3.7
-    "@sapphire/framework": 3.0.0-next.961e0bf.0
+    "@sapphire/framework": 3.0.0-next.c6c1eee.0
     "@sapphire/pieces": 3.3.4
     "@sapphire/plugin-editable-commands": 1.2.1
     "@sapphire/plugin-logger": 2.2.2
