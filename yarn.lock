@@ -308,13 +308,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/plugin-editable-commands@npm:1.2.1":
-  version: 1.2.1
-  resolution: "@sapphire/plugin-editable-commands@npm:1.2.1"
+"@sapphire/plugin-editable-commands@npm:1.2.2":
+  version: 1.2.2
+  resolution: "@sapphire/plugin-editable-commands@npm:1.2.2"
   dependencies:
-    "@skyra/editable-commands": ^2.1.2
+    "@skyra/editable-commands": ^2.1.3
     tslib: ^2.4.0
-  checksum: e5b3b3c472042abf1bd29750d8ec5f28ac69155a75c6a23cf10af44a292f4f461ebb49f022039ddf09fca7fd042fafd3a1ee846a285e9b1bc8eb0bb270c212f6
+  checksum: b294d6587a9d04233233b8f4350e0ea21acc8cbe558ef792beffad26d7605a2a90bd2c1d4c422bbcafe7d1dcb4786bc701d92e24f7ccd1184cf0f1a566e2e35b
   languageName: node
   linkType: hard
 
@@ -437,10 +437,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@skyra/editable-commands@npm:^2.1.2":
-  version: 2.1.2
-  resolution: "@skyra/editable-commands@npm:2.1.2"
-  checksum: a0a853abe476d2f622bedfbf37a67aff10ab57d0bd742a0a214a907c77648273bf544da6491a4dc6e8e0528f9533aeb20028be792134e39fb07c34219596ae2c
+"@skyra/editable-commands@npm:^2.1.3":
+  version: 2.1.3
+  resolution: "@skyra/editable-commands@npm:2.1.3"
+  checksum: 3250f2167d8c3a2c2dfcb93f53323786cb2a94c50d3f511bdabf030b50d4df851eddba9d2f1fbde18478ab90c9a0ba43b2d71d99a9f7989b1c370820b9226b05
   languageName: node
   linkType: hard
 
@@ -3845,7 +3845,7 @@ __metadata:
     "@sapphire/eslint-config": 4.3.7
     "@sapphire/framework": 3.0.0-next.c6c1eee.0
     "@sapphire/pieces": 3.3.4
-    "@sapphire/plugin-editable-commands": 1.2.1
+    "@sapphire/plugin-editable-commands": 1.2.2
     "@sapphire/plugin-logger": 2.2.2
     "@sapphire/plugin-subcommands": 2.2.1
     "@sapphire/prettier-config": 1.4.3
