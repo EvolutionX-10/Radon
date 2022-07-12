@@ -318,14 +318,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/plugin-logger@npm:2.2.2":
-  version: 2.2.2
-  resolution: "@sapphire/plugin-logger@npm:2.2.2"
+"@sapphire/plugin-logger@npm:2.2.3":
+  version: 2.2.3
+  resolution: "@sapphire/plugin-logger@npm:2.2.3"
   dependencies:
     "@sapphire/time-utilities": ^1.7.4
     colorette: ^2.0.19
     tslib: ^2.4.0
-  checksum: dce5d00a17747383274a5c33fa0befd645d6e2c48e795ce3e65e38648c547be985cddf616ba05bb32703512b6ac04d67ee86b2910b28c62e01672b9d47c06be8
+  checksum: 90d4fdffccae8ab777601a322d0e32aba7ae415837298f176122620600f2b48a8235f746dfd292fdf9f2af1229f576e736870b394e368a3ed7e91791fddaacca
   languageName: node
   linkType: hard
 
@@ -3846,7 +3846,7 @@ __metadata:
     "@sapphire/framework": 3.0.0-next.c6c1eee.0
     "@sapphire/pieces": 3.3.4
     "@sapphire/plugin-editable-commands": 1.2.2
-    "@sapphire/plugin-logger": 2.2.2
+    "@sapphire/plugin-logger": 2.2.3
     "@sapphire/plugin-subcommands": 2.2.1
     "@sapphire/prettier-config": 1.4.3
     "@sapphire/stopwatch": 1.4.1
