@@ -49,7 +49,7 @@ commit_parsers = [
 	{ message = "^types", group = "⌨️ Typings"},
 	{ message = ".*deprecated", body = ".*deprecated", group = "🚨 Deprecation"},
 	{ message = "^revert", skip = true},
-	{ message = "^style", group = "🪞 Styling"},
+	{ message = "^style", skip = true},
 	{ message = "^test", group = "🧪 Testing"},
 	{ message = "^chore", skip = true},
 	{ message = "^ci", skip = true},
