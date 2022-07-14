@@ -386,7 +386,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/time-utilities@npm:1.7.4, @sapphire/time-utilities@npm:^1.7.4":
+"@sapphire/time-utilities@npm:1.7.5":
+  version: 1.7.5
+  resolution: "@sapphire/time-utilities@npm:1.7.5"
+  dependencies:
+    "@sapphire/utilities": ^3.7.0
+  checksum: a83f505ff0e5eac7b8b316c7fa207f52ae2c07dd223f651d7dcb3f9a3e61b86b6168dac746455d1d1a2a4732d4865ab7526332f3f463db31048d8b1e5ba9d6cb
+  languageName: node
+  linkType: hard
+
+"@sapphire/time-utilities@npm:^1.7.4":
   version: 1.7.4
   resolution: "@sapphire/time-utilities@npm:1.7.4"
   dependencies:
@@ -3850,7 +3859,7 @@ __metadata:
     "@sapphire/plugin-subcommands": 2.2.2
     "@sapphire/prettier-config": 1.4.3
     "@sapphire/stopwatch": 1.4.1
-    "@sapphire/time-utilities": 1.7.4
+    "@sapphire/time-utilities": 1.7.5
     "@sapphire/ts-config": 3.3.4
     "@sapphire/type": 2.2.4
     "@sapphire/utilities": 3.7.0
