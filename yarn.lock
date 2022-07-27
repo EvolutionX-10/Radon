@@ -78,6 +78,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@discordjs/collection@npm:^1.0.0":
+  version: 1.0.1
+  resolution: "@discordjs/collection@npm:1.0.1"
+  checksum: 6477ae9870f3c069b190f673a6b34467930b409a6d763f1b0d4f6169051b8499d03de7b0e7e4c3697222845aea6d94283573ad6a488b50516764df675915ff44
+  languageName: node
+  linkType: hard
+
 "@discordjs/node-pre-gyp@npm:^0.4.2":
   version: 0.4.2
   resolution: "@discordjs/node-pre-gyp@npm:0.4.2"
@@ -304,7 +311,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/pieces@npm:3.3.4, @sapphire/pieces@npm:^3.3.4":
+"@sapphire/pieces@npm:3.3.5":
+  version: 3.3.5
+  resolution: "@sapphire/pieces@npm:3.3.5"
+  dependencies:
+    "@discordjs/collection": ^1.0.0
+    "@sapphire/utilities": ^3.7.0
+    tslib: ^2.4.0
+  checksum: fb86ab91a002dc85033cf160d0f4429930e4cc580323888c2e2032aedb7ca599ec69743071fd08baef228e9497930b8afff7d9c4d43427b47da1ba3a537666ab
+  languageName: node
+  linkType: hard
+
+"@sapphire/pieces@npm:^3.3.4":
   version: 3.3.4
   resolution: "@sapphire/pieces@npm:3.3.4"
   dependencies:
@@ -3860,7 +3878,7 @@ __metadata:
     "@sapphire/discord.js-utilities": 4.11.3
     "@sapphire/eslint-config": 4.3.7
     "@sapphire/framework": 3.0.0-next.c6c1eee.0
-    "@sapphire/pieces": 3.3.4
+    "@sapphire/pieces": 3.3.5
     "@sapphire/plugin-editable-commands": 1.2.2
     "@sapphire/plugin-logger": 2.2.3
     "@sapphire/plugin-subcommands": 2.2.2
