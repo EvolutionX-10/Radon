@@ -591,9 +591,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typegoose/typegoose@npm:9.10.1":
-  version: 9.10.1
-  resolution: "@typegoose/typegoose@npm:9.10.1"
+"@typegoose/typegoose@npm:9.11.0":
+  version: 9.11.0
+  resolution: "@typegoose/typegoose@npm:9.11.0"
   dependencies:
     lodash: ^4.17.20
     loglevel: ^1.8.0
@@ -601,8 +601,8 @@ __metadata:
     semver: ^7.3.7
     tslib: ^2.4.0
   peerDependencies:
-    mongoose: ~6.4.2
-  checksum: 4877cc3e5296eae53748263c21b02c3c247c34f614a75b3c2f9fd7211ee8c394c0b6da4ff1c8c26c481f761b98cc765f3b56f77b453e3a4f8b7bba654ad17df6
+    mongoose: ~6.5.0
+  checksum: 49728cf269a250a024007cb637d081096bd9bc9268aa4ec20fe31c3fdb8a939ef93bf9d896705b44d739503d809e5f63551ff7a09d555c8bed6fa1274eb76904
   languageName: node
   linkType: hard
 
@@ -3882,7 +3882,7 @@ __metadata:
     "@sapphire/type": 2.2.4
     "@sapphire/utilities": 3.7.0
     "@swc/core": 1.2.220
-    "@typegoose/typegoose": 9.10.1
+    "@typegoose/typegoose": 9.11.0
     "@types/colornames": 1.1.2
     "@types/gradient-string": 1.1.2
     "@types/node": 18.6.2
