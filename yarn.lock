@@ -205,12 +205,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-"@sapphire/async-queue@npm:^1.3.2":
-  version: 1.3.2
-  resolution: "@sapphire/async-queue@npm:1.3.2"
-  checksum: 348f35a278bff68cb6d5e2c2219b03ce66243162522003bb14426e5fdad251300bea8ef3883043eb034c181dddd52296a519e9f377075a5b31074807fe163e76
-=======
 "@prisma/client@npm:4.0.0":
   version: 4.0.0
   resolution: "@prisma/client@npm:4.0.0"
@@ -239,11 +233,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/async-queue@npm:^1.3.1":
-  version: 1.3.1
-  resolution: "@sapphire/async-queue@npm:1.3.1"
-  checksum: 4016010a8b6f2896ce7694eb04c1839b613387cbfb104028a4a1bea471afb1dc4d569b66d3c9770319c47be55035dc786c072c32656d467fc2cded4347055d92
->>>>>>> c5feaa7 (chore: remove mongoose and add prisma)
+"@sapphire/async-queue@npm:^1.3.2":
+  version: 1.3.2
+  resolution: "@sapphire/async-queue@npm:1.3.2"
+  checksum: 348f35a278bff68cb6d5e2c2219b03ce66243162522003bb14426e5fdad251300bea8ef3883043eb034c181dddd52296a519e9f377075a5b31074807fe163e76
   languageName: node
   linkType: hard
 
@@ -3044,7 +3037,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "lodash.uniqwith@npm:^4.5.0":
   version: 4.5.0
   resolution: "lodash.uniqwith@npm:4.5.0"
@@ -3052,10 +3044,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:^4.17.15, lodash@npm:^4.17.20":
-=======
 "lodash@npm:^4.17.15":
->>>>>>> c5feaa7 (chore: remove mongoose and add prisma)
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: eb835a2e51d381e561e508ce932ea50a8e5a68f4ebdd771ea240d3048244a8d13658acbd502cd4829768c56f2e16bdd4340b9ea141297d472517b83868e677f7
@@ -3774,14 +3763,9 @@ __metadata:
   dependencies:
     "@devtomio/plugin-botlist": 1.2.0
     "@favware/cliff-jumper": 1.8.5
-<<<<<<< HEAD
+    "@prisma/client": 4.0.0
     "@sapphire/decorators": 4.3.8
     "@sapphire/discord-utilities": 2.11.5
-=======
-    "@prisma/client": 4.0.0
-    "@sapphire/decorators": 4.3.7
-    "@sapphire/discord-utilities": 2.11.4
->>>>>>> c5feaa7 (chore: remove mongoose and add prisma)
     "@sapphire/discord.js-utilities": 4.11.3
     "@sapphire/eslint-config": 4.3.7
     "@sapphire/framework": 3.0.0-next.f47e6f6.0
@@ -3795,12 +3779,7 @@ __metadata:
     "@sapphire/ts-config": 3.3.4
     "@sapphire/type": 2.2.4
     "@sapphire/utilities": 3.7.0
-<<<<<<< HEAD
     "@swc/core": 1.2.220
-    "@typegoose/typegoose": 9.10.1
-=======
-    "@swc/core": 1.2.211
->>>>>>> c5feaa7 (chore: remove mongoose and add prisma)
     "@types/colornames": 1.1.2
     "@types/gradient-string": 1.1.2
     "@types/node": 18.6.2
@@ -3819,19 +3798,11 @@ __metadata:
     eslint-plugin-prettier: 4.2.1
     gradient-string: 2.0.1
     husky: 8.0.1
-<<<<<<< HEAD
     ioredis: 5.2.2
-    mongoose: 6.5.0
-    prettier: 2.7.1
-    pretty-quick: 3.1.3
-    tsup: 6.2.0
-=======
-    ioredis: 5.1.0
     prettier: 2.7.1
     pretty-quick: 3.1.3
     prisma: 4.0.0
-    tsup: 6.1.3
->>>>>>> c5feaa7 (chore: remove mongoose and add prisma)
+    tsup: 6.2.0
     typescript: 4.7.4
   languageName: unknown
   linkType: soft
