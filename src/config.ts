@@ -104,7 +104,7 @@ export const client_config: ClientOptions = {
 	typing: false,
 	shards: 'auto',
 	disableMentionPrefix: process.env.NODE_ENV === 'production',
-	preventFailedToFetchLogForGuildIds: ['733135938347073576', '979342238951800882', '608711879858192479'],
+	preventFailedToFetchLogForGuilds: true,
 	botList: config.botlist,
 	sweepers: config.sweepers
 };
