@@ -1,7 +1,6 @@
 import { Timestamp } from '#lib/structures';
 import { RadonEvents } from '#lib/types';
 import { color } from '#lib/utility';
-import { blacklistDB } from '#models';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener } from '@sapphire/framework';
 import type { Guild, TextChannel } from 'discord.js';
@@ -12,7 +11,11 @@ import type { Guild, TextChannel } from 'discord.js';
 export class UserListener extends Listener {
 	public override async run(guild: Guild) {
 		await this.container.client.guilds.fetch();
-		const isBlacklisted = await blacklistDB.findById(guild.id);
+		const isBlacklisted = await this.container.prisma.blacklist.findUnique({
+			where: {
+				id: guild.id
+			}
+		});
 		if (isBlacklisted) return;
 		const channel = (await this.container.client.channels.fetch('950646213504552960').catch(() => null)) as TextChannel;
 		if (!channel) return;

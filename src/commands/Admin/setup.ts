@@ -2,7 +2,6 @@
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { color, mins, sec } from '#lib/utility';
-import { guildSettingsDB } from '#models';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import { container } from '@sapphire/framework';
@@ -165,18 +164,24 @@ export class UserCommand extends RadonCommand {
 			if (r === 'not-ready') return;
 
 			if (r === 'Complete') {
-				const data = await guildSettingsDB.findByIdAndUpdate(
-					interaction.guildId,
-					{
+				const data = await this.container.prisma.guildSettings.upsert({
+					create: {
+						id: interaction.guildId!,
 						configured: true,
 						modRoles,
 						adminRoles,
 						modLogChannel
 					},
-					{
-						upsert: true
+					update: {
+						configured: true,
+						modRoles,
+						adminRoles,
+						modLogChannel
+					},
+					where: {
+						id: interaction.guildId!
 					}
-				);
+				});
 				const final = this.container.utils
 					.embed()
 					._color(color.Admin)

@@ -1,4 +1,3 @@
-import { blacklistDB } from '#models';
 import { ApplyOptions } from '@sapphire/decorators';
 import { AllFlowsPrecondition, Precondition } from '@sapphire/framework';
 @ApplyOptions<Precondition.Options>({
@@ -19,13 +18,12 @@ export class UserPrecondition extends Precondition {
 
 	private async isBlacklisted(id?: string) {
 		if (!id) return this.ok();
-		const blUsers = await blacklistDB.findById(id);
-		if (blUsers) {
-			return this.error({
-				context: { silent: true },
-				message: `You are blacklisted!`
-			});
-		}
-		return this.ok();
+		const blacklisted = await this.container.prisma.blacklist.findUnique({
+			where: {
+				id
+			}
+		});
+
+		return blacklisted ? this.error({ context: { silent: true } }) : this.ok();
 	}
 }

@@ -1,7 +1,6 @@
 import { GuildSettings, Timestamp } from '#lib/structures';
 import { RadonEvents } from '#lib/types';
 import { color } from '#lib/utility';
-import { blacklistDB } from '#models';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener } from '@sapphire/framework';
 import type { Guild, TextChannel } from 'discord.js';
@@ -11,7 +10,11 @@ import type { Guild, TextChannel } from 'discord.js';
 })
 export class UserListener extends Listener {
 	public override async run(guild: Guild) {
-		const isBlacklisted = await blacklistDB.findById(guild.id);
+		const isBlacklisted = await this.container.prisma.blacklist.findUnique({
+			where: {
+				id: guild.id
+			}
+		});
 		if (isBlacklisted) {
 			await guild.leave();
 			return;
@@ -28,10 +31,7 @@ export class UserListener extends Listener {
 		if (!webhook || !webhook.token) return;
 		const createDate = new Timestamp(guild.createdTimestamp);
 		const owner = await this.container.client.users.fetch(guild.ownerId);
-		const me =
-			guild.me ??
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			(await guild.members.fetch(this.container.client.user!.id));
+		const me = guild.me ?? (await guild.members.fetch(this.container.client.user!.id));
 		let perms = me.permissions
 			.toArray()
 			.map((e) =>
