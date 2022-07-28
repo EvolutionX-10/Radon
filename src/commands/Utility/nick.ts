@@ -64,6 +64,7 @@ export class UserCommand extends RadonCommand {
 								option //
 									.setName('nickname')
 									.setDescription('The nickname to set')
+									.setMaxLength(32)
 									.setRequired(true)
 							)
 							.addStringOption((option) =>
