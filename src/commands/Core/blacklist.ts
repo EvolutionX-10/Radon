@@ -73,7 +73,7 @@ export class UserCommand extends RadonCommand {
 		const id = await args.pick('string').catch(() => null);
 		if (!id) return send(message, `Please provide a valid ID.`);
 
-		const reason = await this.container.settings.blacklists.remove(id);
+		const reason = await this.container.settings.blacklists.remove(id).catch(() => null);
 		if (!reason) return send(message, `That guild isn't blacklisted.`);
 
 		await send(message, `Blacklist removed from \`${id}\``);

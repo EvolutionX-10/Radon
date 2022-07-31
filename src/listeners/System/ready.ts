@@ -14,11 +14,9 @@ import gradient from 'gradient-string';
 export class UserListener extends Listener {
 	private readonly style = this.isDev ? yellow : blue;
 
-	public override async run(client: RadonClient) {
+	public override run(client: RadonClient) {
 		this.container.settings = new Settings();
 		this.container.utils = new Utils(client);
-
-		await client.guilds.fetch();
 
 		this.container.client = client;
 		this.container.logger.info(`Logged in as ${gradient.pastel(client.user!.username!)} ${cyanBright(`[${process.env.npm_package_version}]`)}`);

@@ -10,7 +10,7 @@ export class RadonClient<Ready extends boolean = boolean> extends SapphireClient
 	}
 
 	public override async login(token?: string): Promise<string> {
-		ApplicationCommandRegistries.setDefaultBehaviorWhenNotIdentical(RegisterBehavior.Overwrite);
+		ApplicationCommandRegistries.setDefaultBehaviorWhenNotIdentical(RegisterBehavior.VerboseOverwrite);
 		container.prisma = new PrismaClient();
 		await container.prisma.$connect();
 		container.db = new Redis(process.env.REDIS_URL!);
