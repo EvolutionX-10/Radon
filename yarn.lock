@@ -106,14 +106,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@favware/cliff-jumper@npm:1.8.5":
-  version: 1.8.5
-  resolution: "@favware/cliff-jumper@npm:1.8.5"
+"@favware/cliff-jumper@npm:1.8.6":
+  version: 1.8.6
+  resolution: "@favware/cliff-jumper@npm:1.8.6"
   dependencies:
-    "@sapphire/result": ^2.0.0
-    "@sapphire/utilities": ^3.6.2
+    "@sapphire/result": ^2.1.1
+    "@sapphire/utilities": ^3.8.0
     colorette: ^2.0.19
-    commander: ^9.3.0
+    commander: ^9.4.0
     conventional-changelog-angular: ^5.0.13
     conventional-recommended-bump: ^6.1.0
     js-yaml: ^4.1.0
@@ -122,7 +122,7 @@ __metadata:
   bin:
     cj: ./dist/cli.js
     cliff-jumper: ./dist/cli.js
-  checksum: afdf247292089b79a17aa9d5b05f6d4077739e044aa0ef8125caa7030064bbb648c6f36b294546d66122ab2a8371af93d9fddfa768721ef40231b5e03b27f5ce
+  checksum: 0c4f55d3177f395d09709faa26845aa5b7fb4250e278e5b9a84994ed49f6b1cf14f57f306db596b68af8016594d725bdb6cb091f4f0372fa2fce0fd8e0e93b59
   languageName: node
   linkType: hard
 
@@ -299,9 +299,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/framework@npm:3.0.0-next.f47e6f6.0":
-  version: 3.0.0-next.f47e6f6.0
-  resolution: "@sapphire/framework@npm:3.0.0-next.f47e6f6.0"
+"@sapphire/framework@npm:3.0.0-pr-495.64f1b90.0":
+  version: 3.0.0-pr-495.64f1b90.0
+  resolution: "@sapphire/framework@npm:3.0.0-pr-495.64f1b90.0"
   dependencies:
     "@discordjs/builders": ^0.16.0
     "@sapphire/discord-utilities": ^2.11.5
@@ -315,7 +315,7 @@ __metadata:
     lexure: ^0.17.0
     object-hash: ^3.0.0
     tslib: ^2.4.0
-  checksum: fc5504da5a3b9e970718803b4373cd87d64f20134d5b7d3fab717763f4b5b74ae29cd7fa1550de204ea53894f00a6766bae64b6904c242db0f147790a0fe4064
+  checksum: 9a2bf0af94198829e1be8f63c216f2246b046eb8b1d0486dea6757c9c8d4cd727663724a3313f440934c810508eb5dc45f68ec483d017e0f3b3a0388eaa7d4a1
   languageName: node
   linkType: hard
 
@@ -385,10 +385,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/result@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@sapphire/result@npm:2.0.0"
-  checksum: 24ec5637e128c551332e40b0fbab06ef156a09630a7f812ac183717cadecec021d883894055b4ac3d5ede7ce0a2fff0f2b43f08fafb5d9c6f8f20b813bdd71d6
+"@sapphire/result@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "@sapphire/result@npm:2.1.1"
+  checksum: e1c77ba6fcdb63b17152e06a1b30ca8e9a8da00c343019cf1181aeb6d14cc3d7546c2535c9f3f592252c3578889081dcdbad0649bd33d6279b93a79710a7f8e1
   languageName: node
   linkType: hard
 
@@ -1425,10 +1425,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:^9.3.0":
-  version: 9.3.0
-  resolution: "commander@npm:9.3.0"
-  checksum: d421ce66fee25792a1470c69aa8d1b86434bf873a96483aa92c8267f81a6f20c6f7c426f5e82f88ac50a8ec4855d3f2787aebcdef8aa559e1080a2337a95a217
+"commander@npm:^9.4.0":
+  version: 9.4.0
+  resolution: "commander@npm:9.4.0"
+  checksum: a322de584a6ccd1ea83c24f6a660e52d16ffbe2613fcfbb8d2cc68bc9dec637492456d754fe8bb5b039ad843ed8e04fb0b107e581a75f62cde9e1a0ab1546e09
   languageName: node
   linkType: hard
 
@@ -3775,7 +3775,7 @@ __metadata:
     "@sapphire/discord-utilities": 2.11.5
     "@sapphire/discord.js-utilities": 4.11.3
     "@sapphire/eslint-config": 4.3.7
-    "@sapphire/framework": 3.0.0-next.f47e6f6.0
+    "@sapphire/framework": 3.0.0-pr-495.64f1b90.0
     "@sapphire/pieces": 3.3.5
     "@sapphire/plugin-editable-commands": 1.2.2
     "@sapphire/plugin-logger": 2.2.3
