@@ -59,7 +59,7 @@ export class UserCommand extends RadonCommand {
 		const data = await interaction.guild?.settings?.warns.get({
 			member
 		});
-		const warns = data?.person?.warns?.map((w) => w?._id);
+		const warns = data?.person?.warns?.map((w) => w?.id);
 
 		if (!warns?.length) {
 			return this.noAutocompleteResults(interaction);
@@ -68,7 +68,7 @@ export class UserCommand extends RadonCommand {
 		const choices: APIApplicationCommandOptionChoice[] = [];
 
 		for (const warn of warns) {
-			const warnsForUser = data?.person?.warns.filter((e) => e?._id === warn);
+			const warnsForUser = data?.person?.warns.filter((e) => e?.id === warn);
 
 			if (!warnsForUser) continue;
 
@@ -78,11 +78,11 @@ export class UserCommand extends RadonCommand {
 
 			const user = await this.container.client.users.fetch(modId);
 
-			const name = cutText(`${warnsForUser[0]._id} | Mod: ${user.tag} | Reason: ${warnsForUser?.[0].reason ?? 'N/A'}`, 100);
+			const name = cutText(`${warnsForUser[0].id} | Mod: ${user.tag} | Reason: ${warnsForUser?.[0].reason ?? 'N/A'}`, 100);
 
 			choices.push({
 				name,
-				value: warnsForUser[0]._id
+				value: warnsForUser[0].id
 			});
 		}
 
@@ -242,7 +242,9 @@ export class UserCommand extends RadonCommand {
 				ephemeral: true
 			});
 		}
-		const prevWarns_size = warn?.warnlist?.filter((e) => e?._id === member?.id)?.[0]?.warns?.length ?? 0;
+
+		const prevWarns_size = warn?.warnlist?.filter((warn) => warn?.id === member?.id)?.[0]?.warns.length ?? 0;
+
 		const totalwarns = prevWarns_size + 1;
 		let content = `${member} (${member.user.tag}) has been warned for __${reason}__\nWarn ID: \`${warnId}\`\n*They now have ${totalwarns} warning(s)*`;
 		if (!silent) {
@@ -322,17 +324,19 @@ export class UserCommand extends RadonCommand {
 			warnId,
 			member
 		});
+
 		if (!warn) {
 			return interaction.reply({
 				content:
 					`That warning does not exist on ${member.user.tag}\n` +
 					`Possible reasons: \n` +
-					`- The warning ID is incorrect\n` +
-					`- The user has not been warned`,
+					`\` - \` The warning ID is incorrect\n` +
+					`\` - \` The user has not been warned`,
 				ephemeral: true
 			});
 		}
-		const prevWarns_size = warn?.warnlist?.filter((e) => e?._id === member?.id)?.[0]?.warns?.length ?? 0;
+		const prevWarns_size = warn?.warnlist?.filter((warn) => warn?.id === member?.id)?.[0]?.warns.length ?? 0;
+
 		const totalwarns = prevWarns_size - 1;
 		const content = `${member} (${member.user.tag}) has had their warning removed\n*They now have ${totalwarns} warning(s)*`;
 		await interaction.reply({
@@ -365,26 +369,26 @@ export class UserCommand extends RadonCommand {
 		const data = await interaction.guild?.settings?.warns.get({
 			member
 		});
-		if (!data?.exist || !data.person.warns.length) {
+		if (!data?.doc || !data.person.warns.length) {
 			return interaction.reply({
 				content: `${member} has no warnings`,
 				ephemeral: true
 			});
 		}
-		const warns = data!.exist;
-		const warns_size = warns.warnlist.filter((e) => e?._id === member?.id)[0].warns.length;
+		const warns = data!.doc;
+		const warns_size = warns.warnlist.filter((e) => e?.id === member?.id)[0].warns.length;
 		const embed_color = color.Moderation;
 		const embed_title = `${member.user.tag}'s Warnings`;
 		const embed_description = `${member} has ${warns_size} warning(s)`;
 		const embed_fields = await Promise.all(
 			warns.warnlist
-				.filter((e) => e?._id === member?.id)[0]
+				.filter((e) => e?.id === member?.id)[0]
 				.warns.map(async (e) => {
 					const mod = await this.container.client.users.fetch(e.mod);
 					const expiration = new Timestamp(e.expiration.getTime());
 					const time = new Timestamp(e.date.getTime());
 					return {
-						name: `Warn ID: ${e._id}`,
+						name: `Warn ID: ${e.id}`,
 						value:
 							`> Reason: ${e.reason}\n> Given on ${time.getShortDateTime()} (${time.getRelativeTime()})` +
 							`\n> Severity: \`${e.severity}\`` +

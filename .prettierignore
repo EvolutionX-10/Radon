@@ -1,2 +1,5 @@
 .github/
 CHANGELOG.md
+prisma/
+LICENSE.md
+dist/

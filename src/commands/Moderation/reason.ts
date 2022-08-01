@@ -1,5 +1,4 @@
 import { RadonCommand } from '#lib/structures';
-import { warnsDB } from '#models';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import type { GuildMember, Message, TextChannel } from 'discord.js';
@@ -79,32 +78,13 @@ export class UserCommand extends RadonCommand {
 		);
 	}
 
-	private async updateReason(member: GuildMember, id: string, reason: string) {
+	private async updateReason(member: GuildMember, _id: string, _reason: string) {
 		const warns = await member.guild.settings?.warns.get({ member });
-		if (!warns || !warns?.exist || !warns?.person) return;
-
-		return warnsDB.findOneAndUpdate(
-			{
-				_id: member.guild.id,
-				'warnlist.warns': {
-					$elemMatch: {
-						_id: id
-					}
-				}
-			},
-			{
-				$set: {
-					'warnlist.$.warns.$[warns].reason': reason
-				}
-			},
-			{
-				arrayFilters: [
-					{
-						'warns._id': id
-					}
-				]
-			}
-		);
+		if (!warns || !warns?.doc || !warns?.person) return;
+		const warn = warns.person.warns.find((warn) => warn.id === _id);
+		if (!warn) return;
+		warn.reason = _reason;
+		return member.guild.settings?.warns.update({ member, warns: warns.person.warns });
 	}
 
 	private getID(message: Message) {

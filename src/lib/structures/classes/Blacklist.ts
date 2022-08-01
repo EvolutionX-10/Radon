@@ -1,31 +1,39 @@
-import { blacklistDB } from '#models';
-
+import { container } from '@sapphire/framework';
+const { prisma } = container;
 export class Blacklist {
 	public async add(id: string, reason: string) {
-		const doc = await blacklistDB.findByIdAndUpdate(
-			id,
-			{
+		const doc = await prisma.blacklist.upsert({
+			create: {
+				id,
 				reason
 			},
-			{
-				upsert: true
+			update: {
+				reason
+			},
+			where: {
+				id
 			}
-		);
+		});
+
 		if (!doc) return null;
-		return doc as document;
+		return doc;
 	}
 
-	public isBlacklisted(id: string) {
-		return blacklistDB.findById(id).then((doc) => Boolean(doc));
+	public async isBlacklisted(id: string) {
+		const exists = await prisma.blacklist.findUnique({
+			where: {
+				id
+			}
+		});
+		return Boolean(exists);
 	}
 
 	public async remove(id: string) {
-		const doc = await blacklistDB.findByIdAndDelete(id);
-		const reason = doc?.reason;
-		return reason;
+		const doc = await prisma.blacklist.delete({
+			where: {
+				id
+			}
+		});
+		return doc.reason;
 	}
-}
-interface document {
-	id: string;
-	reason: string;
 }

@@ -1,5 +1,6 @@
-import { guildSettingsDB } from '#models';
+import { container } from '@sapphire/framework';
 import type { Guild } from 'discord.js';
+const { prisma } = container;
 
 export class RolesConfig {
 	public constructor(private readonly guild: Guild) {
@@ -8,17 +9,23 @@ export class RolesConfig {
 
 	public get admins() {
 		return (async () => {
-			const data = await guildSettingsDB.findById(this.guild.id).catch(() => null);
-			if (data && data.adminRoles) return data.adminRoles;
-			return [];
+			const data = await prisma.guildSettings.findUnique({
+				where: {
+					id: this.guild.id
+				}
+			});
+			return data?.adminRoles ?? [];
 		})();
 	}
 
 	public get mods() {
 		return (async () => {
-			const data = await guildSettingsDB.findById(this.guild.id).catch(() => null);
-			if (data && data.modRoles) return data.modRoles;
-			return [];
+			const data = await prisma.guildSettings.findUnique({
+				where: {
+					id: this.guild.id
+				}
+			});
+			return data?.modRoles ?? [];
 		})();
 	}
 }
