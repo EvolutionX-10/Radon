@@ -1,47 +1,47 @@
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "mongodb"
-    url      = env("MONGO")
+  provider = "mongodb"
+  url      = env("MONGO")
 }
 
 type GuildWarnsWarnlist {
-    id    String                    @map("_id")
-    warns GuildWarnsWarnlistWarns[]
+  id    String                    @map("_id")
+  warns GuildWarnsWarnlistWarns[]
 }
 
 type GuildWarnsWarnlistWarns {
-    id         String   @map("_id")
-    date       DateTime @db.Date
-    expiration DateTime @db.Date
-    mod        String
-    reason     String
-    severity   Int
+  id         String   @map("_id")
+  date       DateTime @db.Date
+  expiration DateTime @db.Date
+  mod        String
+  reason     String
+  severity   Int
 }
 
 model blacklist {
-    id        String    @id @map("_id")
-    createdAt DateTime? @db.Date
-    reason    String
-    updatedAt DateTime? @db.Date
+  id        String    @id @map("_id")
+  createdAt DateTime? @db.Date
+  reason    String
+  updatedAt DateTime? @db.Date
 }
 
 model guildSettings {
-    id            String   @id @map("_id")
-    adminRoles    String[]
-    configured    Boolean
-    createdAt     DateTime? @db.Date
-    isCommunity   Boolean?
-    modLogChannel String
-    modRoles      String[]
-    updatedAt     DateTime? @db.Date
+  id            String    @id @map("_id")
+  adminRoles    String[]
+  configured    Boolean
+  createdAt     DateTime? @db.Date
+  isCommunity   Boolean?
+  modLogChannel String
+  modRoles      String[]
+  updatedAt     DateTime? @db.Date
 }
 
 model guildWarns {
-    id        String               @id @map("_id")
-    createdAt DateTime?            @db.Date
-    updatedAt DateTime?            @db.Date
-    warnlist  GuildWarnsWarnlist[]
+  id        String               @id @map("_id")
+  createdAt DateTime?            @db.Date
+  updatedAt DateTime?            @db.Date
+  warnlist  GuildWarnsWarnlist[]
 }
