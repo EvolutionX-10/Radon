@@ -18,7 +18,7 @@
 	},
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"start": "yarn compile && NODE_ENV=production && node --no-warnings ./dist/index.js",
+		"start": "yarn compile && NODE_ENV=production && node ./dist/index.js",
 		"dev": "yarn compile && node ./dist/index.js",
 		"heroku": "git push heroku main",
 		"backup": "heroku git:remote -a radon-dev2 && yarn heroku && heroku git:remote -a radon-dev",
