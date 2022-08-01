@@ -450,7 +450,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/utilities@npm:3.8.0":
+"@sapphire/utilities@npm:3.8.0, @sapphire/utilities@npm:^3.8.0":
   version: 3.8.0
   resolution: "@sapphire/utilities@npm:3.8.0"
   checksum: 5b7520bcce6abf743bdf393783bed7b003e2fe6e6473a8325c00ee1df8c7eb6325ec0a307435345627b609146ca0555e5169545af41c7b3a71dcf6f7b87339f3
@@ -3769,7 +3769,7 @@ __metadata:
   resolution: "radon@workspace:."
   dependencies:
     "@devtomio/plugin-botlist": 1.2.0
-    "@favware/cliff-jumper": 1.8.5
+    "@favware/cliff-jumper": 1.8.6
     "@prisma/client": ^4.1.1
     "@sapphire/decorators": 4.3.8
     "@sapphire/discord-utilities": 2.11.5
