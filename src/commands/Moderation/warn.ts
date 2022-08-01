@@ -324,13 +324,14 @@ export class UserCommand extends RadonCommand {
 			warnId,
 			member
 		});
+
 		if (!warn) {
 			return interaction.reply({
 				content:
 					`That warning does not exist on ${member.user.tag}\n` +
 					`Possible reasons: \n` +
-					`- The warning ID is incorrect\n` +
-					`- The user has not been warned`,
+					`\` - \` The warning ID is incorrect\n` +
+					`\` - \` The user has not been warned`,
 				ephemeral: true
 			});
 		}

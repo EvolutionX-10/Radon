@@ -89,9 +89,9 @@ export class Warn {
 		});
 
 		if (data) {
-			const person = data.warnlist.filter((e) => e.id === member.id)?.[0];
-
-			if (person) {
+			const person = data.warnlist.find((e) => e.id === member.id);
+			const warn = person?.warns.find((e) => e.id === warnId);
+			if (person && warn) {
 				const warns = person.warns.filter((e) => e.id !== warnId);
 				await prisma.guildWarns.update({
 					where: {
@@ -103,8 +103,9 @@ export class Warn {
 						}
 					}
 				});
+				return data;
 			}
-			return data;
+			return null;
 		}
 		return null;
 	}
