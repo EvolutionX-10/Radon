@@ -3,8 +3,9 @@
 	"extends": ["config:base", "helpers:pinGitHubActionDigests"],
 	"labels": ["Type: Dependencies"],
 	"automerge": true,
+	"automergeType": "pr-comment",
 	"automergeStrategy": "squash",
-	"automergeComment": "Renovate: Auto Merged dependencies",
+	"automergeComment": "Auto Merged dependencies",
 	"major": {
 		"dependencyDashboardApproval": true,
 		"addLabels": ["Dependencies: Major"],
@@ -12,30 +13,22 @@
 	},
 	"minor": {
 		"addLabels": ["Dependencies: Minor"],
-		"automerge": true,
-		"automergeStrategy": "squash",
-		"automergeComment": "Automerging PR for minor dependencies"
+		"automerge": true
 	},
 	"patch": {
 		"addLabels": ["Dependencies: Patch"],
-		"automerge": true,
-		"automergeStrategy": "squash",
-		"automergeComment": "Automerging PR for patch dependencies"
+		"automerge": true
 	},
 	"timezone": "Asia/Kolkata",
 	"schedule": ["before 6pm every weekday"],
 	"lockFileMaintenance": {
 		"enabled": true,
-		"automerge": true,
-		"automergeStrategy": "squash",
-		"automergeComment": "Automerging PR for lock file maintenance"
+		"automerge": true
 	},
 	"packageRules": [
 		{
 			"matchUpdateTypes": ["minor", "patch"],
-			"matchCurrentVersion": "!/^0/",
-			"automerge": true,
-			"automergeStrategy": "squash"
+			"matchCurrentVersion": "!/^0/"
 		},
 		{
 			"matchPackagePatterns": ["discord-api-types"],
