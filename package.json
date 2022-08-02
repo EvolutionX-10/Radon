@@ -77,7 +77,7 @@
 	},
 	"dependencies": {
 		"@devtomio/plugin-botlist": "1.2.0",
-		"@prisma/client": "^4.1.1",
+		"@prisma/client": "4.1.1",
 		"@sapphire/decorators": "4.3.8",
 		"@sapphire/discord-utilities": "2.11.5",
 		"@sapphire/discord.js-utilities": "4.11.3",
