@@ -3,9 +3,8 @@
 	"extends": ["config:base", "helpers:pinGitHubActionDigests"],
 	"labels": ["Type: Dependencies"],
 	"automerge": true,
-	"automergeType": "pr-comment",
+	"automergeType": "pr",
 	"automergeStrategy": "squash",
-	"automergeComment": "Auto Merged dependencies",
 	"major": {
 		"dependencyDashboardApproval": true,
 		"addLabels": ["Dependencies: Major"],
@@ -25,6 +24,7 @@
 		"enabled": true,
 		"automerge": true
 	},
+	"automergeSchedule": ["after 9pm every weekday"],
 	"packageRules": [
 		{
 			"matchUpdateTypes": ["minor", "patch"],
