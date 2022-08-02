@@ -1,4 +1,4 @@
-process.env.NODE_ENV ??= 'development'; // TODO see if this is loaded first
+process.env.NODE_ENV ??= 'development';
 
 import { BitFieldResolvable, ClientOptions, IntentsString, MessageMentionOptions, PartialTypes, Intents, SweeperOptions } from 'discord.js';
 import { BucketScope, ClientLoggerOptions, CooldownOptions, LogLevel } from '@sapphire/framework';
@@ -13,13 +13,7 @@ dotenv({
 });
 
 export const config: config = {
-	intents: [
-		Intents.FLAGS.GUILDS,
-		Intents.FLAGS.GUILD_MEMBERS,
-		Intents.FLAGS.GUILD_MESSAGES,
-		Intents.FLAGS.GUILD_BANS,
-		Intents.FLAGS.DIRECT_MESSAGES
-	],
+	intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_BANS, Intents.FLAGS.DIRECT_MESSAGES],
 	cooldown_options: {
 		delay: Time.Second * 10,
 		filteredUsers: vars.owners,
@@ -54,27 +48,23 @@ export const config: config = {
 			filter: () => null
 		},
 		emojis: {
-			interval: 60,
+			interval: 30,
 			filter: () => null
 		},
 		invites: {
-			interval: 120,
+			interval: 60,
 			filter: () => null
 		},
 		messages: {
 			interval: 120,
 			lifetime: 360
 		},
-		presences: {
-			interval: 5,
-			filter: () => null
-		},
 		reactions: {
 			interval: 5,
 			filter: () => null
 		},
 		voiceStates: {
-			interval: 60,
+			interval: 30,
 			filter: () => null
 		},
 		threads: {

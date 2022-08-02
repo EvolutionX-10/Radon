@@ -4,6 +4,11 @@
  * @param {number} maximum - The maximum number of items in the array.
  * @param {number} part - The maximum amount of the sum that can be added at once.
  * @returns An array of numbers that sum up to the maximum number.
+ * @example
+ * ```ts
+ * const result = summableArray(10, 2);
+ * console.log(result); // [2, 2, 2, 2, 2]
+ * ```
  */
 export function summableArray(maximum: number, part: number) {
 	const arr = [];

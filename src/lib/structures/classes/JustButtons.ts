@@ -8,7 +8,7 @@ export class JustButtons extends PaginatedMessage {
 		super(options);
 		const noSelect = [...PaginatedMessage.defaultActions.filter((obj) => obj.type === 2)];
 		const neworder = [noSelect[0], noSelect[1], noSelect[4], noSelect[2], noSelect[3]];
-		this.setActions([...neworder]);
+		this.setActions(neworder);
 	}
 
 	public override addPage(page: PaginatedMessagePage): this {

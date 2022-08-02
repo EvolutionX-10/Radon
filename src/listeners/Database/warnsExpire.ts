@@ -1,4 +1,5 @@
 import { RadonEvents } from '#lib/types';
+import { sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener } from '@sapphire/framework';
 
@@ -32,7 +33,7 @@ export class UserListener extends Listener {
 					}
 				}
 			}
-			setTimeout(expire, 5000);
+			setTimeout(expire, sec(30));
 		};
 		await expire();
 	}

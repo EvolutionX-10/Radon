@@ -24,6 +24,7 @@ export class Select extends MessageSelectMenu {
 	/**
 	 * Disabled
 	 * @param disabled The disabled state of the select
+	 * @default true
 	 * @returns Select
 	 */
 	public _disabled(disabled?: boolean) {

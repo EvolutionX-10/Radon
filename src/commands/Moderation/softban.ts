@@ -31,25 +31,25 @@ export class UserCommand extends RadonCommand {
 			return interaction.editReply({
 				content: `${vars.emojis.cross} You must specify a valid member`
 			});
-		const reason = interaction.options.getString('reason');
-		const days = interaction.options.getInteger('days');
+		const reason = interaction.options.getString('reason') ?? undefined;
+		const days = interaction.options.getInteger('days') ?? 1;
 		const { content: ctn, result } = runAllChecks(interaction.member as GuildMember, member, 'soft ban');
 		if (!result) return interaction.editReply(ctn);
 		const content = `${vars.emojis.confirm} ${member.user.tag} has been soft banned ${reason ? `for the following reason: ${reason}` : ''}`;
 		const { id } = member;
 
 		await member.ban({
-			days: days ?? 1,
-			reason: reason ?? undefined
+			days,
+			reason
 		});
 
-		await interaction.guild.members.unban(id, reason ?? undefined);
+		await interaction.guild.members.unban(id, reason);
 
 		const data: BaseModActionData = {
 			action: 'softban',
 			moderator: interaction.member as GuildMember,
 			target: member,
-			reason: reason ?? undefined
+			reason
 		};
 
 		if (await interaction.guild.settings?.modlogs.modLogs_exist()) {

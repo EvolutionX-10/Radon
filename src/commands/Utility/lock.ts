@@ -128,9 +128,7 @@ export class UserCommand extends RadonCommand {
 									.setName('channel')
 									.setDescription('The channel to lock')
 									.setRequired(true)
-									.addChannelTypes(ChannelType.GuildNewsThread)
-									.addChannelTypes(ChannelType.GuildPublicThread)
-									.addChannelTypes(ChannelType.GuildPrivateThread)
+									.addChannelTypes(ChannelType.GuildNewsThread, ChannelType.GuildPublicThread, ChannelType.GuildPrivateThread)
 							)
 					)
 					.addSubcommandGroup((builder) =>
@@ -145,7 +143,6 @@ export class UserCommand extends RadonCommand {
 										option //
 											.setName('role')
 											.setDescription('The role to lock the channel for (defaults to @everyone)')
-
 											.setRequired(false)
 									)
 							)

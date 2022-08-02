@@ -30,9 +30,9 @@ export class UserListener extends Listener {
 			high: 20
 		};
 		// ! slowmode immune people are ignored!
-		// if (message.member.permissions.has('MANAGE_MESSAGES') || message.member.permissions.has('MANAGE_CHANNELS')) return;
+		if (message.member.permissions.has('MANAGE_MESSAGES') || message.member.permissions.has('MANAGE_CHANNELS')) return;
 		// ! bots and webhooks are ignored
-		// if (message.author.bot || message.webhookId) return;
+		if (message.author.bot || message.webhookId) return;
 		if (message.channel.spam.length < slowModeSensitivity[message.channel.slowModeSensitivity]) {
 			message.channel.spam.push(message);
 		} else {

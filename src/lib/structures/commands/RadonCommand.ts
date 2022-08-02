@@ -150,9 +150,6 @@ declare module '@sapphire/framework' {
 	}
 }
 declare module 'discord.js' {
-	interface Message {
-		sudo: GuildMember | null;
-	}
 	interface Guild {
 		settings: GuildSettings | null;
 	}

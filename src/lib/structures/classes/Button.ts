@@ -40,6 +40,7 @@ export class Button extends MessageButton {
 	/**
 	 * Disabled
 	 * @param disabled The disabled state of the button
+	 * @default true
 	 * @returns Button
 	 */
 	public _disabled(disabled?: boolean) {

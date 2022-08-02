@@ -1,5 +1,6 @@
 import { isNullishOrEmpty } from '@sapphire/utilities';
 import type {
+	RadonEnv,
 	// RadonEnv,
 	RadonEnvAny,
 	RadonEnvBoolean,
@@ -20,7 +21,7 @@ export function envParseInteger(key: RadonEnvInteger, defaultValue?: number): nu
 }
 
 export function envParseBoolean(key: RadonEnvBoolean, defaultValue?: boolean): boolean {
-	const value: string = process.env[key] as string;
+	const value = process.env[key];
 	if (isNullishOrEmpty(value)) {
 		if (defaultValue === undefined) throw new Error(`[ENV] ${key} - The key must be a boolean, but is empty or undefined.`);
 		return defaultValue;
@@ -31,21 +32,15 @@ export function envParseBoolean(key: RadonEnvBoolean, defaultValue?: boolean): b
 	throw new Error(`[ENV] ${key} - The key must be a boolean, but received '${value}'.`);
 }
 
-// export function envParseString<K extends RadonEnvString>(
-//     key: K,
-//     defaultValue?: RadonEnv[K]
-// ): RadonEnv[K] {
-//     const value = process.env[key];
-//     if (isNullishOrEmpty(value)) {
-//         if (defaultValue === undefined)
-//             throw new Error(
-//                 `[ENV] ${key} - The key must be a string, but is empty or undefined.`
-//             );
-//         return defaultValue;
-//     }
+export function envParseString<K extends RadonEnvString>(key: K, defaultValue?: RadonEnv[K]): RadonEnv[K] {
+	const value = process.env[key];
+	if (isNullishOrEmpty(value)) {
+		if (defaultValue === undefined) throw new Error(`[ENV] ${key} - The key must be a string, but is empty or undefined.`);
+		return defaultValue;
+	}
 
-//     return value;
-// }
+	return value;
+}
 
 export function envParseArray(key: RadonEnvString, defaultValue?: string[]): string[] {
 	const value = process.env[key];

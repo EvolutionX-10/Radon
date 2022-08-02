@@ -128,9 +128,7 @@ export class UserCommand extends RadonCommand {
 									.setName('channel')
 									.setDescription('The channel to unlock')
 									.setRequired(true)
-									.addChannelTypes(ChannelType.GuildNewsThread)
-									.addChannelTypes(ChannelType.GuildPublicThread)
-									.addChannelTypes(ChannelType.GuildPrivateThread)
+									.addChannelTypes(ChannelType.GuildNewsThread, ChannelType.GuildPublicThread, ChannelType.GuildPrivateThread)
 							)
 					)
 					.addSubcommandGroup((builder) =>

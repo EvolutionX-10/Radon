@@ -1,6 +1,6 @@
 import { GuildSettings, Timestamp } from '#lib/structures';
 import { RadonEvents } from '#lib/types';
-import { color } from '#lib/utility';
+import { color, format } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener } from '@sapphire/framework';
 import type { Guild, TextChannel } from 'discord.js';
@@ -32,16 +32,8 @@ export class UserListener extends Listener {
 		const createDate = new Timestamp(guild.createdTimestamp);
 		const owner = await this.container.client.users.fetch(guild.ownerId);
 		const me = guild.me ?? (await guild.members.fetch(this.container.client.user!.id));
-		let perms = me.permissions
-			.toArray()
-			.map((e) =>
-				e
-					.split(`_`)
-					.map((i) => i[0] + i.match(/\B(\w+)/)?.[1]?.toLowerCase())
-					.join(` `)
-			)
-			.filter((f) => f.match(/mem|mana|min|men/gim))
-			?.sort();
+
+		let perms = format(me.permissions.toArray());
 		if (perms.includes('Administrator')) perms = ['Administrator'];
 
 		const description =

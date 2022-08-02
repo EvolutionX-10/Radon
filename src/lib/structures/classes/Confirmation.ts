@@ -13,16 +13,16 @@ export class Confirmation {
 		this.options = options;
 		this.buttons = [];
 
-		if (options.emojis && options?.emojis?.length < 2) {
-			throw new Error('Confirmation requires at least 2 emojis');
+		if (options.emojis && options?.emojis?.length !== 2) {
+			throw new Error('Confirmation requires 2 emojis');
 		}
-		if (options.buttonLabels && options?.buttonLabels?.length < 2) {
-			throw new Error('Confirmation requires at least 2 button labels');
+		if (options.buttonLabels && options?.buttonLabels?.length !== 2) {
+			throw new Error('Confirmation requires 2 button labels');
 		}
 	}
 
-	public setButtons(buttons: ButtonPrompt[]) {
-		if (buttons.length < 2) {
+	public setButtons(buttons: [ButtonPrompt, ButtonPrompt]) {
+		if (buttons.length !== 2) {
 			throw new Error('Confirmation requires at least 2 buttons');
 		}
 
@@ -127,11 +127,11 @@ interface ConfirmationOptions {
 	/**
 	 * Button labels are by default Yes and No, but can be customized
 	 */
-	buttonLabels?: string[];
+	buttonLabels?: [string, string];
 	/**
 	 * Radon uses default emojis for confirmation, but custom can be added
 	 */
-	emojis?: string[];
+	emojis?: [string, string];
 	/**
 	 * Default time is 1 minute
 	 */

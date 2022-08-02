@@ -8,23 +8,21 @@ export interface BaseModActionData {
 	action: modAction;
 }
 
-type modAction = 'warn' | 'kick' | 'ban' | 'softban' | 'unban' | 'timeout' | 'warn-remove';
+type modAction = 'warn' | 'kick' | 'ban' | 'softban' | 'unban' | 'timeout' | 'warn_remove';
 
-interface BaseWarnActionData extends BaseModActionData {
+export interface BaseWarnActionData extends BaseModActionData {
 	warnId: string;
 }
 
 type warnSeverityNum = 1 | 2 | 3 | 4 | 5;
 
-type warnAction = 'add' | 'remove';
-
-export type WarnActionData<T extends warnAction = 'add'> = T extends 'add'
-	? BaseWarnActionData & {
-			severity: warnSeverityNum;
-			duration: Timestamp;
-	  }
-	: BaseWarnActionData;
+export type WarnActionData = BaseWarnActionData & {
+	severity: warnSeverityNum;
+	duration: Timestamp;
+};
 
 export interface TimeoutActionData extends BaseModActionData {
 	duration: Timestamp;
 }
+
+export type ModActionData = (Partial<TimeoutActionData> | Partial<WarnActionData>) & BaseModActionData;

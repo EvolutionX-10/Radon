@@ -104,9 +104,7 @@ export class UserCommand extends RadonCommand {
 		if (dm) {
 			await member
 				.send({
-					content: `You have been [banned](https://tenor.com/view/11035060) from ${interaction.guild!.name}\n${
-						reason ? `Reason: ${reason}` : ''
-					}`
+					content: `You have been banned from ${interaction.guild!.name}\n${reason ? `Reason: ${reason}` : ''}`
 				})
 				.catch(() => (content += `\n${vars.emojis.cross} Couldn't DM member!`));
 		}
@@ -141,9 +139,7 @@ export class UserCommand extends RadonCommand {
 			this.container.client.emit(RadonEvents.ModAction, data);
 		}
 
-		return interaction.editReply({
-			content
-		});
+		return interaction.editReply(content);
 	}
 }
 

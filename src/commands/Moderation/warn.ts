@@ -1,5 +1,5 @@
 import { RadonCommand, RadonPaginatedMessageEmbedFields, Timestamp } from '#lib/structures';
-import { PermissionLevels, RadonEvents, WarnActionData } from '#lib/types';
+import { BaseWarnActionData, PermissionLevels, RadonEvents, WarnActionData } from '#lib/types';
 import { color, mins, runAllChecks, uid, warnSeverity, sec } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
@@ -344,12 +344,12 @@ export class UserCommand extends RadonCommand {
 			ephemeral: false
 		});
 
-		const data: WarnActionData<'remove'> = {
+		const data: BaseWarnActionData = {
 			warnId,
 			target: member,
 			moderator: interaction.member as GuildMember,
 			reason,
-			action: 'warn-remove'
+			action: 'warn_remove'
 		};
 
 		if (await interaction.guild!.settings!.modlogs.modLogs_exist()) {

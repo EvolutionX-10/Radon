@@ -36,6 +36,7 @@ export interface RadonEnv {
 
 	DISCORD_TOKEN?: string;
 	MONGO?: string;
+	REDIS_URL?: string;
 
 	VOID_BOT_TOKEN?: string;
 	TOP_BOT_TOKEN?: string;
