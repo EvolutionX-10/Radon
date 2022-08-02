@@ -21,6 +21,12 @@ type GuildWarnsWarnlistWarns {
   severity   Int
 }
 
+type WarnAction {
+  action String
+  severity Int
+  expiration Int?
+}
+
 model blacklist {
   id        String    @id @map("_id")
   createdAt DateTime? @db.Date
@@ -44,4 +50,5 @@ model guildWarns {
   createdAt DateTime?            @db.Date
   updatedAt DateTime?            @db.Date
   warnlist  GuildWarnsWarnlist[]
+  actions   WarnAction[]
 }
