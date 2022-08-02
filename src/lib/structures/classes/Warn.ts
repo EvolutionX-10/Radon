@@ -1,3 +1,4 @@
+import type { modAction } from '#lib/types';
 import type { GuildWarnsWarnlistWarns } from '@prisma/client';
 import { container } from '@sapphire/framework';
 import type { Guild, GuildMember } from 'discord.js';
@@ -141,4 +142,86 @@ export class Warn {
 			}
 		});
 	}
+
+	public async getAmount({ member }: { member: GuildMember }) {
+		const doc = await prisma.guildWarns.findUnique({
+			where: {
+				id: this.guild.id
+			}
+		});
+
+		if (doc) {
+			const person = doc?.warnlist.filter((e) => e.id === member.id)?.[0];
+			if (person) {
+				return person.warns.length;
+			}
+		}
+		return 0;
+	}
+
+	public async addAction({ action, severity, expiration }: { action: warnAction; severity: number; expiration?: number }) {
+		const data = await prisma.guildWarns.findUnique({
+			where: {
+				id: this.guild.id
+			}
+		});
+
+		if (data) {
+			const actions = data.actions.filter((e) => e.action !== action);
+			const exists = data.actions.filter((e) => e.severity === severity);
+			if (exists.length > 0) return;
+			await prisma.guildWarns.update({
+				where: {
+					id: this.guild.id
+				},
+				data: {
+					actions: {
+						set: [...actions, { action, severity, expiration }]
+					}
+				}
+			});
+			return data;
+		}
+		return null;
+	}
+
+	public async removeAction({ severity }: { severity: number }) {
+		const data = await prisma.guildWarns.findUnique({
+			where: {
+				id: this.guild.id
+			}
+		});
+
+		if (data) {
+			const actions = data.actions.filter((e) => e.severity !== severity);
+			const action = data.actions.find((e) => e.severity === severity);
+			await prisma.guildWarns.update({
+				where: {
+					id: this.guild.id
+				},
+				data: {
+					actions: {
+						set: actions
+					}
+				}
+			});
+			return action;
+		}
+		return null;
+	}
+
+	public async getActions() {
+		const data = await prisma.guildWarns.findUnique({
+			where: {
+				id: this.guild.id
+			}
+		});
+
+		if (data) {
+			return data.actions;
+		}
+		return null;
+	}
 }
+
+export type warnAction = Exclude<modAction, 'warn' | 'warn_remove' | 'unban'>;

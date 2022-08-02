@@ -8,7 +8,7 @@ export interface BaseModActionData {
 	action: modAction;
 }
 
-type modAction = 'warn' | 'kick' | 'ban' | 'softban' | 'unban' | 'timeout' | 'warn_remove';
+export type modAction = 'warn' | 'kick' | 'ban' | 'softban' | 'unban' | 'timeout' | 'warn_remove';
 
 export interface BaseWarnActionData extends BaseModActionData {
 	warnId: string;

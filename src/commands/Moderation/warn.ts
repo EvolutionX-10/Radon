@@ -6,8 +6,8 @@ import { ApplyOptions } from '@sapphire/decorators';
 import { cutText } from '@sapphire/utilities';
 import { APIApplicationCommandOptionChoice, ApplicationCommandType } from 'discord-api-types/v9';
 import type { Collection, GuildMember, GuildTextBasedChannel, TextChannel } from 'discord.js';
-import { Duration } from '@sapphire/time-utilities';
-
+import { Duration, DurationFormatter } from '@sapphire/time-utilities';
+import type { warnAction } from '#lib/structures/classes/Warn.js';
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Manage warnings for a user',
 	permissionLevel: PermissionLevels.Moderator,
@@ -23,9 +23,27 @@ export class UserCommand extends RadonCommand {
 		{ name: '5 | 4 weeks', value: 5 }
 	];
 
+	readonly #WarnActions: APIApplicationCommandOptionChoice<warnAction>[] = [
+		{ name: 'Kick', value: 'kick' },
+		{ name: 'Ban', value: 'ban' },
+		{ name: 'Softban', value: 'softban' },
+		{ name: 'Timeout', value: 'timeout' }
+	];
+
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const subcmd = interaction.options.getSubcommand();
-		switch (subcmd) {
+		const subcmdgroup = interaction.options.getSubcommandGroup(false);
+		if (subcmdgroup) {
+			switch (subcmd as actionCommand) {
+				case 'create':
+					return this.createAction(interaction);
+				case 'remove':
+					return this.removeAction(interaction);
+				case 'list':
+					return this.listActions(interaction);
+			}
+		}
+		switch (subcmd as subCommand) {
 			case 'add':
 				return this.add(interaction);
 			case 'remove':
@@ -35,7 +53,7 @@ export class UserCommand extends RadonCommand {
 		}
 	}
 
-	public override async contextMenuRun(interaction: RadonCommand.ContextMenuCommandInteraction) {
+	public override contextMenuRun(interaction: RadonCommand.ContextMenuCommandInteraction) {
 		return this.list(interaction);
 	}
 
@@ -171,6 +189,55 @@ export class UserCommand extends RadonCommand {
 									.setDescription('The user to list warns for')
 									.setRequired(true)
 							)
+					)
+					.addSubcommandGroup((builder) =>
+						builder //
+							.setName('action')
+							.setDescription('Perform automated actions based on warns')
+							.addSubcommand((builder) =>
+								builder //
+									.setName('create')
+									.setDescription('Create a new automated action')
+									.addStringOption((option) =>
+										option //
+											.setName('action')
+											.setDescription('The action to perform')
+											.setRequired(true)
+											.setChoices(...this.#WarnActions)
+									)
+									.addIntegerOption((option) =>
+										option //
+											.setName('severity')
+											.setDescription('The severity at which the action should be triggered [1 - 250]')
+											.setMinValue(1)
+											.setMaxValue(250)
+											.setRequired(true)
+									)
+									.addStringOption((option) =>
+										option //
+											.setName('duration')
+											.setDescription('The duration of the action (only for Timeout)')
+											.setRequired(false)
+									)
+							)
+							.addSubcommand((builder) =>
+								builder //
+									.setName('remove')
+									.setDescription('Remove an automated action')
+									.addIntegerOption((option) =>
+										option //
+											.setName('severity')
+											.setDescription('The severity trigger of the action')
+											.setMinValue(1)
+											.setMaxValue(250)
+											.setRequired(true)
+									)
+							)
+							.addSubcommand((builder) =>
+								builder //
+									.setName('list')
+									.setDescription('List all automated actions')
+							)
 					),
 			{
 				guildIds: GuildIds,
@@ -206,7 +273,7 @@ export class UserCommand extends RadonCommand {
 			});
 		const deleteMsg = interaction.options.getBoolean('delete_messages') ?? false;
 		const severity = (interaction.options.getInteger('severity') ?? 1) as warnSeverityNum;
-		const expires = interaction.options.getString('expiration') ?? this.autoSeverity(severity);
+		const expires = interaction.options.getString('expiration') ?? expirationFromSeverity[severity];
 		const silent = interaction.options.getBoolean('silent') ?? false;
 		if (isNaN(new Duration(expires).offset)) {
 			return interaction.reply({
@@ -418,19 +485,111 @@ export class UserCommand extends RadonCommand {
 		await paginatedMessage.run(interaction, interaction.user).catch(() => null);
 	}
 
-	private autoSeverity(num: number) {
-		switch (num as warnSeverityNum) {
-			case 1:
-				return warnSeverity.One;
-			case 2:
-				return warnSeverity.Two;
-			case 3:
-				return warnSeverity.Three;
-			case 4:
-				return warnSeverity.Four;
-			case 5:
-				return warnSeverity.Five;
+	private async createAction(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const action = interaction.options.getString('action', true) as warnAction;
+		const severity = interaction.options.getInteger('severity', true);
+		let time = interaction.options.getString('duration');
+		await interaction.deferReply();
+		let content = `It will be applied to any user that crosses the threshold of ${severity} severity in warnings.`;
+		if (action === 'timeout' && !time) return interaction.editReply(`Please provide a duration`);
+
+		if (action === 'timeout') {
+			if (!isNaN(Number(time))) time += 's';
+
+			const duration = new Duration(time!).offset;
+
+			if (isNaN(duration))
+				return interaction.editReply({
+					content: 'Invalid duration! Valid examples: `1d`, `1h`, `1m`, `1s`\nTo remove a timeout just put `0` as the duration.'
+				});
+
+			const MAX_TIMEOUT_DURATION = new Duration('28d').offset;
+
+			if (duration > MAX_TIMEOUT_DURATION) {
+				return interaction.editReply({
+					content: 'You cannot timeout a user for more than 28 days!'
+				});
+			}
+			const added = await interaction.guild!.settings!.warns.addAction({
+				action,
+				severity,
+				expiration: duration
+			});
+
+			if (!added)
+				return interaction.editReply({
+					content: `An action already exists for severity ${severity}`
+				});
+
+			return interaction.editReply({
+				content: `Successfully added a timeout action with a duration of ${new DurationFormatter().format(duration)}\n${content}`
+			});
 		}
+
+		const added = await interaction.guild!.settings!.warns.addAction({
+			action,
+			severity
+		});
+
+		if (!added)
+			return interaction.editReply({
+				content: `An action already exists for severity ${severity}`
+			});
+		if (time) content += `\n\n> Note: The duration will be ignored here since the action is not a timeout.`;
+		return interaction.editReply({
+			content: `Successfully added a ${action} action.\n${content}`
+		});
+	}
+
+	private async removeAction(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const severity = interaction.options.getInteger('severity', true);
+		const rem = await interaction.guild!.settings?.warns?.removeAction({ severity });
+		if (!rem)
+			return interaction.reply({
+				content: 'No action found for this severity',
+				ephemeral: true
+			});
+		return interaction.reply({
+			content: `Successfully removed the ${rem.action} action for ${rem.severity} severity`
+		});
+	}
+
+	private async listActions(interaction: RadonCommand.ChatInputCommandInteraction) {
+		let actions = await interaction.guild!.settings?.warns?.getActions();
+		if (!actions?.length)
+			return interaction.reply({
+				content: 'No actions found',
+				ephemeral: true
+			});
+		actions = actions.sort((a, b) => a.severity - b.severity);
+		const embed_color = color.Moderation;
+		const embed_title = 'Warn Actions';
+		const embed_description = 'Actions that will be applied to users when they cross the threshold of a certain severity in warnings';
+		const embed_fields = actions.map((e) => {
+			return {
+				name: `Severity: ${e.severity}`,
+				value: `> Action: ${e.action}`,
+				inline: false
+			};
+		});
+		const embed_footer = `Warn Actions for ${interaction.guild!.name}`;
+		const embed_timestamp = new Date();
+		const embed_thumbnail = {
+			url: interaction.guild!.iconURL({
+				dynamic: true
+			})
+		};
+		const template = this.container.utils
+			.embed()
+			._color(embed_color)
+			._title(embed_title)
+			._description(embed_description)
+			._footer({ text: embed_footer })
+			._timestamp(embed_timestamp)
+			._thumbnail(embed_thumbnail.url ?? '');
+		const paginatedMessage = new RadonPaginatedMessageEmbedFields().setTemplate(template).setItems(embed_fields).setItemsPerPage(2).make();
+
+		await paginatedMessage.run(interaction, interaction.user).catch(() => null);
 	}
 
 	private noAutocompleteResults(interaction: RadonCommand.AutoComplete) {
@@ -443,4 +602,14 @@ export class UserCommand extends RadonCommand {
 	}
 }
 
+const expirationFromSeverity = {
+	1: warnSeverity.One,
+	2: warnSeverity.Two,
+	3: warnSeverity.Three,
+	4: warnSeverity.Four,
+	5: warnSeverity.Five
+};
+
 type warnSeverityNum = 1 | 2 | 3 | 4 | 5;
+type subCommand = 'add' | 'remove' | 'list';
+type actionCommand = 'create' | 'remove' | 'list';
