@@ -12,7 +12,7 @@ export class UserListener extends Listener {
 	public override async run(interaction: CommandInteraction) {
 		if (isOwner(interaction.user)) return;
 		const isvoted = await this.hasVoted(interaction);
-		if (!isvoted && chance(40)) await this.addVoteMsg(interaction);
+		if (!isvoted && chance(20)) await this.addVoteMsg(interaction);
 	}
 
 	private async hasVoted(interaction: CommandInteraction) {
