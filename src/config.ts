@@ -1,6 +1,15 @@
 process.env.NODE_ENV ??= 'development';
 
-import { BitFieldResolvable, ClientOptions, IntentsString, MessageMentionOptions, PartialTypes, Intents, SweeperOptions } from 'discord.js';
+import {
+	BitFieldResolvable,
+	ClientOptions,
+	IntentsString,
+	MessageMentionOptions,
+	PartialTypes,
+	Intents,
+	SweeperOptions,
+	PresenceData
+} from 'discord.js';
 import { BucketScope, ClientLoggerOptions, CooldownOptions, LogLevel } from '@sapphire/framework';
 import { Time } from '@sapphire/time-utilities';
 import { vars } from '#vars';
@@ -71,6 +80,15 @@ export const config: config = {
 			interval: 3600,
 			lifetime: 14400
 		}
+	},
+	presence: {
+		status: 'dnd',
+		activities: [
+			{
+				name: 'for Rule Breakers',
+				type: 'WATCHING'
+			}
+		]
 	}
 };
 interface config {
@@ -81,6 +99,7 @@ interface config {
 	logger: ClientLoggerOptions;
 	sweepers: SweeperOptions;
 	botlist: BotList.Options;
+	presence: PresenceData;
 }
 export const client_config: ClientOptions = {
 	intents: config.intents,
@@ -96,5 +115,6 @@ export const client_config: ClientOptions = {
 	disableMentionPrefix: process.env.NODE_ENV === 'production',
 	preventFailedToFetchLogForGuilds: true,
 	botList: config.botlist,
-	sweepers: config.sweepers
+	sweepers: config.sweepers,
+	presence: config.presence
 };
