@@ -1,14 +1,14 @@
 import { RadonEvents } from '#lib/types';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import { ChatInputCommand, Listener } from '@sapphire/framework';
+import { Listener } from '@sapphire/framework';
 import type { CommandInteraction } from 'discord.js';
 
 @ApplyOptions<Listener.Options>({
 	event: RadonEvents.ChatInputCommandRun
 })
 export class UserListener extends Listener {
-	public override async run(interaction: CommandInteraction, command: ChatInputCommand) {
+	public override async run(interaction: CommandInteraction) {
 		if (!interaction.guild) return;
 		if (vars.owners.includes(interaction.user.id)) return;
 
@@ -17,7 +17,7 @@ export class UserListener extends Listener {
 		const webhook = (await channel.fetchWebhooks()).first();
 		if (!webhook || !webhook?.token) return;
 
-		const content = `${interaction.user.tag} used the command __${command.name}__ in *"${interaction.guild.name}"*`;
+		const content = `${interaction.user.tag} used the command __${interaction.commandName}__ in *"${interaction.guild.name}"*`;
 
 		return webhook.send({
 			username: interaction.user.username,
