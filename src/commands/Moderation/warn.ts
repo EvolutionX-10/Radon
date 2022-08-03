@@ -506,9 +506,13 @@ export class UserCommand extends RadonCommand {
 				expiration: duration
 			});
 
-			if (!added)
+			if (added === null)
 				return interaction.editReply({
 					content: `An action already exists for severity ${severity}`
+				});
+			if (added === undefined)
+				return interaction.editReply({
+					content: `You have 10 actions already! There is a limit of 10 actions\nRemove actions in order to create new!`
 				});
 
 			return interaction.editReply({
@@ -521,10 +525,15 @@ export class UserCommand extends RadonCommand {
 			severity
 		});
 
-		if (!added)
+		if (added === null)
 			return interaction.editReply({
 				content: `An action already exists for severity ${severity}`
 			});
+		if (added === undefined)
+			return interaction.editReply({
+				content: `You have 10 actions already! There is a limit of 10 actions\nRemove actions in order to create new!`
+			});
+
 		if (time) content += `\n\n> Note: The duration will be ignored here since the action is not a timeout.`;
 		return interaction.editReply({
 			content: `Successfully added a ${action} action.\n${content}`

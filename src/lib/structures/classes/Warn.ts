@@ -167,9 +167,10 @@ export class Warn {
 		});
 
 		if (data) {
-			const actions = data.actions.filter((e) => e.action !== action);
-			const exists = data.actions.filter((e) => e.severity === severity);
-			if (exists.length > 0) return;
+			const { actions } = data;
+			const exists = data.actions.find((e) => e.severity === severity);
+			if (exists) return null;
+			if (data.actions.length >= 10) return undefined;
 			await prisma.guildWarns.update({
 				where: {
 					id: this.guild.id
