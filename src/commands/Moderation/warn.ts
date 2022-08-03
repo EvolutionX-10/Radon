@@ -577,7 +577,7 @@ export class UserCommand extends RadonCommand {
 		const embed_fields = actions.map((e) => {
 			return {
 				name: `Severity: ${e.severity}`,
-				value: `> Action: ${e.action}`,
+				value: `> Action: ${action[e.action as warnAction]} ${e.expiration ? `[${new DurationFormatter().format(e.expiration)}]` : ''}`,
 				inline: false
 			};
 		});
@@ -617,6 +617,13 @@ const expirationFromSeverity = {
 	3: warnSeverity.Three,
 	4: warnSeverity.Four,
 	5: warnSeverity.Five
+};
+
+const action = {
+	timeout: 'Timeout',
+	ban: 'Ban',
+	kick: 'Kick',
+	softban: 'Softban'
 };
 
 type warnSeverityNum = 1 | 2 | 3 | 4 | 5;
