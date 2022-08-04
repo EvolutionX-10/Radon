@@ -4,7 +4,7 @@ import { generateModLogDescription, runAllChecks, sec, severity } from '#lib/uti
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import type { APIApplicationCommandOptionChoice } from 'discord-api-types/v9';
-import type { GuildMember, TextChannel } from 'discord.js';
+import type { GuildMember } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
 	cooldownDelay: sec(10),
 	cooldownLimit: 3,
@@ -40,7 +40,7 @@ export class UserCommand extends RadonCommand {
 
 		const confirm = new Confirmation({
 			content: `Are you sure you want to ban ${member.user.tag}?${reason ? `\nReason: ${reason}` : ''}`,
-			ephemeral: (interaction.channel as TextChannel).visible(),
+			ephemeral: interaction.channel.visible,
 			onConfirm: async () => {
 				await this.ban(interaction, member, reason, days, dm);
 			},

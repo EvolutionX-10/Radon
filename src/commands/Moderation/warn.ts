@@ -415,7 +415,7 @@ export class UserCommand extends RadonCommand {
 			._thumbnail(embed_thumbnail.url);
 		const paginatedMessage = new RadonPaginatedMessageEmbedFields().setTemplate(template).setItems(embed_fields).setItemsPerPage(2).make();
 		await interaction.deferReply({
-			ephemeral: interaction.channel.visible()
+			ephemeral: interaction.channel.visible
 		});
 		await paginatedMessage.run(interaction, interaction.user).catch(() => null);
 	}
