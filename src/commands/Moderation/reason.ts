@@ -10,7 +10,7 @@ export class UserCommand extends RadonCommand {
 		await interaction.deferReply({ ephemeral: true, fetchReply: true });
 		const id = interaction.options.getString('id', true);
 		const reason = interaction.options.getString('reason', true);
-		if (!interaction.guild) return;
+
 		const channelID = await interaction.guild.settings?.modlogs.modLogs_exist();
 		if (!channelID) {
 			return interaction.editReply({
@@ -41,8 +41,10 @@ export class UserCommand extends RadonCommand {
 		await message.edit({
 			embeds: message.embeds
 		});
+
 		if (message.embeds[0].description.includes('**Action**: Warn')) {
 			const id = this.getID(message);
+
 			const member = await interaction.guild.members.fetch(id!.memberID!).catch(() => null);
 			if (member) {
 				await this.updateReason(member, id!.warnID!, reason);
@@ -78,12 +80,12 @@ export class UserCommand extends RadonCommand {
 		);
 	}
 
-	private async updateReason(member: GuildMember, _id: string, _reason: string) {
+	private async updateReason(member: GuildMember, id: string, reason: string) {
 		const warns = await member.guild.settings?.warns.get({ member });
 		if (!warns || !warns?.doc || !warns?.person) return;
-		const warn = warns.person.warns.find((warn) => warn.id === _id);
+		const warn = warns.person.warns.find((warn) => warn.id === id);
 		if (!warn) return;
-		warn.reason = _reason;
+		warn.reason = reason;
 		return member.guild.settings?.warns.update({ member, warns: warns.person.warns });
 	}
 

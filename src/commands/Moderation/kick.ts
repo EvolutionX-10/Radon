@@ -3,7 +3,6 @@ import { BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
 import { runAllChecks, sec } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import type { GuildMember } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
 	description: `Kick a member`,
 	permissionLevel: PermissionLevels.Moderator,
@@ -13,10 +12,15 @@ import type { GuildMember } from 'discord.js';
 })
 export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
-		if (!interaction.guild) return;
-		const member = interaction.options.getMember('member') as GuildMember;
-		const reason = interaction.options.getString('reason') as string;
-		const { content: ctn, result } = runAllChecks(interaction.member as GuildMember, member, 'kick');
+		const member = interaction.options.getMember('member');
+		const reason = interaction.options.getString('reason') ?? undefined;
+		if (!member) {
+			return interaction.reply({
+				content: `${vars.emojis.cross} You must specify a valid member`,
+				ephemeral: true
+			});
+		}
+		const { content: ctn, result } = runAllChecks(interaction.member, member, 'kick');
 		if (!result) return interaction.reply({ content: ctn, ephemeral: true });
 		let content = `${vars.emojis.confirm} ${member.user.tag} has been kicked ${reason ? `for the following reason: ${reason}` : ''}`;
 		await member
@@ -36,7 +40,7 @@ export class UserCommand extends RadonCommand {
 		});
 
 		const data: BaseModActionData = {
-			moderator: interaction.member as GuildMember,
+			moderator: interaction.member,
 			target: member,
 			action: 'kick',
 			reason

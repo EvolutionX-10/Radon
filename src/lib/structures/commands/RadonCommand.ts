@@ -13,8 +13,9 @@ import {
 	UserError
 } from '@sapphire/framework';
 import { PermissionLevels } from '#lib/types';
-import { AutocompleteInteraction, CommandInteraction, ContextMenuInteraction, Message as Msg, Permissions } from 'discord.js';
+import { AutocompleteInteraction, Permissions } from 'discord.js';
 import type { GuildSettings } from '#lib/structures';
+import type { GuildContextMenuInteraction, GuildInteraction, GuildMessage } from '#lib/types/Discord';
 export abstract class RadonCommand extends SubCommandPluginCommand<RadonCommand.Args, RadonCommand> {
 	/**
 	 * Whether the command can be disabled.
@@ -116,12 +117,12 @@ export namespace RadonCommand {
 		community?: boolean;
 	};
 	export type MessageContext = MessageCommandContext;
-	export type ChatInputCommandInteraction = CommandInteraction;
-	export type ContextMenuCommandInteraction = ContextMenuInteraction;
+	export type ChatInputCommandInteraction = GuildInteraction;
+	export type ContextMenuCommandInteraction = GuildContextMenuInteraction;
 	export type AutoComplete = AutocompleteInteraction;
 	export type Context = ChatInputCommandContext | ContextMenuCommandContext;
 	export type Args = SapphireArgs;
-	export type Message = Msg;
+	export type Message = GuildMessage;
 	export type Registry = ApplicationCommandRegistry;
 }
 

@@ -190,7 +190,7 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private async add(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const member = interaction.options.getMember('user') as GuildMember;
+		const member = interaction.options.getMember('user');
 		const reason = interaction.options.getString('reason', true);
 		if (!member) {
 			return interaction.reply({
@@ -198,7 +198,7 @@ export class UserCommand extends RadonCommand {
 				ephemeral: true
 			});
 		}
-		const { content: ctn, result } = runAllChecks(interaction.member as GuildMember, member, 'warn');
+		const { content: ctn, result } = runAllChecks(interaction.member, member, 'warn');
 		if (!result || member.user.bot)
 			return interaction.reply({
 				content: ctn || `${vars.emojis.cross} I can't warn bots!`,
@@ -228,13 +228,13 @@ export class UserCommand extends RadonCommand {
 			});
 		}
 		const warnId = uid();
-		const warn = await interaction.guild?.settings?.warns.add({
+		const warn = await interaction.guild.settings?.warns.add({
 			expiration,
 			reason,
 			severity,
 			warnId,
 			member,
-			mod: interaction.member as GuildMember
+			mod: interaction.member
 		});
 		if (typeof warn === 'undefined') {
 			return interaction.reply({
@@ -273,14 +273,14 @@ export class UserCommand extends RadonCommand {
 		const data: WarnActionData = {
 			warnId,
 			target: member,
-			moderator: interaction.member as GuildMember,
+			moderator: interaction.member,
 			duration: new Timestamp(expiration.getTime()),
 			reason,
 			severity,
 			action: 'warn'
 		};
 
-		if (await interaction.guild!.settings!.modlogs.modLogs_exist()) {
+		if (await interaction.guild.settings!.modlogs.modLogs_exist()) {
 			this.container.client.emit(RadonEvents.ModAction, data);
 		}
 
@@ -294,7 +294,7 @@ export class UserCommand extends RadonCommand {
 			interaction.guild?.channels.cache
 				.filter((c) => c.type === 'GUILD_TEXT')
 				?.forEach(async (c) => {
-					if (c.permissionsFor(interaction.guild!.me!).has('MANAGE_MESSAGES')) {
+					if (c.permissionsFor(interaction.guild.me!).has('MANAGE_MESSAGES')) {
 						const messages = await (c as TextChannel).messages.fetch({ limit: 15 }).catch(() => null);
 						if (!messages) return;
 						const msg = messages.filter((m) => m.author.id === member.id);
@@ -311,7 +311,7 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private async remove(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const member = interaction.options.getMember('user') as GuildMember;
+		const member = interaction.options.getMember('user');
 		const warnId = interaction.options.getString('warn_id', true);
 		const reason = interaction.options.getString('reason') ?? 'No reason provided';
 		if (!member) {
@@ -320,7 +320,7 @@ export class UserCommand extends RadonCommand {
 				ephemeral: true
 			});
 		}
-		const warn = await interaction.guild?.settings?.warns.remove({
+		const warn = await interaction.guild.settings?.warns.remove({
 			warnId,
 			member
 		});
@@ -347,26 +347,26 @@ export class UserCommand extends RadonCommand {
 		const data: BaseWarnActionData = {
 			warnId,
 			target: member,
-			moderator: interaction.member as GuildMember,
+			moderator: interaction.member,
 			reason,
 			action: 'warn_remove'
 		};
 
-		if (await interaction.guild!.settings!.modlogs.modLogs_exist()) {
+		if (await interaction.guild.settings!.modlogs.modLogs_exist()) {
 			this.container.client.emit(RadonEvents.ModAction, data);
 		}
 	}
 
 	private async list(interaction: RadonCommand.ChatInputCommandInteraction | RadonCommand.ContextMenuCommandInteraction) {
-		if (!interaction.channel?.isText() || interaction.channel?.type === 'DM') return;
-		const member = interaction.options.getMember('user') as GuildMember;
+		if (!interaction.channel?.isText() || interaction.channel.type === 'DM') return;
+		const member = interaction.options.getMember('user');
 		if (!member) {
 			return interaction.reply({
 				content: 'Please provide a valid member',
 				ephemeral: true
 			});
 		}
-		const data = await interaction.guild?.settings?.warns.get({
+		const data = await interaction.guild.settings?.warns.get({
 			member
 		});
 		if (!data?.doc || !data.person.warns.length) {
@@ -376,13 +376,13 @@ export class UserCommand extends RadonCommand {
 			});
 		}
 		const warns = data!.doc;
-		const warns_size = warns.warnlist.filter((e) => e?.id === member?.id)[0].warns.length;
+		const warns_size = warns.warnlist.filter((e) => e?.id === member.id)[0].warns.length;
 		const embed_color = color.Moderation;
 		const embed_title = `${member.user.tag}'s Warnings`;
 		const embed_description = `${member} has ${warns_size} warning(s)`;
 		const embed_fields = await Promise.all(
 			warns.warnlist
-				.filter((e) => e?.id === member?.id)[0]
+				.filter((e) => e?.id === member.id)[0]
 				.warns.map(async (e) => {
 					const mod = await this.container.client.users.fetch(e.mod);
 					const expiration = new Timestamp(e.expiration.getTime());

@@ -18,13 +18,13 @@ import { DurationFormatter } from '@sapphire/time-utilities';
 })
 export class UserCommand extends RadonCommand {
 	public override chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const subcmd = interaction.options.getSubcommand() as Subcommands;
+		const subcmd = interaction.options.getSubcommand();
 
 		const subcmdgroup = interaction.options.getSubcommandGroup(false);
 
 		if (subcmdgroup === 'bulk') return this.bulk(interaction, subcmd as bulkActions);
 
-		switch (subcmd) {
+		switch (subcmd as Subcommands) {
 			case 'add':
 				return this.add(interaction);
 			case 'remove':
@@ -232,8 +232,8 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private async add(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const role = interaction.options.getRole('role') as Role;
-		const target = interaction.options.getMember('target') as GuildMember;
+		const role = interaction.options.getRole('role', true);
+		const target = interaction.options.getMember('target');
 		const reason = interaction.options.getString('reason') ?? undefined;
 
 		if (!role) return;
@@ -247,7 +247,7 @@ export class UserCommand extends RadonCommand {
 				ephemeral: true
 			});
 
-		if (role.position > interaction.guild!.me!.roles.highest!.position)
+		if (role.position > interaction.guild.me!.roles.highest!.position)
 			return interaction.reply({
 				content: `I can't add ${role} because its position is higher than my highest role!`
 			});
@@ -263,11 +263,9 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private async remove(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const role = interaction.options.getRole('role') as Role;
-		const target = interaction.options.getMember('target') as GuildMember;
+		const role = interaction.options.getRole('role', true);
+		const target = interaction.options.getMember('target');
 		const reason = interaction.options.getString('reason') ?? undefined;
-
-		if (!role) return;
 
 		if (role.id === interaction.guildId) return interaction.reply(`You can't remove @everyone role`);
 		if (role.tags) return interaction.reply(`I cannot remove roles which are linked to bots/server`);
@@ -278,14 +276,21 @@ export class UserCommand extends RadonCommand {
 				ephemeral: true
 			});
 
-		if (role.position > interaction.guild!.me!.roles.highest!.position)
+		if (role.position > interaction.guild.me!.roles.highest.position)
 			return interaction.reply({
 				content: `I can't remove ${role} because its position is higher than my highest role!`
 			});
 
 		if (!target.roles.cache.has(role.id)) return interaction.reply(`${target} doesn't have ${role}`);
 
-		await target.roles.remove(role, reason).catch((e) => console.log(e.message));
+		const removed = await target.roles.remove(role, reason).catch(() => null);
+
+		if (!removed) {
+			return interaction.reply({
+				content: `Failed to remove ${role} from ${target}`,
+				ephemeral: true
+			});
+		}
 
 		return interaction.reply({
 			content: `Removed ${role} to ${target} successfully!`,
@@ -294,7 +299,7 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private info(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const role = interaction.options.getRole('role', true) as Role;
+		const role = interaction.options.getRole('role', true);
 		const date = new Timestamp(role.createdTimestamp);
 
 		const basic =
@@ -306,16 +311,7 @@ export class UserCommand extends RadonCommand {
 			`- Mentionable: ${role.mentionable ? 'Yes' : 'No'}\n` +
 			`- Managed externally: ${role.managed ? 'Yes' : 'No'}`;
 
-		let perms = role.permissions
-			.toArray()
-			.map((e) =>
-				e
-					.split(`_`)
-					.map((i) => i[0] + i.match(/\B(\w+)/)?.[1]?.toLowerCase())
-					.join(` `)
-			)
-			.filter((f) => f.match(/mem|mana|min|men/gim))
-			?.sort();
+		let perms = this.container.utils.format(role.permissions.toArray());
 		if (perms.includes('Administrator')) perms = ['Administrator'];
 
 		const adv = `- Key Permissions: ${perms.length ? perms.join(' | ') : 'None!'}\n- ID: *\`${role.id}\`*\n- Members: ${role.members.size}`;
@@ -365,8 +361,8 @@ export class UserCommand extends RadonCommand {
 			content += `\n> Warning: Looks like you entered invalid color, a random color was taken!`;
 		}
 
-		const role = await interaction
-			.guild!.roles.create({
+		const role = (await interaction.guild.roles
+			.create({
 				name,
 				color: color as ColorResolvable | undefined,
 				hoist,
@@ -375,13 +371,13 @@ export class UserCommand extends RadonCommand {
 				reason,
 				permissions: []
 			})
-			.catch(() => (content = 'Role creation failed due to missing permissions'));
+			.catch(() => (content = 'Role creation failed due to missing permissions'))) as Role;
 
 		content = content.replace(name, role.toString());
 
-		let perms = (await interaction.guild!.me?.fetch())?.permissions.toArray() ?? [];
-		if (perms.includes('ADMINISTRATOR')) perms = (await interaction.guild!.fetchOwner()).permissions.toArray();
-		perms = perms.filter((perm) => (interaction.member as GuildMember).permissions.toArray().includes(perm));
+		let perms = (await interaction.guild.me?.fetch())?.permissions.toArray() ?? [];
+		if (perms.includes('ADMINISTRATOR')) perms = (await interaction.guild.fetchOwner()).permissions.toArray();
+		perms = perms.filter((perm) => interaction.member.permissions.toArray().includes(perm));
 
 		if (!perms.length) return interaction.editReply(content);
 
@@ -399,7 +395,7 @@ export class UserCommand extends RadonCommand {
 			components: rows.concat(row)
 		});
 
-		return this.collector(message, role as Role, interaction);
+		return this.collector(message, role, interaction);
 	}
 
 	private gimmeMenu(array: string[]) {
@@ -489,31 +485,38 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private async delete(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const role = interaction.options.getRole('role', true) as Role;
+		const role = interaction.options.getRole('role', true);
 		const reason = interaction.options.getString('reason') ?? undefined;
+
+		if (role.managed) {
+			return interaction.editReply("This role is managed by an integration, you can't delete it!");
+		}
+		if (role.position > interaction.guild.me!.roles?.highest?.position) {
+			return interaction.editReply(`I can't delete ${role} because its position is higher than my highest role!`);
+		}
 		await role.delete(reason);
 		return interaction.reply(`Role *${role.name}* deleted!`);
 	}
 
 	@PermissionLevel('Administrator')
 	private async bulk(interaction: RadonCommand.ChatInputCommandInteraction, option: bulkActions) {
-		const role = interaction.options.getRole('role', true) as Role;
+		const role = interaction.options.getRole('role', true);
 		const reason = interaction.options.getString('reason') ?? undefined;
-		const base = (interaction.options.getRole('base_role') ?? interaction.guild!.roles.everyone) as Role;
+		const base = interaction.options.getRole('base_role') ?? interaction.guild.roles.everyone;
 
 		if (role.id === interaction.guildId) return interaction.reply(`You can't add @everyone role`);
 		if (role.tags) return interaction.reply(`I cannot add roles which are linked to bots/server`);
 
-		if (role.position > interaction.guild!.me!.roles.highest!.position)
+		if (role.position > interaction.guild.me!.roles.highest!.position)
 			return interaction.reply({
 				content: `I can't add ${role} because its position is higher than my highest role!`
 			});
 
 		if (role.id === base.id) return interaction.reply(`You can't bulk ${option} same role as base role!`);
 
-		if (interaction.guild?.bulkRoleInProgress) return interaction.reply(`A bulk role process is already in progress!`);
+		if (interaction.guild.bulkRoleInProgress) return interaction.reply(`A bulk role process is already in progress!`);
 
-		await interaction.guild!.members.fetch();
+		await interaction.guild.members.fetch();
 
 		let { members } = base;
 		members = members.filter((m) => (option === 'add' ? !m.roles.cache.has(role.id) : m.roles.cache.has(role.id)));
@@ -557,7 +560,7 @@ export class UserCommand extends RadonCommand {
 		}
 
 		const time = stopwatch.stop().toString();
-		interaction.guild!.bulkRoleInProgress = false;
+		interaction.guild.bulkRoleInProgress = false;
 		return interaction.editReply({
 			content: `Process completed!\n\nTime taken: **${time}**\nMembers affected: **${i}**`,
 			components: []

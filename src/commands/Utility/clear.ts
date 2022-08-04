@@ -3,7 +3,6 @@ import { PermissionLevels } from '#lib/types';
 import { sec } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import type { TextChannel } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
 	cooldownDelay: sec(15),
 	description: `Deletes messages from current channel`,
@@ -14,7 +13,7 @@ export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		await interaction.deferReply({ ephemeral: true });
 		const count = interaction.options.getInteger('count', true);
-		const channel = interaction.channel as TextChannel;
+		const { channel } = interaction;
 		const pinned = interaction.options.getBoolean('skip_pinned', false) ?? true;
 		const contains = interaction.options.getString('contains', false);
 		const user = interaction.options.getUser('user', false);

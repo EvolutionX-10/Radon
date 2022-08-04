@@ -132,7 +132,7 @@ export class UserCommand extends RadonCommand {
 		})) as RadonCommand.Message;
 
 		const collector = m.createMessageComponentCollector({
-			time: this.container.utils.sec(30)
+			time: this.container.utils.sec(15)
 		});
 		collector.on('collect', (i) => {
 			switch (i.customId as Ids) {

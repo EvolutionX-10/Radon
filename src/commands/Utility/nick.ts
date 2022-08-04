@@ -4,7 +4,6 @@ import { runAllChecks } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import { ApplicationCommandType } from 'discord-api-types/v9';
-import type { GuildMember } from 'discord.js';
 import { clean } from 'confusables';
 @ApplyOptions<RadonCommand.Options>({
 	description: `Manage nicknames`,
@@ -14,18 +13,13 @@ import { clean } from 'confusables';
 export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const subcmd = interaction.options.getSubcommand();
-		switch (subcmd) {
+		switch (subcmd as SubCommand) {
 			case 'set':
 				return this.set(interaction);
 			case 'clear':
 				return this.clear(interaction);
 			case 'decancer':
 				return this.decancer(interaction);
-			default:
-				return interaction.reply({
-					content: `Error: \`${subcmd}\`\nPlease report this in the support server`,
-					ephemeral: true
-				});
 		}
 	}
 
@@ -109,7 +103,7 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private async decancer(interaction: RadonCommand.ChatInputCommandInteraction | RadonCommand.ContextMenuCommandInteraction) {
-		const member = (interaction.options.getMember('member') || interaction.options.getMember('user')) as GuildMember;
+		const member = interaction.options.getMember('member') ?? interaction.options.getMember('user');
 		if (!member) {
 			return interaction.reply({
 				content: 'No member found',
@@ -117,25 +111,25 @@ export class UserCommand extends RadonCommand {
 			});
 		}
 		const reason = `Done by ${interaction.user.tag}`;
-		if (member.id === interaction.guild?.ownerId) {
+		if (member.id === interaction.guild.ownerId) {
 			return interaction.reply({
 				content: 'I cannot decancer the owner of the server',
 				ephemeral: true
 			});
 		}
-		const { result, content } = runAllChecks(interaction.member as GuildMember, member, 'nickname decancer');
+		const { result, content } = runAllChecks(interaction.member, member, 'nickname decancer');
 		if (!result) {
 			return interaction.reply({
 				content,
 				ephemeral: true
 			});
 		}
-		const name = member.displayName;
-		let nickname = clean(name).replace(/[^a-z 0-9]+/gi, '');
+		const { displayName } = member;
+		let nickname = clean(displayName).replace(/[^a-z 0-9]+/gi, '');
 		if (!nickname.length) nickname = 'Moderated Nickname';
-		if (nickname === name) {
+		if (nickname === displayName) {
 			return interaction.reply({
-				content: `No changes were made to ${name}`,
+				content: `No changes were made to ${displayName}`,
 				ephemeral: true
 			});
 		}
@@ -144,7 +138,7 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private async set(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const member = interaction.options.getMember('member') as GuildMember;
+		const member = interaction.options.getMember('member');
 		if (!member) {
 			return interaction.reply({
 				content: 'No member found',
@@ -155,13 +149,13 @@ export class UserCommand extends RadonCommand {
 		const reason =
 			(interaction.options.getString('reason', false) ? `${interaction.options.getString('reason', false)} (${interaction.user.tag})` : null) ??
 			`Done by ${interaction.user.tag}`;
-		if (member.id === interaction.guild?.ownerId) {
+		if (member.id === interaction.guild.ownerId) {
 			return interaction.reply({
 				content: 'I cannot set the nickname of the guild owner',
 				ephemeral: true
 			});
 		}
-		const { result, content } = runAllChecks(interaction.member as GuildMember, member, 'nickname set');
+		const { result, content } = runAllChecks(interaction.member, member, 'nickname set');
 		if (!result) {
 			return interaction.reply({
 				content,
@@ -181,7 +175,7 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private async clear(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const member = interaction.options.getMember('member') as GuildMember;
+		const member = interaction.options.getMember('member');
 		if (!member) {
 			return interaction.reply({
 				content: 'No member found',
@@ -191,13 +185,13 @@ export class UserCommand extends RadonCommand {
 		const reason =
 			(interaction.options.getString('reason', false) ? `${interaction.options.getString('reason', false)} (${interaction.user.tag})` : null) ??
 			`Done by ${interaction.user.tag}`;
-		if (member.id === interaction.guild?.ownerId) {
+		if (member.id === interaction.guild.ownerId) {
 			return interaction.reply({
 				content: 'I cannot clear the nickname of the guild owner',
 				ephemeral: true
 			});
 		}
-		const { result, content } = runAllChecks(interaction.member as GuildMember, member, 'nickname clear');
+		const { result, content } = runAllChecks(interaction.member, member, 'nickname clear');
 		if (!result) {
 			return interaction.reply({
 				content,
@@ -216,3 +210,5 @@ export class UserCommand extends RadonCommand {
 		});
 	}
 }
+
+type SubCommand = 'set' | 'clear' | 'decancer';

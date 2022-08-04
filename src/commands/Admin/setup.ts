@@ -5,7 +5,7 @@ import { color, mins, sec } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import { container } from '@sapphire/framework';
-import { ButtonInteraction, Message, OverwriteResolvable, Permissions, Role } from 'discord.js';
+import { ButtonInteraction, Message, OverwriteResolvable, Permissions } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	cooldownDelay: sec(60),
@@ -15,13 +15,9 @@ import { ButtonInteraction, Message, OverwriteResolvable, Permissions, Role } fr
 })
 export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
-		if (!interaction.guild) return;
 		const row = this.container.utils.row();
 
-		if (
-			interaction.channel?.type === 'GUILD_TEXT' &&
-			interaction.channel.permissionsFor(interaction.guild?.roles.everyone as Role).has('VIEW_CHANNEL')
-		) {
+		if (interaction.channel?.type === 'GUILD_TEXT' && interaction.channel.permissionsFor(interaction.guild.roles.everyone).has('VIEW_CHANNEL')) {
 			await interaction.reply({
 				content: 'Woah wait! It seems this channel is viewable by everyone! Please make sure you run setup in a private channel.',
 				ephemeral: true
@@ -124,7 +120,7 @@ export class UserCommand extends RadonCommand {
 					break;
 
 				case 'make_modlog':
-					if (!interaction.guild?.me?.permissions.has(Permissions.FLAGS.MANAGE_CHANNELS)) {
+					if (!interaction.guild.me?.permissions.has(Permissions.FLAGS.MANAGE_CHANNELS)) {
 						await i.followUp({
 							content: `I don't have the permissions to create channels!\nPlease give me the Manage Channels permission!`,
 							ephemeral: true
@@ -166,7 +162,7 @@ export class UserCommand extends RadonCommand {
 			if (r === 'Complete') {
 				const data = await this.container.prisma.guildSettings.upsert({
 					create: {
-						id: interaction.guildId!,
+						id: interaction.guildId,
 						configured: true,
 						modRoles,
 						adminRoles,
@@ -179,7 +175,7 @@ export class UserCommand extends RadonCommand {
 						modLogChannel
 					},
 					where: {
-						id: interaction.guildId!
+						id: interaction.guildId
 					}
 				});
 				const final = this.container.utils
