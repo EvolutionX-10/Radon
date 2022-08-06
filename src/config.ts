@@ -22,7 +22,13 @@ dotenv({
 });
 
 export const config: config = {
-	intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_BANS, Intents.FLAGS.DIRECT_MESSAGES],
+	intents: [
+		Intents.FLAGS.GUILDS,
+		Intents.FLAGS.GUILD_MESSAGES,
+		Intents.FLAGS.GUILD_BANS,
+		Intents.FLAGS.DIRECT_MESSAGES,
+		Intents.FLAGS.GUILD_MEMBERS
+	],
 	cooldown_options: {
 		delay: Time.Second * 10,
 		filteredUsers: vars.owners,
