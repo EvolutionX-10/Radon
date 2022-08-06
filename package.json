@@ -82,7 +82,7 @@
 		"@sapphire/discord-utilities": "2.11.5",
 		"@sapphire/discord.js-utilities": "4.11.3",
 		"@sapphire/framework": "3.0.0-next.8007303.0",
-		"@sapphire/pieces": "3.3.5",
+		"@sapphire/pieces": "3.5.0",
 		"@sapphire/plugin-editable-commands": "1.2.2",
 		"@sapphire/plugin-logger": "2.2.3",
 		"@sapphire/plugin-subcommands": "2.2.2",
