@@ -16,6 +16,7 @@ import {
 	TextInputComponent,
 	ThreadChannel
 } from 'discord.js';
+import { PermissionLevel } from '#lib/decorators';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Unlock!',
@@ -322,6 +323,7 @@ export class UserCommand extends RadonCommand {
 		return interaction.showModal(modal);
 	}
 
+	@PermissionLevel('Administrator')
 	private unlockAllText(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const role = (interaction.options.getRole('role') ?? interaction.guild!.roles.everyone!) as Role;
 		if (!this.checkRole(role)) {
@@ -350,6 +352,7 @@ export class UserCommand extends RadonCommand {
 		return interaction.showModal(modal);
 	}
 
+	@PermissionLevel('Administrator')
 	private async unlockAllVoice(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const role = (interaction.options.getRole('role') ?? interaction.guild!.roles.everyone) as Role;
 		if (!this.checkRole(role)) {
@@ -382,6 +385,7 @@ export class UserCommand extends RadonCommand {
 		return interaction.editReply(content);
 	}
 
+	@PermissionLevel('Administrator')
 	private unlockAllThread(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const role = (interaction.options.getRole('role') ?? interaction.guild!.roles.everyone!) as Role;
 		if (!this.checkRole(role)) {
@@ -410,6 +414,7 @@ export class UserCommand extends RadonCommand {
 		return interaction.showModal(modal);
 	}
 
+	@PermissionLevel('Administrator')
 	private unlockServer(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const role = (interaction.options.getRole('role') ?? interaction.guild!.roles.everyone!) as Role;
 		const deep = interaction.options.getBoolean('deep') ?? false;
