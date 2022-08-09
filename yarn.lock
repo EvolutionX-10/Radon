@@ -317,27 +317,36 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/framework@npm:3.0.0-pr-499.b9dcd4c.0":
-  version: 3.0.0-pr-499.b9dcd4c.0
-  resolution: "@sapphire/framework@npm:3.0.0-pr-499.b9dcd4c.0"
+"@sapphire/framework@npm:3.0.0-next.8ca7d7e.0":
+  version: 3.0.0-next.8ca7d7e.0
+  resolution: "@sapphire/framework@npm:3.0.0-next.8ca7d7e.0"
   dependencies:
     "@discordjs/builders": ^0.16.0
     "@sapphire/discord-utilities": ^2.11.5
     "@sapphire/discord.js-utilities": ^4.11.3
-    "@sapphire/pieces": ^3.3.5
+    "@sapphire/lexure": ^1.0.1
+    "@sapphire/pieces": ^3.5.0
     "@sapphire/ratelimits": ^2.4.4
-    "@sapphire/result": ^1.1.1
+    "@sapphire/result": ^2.3.3
     "@sapphire/stopwatch": ^1.4.1
-    "@sapphire/utilities": ^3.8.0
+    "@sapphire/utilities": ^3.9.0
     "@types/object-hash": ^2.2.1
-    lexure: ^0.17.0
     object-hash: ^3.0.0
     tslib: ^2.4.0
-  checksum: bee5e72c49a53fa17964c3db18e424d63cb0f49694a0a8ca84428a1251a5daf022d1642291e0677945ae39638ee5aeea8a6e7cb91176ce5b1ca3f3d09356e14a
+  checksum: 5d0dddf5fc7c5924dd57f768729c105cedb438d74508f81449cad3281f526ad935d54ec5b9d2624f086dc2da6ecd77cc386bbe293808b926125510bc6c82879b
   languageName: node
   linkType: hard
 
-"@sapphire/pieces@npm:3.5.0, @sapphire/pieces@npm:^3.3.5":
+"@sapphire/lexure@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@sapphire/lexure@npm:1.0.1"
+  dependencies:
+    "@sapphire/result": ^2.1.1
+  checksum: e61c2447deb494e385534eaad0c4f489a29964e57dadf5b50b3a139f7a147e33e243288b5929a70886f867ca52489c32658c3ca46fcd5cee7b236ed83a017692
+  languageName: node
+  linkType: hard
+
+"@sapphire/pieces@npm:3.5.0, @sapphire/pieces@npm:^3.5.0":
   version: 3.5.0
   resolution: "@sapphire/pieces@npm:3.5.0"
   dependencies:
@@ -3057,13 +3066,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lexure@npm:^0.17.0":
-  version: 0.17.0
-  resolution: "lexure@npm:0.17.0"
-  checksum: 95797b0ada9452bcdfdd30997572ab1673de1b2583a5af2fa309aa3587ec3b95ba361880b333ed446a6b0f07764b6d8d2cf1d72083c61fa9f96c06181f194453
-  languageName: node
-  linkType: hard
-
 "lilconfig@npm:^2.0.5":
   version: 2.0.5
   resolution: "lilconfig@npm:2.0.5"
@@ -3887,7 +3889,7 @@ __metadata:
     "@sapphire/discord-utilities": 2.11.5
     "@sapphire/discord.js-utilities": 4.11.3
     "@sapphire/eslint-config": 4.3.7
-    "@sapphire/framework": 3.0.0-pr-499.b9dcd4c.0
+    "@sapphire/framework": 3.0.0-next.8ca7d7e.0
     "@sapphire/pieces": 3.5.0
     "@sapphire/plugin-editable-commands": 1.2.2
     "@sapphire/plugin-logger": 2.2.3

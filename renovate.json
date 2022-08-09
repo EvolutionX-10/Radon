@@ -37,6 +37,10 @@
 		{
 			"matchPackagePatterns": ["discord.js"],
 			"enabled": false
+		},
+		{
+			"matchPackageNames": ["@sapphire/.*"],
+			"enabled": false
 		}
 	]
 }
