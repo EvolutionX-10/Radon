@@ -22,7 +22,8 @@ export class UserListener extends Listener {
 		const webhook = (await channel.fetchWebhooks()).first();
 		if (!webhook || !webhook.token) return;
 		const createDate = new Timestamp(guild.createdTimestamp);
-		const owner = await this.container.client.users.fetch(guild.ownerId);
+		const owner = await this.container.client.users.fetch(guild.ownerId).catch(() => null);
+		if (!owner) return;
 		const description =
 			`Guild name: ${guild.name} \`[${guild.id}]\`\n` +
 			`Created at ${createDate.getLongDateTime()} (${createDate.getRelativeTime()})\n` +
