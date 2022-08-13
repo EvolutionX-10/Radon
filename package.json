@@ -81,7 +81,7 @@
 		"@sapphire/decorators": "4.3.8",
 		"@sapphire/discord-utilities": "2.11.5",
 		"@sapphire/discord.js-utilities": "4.11.3",
-		"@sapphire/framework": "3.0.0-next.8ca7d7e.0",
+		"@sapphire/framework": "3.0.0-next.8007303.0",
 		"@sapphire/pieces": "3.5.0",
 		"@sapphire/plugin-editable-commands": "1.2.2",
 		"@sapphire/plugin-logger": "2.2.3",
@@ -96,7 +96,7 @@
 		"colornames": "1.1.1",
 		"confusables": "1.1.1",
 		"discord-api-types": "0.33.5",
-		"discord.js": "13.9.2",
+		"discord.js": "13.9.1",
 		"dotenv-cra": "3.0.2",
 		"gradient-string": "2.0.1",
 		"ioredis": "5.2.2"
@@ -107,8 +107,5 @@
 		}
 	},
 	"packageManager": "yarn@3.2.2",
-	"prettier": "@sapphire/prettier-config",
-	"resolutions": {
-		"@sapphire/result": "2.3.3"
-	}
+	"prettier": "@sapphire/prettier-config"
 }
