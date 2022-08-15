@@ -17,18 +17,24 @@ import { clean } from '#lib/utility';
 	aliases: ['ev'],
 	quotes: [],
 	permissionLevel: PermissionLevels.BotOwner,
-	flags: true,
-	options: true,
+	flags: ['hidden', 'haste', 'silent', 's', 'type', 't', 'v', 'value', 'this', 'stack'],
+	options: ['depth'],
 	description: 'Evaluate some code',
 	guarded: true
 })
 export class UserCommand extends RadonCommand {
 	public override async messageRun(message: RadonCommand.Message, args: RadonCommand.Args) {
-		const code = await args.rest('string');
+		let code: string;
+		if (args.getFlags('this') && message.reference?.messageId) {
+			const msg = await message.channel.messages.fetch(message.reference.messageId);
+			code = msg.content;
+		} else code = await args.rest('string').catch(() => '');
+		if (!code.length) return;
 		const { success, result, time, type } = await this.eval(message, code, {
 			async: args.getFlags('async'),
 			depth: Number(args.getOption('depth')) ?? 0,
-			showHidden: args.getFlags('hidden', 'showHidden')
+			showHidden: args.getFlags('hidden'),
+			stack: args.getFlags('stack')
 		}).catch((e: Error) => {
 			return {
 				success: false,
@@ -58,7 +64,7 @@ export class UserCommand extends RadonCommand {
 		}
 
 		if (args.getFlags('type', 't')) {
-			return send(message, footer);
+			return send(message, type.toString());
 		}
 
 		if (result.length > 1900) {
@@ -111,7 +117,7 @@ export class UserCommand extends RadonCommand {
 			if (thenable && !asyncTime.length) asyncTime = stopwatch.toString();
 			if (!type!) type = new Type(error);
 			success = false;
-			result = error;
+			result = flags.stack ? error : (error as Error).message;
 		}
 		stopwatch.stop();
 
@@ -148,4 +154,5 @@ interface flags {
 	async: boolean;
 	depth: number;
 	showHidden: boolean;
+	stack: boolean;
 }
