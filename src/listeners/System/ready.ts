@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { RadonClient } from '#lib/RadonClient';
 import { GuildSettings, Settings, Utils } from '#lib/structures';
 import { RadonEvents } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
-import { Listener, Store } from '@sapphire/framework';
+import { Listener, Piece, Store } from '@sapphire/framework';
 import { blue, gray, green, magentaBright, white, yellow, greenBright, blueBright, cyanBright } from 'colorette';
 import gradient from 'gradient-string';
 
@@ -51,14 +50,14 @@ ${this.isDev ? ` ${pad}${blc('<')}${llc('/')}${blc('>')} ${llc('DEVELOPMENT MODE
 
 	private printStoreDebugInformation() {
 		const { client, logger } = this.container;
-		const stores = [...client.stores.values()];
+		const stores = [...client.stores.values()] as Store<Piece>[];
 		const last = stores.pop()!;
 
 		for (const store of stores) logger.info(this.styleStore(store, false));
 		logger.info(this.styleStore(last, true));
 	}
 
-	private styleStore(store: Store<any>, last: boolean) {
+	private styleStore<T extends Piece>(store: Store<T>, last: boolean) {
 		return gray(`${last ? '└─' : '├─'} Loaded ${this.style(store.size.toString().padEnd(3, ' '))} ${store.name}.`);
 	}
 }
