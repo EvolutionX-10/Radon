@@ -24,7 +24,9 @@ export class UserListener extends Listener {
 		this.container.logger.info(`${greenBright('ws            [')}${blueBright('READY')}${greenBright(']')}`);
 
 		const guilds = client.guilds.cache;
-		guilds.forEach((guild) => (guild.settings = new GuildSettings(guild)));
+		for (const guild of guilds.values()) {
+			guild.settings = new GuildSettings(guild);
+		}
 	}
 
 	private get isDev() {
