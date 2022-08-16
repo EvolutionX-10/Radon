@@ -8,13 +8,17 @@ import { Listener, UserError, type ChatInputCommandErrorPayload } from '@sapphir
 export class UserListener extends Listener {
 	public override async run(error: UserError, { interaction }: ChatInputCommandErrorPayload) {
 		if (interaction.deferred || interaction.replied) {
-			return interaction.editReply({
-				content: error.message
-			});
+			return interaction
+				.editReply({
+					content: error.message
+				})
+				.catch(() => null);
 		}
-		return interaction.reply({
-			content: error.message,
-			ephemeral: true
-		});
+		return interaction
+			.reply({
+				content: error.message,
+				ephemeral: true
+			})
+			.catch(() => null);
 	}
 }

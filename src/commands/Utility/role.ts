@@ -1,7 +1,8 @@
 import { Confirmation, RadonCommand, Select, Timestamp } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
+import { PermissionLevel } from '#lib/decorators';
 import { vars } from '#vars';
-import { ApplyOptions, RequiresUserPermissions } from '@sapphire/decorators';
+import { ApplyOptions } from '@sapphire/decorators';
 import type { BufferResolvable, Collection, ColorResolvable, GuildMember, MessageSelectOptionData, PermissionResolvable, Role } from 'discord.js';
 import { all } from 'colornames';
 import { Stopwatch } from '@sapphire/stopwatch';
@@ -494,7 +495,7 @@ export class UserCommand extends RadonCommand {
 		return interaction.reply(`Role *${role.name}* deleted!`);
 	}
 
-	@RequiresUserPermissions('ADMINISTRATOR')
+	@PermissionLevel('Administrator')
 	private async bulk(interaction: RadonCommand.ChatInputCommandInteraction, option: bulkActions) {
 		const role = interaction.options.getRole('role', true) as Role;
 		const reason = interaction.options.getString('reason') ?? undefined;
