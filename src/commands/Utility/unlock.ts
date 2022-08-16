@@ -437,7 +437,7 @@ export class UserCommand extends RadonCommand {
 
 	private isLocked(channel: GuildChannel | ThreadChannel, role?: Role) {
 		if (channel.isThread() && !channel.locked) return false;
-		if (channel.isText() && channel.permissionsFor(role!).has('SEND_MESSAGES')) return false;
+		if (!channel.isVoice() && channel.permissionsFor(role!).has('SEND_MESSAGES')) return false;
 		return !(channel.isVoice() && channel.permissionsFor(role!).has('CONNECT'));
 	}
 
