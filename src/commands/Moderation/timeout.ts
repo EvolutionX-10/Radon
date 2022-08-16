@@ -1,7 +1,7 @@
 import { RadonCommand, Timestamp } from '#lib/structures';
 import { PermissionLevels, RadonEvents, TimeoutActionData } from '#lib/types';
 import { runAllChecks } from '#lib/utility';
-import { vars } from '#vars';
+import { GuildIds, Emojis } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Duration, DurationFormatter } from '@sapphire/time-utilities';
 
@@ -21,7 +21,7 @@ export class UserCommand extends RadonCommand {
 		const { content: ctn, result } = runAllChecks(interaction.member, member, 'timeout');
 		if (!result || member.user.bot)
 			return interaction.editReply({
-				content: ctn || `${vars.emojis.cross} I can't perform timeout on bots!`
+				content: ctn || `${Emojis.Cross} I can't perform timeout on bots!`
 			});
 		let time = interaction.options.getString('duration', true);
 		if (!isNaN(Number(time))) time += 's';
@@ -38,7 +38,7 @@ export class UserCommand extends RadonCommand {
 				content: 'You cannot timeout a user for more than 28 days!'
 			});
 		}
-		let content = `${vars.emojis.confirm} ${member.user.tag} has been timed out for ${new DurationFormatter().format(duration)}`;
+		let content = `${Emojis.Confirm} ${member.user.tag} has been timed out for ${new DurationFormatter().format(duration)}`;
 		const reason = interaction.options.getString('reason') ?? undefined;
 		await member.timeout(duration, reason);
 		if (duration !== 0) {
@@ -46,7 +46,7 @@ export class UserCommand extends RadonCommand {
 				.send({
 					content: `You have been timed out for ${new DurationFormatter().format(duration)}!\nServer: ${interaction.guild.name}`
 				})
-				.catch(() => (content += `\n${vars.emojis.cross} Couldn't DM the member!`));
+				.catch(() => (content += `\n${Emojis.Cross} Couldn't DM the member!`));
 		}
 
 		const data: TimeoutActionData = {
@@ -61,7 +61,7 @@ export class UserCommand extends RadonCommand {
 			this.container.client.emit(RadonEvents.ModAction, data);
 		}
 
-		if (duration === 0) content = `${vars.emojis.confirm} Removed timeout from ${member.user.tag}`;
+		if (duration === 0) content = `${Emojis.Confirm} Removed timeout from ${member.user.tag}`;
 		return interaction.editReply(content);
 	}
 
@@ -90,7 +90,7 @@ export class UserCommand extends RadonCommand {
 							.setRequired(true)
 					),
 			{
-				guildIds: vars.guildIds,
+				guildIds: GuildIds,
 				idHints: ['948096165017169943', '951679384476086353']
 			}
 		);

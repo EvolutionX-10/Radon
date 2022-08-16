@@ -1,7 +1,7 @@
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { sec } from '#lib/utility';
-import { vars } from '#vars';
+import { GuildIds, Emojis } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 @ApplyOptions<RadonCommand.Options>({
 	cooldownDelay: sec(15),
@@ -44,7 +44,7 @@ export class UserCommand extends RadonCommand {
 					await interaction.editReply(content);
 				} else
 					await interaction.editReply({
-						content: `${vars.emojis.confirm} Deleted ${dels} messages`
+						content: `${Emojis.Confirm} Deleted ${dels} messages`
 					});
 			});
 		} else {
@@ -62,7 +62,7 @@ export class UserCommand extends RadonCommand {
 				await interaction.editReply(content);
 			} else
 				await interaction.editReply({
-					content: `${vars.emojis.confirm} Deleted ${dels} messages`
+					content: `${Emojis.Confirm} Deleted ${dels} messages`
 				});
 		}
 	}
@@ -100,7 +100,7 @@ export class UserCommand extends RadonCommand {
 							.setRequired(false)
 					),
 			{
-				guildIds: vars.guildIds,
+				guildIds: GuildIds,
 				idHints: ['947723986521956433', '951679388976545852']
 			}
 		);

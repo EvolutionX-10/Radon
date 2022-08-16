@@ -1,5 +1,5 @@
 import { RadonCommand } from '#lib/structures';
-import { vars } from '#vars';
+import { GuildIds } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import type { GuildMember, Message, TextChannel } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
@@ -74,7 +74,7 @@ export class UserCommand extends RadonCommand {
 							.setRequired(true)
 					),
 			{
-				guildIds: vars.guildIds,
+				guildIds: GuildIds,
 				idHints: ['952460616696741938', '952277309015093288']
 			}
 		);

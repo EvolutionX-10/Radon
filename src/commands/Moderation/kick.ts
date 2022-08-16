@@ -1,7 +1,7 @@
 import { RadonCommand } from '#lib/structures';
 import { BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
 import { runAllChecks, sec } from '#lib/utility';
-import { vars } from '#vars';
+import { GuildIds, Emojis } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 @ApplyOptions<RadonCommand.Options>({
 	description: `Kick a member`,
@@ -16,18 +16,18 @@ export class UserCommand extends RadonCommand {
 		const reason = interaction.options.getString('reason') ?? undefined;
 		if (!member) {
 			return interaction.reply({
-				content: `${vars.emojis.cross} You must specify a valid member`,
+				content: `${Emojis.Cross} You must specify a valid member`,
 				ephemeral: true
 			});
 		}
 		const { content: ctn, result } = runAllChecks(interaction.member, member, 'kick');
 		if (!result) return interaction.reply({ content: ctn, ephemeral: true });
-		let content = `${vars.emojis.confirm} ${member.user.tag} has been kicked ${reason ? `for the following reason: ${reason}` : ''}`;
+		let content = `${Emojis.Confirm} ${member.user.tag} has been kicked ${reason ? `for the following reason: ${reason}` : ''}`;
 		await member
 			.send({
 				content: `You have been kicked from ${member.guild.name} ${reason ? `for the following reason: ${reason}` : ''}`
 			})
-			.catch(() => (content += `\n${vars.emojis.cross} Couldn't DM ${member}`));
+			.catch(() => (content += `\n${Emojis.Cross} Couldn't DM ${member}`));
 		const kicked = await member.kick(reason).catch(() => null);
 		if (!kicked)
 			return interaction.reply({
@@ -70,7 +70,7 @@ export class UserCommand extends RadonCommand {
 							.setRequired(false)
 					),
 			{
-				guildIds: vars.guildIds,
+				guildIds: GuildIds,
 				idHints: ['947723984949092392', '951679380692828180']
 			}
 		);

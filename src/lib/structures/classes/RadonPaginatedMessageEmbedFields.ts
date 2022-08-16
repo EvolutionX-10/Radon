@@ -1,4 +1,4 @@
-import { vars } from '#vars';
+import { Emojis } from '#constants';
 import { PaginatedMessageEmbedFields, PaginatedMessageOptions } from '@sapphire/discord.js-utilities';
 import { Constants } from 'discord.js';
 
@@ -14,14 +14,14 @@ export class RadonPaginatedMessageEmbedFields extends PaginatedMessageEmbedField
 			{
 				customId: '@sapphire/paginated-messages.firstPage',
 				style: 'SECONDARY',
-				emoji: vars.emojis.full_left,
+				emoji: Emojis.Backward,
 				type: Constants.MessageComponentTypes.BUTTON,
 				run: ({ handler }) => (handler.index = 0)
 			},
 			{
 				customId: '@sapphire/paginated-messages.previousPage',
 				style: 'SECONDARY',
-				emoji: vars.emojis.left,
+				emoji: Emojis.Left,
 				type: Constants.MessageComponentTypes.BUTTON,
 				run: ({ handler }) => {
 					if (handler.index === 0) {
@@ -34,7 +34,7 @@ export class RadonPaginatedMessageEmbedFields extends PaginatedMessageEmbedField
 			{
 				customId: '@sapphire/paginated-messages.stop',
 				style: 'SECONDARY',
-				emoji: vars.emojis.stop,
+				emoji: Emojis.Stop,
 				type: Constants.MessageComponentTypes.BUTTON,
 				run: ({ collector }) => {
 					collector.stop();
@@ -43,7 +43,7 @@ export class RadonPaginatedMessageEmbedFields extends PaginatedMessageEmbedField
 			{
 				customId: '@sapphire/paginated-messages.nextPage',
 				style: 'SECONDARY',
-				emoji: vars.emojis.right,
+				emoji: Emojis.Right,
 				type: Constants.MessageComponentTypes.BUTTON,
 				run: ({ handler }) => {
 					if (handler.index === handler.pages.length - 1) {
@@ -56,7 +56,7 @@ export class RadonPaginatedMessageEmbedFields extends PaginatedMessageEmbedField
 			{
 				customId: '@sapphire/paginated-messages.goToLastPage',
 				style: 'SECONDARY',
-				emoji: vars.emojis.full_right,
+				emoji: Emojis.Forward,
 				type: Constants.MessageComponentTypes.BUTTON,
 				run: ({ handler }) => (handler.index = handler.pages.length - 1)
 			}

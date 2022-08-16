@@ -1,5 +1,5 @@
 import type { GuildInteraction } from '#lib/types';
-import { vars } from '#vars';
+import { Emojis } from '#constants';
 import { ButtonInteraction, Collection, ColorResolvable, EmojiIdentifierResolvable, Message, User } from 'discord.js';
 import { Button } from './Button.js';
 import { Embed } from './Embed.js';
@@ -51,7 +51,7 @@ export class Confirmation {
 			._color(this.options?.color || 0x00ae86)
 			._description(`Are you sure you want to proceed?`);
 		const embed = this.options?.embed || default_embed;
-		const emojis = this.options?.emojis || [vars.emojis.confirm, vars.emojis.cross];
+		const emojis = this.options?.emojis || [Emojis.Confirm, Emojis.Cross];
 		const buttonLabels = this.options?.buttonLabels || ['Yes', 'No'];
 		const row = new Row();
 		const yes_button = new Button()._customId('yes')._label(buttonLabels[0])._emoji(emojis[0])._style('SUCCESS');

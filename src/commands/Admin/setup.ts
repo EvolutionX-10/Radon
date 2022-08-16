@@ -2,7 +2,7 @@
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { color, mins, sec } from '#lib/utility';
-import { vars } from '#vars';
+import { GuildIds } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { container } from '@sapphire/framework';
 import { ButtonInteraction, Message, OverwriteResolvable, Permissions } from 'discord.js';
@@ -288,7 +288,7 @@ export class UserCommand extends RadonCommand {
 			if (is_private) {
 				permissionOverwrites = [
 					{
-						id: interaction.guild!.id,
+						id: interaction.guild.id,
 						deny: ['VIEW_CHANNEL'],
 						type: 'role'
 					},
@@ -343,7 +343,7 @@ export class UserCommand extends RadonCommand {
 					.setName(this.name)
 					.setDescription(this.description),
 			{
-				guildIds: vars.guildIds,
+				guildIds: GuildIds,
 				idHints: ['951113445930065980', '951679292348174419']
 			}
 		);

@@ -1,6 +1,6 @@
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
-import { vars } from '#vars';
+import { GuildIds, Emojis } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import type { TextChannel } from 'discord.js';
 import { DurationFormatter, Duration } from '@sapphire/time-utilities';
@@ -35,9 +35,9 @@ export class UserCommand extends RadonCommand {
 				content: 'You cannot set slowmode for more than 6hrs!'
 			});
 		}
-		let content = `${vars.emojis.confirm} Set the slowmode for ${new DurationFormatter().format(duration)} in ${interaction.channel}`;
+		let content = `${Emojis.Confirm} Set the slowmode for ${new DurationFormatter().format(duration)} in ${interaction.channel}`;
 		if (duration === 0) {
-			content = `${vars.emojis.confirm} Removed slowmode from ${interaction.channel}`;
+			content = `${Emojis.Confirm} Removed slowmode from ${interaction.channel}`;
 		}
 		const reason =
 			(interaction.options.getString('reason', false) ? `${interaction.options.getString('reason', false)} (${interaction.user.tag})` : null) ??
@@ -67,7 +67,7 @@ export class UserCommand extends RadonCommand {
 							.setRequired(false)
 					),
 			{
-				guildIds: vars.guildIds,
+				guildIds: GuildIds,
 				idHints: ['954799793559986296', '954796834038112276']
 			}
 		);

@@ -1,7 +1,7 @@
 import { RadonCommand } from '#lib/structures';
-import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import { send } from '@sapphire/plugin-editable-commands';
+import { RadonGuildId } from '#constants';
 @ApplyOptions<RadonCommand.Options>({
 	description: `Check my latency!`
 })
@@ -35,7 +35,7 @@ export class UserCommand extends RadonCommand {
 					.setName(this.name)
 					.setDescription(this.description),
 			{
-				guildIds: vars.radonGuildId, // * Only run in Radon Support *
+				guildIds: RadonGuildId, // * Only run in Radon Support *
 				idHints: ['961940451135479888', '951679296689287239']
 			}
 		);
