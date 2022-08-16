@@ -5,17 +5,7 @@ import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import { ChannelType } from 'discord-api-types/v9';
 import { BucketScope } from '@sapphire/framework';
-import {
-	CategoryChannel,
-	GuildChannel,
-	MessageActionRow,
-	Modal,
-	ModalActionRowComponent,
-	Role,
-	TextChannel,
-	TextInputComponent,
-	ThreadChannel
-} from 'discord.js';
+import { CategoryChannel, GuildChannel, MessageActionRow, Modal, ModalActionRowComponent, Role, TextInputComponent, ThreadChannel } from 'discord.js';
 import { PermissionLevel } from '#lib/decorators';
 
 @ApplyOptions<RadonCommand.Options>({
@@ -195,12 +185,12 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private unlockText(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const channel = interaction.options.getChannel('channel', true) as TextChannel;
+		const channel = interaction.options.getChannel('channel', true);
 		if (!channel) return interaction.reply('Invalid channel!');
 		if (!channel.permissionsFor(this.container.client.user!)!.has('MANAGE_ROLES'))
 			return interaction.reply('I do not have permission to unlock channels!');
 
-		const role = (interaction.options.getRole('role') ?? interaction.guild!.roles.everyone!) as Role;
+		const role = interaction.options.getRole('role') ?? interaction.guild.roles.everyone;
 		if (!this.checkRole(role)) {
 			return interaction.reply('This role is integrated to a bot or higher than my highest role! Action cancelled.');
 		}
@@ -229,12 +219,12 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private async unlockVoice(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const channel = interaction.options.getChannel('channel', true) as GuildChannel;
-		if (!channel) return interaction.reply('Invalid channel!');
+		const channel = interaction.options.getChannel('channel', true);
+		if (!channel || channel.isThread()) return interaction.reply('Invalid channel!');
 		if (!channel.permissionsFor(this.container.client.user!)!.has('MANAGE_ROLES'))
 			return interaction.reply('I do not have permission to lock channels!');
 
-		const role = (interaction.options.getRole('role') ?? interaction.guild!.roles.everyone!) as Role;
+		const role = interaction.options.getRole('role') ?? interaction.guild.roles.everyone;
 		if (!this.checkRole(role)) {
 			return interaction.reply('This role is integrated to a bot or higher than my highest role! Action cancelled.');
 		}
@@ -264,7 +254,7 @@ export class UserCommand extends RadonCommand {
 		if (!category.permissionsFor(this.container.client.user!)!.has('MANAGE_ROLES'))
 			return interaction.reply('I do not have permission to unlock channels!');
 
-		const role = (interaction.options.getRole('role') ?? interaction.guild!.roles.everyone!) as Role;
+		const role = interaction.options.getRole('role') ?? interaction.guild.roles.everyone;
 
 		if (!this.checkRole(role)) {
 			return interaction.reply('This role is integrated to a bot or higher than my highest role! Action cancelled.');
@@ -296,8 +286,8 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private unlockThread(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const thread = interaction.options.getChannel('channel', true) as ThreadChannel;
-		if (!thread) return interaction.reply('Invalid thread!');
+		const thread = interaction.options.getChannel('channel', true);
+		if (!thread || !thread.isThread()) return interaction.reply('Invalid thread!');
 
 		if (!thread.manageable) return interaction.reply('I do not have permission to unlock this thread!');
 
@@ -325,7 +315,7 @@ export class UserCommand extends RadonCommand {
 
 	@PermissionLevel('Administrator')
 	private unlockAllText(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const role = (interaction.options.getRole('role') ?? interaction.guild!.roles.everyone!) as Role;
+		const role = interaction.options.getRole('role') ?? interaction.guild.roles.everyone;
 		if (!this.checkRole(role)) {
 			return interaction.reply('This role is integrated to a bot or higher than my highest role! Action cancelled.');
 		}
@@ -354,7 +344,7 @@ export class UserCommand extends RadonCommand {
 
 	@PermissionLevel('Administrator')
 	private async unlockAllVoice(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const role = (interaction.options.getRole('role') ?? interaction.guild!.roles.everyone) as Role;
+		const role = interaction.options.getRole('role') ?? interaction.guild.roles.everyone;
 		if (!this.checkRole(role)) {
 			return interaction.reply('This role is integrated to a bot or higher than my highest role! Action cancelled.');
 		}
@@ -387,7 +377,7 @@ export class UserCommand extends RadonCommand {
 
 	@PermissionLevel('Administrator')
 	private unlockAllThread(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const role = (interaction.options.getRole('role') ?? interaction.guild!.roles.everyone!) as Role;
+		const role = interaction.options.getRole('role') ?? interaction.guild.roles.everyone;
 		if (!this.checkRole(role)) {
 			return interaction.reply('This role is integrated to a bot or higher than my highest role! Action cancelled.');
 		}
@@ -416,7 +406,7 @@ export class UserCommand extends RadonCommand {
 
 	@PermissionLevel('Administrator')
 	private unlockServer(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const role = (interaction.options.getRole('role') ?? interaction.guild!.roles.everyone!) as Role;
+		const role = interaction.options.getRole('role') ?? interaction.guild.roles.everyone;
 		const deep = interaction.options.getBoolean('deep') ?? false;
 		if (!this.checkRole(role)) {
 			return interaction.reply('This role is integrated to a bot or higher than my highest role! Action cancelled.');

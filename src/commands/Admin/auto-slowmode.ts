@@ -32,25 +32,25 @@ export class UserCommand extends RadonCommand {
 		// }
 
 		if (status) {
-			const members = await this.container.db.smembers(guildId!);
+			const members = await this.container.db.smembers(guildId);
 			const member = members.find((m) => m.startsWith(channelId));
 			if (member) {
 				if (member.split('|')[1] === sensitivity) {
 					content = `<#${channelId}> is already in the auto slowmode list!`;
 				} else {
-					await this.container.db.srem(guildId!, member);
-					await this.container.db.sadd(guildId!, `${channelId}|${sensitivity}`);
+					await this.container.db.srem(guildId, member);
+					await this.container.db.sadd(guildId, `${channelId}|${sensitivity}`);
 					content = `<#${channelId}> is now set to ${sensitivity}`;
 				}
 			} else {
-				await this.container.db.sadd(guildId!, data);
+				await this.container.db.sadd(guildId, data);
 				content = `Added <#${channelId}> to the auto slowmode list.`;
 			}
 		} else {
-			const members = await this.container.db.smembers(guildId!);
+			const members = await this.container.db.smembers(guildId);
 			const member = members.find((m) => m.startsWith(channelId));
 			if (member) {
-				await this.container.db.srem(guildId!, member);
+				await this.container.db.srem(guildId, member);
 				content = `Removed <#${channelId}> from the auto slowmode list.`;
 			} else {
 				content = `<#${channelId}> is not in the auto slowmode list!`;

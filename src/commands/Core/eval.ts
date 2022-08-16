@@ -9,7 +9,6 @@ import { send } from '@sapphire/plugin-editable-commands';
 import { Stopwatch } from '@sapphire/stopwatch';
 import { Type } from '@sapphire/type';
 import { codeBlock, isThenable } from '@sapphire/utilities';
-import type { Message } from 'discord.js';
 import { inspect } from 'node:util';
 import axios from 'axios';
 import { clean } from '#lib/utility';
@@ -86,7 +85,7 @@ export class UserCommand extends RadonCommand {
 		return send(message, `${codeBlock('ts', result)}\n${footer}\n${time}`);
 	}
 
-	private async eval(message: Message, code: string, flags: flags) {
+	private async eval(message: RadonCommand.Message, code: string, flags: flags) {
 		const stopwatch = new Stopwatch();
 		if (code.includes('await')) flags.async = true;
 		const ar = code.split(';');

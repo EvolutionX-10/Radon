@@ -42,7 +42,7 @@ export class UserCommand extends RadonCommand {
 		const reason =
 			(interaction.options.getString('reason', false) ? `${interaction.options.getString('reason', false)} (${interaction.user.tag})` : null) ??
 			`Done by ${interaction.user.tag}`;
-		await (interaction.channel as TextChannel).setRateLimitPerUser(Math.floor(duration / 1000), reason);
+		await interaction.channel.setRateLimitPerUser(Math.floor(duration / 1000), reason);
 		await interaction.reply({
 			content
 		});

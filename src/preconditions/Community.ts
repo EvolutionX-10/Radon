@@ -1,16 +1,17 @@
-import { Precondition, type AllFlowsPrecondition, type AsyncPreconditionResult } from '@sapphire/framework';
+import type { GuildContextMenuInteraction, GuildInteraction, GuildMessage } from '#lib/types';
+import { Precondition, AsyncPreconditionResult } from '@sapphire/framework';
 import type { Guild } from 'discord.js';
 
 export class UserPrecondition extends Precondition {
-	public override async messageRun(...[message]: Parameters<AllFlowsPrecondition['messageRun']>) {
-		return this.isCommunity(message.guild!);
+	public override async messageRun(message: GuildMessage) {
+		return this.isCommunity(message.guild);
 	}
 
-	public override async chatInputRun(...[interaction]: Parameters<AllFlowsPrecondition['chatInputRun']>) {
-		return this.isCommunity(interaction.guild!);
+	public override async chatInputRun(interaction: GuildInteraction) {
+		return this.isCommunity(interaction.guild);
 	}
 
-	public override async contextMenuRun(...[interaction]: Parameters<AllFlowsPrecondition['contextMenuRun']>) {
+	public override async contextMenuRun(interaction: GuildContextMenuInteraction) {
 		return this.isCommunity(interaction.guild!);
 	}
 

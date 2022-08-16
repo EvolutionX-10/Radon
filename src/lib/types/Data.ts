@@ -4,7 +4,7 @@ import type { GuildMember, User } from 'discord.js';
 export interface BaseModActionData {
 	moderator: GuildMember;
 	target: GuildMember | User;
-	reason: string | undefined;
+	reason?: string;
 	action: modAction;
 }
 

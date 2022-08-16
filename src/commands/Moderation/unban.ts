@@ -3,7 +3,6 @@ import { BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
 import { sec } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import type { GuildMember } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
 	cooldownDelay: sec(10),
 	cooldownLimit: 3,
@@ -13,9 +12,8 @@ import type { GuildMember } from 'discord.js';
 })
 export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
-		if (!interaction.guild) return;
 		const user = interaction.options.getUser('user', true);
-		const reason = interaction.options.getString('reason') || undefined;
+		const reason = interaction.options.getString('reason') ?? undefined;
 		const ban = await interaction.guild.bans.fetch(user.id).catch(() => null);
 
 		if (!ban)
@@ -29,7 +27,7 @@ export class UserCommand extends RadonCommand {
 
 		const data: BaseModActionData = {
 			action: 'unban',
-			moderator: interaction.member as GuildMember,
+			moderator: interaction.member,
 			reason,
 			target: user
 		};

@@ -4,7 +4,6 @@ import { runAllChecks, sec } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import type { APIApplicationCommandOptionChoice } from 'discord-api-types/v9';
-import type { GuildMember } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
 	cooldownDelay: sec(15),
 	cooldownLimit: 2,
@@ -24,16 +23,16 @@ export class UserCommand extends RadonCommand {
 	];
 
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
-		if (!interaction.guild) return;
 		await interaction.deferReply({ ephemeral: true, fetchReply: true });
-		const member = interaction.options.getMember('member') as GuildMember;
+		const member = interaction.options.getMember('member');
 		if (!member)
 			return interaction.editReply({
 				content: `${vars.emojis.cross} You must specify a valid member`
 			});
 		const reason = interaction.options.getString('reason') ?? undefined;
 		const days = interaction.options.getInteger('days') ?? 1;
-		const { content: ctn, result } = runAllChecks(interaction.member as GuildMember, member, 'soft ban');
+
+		const { content: ctn, result } = runAllChecks(interaction.member, member, 'soft ban');
 		if (!result) return interaction.editReply(ctn);
 		const content = `${vars.emojis.confirm} ${member.user.tag} has been soft banned ${reason ? `for the following reason: ${reason}` : ''}`;
 		const { id } = member;
@@ -47,7 +46,7 @@ export class UserCommand extends RadonCommand {
 
 		const data: BaseModActionData = {
 			action: 'softban',
-			moderator: interaction.member as GuildMember,
+			moderator: interaction.member,
 			target: member,
 			reason
 		};

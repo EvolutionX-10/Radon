@@ -3,7 +3,6 @@ import { PermissionLevels, RadonEvents, TimeoutActionData } from '#lib/types';
 import { runAllChecks } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import type { GuildMember } from 'discord.js';
 import { Duration, DurationFormatter } from '@sapphire/time-utilities';
 
 @ApplyOptions<RadonCommand.Options>({
@@ -13,14 +12,13 @@ import { Duration, DurationFormatter } from '@sapphire/time-utilities';
 })
 export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
-		if (!interaction.guild) return;
 		await interaction.deferReply({ ephemeral: true, fetchReply: true });
-		const member = interaction.options.getMember('member') as GuildMember;
+		const member = interaction.options.getMember('member');
 		if (!member)
 			return interaction.editReply({
 				content: 'No member found!'
 			});
-		const { content: ctn, result } = runAllChecks(interaction.member as GuildMember, member, 'timeout');
+		const { content: ctn, result } = runAllChecks(interaction.member, member, 'timeout');
 		if (!result || member.user.bot)
 			return interaction.editReply({
 				content: ctn || `${vars.emojis.cross} I can't perform timeout on bots!`
@@ -41,7 +39,7 @@ export class UserCommand extends RadonCommand {
 			});
 		}
 		let content = `${vars.emojis.confirm} ${member.user.tag} has been timed out for ${new DurationFormatter().format(duration)}`;
-		const reason = interaction.options.getString('reason') || undefined;
+		const reason = interaction.options.getString('reason') ?? undefined;
 		await member.timeout(duration, reason);
 		if (duration !== 0) {
 			await member
@@ -52,7 +50,7 @@ export class UserCommand extends RadonCommand {
 		}
 
 		const data: TimeoutActionData = {
-			moderator: interaction.member as GuildMember,
+			moderator: interaction.member,
 			target: member,
 			reason,
 			action: 'timeout',

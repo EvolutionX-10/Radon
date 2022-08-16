@@ -1,5 +1,6 @@
+import type { GuildInteraction } from '#lib/types';
 import { vars } from '#vars';
-import { ButtonInteraction, Collection, ColorResolvable, CommandInteraction, EmojiIdentifierResolvable, Message, User } from 'discord.js';
+import { ButtonInteraction, Collection, ColorResolvable, EmojiIdentifierResolvable, Message, User } from 'discord.js';
 import { Button } from './Button.js';
 import { Embed } from './Embed.js';
 import { Row } from './Row.js';
@@ -39,7 +40,7 @@ export class Confirmation {
 		return this;
 	}
 
-	public async run(message: Message | CommandInteraction, user?: User) {
+	public async run(message: Message | GuildInteraction, user?: User) {
 		const id = user ? user.id : message instanceof Message ? message.author.id : message.user.id;
 		const default_embed = new Embed()
 			._author({

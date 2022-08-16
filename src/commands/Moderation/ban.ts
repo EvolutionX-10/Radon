@@ -4,7 +4,7 @@ import { generateModLogDescription, runAllChecks, sec, severity } from '#lib/uti
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import type { APIApplicationCommandOptionChoice } from 'discord-api-types/v9';
-import type { GuildMember, TextChannel } from 'discord.js';
+import type { GuildMember } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
 	cooldownDelay: sec(10),
 	cooldownLimit: 3,
@@ -23,23 +23,24 @@ export class UserCommand extends RadonCommand {
 		{ name: '7 Days', value: 7 }
 	];
 
-	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const member = interaction.options.getMember('member') as GuildMember;
+	public override chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const member = interaction.options.getMember('member');
 		if (!member)
 			return interaction.reply({
 				content: `${vars.emojis.cross} You must specify a valid member`,
 				ephemeral: true
 			});
+
 		const reason = interaction.options.getString('reason') ?? undefined;
 		const days = interaction.options.getInteger('days') ?? 0;
 		const dm = interaction.options.getBoolean('dm') ?? false;
 
-		const { content: ctn, result } = runAllChecks(interaction.member as GuildMember, member, 'ban');
+		const { content: ctn, result } = runAllChecks(interaction.member, member, 'ban');
 		if (!result) return interaction.reply({ content: ctn, ephemeral: true });
 
 		const confirm = new Confirmation({
 			content: `Are you sure you want to ban ${member.user.tag}?${reason ? `\nReason: ${reason}` : ''}`,
-			ephemeral: (interaction.channel as TextChannel).visible(),
+			ephemeral: interaction.channel.visible,
 			onConfirm: async () => {
 				await this.ban(interaction, member, reason, days, dm);
 			},
@@ -49,7 +50,7 @@ export class UserCommand extends RadonCommand {
 				});
 			}
 		});
-		await confirm.run(interaction);
+		return confirm.run(interaction);
 	}
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {
@@ -104,7 +105,7 @@ export class UserCommand extends RadonCommand {
 		if (dm) {
 			await member
 				.send({
-					content: `You have been banned from ${interaction.guild!.name}\n${reason ? `Reason: ${reason}` : ''}`
+					content: `You have been banned from ${interaction.guild.name}\n${reason ? `Reason: ${reason}` : ''}`
 				})
 				.catch(() => (content += `\n${vars.emojis.cross} Couldn't DM member!`));
 		}
@@ -115,7 +116,7 @@ export class UserCommand extends RadonCommand {
 		});
 
 		const data: BaseModActionData = {
-			moderator: interaction.member as GuildMember,
+			moderator: interaction.member,
 			target: member,
 			reason,
 			action: 'ban'

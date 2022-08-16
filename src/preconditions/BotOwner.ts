@@ -1,16 +1,17 @@
+import type { GuildContextMenuInteraction, GuildInteraction, GuildMessage } from '#lib/types';
 import { vars } from '#vars';
-import { AllFlowsPrecondition, AsyncPreconditionResult, Precondition } from '@sapphire/framework';
+import { AsyncPreconditionResult, Precondition } from '@sapphire/framework';
 
 export class UserPrecondition extends Precondition {
-	public override async messageRun(...[message]: Parameters<AllFlowsPrecondition['messageRun']>) {
+	public override async messageRun(message: GuildMessage) {
 		return this.isBotOwner(message.author.id);
 	}
 
-	public override async chatInputRun(...[interaction]: Parameters<AllFlowsPrecondition['chatInputRun']>) {
+	public override async chatInputRun(interaction: GuildInteraction) {
 		return this.isBotOwner(interaction.user.id);
 	}
 
-	public override async contextMenuRun(...[interaction]: Parameters<AllFlowsPrecondition['contextMenuRun']>) {
+	public override async contextMenuRun(interaction: GuildContextMenuInteraction) {
 		return this.isBotOwner(interaction.user.id);
 	}
 
