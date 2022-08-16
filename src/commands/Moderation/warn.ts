@@ -1,7 +1,7 @@
 import { RadonCommand, RadonPaginatedMessageEmbedFields, Timestamp } from '#lib/structures';
 import { BaseWarnActionData, PermissionLevels, RadonEvents, WarnActionData } from '#lib/types';
 import { color, mins, runAllChecks, uid, warnSeverity, sec } from '#lib/utility';
-import { vars } from '#vars';
+import { GuildIds, Emojis } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { cutText } from '@sapphire/utilities';
 import { APIApplicationCommandOptionChoice, ApplicationCommandType } from 'discord-api-types/v9';
@@ -173,7 +173,7 @@ export class UserCommand extends RadonCommand {
 							)
 					),
 			{
-				guildIds: vars.guildIds,
+				guildIds: GuildIds,
 				idHints: ['960410676797509702', '957277610788921374']
 			}
 		);
@@ -183,7 +183,7 @@ export class UserCommand extends RadonCommand {
 					.setName('Warn List')
 					.setType(ApplicationCommandType.User),
 			{
-				guildIds: vars.guildIds,
+				guildIds: GuildIds,
 				idHints: ['960410679070851122', '958685725358977024']
 			}
 		);
@@ -201,7 +201,7 @@ export class UserCommand extends RadonCommand {
 		const { content: ctn, result } = runAllChecks(interaction.member, member, 'warn');
 		if (!result || member.user.bot)
 			return interaction.reply({
-				content: ctn || `${vars.emojis.cross} I can't warn bots!`,
+				content: ctn || `${Emojis.Cross} I can't warn bots!`,
 				ephemeral: true
 			});
 		const deleteMsg = interaction.options.getBoolean('delete_messages') ?? false;
@@ -253,7 +253,7 @@ export class UserCommand extends RadonCommand {
 					content: `You have been warned in ${member.guild.name} for __${reason}__\nWarn ID: \`${warnId}\``
 				})
 				.catch(() => {
-					content += `\n||${vars.emojis.cross} Couldn't DM ${member}||`;
+					content += `\n||${Emojis.Cross} Couldn't DM ${member}||`;
 				});
 		}
 		await interaction.reply({

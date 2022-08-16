@@ -1,5 +1,5 @@
 import type { GuildContextMenuInteraction, GuildInteraction, GuildMessage } from '#lib/types';
-import { vars } from '#vars';
+import { Owners } from '#constants';
 import { AsyncPreconditionResult, Precondition } from '@sapphire/framework';
 
 export class UserPrecondition extends Precondition {
@@ -16,6 +16,6 @@ export class UserPrecondition extends Precondition {
 	}
 
 	private async isBotOwner(id: string): AsyncPreconditionResult {
-		return vars.owners.includes(id) ? this.ok() : this.error({ context: { silent: true } });
+		return Owners.includes(id) ? this.ok() : this.error({ context: { silent: true } });
 	}
 }

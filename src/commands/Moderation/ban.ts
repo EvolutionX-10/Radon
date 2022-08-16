@@ -1,7 +1,7 @@
 import { Confirmation, RadonCommand } from '#lib/structures';
 import { BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
 import { generateModLogDescription, runAllChecks, sec, severity } from '#lib/utility';
-import { vars } from '#vars';
+import { GuildIds, Emojis } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import type { APIApplicationCommandOptionChoice } from 'discord-api-types/v9';
 import type { GuildMember } from 'discord.js';
@@ -27,7 +27,7 @@ export class UserCommand extends RadonCommand {
 		const member = interaction.options.getMember('member');
 		if (!member)
 			return interaction.reply({
-				content: `${vars.emojis.cross} You must specify a valid member`,
+				content: `${Emojis.Cross} You must specify a valid member`,
 				ephemeral: true
 			});
 
@@ -46,7 +46,7 @@ export class UserCommand extends RadonCommand {
 			},
 			onCancel: ({ i }) => {
 				return i.editReply({
-					content: `${vars.emojis.cross} Wow careful, stopped the ban hammer at the last moment!`
+					content: `${Emojis.Cross} Wow careful, stopped the ban hammer at the last moment!`
 				});
 			}
 		});
@@ -85,7 +85,7 @@ export class UserCommand extends RadonCommand {
 							.setChoices(...this.#DaysChoices)
 					),
 			{
-				guildIds: vars.guildIds,
+				guildIds: GuildIds,
 				idHints: ['947756361876389898', '951679301030387742']
 			}
 		);
@@ -98,7 +98,7 @@ export class UserCommand extends RadonCommand {
 		days: number,
 		dm = false
 	) {
-		let content = `${vars.emojis.confirm} ${member.user.tag} has been [banned](https://tenor.com/view/11035060) ${
+		let content = `${Emojis.Confirm} ${member.user.tag} has been [banned](https://tenor.com/view/11035060) ${
 			reason ? `for the following reason: ${reason}` : ''
 		}`;
 
@@ -107,7 +107,7 @@ export class UserCommand extends RadonCommand {
 				.send({
 					content: `You have been banned from ${interaction.guild.name}\n${reason ? `Reason: ${reason}` : ''}`
 				})
-				.catch(() => (content += `\n${vars.emojis.cross} Couldn't DM member!`));
+				.catch(() => (content += `\n${Emojis.Cross} Couldn't DM member!`));
 		}
 
 		await member.ban({

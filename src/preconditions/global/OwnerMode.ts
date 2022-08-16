@@ -1,4 +1,4 @@
-import { vars } from '#vars';
+import { Owners } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Precondition } from '@sapphire/framework';
 import type { CommandInteraction, ContextMenuInteraction, Message } from 'discord.js';
@@ -23,7 +23,7 @@ export class UserPrecondition extends Precondition {
 		const mode = false;
 		if (!mode) return this.ok();
 
-		return vars.owners.includes(id)
+		return Owners.includes(id)
 			? this.ok()
 			: this.error({
 					message: `I am in bot owner mode`,

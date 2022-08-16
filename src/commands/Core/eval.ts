@@ -4,7 +4,7 @@
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { clean } from '#lib/utility';
-import { vars } from '#vars';
+import { Emojis } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { send } from '@sapphire/plugin-editable-commands';
 import { Stopwatch } from '@sapphire/stopwatch';
@@ -63,11 +63,11 @@ export class UserCommand extends RadonCommand {
 		}
 		if (args.getFlags('silent', 's')) {
 			if (!success && result) {
-				await message.react(vars.emojis.cross).catch(() => null);
-				return;
+				await message.react(Emojis.Cross).catch(() => null);
+				return null;
 			}
-			await message.react(vars.emojis.confirm).catch(() => null);
-			return;
+			await message.react(Emojis.Confirm).catch(() => null);
+			return null;
 		}
 
 		if (args.getFlags('type', 't')) {

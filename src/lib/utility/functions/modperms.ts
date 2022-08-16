@@ -1,4 +1,4 @@
-import { vars } from '#vars';
+import { Emojis } from '#constants';
 import type { GuildMember } from 'discord.js';
 /**
  * Runs all checks before executing a moderation command
@@ -11,9 +11,9 @@ export function runAllChecks(executor: GuildMember, target: GuildMember, action:
 	let content: string;
 	if (!target.manageable) {
 		result = false;
-		content = `${vars.emojis.cross} I can't ${action} ${target}`;
+		content = `${Emojis.Cross} I can't ${action} ${target}`;
 	} else if (executor.roles.highest.position === target.roles.highest.position) {
-		content = `${vars.emojis.cross} You can't ${action} ${target}`;
+		content = `${Emojis.Cross} You can't ${action} ${target}`;
 		result = false;
 	} else {
 		(result = true), (content = '');

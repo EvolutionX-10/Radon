@@ -1,7 +1,7 @@
 import { RadonCommand } from '#lib/structures';
 import { BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
 import { sec } from '#lib/utility';
-import { vars } from '#vars';
+import { GuildIds, Emojis } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 @ApplyOptions<RadonCommand.Options>({
 	cooldownDelay: sec(10),
@@ -18,11 +18,11 @@ export class UserCommand extends RadonCommand {
 
 		if (!ban)
 			return interaction.reply({
-				content: `${vars.emojis.cross} ${user.tag} is not banned!`,
+				content: `${Emojis.Cross} ${user.tag} is not banned!`,
 				ephemeral: true
 			});
 
-		const content = `${vars.emojis.confirm} ${user.tag} has been unbanned ${reason ? `for the following reason: ${reason}` : ''}`;
+		const content = `${Emojis.Confirm} ${user.tag} has been unbanned ${reason ? `for the following reason: ${reason}` : ''}`;
 		await interaction.guild.bans.remove(user, reason);
 
 		const data: BaseModActionData = {
@@ -61,7 +61,7 @@ export class UserCommand extends RadonCommand {
 							.setRequired(false)
 					),
 			{
-				guildIds: vars.guildIds,
+				guildIds: GuildIds,
 				idHints: ['947830619386302525', '951679387084922930']
 			}
 		);

@@ -2,7 +2,7 @@ import { PermissionLevel } from '#lib/decorators';
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { sec } from '#lib/utility';
-import { vars } from '#vars';
+import { GuildIds } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { BucketScope } from '@sapphire/framework';
 import { ChannelType } from 'discord-api-types/v9';
@@ -178,7 +178,7 @@ export class UserCommand extends RadonCommand {
 							)
 					),
 			{
-				guildIds: vars.guildIds,
+				guildIds: GuildIds,
 				idHints: ['978320030452297769', '975667690498834482']
 			}
 		);
