@@ -1,4 +1,4 @@
-import type { GuildInteraction } from '#lib/types/Discord.js';
+import type { GuildInteraction } from '#lib/types';
 import { vars } from '#vars';
 import { ButtonInteraction, Collection, ColorResolvable, EmojiIdentifierResolvable, Message, User } from 'discord.js';
 import { Button } from './Button.js';

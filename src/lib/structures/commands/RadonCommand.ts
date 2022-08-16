@@ -15,7 +15,7 @@ import {
 import { PermissionLevels } from '#lib/types';
 import { AutocompleteInteraction, Permissions } from 'discord.js';
 import type { GuildSettings } from '#lib/structures';
-import type { GuildContextMenuInteraction, GuildInteraction, GuildMessage } from '#lib/types/Discord';
+import type { GuildContextMenuInteraction, GuildInteraction, GuildMessage } from '#lib/types';
 export abstract class RadonCommand extends SubCommandPluginCommand<RadonCommand.Args, RadonCommand> {
 	/**
 	 * Whether the command can be disabled.
