@@ -6,6 +6,7 @@ import { ApplyOptions } from '@sapphire/decorators';
 import { ChannelType } from 'discord-api-types/v9';
 import { BucketScope } from '@sapphire/framework';
 import { CategoryChannel, GuildChannel, MessageActionRow, Modal, ModalActionRowComponent, Role, TextInputComponent, ThreadChannel } from 'discord.js';
+import { PermissionLevel } from '#lib/decorators';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Unlock!',
