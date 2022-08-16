@@ -12,7 +12,7 @@ export class UserPrecondition extends Precondition {
 	}
 
 	public override async contextMenuRun(interaction: GuildContextMenuInteraction) {
-		return this.isCommunity(interaction.guild!);
+		return this.isCommunity(interaction.guild);
 	}
 
 	private async isCommunity(guild: Guild): AsyncPreconditionResult {
