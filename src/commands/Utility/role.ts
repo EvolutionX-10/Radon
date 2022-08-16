@@ -1,7 +1,7 @@
 import { Confirmation, RadonCommand, Select, Timestamp } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { PermissionLevel } from '#lib/decorators';
-import { vars } from '#vars';
+import { GuildIds } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import type { BufferResolvable, Collection, ColorResolvable, GuildMember, MessageSelectOptionData, PermissionResolvable, Role } from 'discord.js';
 import { all } from 'colornames';
@@ -225,7 +225,7 @@ export class UserCommand extends RadonCommand {
 							)
 					),
 			{
-				guildIds: vars.guildIds,
+				guildIds: GuildIds,
 				idHints: ['991634355069915176', '989778331396374580']
 			}
 		);

@@ -1,6 +1,6 @@
 import { RadonCommand, Timestamp } from '#lib/structures';
 import { color } from '#lib/utility';
-import { vars } from '#vars';
+import { GuildIds } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { version as sapphireVersion } from '@sapphire/framework';
 import { roundNumber } from '@sapphire/utilities';
@@ -32,7 +32,7 @@ export class UserCommand extends RadonCommand {
 							.setDescription('Show info about me!')
 					),
 			{
-				guildIds: vars.guildIds,
+				guildIds: GuildIds,
 				idHints: ['970217477126643752', '969450739757883433']
 			}
 		);

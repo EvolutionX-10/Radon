@@ -7,14 +7,10 @@
 	"private": true,
 	"imports": {
 		"#lib/RadonClient": "./dist/lib/RadonClient.js",
-		"#lib/types": "./dist/lib/types/index.js",
-		"#lib/structures": "./dist/lib/structures/index.js",
-		"#lib/setup": "./dist/lib/setup/index.js",
-		"#lib/utility": "./dist/lib/utility/index.js",
 		"#lib/*": "./dist/lib/*/index.js",
-		"#models": "./dist/models/index.js",
-		"#vars": "./dist/vars.js",
-		"#config": "./dist/config.js"
+		"#constants": "./dist/lib/utility/constants.js",
+		"#config": "./dist/lib/utility/config.js",
+		"#root": "./*"
 	},
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",

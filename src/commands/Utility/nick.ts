@@ -1,7 +1,7 @@
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { runAllChecks } from '#lib/utility';
-import { vars } from '#vars';
+import { GuildIds } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { ApplicationCommandType } from 'discord-api-types/v9';
 import { clean } from 'confusables';
@@ -86,7 +86,7 @@ export class UserCommand extends RadonCommand {
 							)
 					),
 			{
-				guildIds: vars.guildIds,
+				guildIds: GuildIds,
 				idHints: ['954251737290661939', '954226414759055400']
 			}
 		);
@@ -96,7 +96,7 @@ export class UserCommand extends RadonCommand {
 					.setName('Decancer')
 					.setType(ApplicationCommandType.User),
 			{
-				guildIds: vars.guildIds,
+				guildIds: GuildIds,
 				idHints: ['954251739077431346', '954249587047170048']
 			}
 		);

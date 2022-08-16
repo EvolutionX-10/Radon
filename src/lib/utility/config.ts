@@ -12,7 +12,7 @@ import {
 } from 'discord.js';
 import { BucketScope, ClientLoggerOptions, CooldownOptions, LogLevel } from '@sapphire/framework';
 import { Time } from '@sapphire/time-utilities';
-import { vars } from '#vars';
+import { Owners } from '#constants';
 import type { BotList } from '@devtomio/plugin-botlist';
 import { config as dotenv } from 'dotenv-cra';
 import { envParseBoolean } from '#lib/env';
@@ -31,7 +31,7 @@ export const config: config = {
 	],
 	cooldown_options: {
 		delay: Time.Second * 10,
-		filteredUsers: vars.owners,
+		filteredUsers: Owners,
 		scope: BucketScope.User
 	},
 	mentions: {
@@ -107,7 +107,7 @@ interface config {
 	botlist: BotList.Options;
 	presence: PresenceData;
 }
-export const client_config: ClientOptions = {
+export const ClientConfig: ClientOptions = {
 	intents: config.intents,
 	allowedMentions: config.mentions,
 	caseInsensitiveCommands: true,

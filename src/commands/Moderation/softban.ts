@@ -1,7 +1,7 @@
 import { RadonCommand } from '#lib/structures';
 import { BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
 import { runAllChecks, sec } from '#lib/utility';
-import { vars } from '#vars';
+import { GuildIds, Emojis } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import type { APIApplicationCommandOptionChoice } from 'discord-api-types/v9';
 @ApplyOptions<RadonCommand.Options>({
@@ -27,14 +27,14 @@ export class UserCommand extends RadonCommand {
 		const member = interaction.options.getMember('member');
 		if (!member)
 			return interaction.editReply({
-				content: `${vars.emojis.cross} You must specify a valid member`
+				content: `${Emojis.Cross} You must specify a valid member`
 			});
 		const reason = interaction.options.getString('reason') ?? undefined;
 		const days = interaction.options.getInteger('days') ?? 1;
 
 		const { content: ctn, result } = runAllChecks(interaction.member, member, 'soft ban');
 		if (!result) return interaction.editReply(ctn);
-		const content = `${vars.emojis.confirm} ${member.user.tag} has been soft banned ${reason ? `for the following reason: ${reason}` : ''}`;
+		const content = `${Emojis.Confirm} ${member.user.tag} has been soft banned ${reason ? `for the following reason: ${reason}` : ''}`;
 		const { id } = member;
 
 		await member.ban({
@@ -84,7 +84,7 @@ export class UserCommand extends RadonCommand {
 							.setChoices(...this.#DaysChoices)
 					),
 			{
-				guildIds: vars.guildIds,
+				guildIds: GuildIds,
 				idHints: ['948096163398160415', '951679382991282186']
 			}
 		);
