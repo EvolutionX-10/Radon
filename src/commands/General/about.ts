@@ -152,7 +152,10 @@ export class UserCommand extends RadonCommand {
 		});
 
 		collector.on('end', async () => {
-			m.components[0].components.forEach((b) => b.setDisabled());
+			for (const button of m.components[0].components) {
+				button.setDisabled();
+			}
+
 			await m.edit({ components: m.components });
 		});
 	}

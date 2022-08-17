@@ -5,7 +5,7 @@ import { GuildIds, Emojis } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { cutText } from '@sapphire/utilities';
 import { APIApplicationCommandOptionChoice, ApplicationCommandType } from 'discord-api-types/v9';
-import type { GuildMember, TextChannel } from 'discord.js';
+import type { Collection, GuildMember, GuildTextBasedChannel, TextChannel } from 'discord.js';
 import { Duration } from '@sapphire/time-utilities';
 
 @ApplyOptions<RadonCommand.Options>({
@@ -291,22 +291,20 @@ export class UserCommand extends RadonCommand {
 					ephemeral: true
 				});
 			}
-			interaction.guild?.channels.cache
-				.filter((c) => c.type === 'GUILD_TEXT')
-				?.forEach(async (c) => {
-					if (c.permissionsFor(interaction.guild.me!).has('MANAGE_MESSAGES')) {
-						const messages = await (c as TextChannel).messages.fetch({ limit: 15 }).catch(() => null);
-						if (!messages) return;
-						const msg = messages.filter((m) => m.author.id === member.id);
-						if (msg && msg.size > 0) {
-							msg.forEach(async (m) => {
-								if (m.deletable && m.createdTimestamp > Date.now() - mins(15)) {
-									await m.delete().catch(() => null);
-								}
-							});
-						}
+			const textChannels = interaction.guild.channels.cache.filter(
+				(c) => c.isText() && c.permissionsFor(interaction.guild.me!).has('MANAGE_MESSAGES')
+			) as Collection<string, GuildTextBasedChannel>;
+
+			for (const channel of textChannels.values()) {
+				const messages = await channel.messages.fetch({ limit: 15 }).catch(() => null);
+				if (!messages) continue;
+				for (const message of messages.filter((m) => m.author.id === member.id).values()) {
+					if (!message) continue;
+					if (message.deletable && (message.editedTimestamp ?? message.createdTimestamp) > Date.now() - mins(15)) {
+						await message.delete().catch(() => null);
 					}
-				});
+				}
+			}
 		}
 	}
 
