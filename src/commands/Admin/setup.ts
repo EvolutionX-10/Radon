@@ -298,21 +298,22 @@ export class UserCommand extends RadonCommand {
 						type: 'member'
 					}
 				];
-				modRoles.forEach((mod) => {
-					permissionOverwrites.push({
+				const permissions = (id: string, mod: boolean): OverwriteResolvable => {
+					return {
+						id,
 						allow: ['VIEW_CHANNEL'],
-						deny: ['SEND_MESSAGES', 'MANAGE_CHANNELS'],
-						id: mod,
+						deny: mod ? ['SEND_MESSAGES', 'MANAGE_CHANNELS'] : [],
 						type: 'role'
-					});
-				});
-				adminRoles.forEach((admin) => {
-					permissionOverwrites.push({
-						allow: ['VIEW_CHANNEL'],
-						id: admin,
-						type: 'role'
-					});
-				});
+					};
+				};
+
+				for (const mod of modRoles) {
+					permissionOverwrites.push(permissions(mod, true));
+				}
+
+				for (const admin of adminRoles) {
+					permissionOverwrites.push(permissions(admin, false));
+				}
 			} else {
 				permissionOverwrites = [
 					{
