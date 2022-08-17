@@ -16,7 +16,7 @@ import { clean } from '#lib/utility';
 	aliases: ['ev'],
 	quotes: [],
 	permissionLevel: PermissionLevels.BotOwner,
-	flags: ['hidden', 'haste', 'silent', 's', 'type', 't', 'v', 'value', 'this', 'stack'],
+	flags: ['hidden', 'haste', 'silent', 's', 'type', 't', 'v', 'value', 'this', 'stack', 'del', 'd'],
 	options: ['depth'],
 	description: 'Evaluate some code',
 	guarded: true
@@ -29,6 +29,9 @@ export class UserCommand extends RadonCommand {
 			code = msg.content;
 		} else code = await args.rest('string').catch(() => '');
 		if (!code.length) return;
+
+		if (args.getFlags('d', 'del')) await message.delete().catch(() => null);
+
 		const { success, result, time, type } = await this.eval(message, code, {
 			async: args.getFlags('async'),
 			depth: Number(args.getOption('depth')) ?? 0,
@@ -55,10 +58,10 @@ export class UserCommand extends RadonCommand {
 		}
 		if (args.getFlags('silent', 's')) {
 			if (!success && result) {
-				await message.react(vars.emojis.cross);
+				await message.react(vars.emojis.cross).catch(() => null);
 				return null;
 			}
-			await message.react(vars.emojis.confirm);
+			await message.react(vars.emojis.confirm).catch(() => null);
 			return null;
 		}
 
