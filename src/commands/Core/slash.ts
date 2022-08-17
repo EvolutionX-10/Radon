@@ -48,13 +48,19 @@ export class UserCommand extends RadonCommand {
 
 		let content = `**Global** ${cmds}\n\n`;
 
-		global?.forEach((cmd) => {
-			content += `${cmd.name} *(${cmd.id})*\n`;
-		});
+		if (global) {
+			for (const cmd of global.values()) {
+				content += `${cmd.name} *(${cmd.id})*\n`;
+			}
+		}
+
 		content += `\n**Guild** ${cmds} \`[${message.guild.name}]\`\n\n`;
-		guild?.forEach((cmd) => {
-			content += `${cmd.name} *(${cmd.id})*\n`;
-		});
+
+		if (guild) {
+			for (const cmd of guild.values()) {
+				content += `${cmd.name} *(${cmd.id})*\n`;
+			}
+		}
 
 		// TODO Paginate it
 		return send(message, content);
