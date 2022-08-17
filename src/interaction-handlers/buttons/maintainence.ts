@@ -1,13 +1,13 @@
 import { Owners } from '#constants';
+import type { RadonButtonInteraction } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
 import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework';
 import { isNullish } from '@sapphire/utilities';
-import type { ButtonInteraction, Message } from 'discord.js';
 @ApplyOptions<InteractionHandler.Options>({
 	interactionHandlerType: InteractionHandlerTypes.Button
 })
 export class ButtonHandler extends InteractionHandler {
-	public override async run(interaction: ButtonInteraction, result: InteractionHandler.ParseResult<this>) {
+	public override run(interaction: RadonButtonInteraction, result: InteractionHandler.ParseResult<this>) {
 		if (!Owners.includes(interaction.user.id)) return this.none();
 		if (isNullish(result.ownerMode)) return;
 
@@ -26,14 +26,14 @@ export class ButtonHandler extends InteractionHandler {
 		});
 	}
 
-	public override async parse(interaction: ButtonInteraction) {
+	public override async parse(interaction: RadonButtonInteraction) {
 		if (interaction.customId !== 'radon-maintenance') return this.none();
 		await interaction.deferUpdate({ fetchReply: true });
 
 		const ownerMode = this.container.client.user?.presence.status === 'invisible';
 
 		const description = ownerMode ? '```\nStatus: Disabled\n```' : '```\nStatus: Enabled\n```';
-		const msg = interaction.message as Message;
+		const msg = interaction.message;
 		return this.some({ ownerMode, msg, description });
 	}
 }
