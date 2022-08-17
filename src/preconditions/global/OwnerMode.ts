@@ -20,7 +20,9 @@ export class UserPrecondition extends Precondition {
 	}
 
 	private async inOwnerMode(id: string) {
-		const mode = false;
+		let mode = false;
+		if (this.container.client.user?.presence.status === 'invisible') mode = true;
+
 		if (!mode) return this.ok();
 
 		return Owners.includes(id)
