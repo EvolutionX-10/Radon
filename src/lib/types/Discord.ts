@@ -1,5 +1,6 @@
 import type { GuildTextBasedChannelTypes } from '@sapphire/discord.js-utilities';
 import type {
+	ButtonInteraction,
 	CommandInteraction,
 	CommandInteractionOptionResolver,
 	ContextMenuInteraction,
@@ -45,4 +46,8 @@ export interface GuildCommandInteractionOptionResolver extends CommandInteractio
 	getMember(name: string): GuildMember;
 	getChannel(name: string, required?: boolean): GuildBasedChannel;
 	getRole(name: string, required?: boolean): Role;
+}
+
+export interface RadonButtonInteraction extends ButtonInteraction {
+	readonly message: Message;
 }
