@@ -94,11 +94,6 @@
 		"dotenv-cra": "3.0.2",
 		"gradient-string": "2.0.1"
 	},
-	"config": {
-		"commitizen": {
-			"path": "./node_modules/cz-conventional-changelog"
-		}
-	},
 	"packageManager": "yarn@3.2.3",
 	"prettier": "@sapphire/prettier-config"
 }

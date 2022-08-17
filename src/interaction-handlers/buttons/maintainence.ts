@@ -10,6 +10,7 @@ export class ButtonHandler extends InteractionHandler {
 	public override async run(interaction: ButtonInteraction, result: InteractionHandler.ParseResult<this>) {
 		if (!Owners.includes(interaction.user.id)) return this.none();
 		if (isNullish(result.ownerMode)) return;
+
 		this.container.client.user?.setPresence({
 			status: result.ownerMode ? 'dnd' : 'invisible',
 			activities: [
@@ -28,9 +29,9 @@ export class ButtonHandler extends InteractionHandler {
 	public override async parse(interaction: ButtonInteraction) {
 		if (interaction.customId !== 'radon-maintenance') return this.none();
 		await interaction.deferUpdate({ fetchReply: true });
-		const ownerMode = Boolean(Number(await this.container.db.get('ownerMode'))!);
 
-		ownerMode ? await this.container.db.set('ownerMode', 0) : await this.container.db.set('ownerMode', 1);
+		const ownerMode = this.container.client.user?.presence.status === 'invisible';
+
 		const description = ownerMode ? '```\nStatus: Disabled\n```' : '```\nStatus: Enabled\n```';
 		const msg = interaction.message as Message;
 		return this.some({ ownerMode, msg, description });
