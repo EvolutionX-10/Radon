@@ -402,7 +402,7 @@ export class UserCommand extends RadonCommand {
 		const newarray = this.container.utils.summableArray(array.length, 25);
 		const menus: Select[] = [];
 
-		newarray.forEach((amount, index) => {
+		for (const [index, amount] of newarray.entries()) {
 			const perms = array.splice(0, amount).sort();
 			const formatted = this.container.utils.format(perms);
 
@@ -424,7 +424,7 @@ export class UserCommand extends RadonCommand {
 				._options(...options);
 
 			menus.push(menu);
-		});
+		}
 		return menus;
 	}
 
@@ -461,7 +461,7 @@ export class UserCommand extends RadonCommand {
 			collector.resetTimer();
 
 			if (i.customId === 'save') {
-				message.components.forEach((r) => r.components.forEach((c) => c.setDisabled()));
+				message.components.map((r) => r.components.map((c) => c.setDisabled()));
 				await message.edit({
 					content: message.content.concat('\nSaved with selected Permissions!'),
 					components: message.components
@@ -472,7 +472,7 @@ export class UserCommand extends RadonCommand {
 
 		collector.on('end', async (c) => {
 			if (c.size === 0 || !perms.length) {
-				message.components.forEach((r) => r.components.forEach((c) => c.setDisabled()));
+				message.components.map((r) => r.components.map((c) => c.setDisabled()));
 				await message.edit({
 					content: message.content.concat('\nRole was created with no permissions!'),
 					components: message.components

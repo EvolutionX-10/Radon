@@ -83,7 +83,7 @@ export class Confirmation {
 		});
 
 		collector.on('collect', async (i) => {
-			row.components.forEach((b) => b.setDisabled());
+			row.components.map((b) => b.setDisabled());
 			if (id !== i.user.id) {
 				await i.reply({
 					content: this.options.wrongUserResponse ?? 'Not for you!',
@@ -104,7 +104,7 @@ export class Confirmation {
 				return this.options.onEnd({ collection: c, msg });
 			}
 			if (c.filter((b) => b.user.id === id)?.size === 0) {
-				row.components.forEach((b) => b.setDisabled());
+				row.components.map((b) => b.setDisabled());
 				await msg.edit({
 					content: this.options.content ? 'No response received.' : null,
 					embeds: this.options.content ? [] : [embed.setDescription('No response received.')],
