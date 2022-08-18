@@ -252,16 +252,22 @@ export class ModalHandler extends InteractionHandler {
 			if (channel.type !== 'GUILD_TEXT') continue;
 			await this.container.utils.wait(1_000);
 
-			channel.permissionOverwrites
+			const overwritten = await channel.permissionOverwrites
 				.edit(role, options, {
 					reason: `Requested by ${interaction.user.tag} (${interaction.user.id})`
 				})
-				.then((c) =>
-					c.isText() && embeds.length && c.type !== 'GUILD_VOICE'
-						? c.threads.fetchActive().then((fetched) => fetched.threads.forEach((thread) => thread.send({ embeds }).catch(() => null)))
-						: null
-				)
-				.catch(() => (content += `\n> Missing permissions to unlock threads in <#${channel.id}>!`));
+				.catch(() => {
+					content += `\n> Missing permissions to unlock threads in <#${channel.id}>!`;
+					return null;
+				});
+
+			if (overwritten && overwritten.isText() && overwritten.type !== 'GUILD_VOICE' && embeds.length) {
+				const active = await overwritten.threads.fetchActive().catch(() => null);
+				if (!active) return;
+				for (const thread of active.threads.values()) {
+					await thread.send({ embeds }).catch(() => null);
+				}
+			}
 		}
 
 		content.endsWith(':') ? (content += ' None 🎉') : null;
