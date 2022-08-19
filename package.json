@@ -10,7 +10,7 @@
 		"#lib/*": "./dist/lib/*/index.js",
 		"#constants": "./dist/lib/utility/constants.js",
 		"#config": "./dist/lib/utility/config.js",
-		"#root": "./*"
+		"#root/*": "./dist/*.js"
 	},
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
