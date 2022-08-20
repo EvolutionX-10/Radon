@@ -5,9 +5,7 @@ import type { Guild, GuildMember } from 'discord.js';
 const { prisma } = container;
 
 export class Warn {
-	public constructor(private readonly guild: Guild) {
-		this.guild = guild;
-	}
+	public constructor(private readonly guild: Guild) {}
 
 	public async add({
 		warnId,
