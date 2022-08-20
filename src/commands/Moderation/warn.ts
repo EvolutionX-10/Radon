@@ -1,5 +1,5 @@
 import { RadonCommand, RadonPaginatedMessageEmbedFields, Timestamp } from '#lib/structures';
-import { BaseWarnActionData, PermissionLevels, RadonEvents, WarnActionData } from '#lib/types';
+import { BaseWarnActionData, PermissionLevels, RadonEvents, WarnActionData, warnAction } from '#lib/types';
 import { color, mins, runAllChecks, uid, warnSeverity, sec } from '#lib/utility';
 import { GuildIds, Emojis } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
@@ -7,7 +7,6 @@ import { cutText } from '@sapphire/utilities';
 import { APIApplicationCommandOptionChoice, ApplicationCommandType } from 'discord-api-types/v9';
 import type { Collection, GuildMember, GuildTextBasedChannel, TextChannel } from 'discord.js';
 import { Duration, DurationFormatter } from '@sapphire/time-utilities';
-import type { warnAction } from '#lib/structures/classes/Warn.js';
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Manage warnings for a user',
 	permissionLevel: PermissionLevels.Moderator,
@@ -491,7 +490,7 @@ export class UserCommand extends RadonCommand {
 		let time = interaction.options.getString('duration');
 		await interaction.deferReply();
 		let content = `It will be applied to any user that crosses the threshold of ${severity} severity in warnings.`;
-		if (action === 'timeout' && !time) return interaction.editReply(`Please provide a duration`);
+		if (action === 'timeout' && !time) return interaction.editReply(`Please provide a duration for timeout!`);
 
 		if (action === 'timeout') {
 			if (!isNaN(Number(time))) time += 's';
