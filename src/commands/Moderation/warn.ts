@@ -542,7 +542,7 @@ export class UserCommand extends RadonCommand {
 
 	private async removeAction(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const severity = interaction.options.getInteger('severity', true);
-		const rem = await interaction.guild!.settings?.warns?.removeAction({ severity });
+		const rem = await interaction.guild.settings?.warns?.removeAction({ severity });
 		if (!rem)
 			return interaction.reply({
 				content: 'No action found for this severity',
@@ -571,7 +571,7 @@ export class UserCommand extends RadonCommand {
 				inline: false
 			};
 		});
-		const embed_footer = `Warn Actions for ${interaction.guild!.name}`;
+		const embed_footer = `Warn Actions for ${interaction.guild.name}`;
 		const embed_timestamp = new Date();
 		const embed_thumbnail = {
 			url: interaction.guild.iconURL({
