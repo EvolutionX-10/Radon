@@ -1,4 +1,4 @@
-import type { modAction } from '#lib/types';
+import type { warnAction } from '#lib/types';
 import type { GuildWarnsWarnlistWarns } from '@prisma/client';
 import { container } from '@sapphire/framework';
 import type { Guild, GuildMember } from 'discord.js';
@@ -224,5 +224,3 @@ export class Warn {
 		return null;
 	}
 }
-
-export type warnAction = Exclude<modAction, 'warn' | 'warn_remove' | 'unban'>;
