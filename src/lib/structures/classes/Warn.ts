@@ -143,7 +143,7 @@ export class Warn {
 		});
 	}
 
-	public async getAmount({ member }: { member: GuildMember }) {
+	public async getSeverity({ member }: { member: GuildMember }) {
 		const doc = await prisma.guildWarns.findUnique({
 			where: {
 				id: this.guild.id
@@ -153,7 +153,8 @@ export class Warn {
 		if (doc) {
 			const person = doc?.warnlist.filter((e) => e.id === member.id)?.[0];
 			if (person) {
-				return person.warns.length;
+				const severity = person.warns.reduce((a, b) => a + b.severity, 0);
+				return severity;
 			}
 		}
 		return 0;
