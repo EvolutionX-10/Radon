@@ -7,7 +7,7 @@ import { ApplyOptions } from '@sapphire/decorators';
 import { Duration, DurationFormatter } from '@sapphire/time-utilities';
 import { cutText } from '@sapphire/utilities';
 import { APIApplicationCommandOptionChoice, ApplicationCommandType } from 'discord-api-types/v9';
-import type { Collection, GuildMember, GuildTextBasedChannel, TextChannel } from 'discord.js';
+import type { Collection, GuildMember, GuildTextBasedChannel } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Manage warnings for a user',
@@ -310,10 +310,12 @@ export class UserCommand extends RadonCommand {
 				ephemeral: true
 			});
 		}
+		const person = warn.warnlist.find((warn) => warn.id === member.id);
 
-		const prevWarns_size = warn?.warnlist?.filter((warn) => warn?.id === member?.id)?.[0]?.warns.length ?? 0;
+		const totalSeverity = (person?.warns.reduce((acc, warn) => acc + warn.severity, 0) ?? 0) + severity;
+		const totalwarns = person?.warns.length === 1 ? 1 : person!.warns.length + 1;
+		const actions = await interaction.guild.settings?.warns.getActions();
 
-		const totalwarns = prevWarns_size + 1;
 		let content = `${member} (${member.user.tag}) has been warned for __${reason}__\nWarn ID: \`${warnId}\`\n*They now have ${totalwarns} warning(s)*`;
 		if (!silent) {
 			await member
@@ -328,7 +330,7 @@ export class UserCommand extends RadonCommand {
 			content,
 			ephemeral: true
 		});
-		await (interaction.channel as TextChannel).send({
+		await interaction.channel.send({
 			embeds: [
 				{
 					description: `${member} (${member.user.tag}) has been warned`,
@@ -350,6 +352,10 @@ export class UserCommand extends RadonCommand {
 
 		if (await interaction.guild.settings!.modlogs.modLogs_exist()) {
 			this.container.client.emit(RadonEvents.ModAction, data);
+		}
+
+		if (actions?.length) {
+			this.container.client.emit(RadonEvents.WarnAction, member, totalSeverity, actions);
 		}
 
 		if (deleteMsg) {
