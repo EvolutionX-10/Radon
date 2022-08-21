@@ -3,15 +3,15 @@
 
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
+import { clean } from '#lib/utility';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import { send } from '@sapphire/plugin-editable-commands';
 import { Stopwatch } from '@sapphire/stopwatch';
 import { Type } from '@sapphire/type';
 import { codeBlock, isThenable } from '@sapphire/utilities';
-import { inspect } from 'node:util';
 import axios from 'axios';
-import { clean } from '#lib/utility';
+import { inspect } from 'node:util';
 @ApplyOptions<RadonCommand.Options>({
 	aliases: ['ev'],
 	quotes: [],
@@ -59,10 +59,10 @@ export class UserCommand extends RadonCommand {
 		if (args.getFlags('silent', 's')) {
 			if (!success && result) {
 				await message.react(vars.emojis.cross).catch(() => null);
-				return null;
+				return;
 			}
 			await message.react(vars.emojis.confirm).catch(() => null);
-			return null;
+			return;
 		}
 
 		if (args.getFlags('type', 't')) {
@@ -93,7 +93,7 @@ export class UserCommand extends RadonCommand {
 		if (code.includes('await')) flags.async = true;
 		const ar = code.split(';');
 		const last = ar.pop();
-		if (flags.async) code = `(async () => {\n${ar.join(';\n')}\nreturn ${last?.trim() ?? 'void'}\n\n})();`;
+		if (flags.async) code = `(async () => {\n${ar.join(';\n')}\nreturn ${last?.trim() ?? ' '}\n\n})();`;
 		const msg = message;
 		// @ts-ignore
 		const { guild, channel, member } = msg;

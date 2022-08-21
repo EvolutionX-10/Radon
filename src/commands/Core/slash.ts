@@ -9,14 +9,19 @@ import { send } from '@sapphire/plugin-editable-commands';
 	hidden: true,
 	guarded: true,
 	flags: true,
-	subCommands: [
+	subcommands: [
 		{
-			input: 'default',
+			name: 'default',
+			messageRun: 'default',
 			default: true
 		},
 		{
-			input: 'del',
-			output: 'delete'
+			name: 'del',
+			messageRun: 'delete'
+		},
+		{
+			name: 'delete',
+			messageRun: 'delete'
 		}
 	]
 })

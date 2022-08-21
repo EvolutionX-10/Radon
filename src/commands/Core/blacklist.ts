@@ -7,17 +7,19 @@ import type { TextChannel } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
 	description: `Blacklist a guild`,
 	permissionLevel: PermissionLevels.BotOwner,
-	subCommands: [
+	subcommands: [
 		{
-			input: 'add',
-			default: true
+			name: 'add',
+			default: true,
+			messageRun: 'add'
 		},
 		{
-			input: 'remove'
+			name: 'remove',
+			messageRun: 'remove'
 		},
 		{
-			input: 'rem',
-			output: 'remove'
+			name: 'rem',
+			messageRun: 'remove'
 		}
 	],
 	flags: ['force'],
