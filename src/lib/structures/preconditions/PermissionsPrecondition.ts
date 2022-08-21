@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import type { CommandInteraction, ContextMenuInteraction, Message } from 'discord.js';
+import type { RadonCommand } from '#lib/structures';
 import {
 	AsyncPreconditionResult,
 	ChatInputCommand,
+	Command,
 	ContextMenuCommand,
 	Identifiers,
 	PieceContext,
@@ -11,7 +12,7 @@ import {
 	PreconditionOptions,
 	PreconditionResult
 } from '@sapphire/framework';
-import type { RadonCommand } from '#lib/structures';
+import type { CommandInteraction, ContextMenuInteraction, Message } from 'discord.js';
 
 export abstract class PermissionsPrecondition extends Precondition {
 	private readonly guildOnly: boolean;
@@ -23,7 +24,7 @@ export abstract class PermissionsPrecondition extends Precondition {
 
 	public override async messageRun(
 		message: Message,
-		command: RadonCommand,
+		command: Command,
 		context: PermissionsPrecondition.Context
 	): PermissionsPrecondition.AsyncResult {
 		// If not in a guild, resolve on an error:
@@ -59,7 +60,7 @@ export abstract class PermissionsPrecondition extends Precondition {
 
 	public abstract handle(
 		message: Message | CommandInteraction | ContextMenuInteraction,
-		command: RadonCommand | ChatInputCommand | ContextMenuCommand,
+		command: RadonCommand | ChatInputCommand | ContextMenuCommand | Command,
 		context: PermissionsPrecondition.Context
 	): PermissionsPrecondition.Result;
 }

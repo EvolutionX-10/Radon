@@ -1,10 +1,10 @@
-import { RadonCommand } from '#lib/structures';
+import { RadonSubcommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { color } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { send } from '@sapphire/plugin-editable-commands';
 import type { TextChannel } from 'discord.js';
-@ApplyOptions<RadonCommand.Options>({
+@ApplyOptions<RadonSubcommand.Options>({
 	description: `Blacklist a guild`,
 	permissionLevel: PermissionLevels.BotOwner,
 	subcommands: [
@@ -25,8 +25,8 @@ import type { TextChannel } from 'discord.js';
 	flags: ['force'],
 	aliases: ['bl']
 })
-export class UserCommand extends RadonCommand {
-	public async add(message: RadonCommand.Message, args: RadonCommand.Args) {
+export class UserCommand extends RadonSubcommand {
+	public async add(message: RadonSubcommand.Message, args: RadonSubcommand.Args) {
 		const id = await args.pick('string').catch(() => null);
 		if (!id) return send(message, `Please provide a valid ID.`);
 
@@ -71,7 +71,7 @@ export class UserCommand extends RadonCommand {
 		});
 	}
 
-	public async remove(message: RadonCommand.Message, args: RadonCommand.Args) {
+	public async remove(message: RadonSubcommand.Message, args: RadonSubcommand.Args) {
 		const id = await args.pick('string').catch(() => null);
 		if (!id) return send(message, `Please provide a valid ID.`);
 

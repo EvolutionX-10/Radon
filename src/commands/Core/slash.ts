@@ -1,13 +1,15 @@
-import { Confirmation, RadonCommand } from '#lib/structures';
-import { PermissionLevels } from '#lib/types';
+import { Confirmation } from '#lib/structures';
 import { ApplyOptions } from '@sapphire/decorators';
+import type { Args } from '@sapphire/framework';
 import { send } from '@sapphire/plugin-editable-commands';
+import { Subcommand } from '@sapphire/plugin-subcommands';
+import type { Message } from 'discord.js';
 
-@ApplyOptions<RadonCommand.Options>({
+@ApplyOptions<Subcommand.Options>({
 	aliases: ['slashies'],
-	permissionLevel: PermissionLevels.BotOwner,
-	hidden: true,
-	guarded: true,
+	// permissionLevel: PermissionLevels.BotOwner,
+	// hidden: true,
+	// guarded: true,
 	flags: true,
 	subcommands: [
 		{
@@ -25,8 +27,8 @@ import { send } from '@sapphire/plugin-editable-commands';
 		}
 	]
 })
-export class UserCommand extends RadonCommand {
-	public async default(message: RadonCommand.Message, args: RadonCommand.Args) {
+export class UserCommand extends Subcommand {
+	public async default(message: Message, args: Args) {
 		if (!message.guild) return;
 
 		let filtered: string;
@@ -63,7 +65,7 @@ export class UserCommand extends RadonCommand {
 		return send(message, content);
 	}
 
-	public async delete(message: RadonCommand.Message, args: RadonCommand.Args) {
+	public async delete(message: Message, args: Args) {
 		if (!message.guild) return;
 
 		const global = await this.container.client.application?.commands.fetch();

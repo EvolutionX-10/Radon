@@ -1,21 +1,19 @@
-/* eslint-disable @typescript-eslint/no-namespace */
-import type { GuildSettings } from '#lib/structures';
-import type { GuildContextMenuInteraction, GuildInteraction, GuildMessage } from '#lib/types';
-import { PermissionLevels } from '#lib/types';
+import { GuildContextMenuInteraction, GuildInteraction, GuildMessage, PermissionLevels } from '#lib/types';
 import {
 	ApplicationCommandRegistry,
 	Args as SapphireArgs,
 	ChatInputCommandContext,
-	Command,
 	CommandOptionsRunTypeEnum,
 	ContextMenuCommandContext,
 	MessageCommandContext,
-	PieceContext,
 	PreconditionContainerArray,
 	UserError
 } from '@sapphire/framework';
+import type { PieceContext } from '@sapphire/pieces';
+import { Subcommand } from '@sapphire/plugin-subcommands';
 import { AutocompleteInteraction, Permissions } from 'discord.js';
-export abstract class RadonCommand extends Command<RadonCommand.Args, RadonCommand.Options> {
+
+export abstract class RadonSubcommand extends Subcommand<RadonSubcommand.Args, RadonSubcommand.Options> {
 	/**
 	 * Whether the command can be disabled.
 	 */
@@ -33,7 +31,7 @@ export abstract class RadonCommand extends Command<RadonCommand.Args, RadonComma
 	 */
 	public readonly community?: boolean;
 
-	public constructor(context: PieceContext, options: RadonCommand.Options) {
+	public constructor(context: PieceContext, options: RadonSubcommand.Options) {
 		const perms = new Permissions(options.requiredClientPermissions).add(
 			Permissions.FLAGS.SEND_MESSAGES,
 			Permissions.FLAGS.EMBED_LINKS,
@@ -55,7 +53,7 @@ export abstract class RadonCommand extends Command<RadonCommand.Args, RadonComma
 		throw typeof identifier === 'string' ? new UserError({ identifier, context }) : identifier;
 	}
 
-	protected parseConstructorPreConditions(options: RadonCommand.Options): void {
+	protected parseConstructorPreConditions(options: RadonSubcommand.Options): void {
 		super.parseConstructorPreConditions(options);
 		this.parseConstructorPreConditionsPermissionLevel(options);
 		if (options.community) {
@@ -63,7 +61,7 @@ export abstract class RadonCommand extends Command<RadonCommand.Args, RadonComma
 		}
 	}
 
-	protected parseConstructorPreConditionsPermissionLevel(options: RadonCommand.Options): void {
+	protected parseConstructorPreConditionsPermissionLevel(options: RadonSubcommand.Options): void {
 		if (options.permissionLevel === PermissionLevels.BotOwner) {
 			this.preconditions.append('BotOwner');
 			return;
@@ -92,11 +90,12 @@ export abstract class RadonCommand extends Command<RadonCommand.Args, RadonComma
 		this.preconditions.append(container);
 	}
 }
-export namespace RadonCommand {
+
+export namespace RadonSubcommand {
 	/**
 	 * The RadonCommand Options
 	 */
-	export type Options = Command.Options & {
+	export type Options = Subcommand.Options & {
 		/**
 		 * Whether the command can be disabled.
 		 */
@@ -122,20 +121,4 @@ export namespace RadonCommand {
 	export type Args = SapphireArgs;
 	export type Message = GuildMessage;
 	export type Registry = ApplicationCommandRegistry;
-}
-
-declare module '@sapphire/framework' {
-	interface Preconditions {
-		BotOwner: never;
-		Everyone: never;
-		Moderator: never;
-		Administrator: never;
-		ServerOwner: never;
-		Community: never;
-	}
-}
-declare module 'discord.js' {
-	interface Guild {
-		settings: GuildSettings | null;
-	}
 }
