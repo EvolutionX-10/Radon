@@ -1,15 +1,16 @@
-import type { CommandInteraction, Message } from 'discord.js';
 import { RadonCommand } from '#lib/structures';
-import { send } from '@sapphire/plugin-editable-commands';
-import { ApplyOptions } from '@sapphire/decorators';
-import { PermissionLevels } from '#lib/types';
 import { vars } from '#vars';
+import { ApplyOptions } from '@sapphire/decorators';
+import type { Args, Command } from '@sapphire/framework';
+import { send } from '@sapphire/plugin-editable-commands';
+import type { CommandInteraction, Message } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
-	description: `Check my latency!`,
-	permissionLevel: PermissionLevels.Everyone
+	description: `Check my latency!`
+	// permissionLevel: PermissionLevels.Everyone
 })
 export class UserCommand extends RadonCommand {
-	public override async messageRun(message: RadonCommand.Message) {
+	public override async messageRun(message: Message, args: Args) {
+		console.log(args.nextMaybe());
 		const msg = await send(message, 'Ping?');
 		const content = `Pong! (Roundtrip took: ${Math.round(
 			(msg.editedTimestamp || msg.createdTimestamp) - (message.editedTimestamp || message.createdTimestamp)
@@ -31,7 +32,7 @@ export class UserCommand extends RadonCommand {
 		});
 	}
 
-	public override registerApplicationCommands(registry: RadonCommand.Registry) {
+	public override registerApplicationCommands(registry: Command.Registry) {
 		registry.registerChatInputCommand(
 			(builder) =>
 				builder //

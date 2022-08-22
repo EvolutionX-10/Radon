@@ -1,12 +1,13 @@
-import { RadonSubcommand } from '#lib/structures';
-import { PermissionLevels } from '#lib/types';
+// import { RadonSubcommand } from '#lib/structures';
 import { color } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
+import type { Args } from '@sapphire/framework';
 import { send } from '@sapphire/plugin-editable-commands';
-import type { TextChannel } from 'discord.js';
-@ApplyOptions<RadonSubcommand.Options>({
+import { Subcommand } from '@sapphire/plugin-subcommands';
+import type { Message, TextChannel } from 'discord.js';
+@ApplyOptions<Subcommand.Options>({
 	description: `Blacklist a guild`,
-	permissionLevel: PermissionLevels.BotOwner,
+	// permissionLevel: PermissionLevels.BotOwner,
 	subcommands: [
 		{
 			name: 'add',
@@ -25,8 +26,8 @@ import type { TextChannel } from 'discord.js';
 	flags: ['force'],
 	aliases: ['bl']
 })
-export class UserCommand extends RadonSubcommand {
-	public async add(message: RadonSubcommand.Message, args: RadonSubcommand.Args) {
+export class UserCommand extends Subcommand {
+	public async add(message: Message, args: Args) {
 		const id = await args.pick('string').catch(() => null);
 		if (!id) return send(message, `Please provide a valid ID.`);
 
@@ -71,7 +72,7 @@ export class UserCommand extends RadonSubcommand {
 		});
 	}
 
-	public async remove(message: RadonSubcommand.Message, args: RadonSubcommand.Args) {
+	public async remove(message: Message, args: Args) {
 		const id = await args.pick('string').catch(() => null);
 		if (!id) return send(message, `Please provide a valid ID.`);
 

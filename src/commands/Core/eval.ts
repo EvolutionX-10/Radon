@@ -32,12 +32,17 @@ export class UserCommand extends RadonCommand {
 
 		if (args.getFlags('d', 'del')) await message.delete().catch(() => null);
 
-		const { success, result, time, type } = await this.eval(message, code, {
-			async: args.getFlags('async'),
-			depth: Number(args.getOption('depth')) ?? 0,
-			showHidden: args.getFlags('hidden'),
-			stack: args.getFlags('stack')
-		}).catch((e: Error) => {
+		const { success, result, time, type } = await this.eval(
+			message,
+			code,
+			{
+				async: args.getFlags('async'),
+				depth: Number(args.getOption('depth')) ?? 0,
+				showHidden: args.getFlags('hidden'),
+				stack: args.getFlags('stack')
+			},
+			args
+		).catch((e: Error) => {
 			return {
 				success: false,
 				result: e.message,
@@ -88,7 +93,8 @@ export class UserCommand extends RadonCommand {
 		return send(message, `${codeBlock('ts', result)}\n${footer}\n${time}`);
 	}
 
-	private async eval(message: RadonCommand.Message, code: string, flags: flags) {
+	// @ts-expect-error
+	private async eval(message: RadonCommand.Message, code: string, flags: flags, args: RadonCommand.Args) {
 		const stopwatch = new Stopwatch();
 		if (code.includes('await')) flags.async = true;
 		const ar = code.split(';');

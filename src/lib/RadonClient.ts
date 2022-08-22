@@ -1,7 +1,7 @@
-import { SapphireClient, container, ApplicationCommandRegistries, RegisterBehavior } from '@sapphire/framework';
 import { client_config } from '#config';
-import { PrismaClient } from '@prisma/client';
 import type { Settings, Utils } from '#lib/structures';
+import { ApplicationCommandRegistries, container, RegisterBehavior, SapphireClient } from '@sapphire/framework';
+import { PrismaClient } from '@prisma/client';
 
 export class RadonClient<Ready extends boolean = boolean> extends SapphireClient<Ready> {
 	public constructor() {
@@ -9,7 +9,7 @@ export class RadonClient<Ready extends boolean = boolean> extends SapphireClient
 	}
 
 	public override async login(token?: string): Promise<string> {
-		ApplicationCommandRegistries.setDefaultBehaviorWhenNotIdentical(RegisterBehavior.VerboseOverwrite);
+		ApplicationCommandRegistries.setDefaultBehaviorWhenNotIdentical(RegisterBehavior.Overwrite);
 		container.prisma = new PrismaClient();
 		await container.prisma.$connect();
 		return super.login(token);
