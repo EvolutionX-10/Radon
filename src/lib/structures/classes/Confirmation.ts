@@ -1,5 +1,5 @@
-import type { GuildInteraction } from '#lib/types';
 import { Emojis } from '#constants';
+import type { GuildInteraction } from '#lib/types';
 import { ButtonInteraction, Collection, ColorResolvable, EmojiIdentifierResolvable, Message, User } from 'discord.js';
 import { Button } from './Button.js';
 import { Embed } from './Embed.js';

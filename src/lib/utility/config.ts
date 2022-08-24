@@ -1,21 +1,21 @@
 process.env.NODE_ENV ??= 'development';
 
+import { Owners } from '#constants';
+import { envParseBoolean } from '#lib/env';
+import type { BotList } from '@devtomio/plugin-botlist';
+import { BucketScope, ClientLoggerOptions, CooldownOptions, LogLevel } from '@sapphire/framework';
+import { Time } from '@sapphire/time-utilities';
 import {
 	BitFieldResolvable,
 	ClientOptions,
+	Intents,
 	IntentsString,
 	MessageMentionOptions,
 	PartialTypes,
-	Intents,
-	SweeperOptions,
-	PresenceData
+	PresenceData,
+	SweeperOptions
 } from 'discord.js';
-import { BucketScope, ClientLoggerOptions, CooldownOptions, LogLevel } from '@sapphire/framework';
-import { Time } from '@sapphire/time-utilities';
-import { Owners } from '#constants';
-import type { BotList } from '@devtomio/plugin-botlist';
 import { config as dotenv } from 'dotenv-cra';
-import { envParseBoolean } from '#lib/env';
 
 dotenv({
 	debug: process.env.DOTENV_DEBUG_ENABLED ? envParseBoolean('DOTENV_DEBUG_ENABLED') : undefined
