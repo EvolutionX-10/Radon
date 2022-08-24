@@ -1,33 +1,30 @@
-// import { RadonSubcommand } from '#lib/structures';
+import { RadonCommand } from '#lib/structures';
+import { PermissionLevels } from '#lib/types';
 import { color } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
-import type { Args } from '@sapphire/framework';
 import { send } from '@sapphire/plugin-editable-commands';
-import { Subcommand } from '@sapphire/plugin-subcommands';
-import type { Message, TextChannel } from 'discord.js';
-@ApplyOptions<Subcommand.Options>({
+import type { TextChannel } from 'discord.js';
+@ApplyOptions<RadonCommand.Options>({
 	description: `Blacklist a guild`,
-	// permissionLevel: PermissionLevels.BotOwner,
-	subcommands: [
-		{
-			name: 'add',
-			default: true,
-			messageRun: 'add'
-		},
-		{
-			name: 'remove',
-			messageRun: 'remove'
-		},
-		{
-			name: 'rem',
-			messageRun: 'remove'
-		}
-	],
+	permissionLevel: PermissionLevels.BotOwner,
 	flags: ['force'],
 	aliases: ['bl']
 })
-export class UserCommand extends Subcommand {
-	public async add(message: Message, args: Args) {
+export class UserCommand extends RadonCommand {
+	public override async messageRun(message: RadonCommand.Message, args: RadonCommand.Args) {
+		const subcmd = await args.pick('string').catch(() => null);
+
+		switch (subcmd) {
+			case 'rm':
+			case 'remove':
+				return this.remove(message, args);
+			case 'add':
+			default:
+				return this.add(message, args);
+		}
+	}
+
+	private async add(message: RadonCommand.Message, args: RadonCommand.Args) {
 		const id = await args.pick('string').catch(() => null);
 		if (!id) return send(message, `Please provide a valid ID.`);
 
@@ -72,7 +69,7 @@ export class UserCommand extends Subcommand {
 		});
 	}
 
-	public async remove(message: Message, args: Args) {
+	private async remove(message: RadonCommand.Message, args: RadonCommand.Args) {
 		const id = await args.pick('string').catch(() => null);
 		if (!id) return send(message, `Please provide a valid ID.`);
 

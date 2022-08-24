@@ -1,34 +1,29 @@
-import { Confirmation } from '#lib/structures';
+import { Confirmation, RadonCommand } from '#lib/structures';
+import { PermissionLevels } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
-import type { Args } from '@sapphire/framework';
 import { send } from '@sapphire/plugin-editable-commands';
-import { Subcommand } from '@sapphire/plugin-subcommands';
-import type { Message } from 'discord.js';
 
-@ApplyOptions<Subcommand.Options>({
+@ApplyOptions<RadonCommand.Options>({
 	aliases: ['slashies'],
-	// permissionLevel: PermissionLevels.BotOwner,
-	// hidden: true,
-	// guarded: true,
-	flags: true,
-	subcommands: [
-		{
-			name: 'default',
-			messageRun: 'default',
-			default: true
-		},
-		{
-			name: 'del',
-			messageRun: 'delete'
-		},
-		{
-			name: 'delete',
-			messageRun: 'delete'
-		}
-	]
+	permissionLevel: PermissionLevels.BotOwner,
+	hidden: true,
+	guarded: true,
+	flags: true
 })
-export class UserCommand extends Subcommand {
-	public async default(message: Message, args: Args) {
+export class UserCommand extends RadonCommand {
+	public override async messageRun(message: RadonCommand.Message, args: RadonCommand.Args) {
+		const subcmd = await args.pick('string').catch(() => null);
+
+		switch (subcmd) {
+			case 'del':
+			case 'delete':
+				return this.delete(message, args);
+			default:
+				return this.default(message, args);
+		}
+	}
+
+	private async default(message: RadonCommand.Message, args: RadonCommand.Args) {
 		if (!message.guild) return;
 
 		let filtered: string;
@@ -65,7 +60,7 @@ export class UserCommand extends Subcommand {
 		return send(message, content);
 	}
 
-	public async delete(message: Message, args: Args) {
+	private async delete(message: RadonCommand.Message, args: RadonCommand.Args) {
 		if (!message.guild) return;
 
 		const global = await this.container.client.application?.commands.fetch();

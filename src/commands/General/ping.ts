@@ -1,7 +1,7 @@
 import { RadonCommand } from '#lib/structures';
 import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import type { Args, Command } from '@sapphire/framework';
+import type { Command } from '@sapphire/framework';
 import { send } from '@sapphire/plugin-editable-commands';
 import type { CommandInteraction, Message } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
@@ -9,8 +9,7 @@ import type { CommandInteraction, Message } from 'discord.js';
 	// permissionLevel: PermissionLevels.Everyone
 })
 export class UserCommand extends RadonCommand {
-	public override async messageRun(message: Message, args: Args) {
-		console.log(args.nextMaybe());
+	public override async messageRun(message: Message) {
 		const msg = await send(message, 'Ping?');
 		const content = `Pong! (Roundtrip took: ${Math.round(
 			(msg.editedTimestamp || msg.createdTimestamp) - (message.editedTimestamp || message.createdTimestamp)

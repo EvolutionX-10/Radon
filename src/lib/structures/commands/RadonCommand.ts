@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import type { GuildSettings } from '#lib/structures';
-import type { GuildContextMenuInteraction, GuildInteraction } from '#lib/types';
+import type { GuildContextMenuInteraction, GuildInteraction, GuildMessage } from '#lib/types';
 import { PermissionLevels } from '#lib/types';
 import {
 	ApplicationCommandRegistry,
@@ -13,7 +13,7 @@ import {
 	PreconditionContainerArray,
 	UserError
 } from '@sapphire/framework';
-import { AutocompleteInteraction, Message as Msg, Permissions } from 'discord.js';
+import { AutocompleteInteraction, Permissions } from 'discord.js';
 export abstract class RadonCommand extends Command {
 	/**
 	 * Whether the command can be disabled.
@@ -119,7 +119,7 @@ export namespace RadonCommand {
 	export type AutoComplete = AutocompleteInteraction;
 	export type Context = ChatInputCommandContext | ContextMenuCommandContext | Command.Context;
 	export type Args = SapphireArgs;
-	export type Message = Msg;
+	export type Message = GuildMessage;
 	export type Registry = ApplicationCommandRegistry;
 }
 
