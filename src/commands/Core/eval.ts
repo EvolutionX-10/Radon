@@ -37,7 +37,7 @@ export class UserCommand extends RadonCommand {
 			code,
 			{
 				async: args.getFlags('async'),
-				depth: Number(args.getOption('depth')) ?? 0,
+				depth: Number(args.getOption('depth')) || 0,
 				showHidden: args.getFlags('hidden'),
 				stack: args.getFlags('stack')
 			},
@@ -140,8 +140,7 @@ export class UserCommand extends RadonCommand {
 		if (typeof result !== 'string') {
 			result = inspect(result, {
 				depth: flags.depth,
-				showHidden: flags.showHidden,
-				customInspect: false
+				showHidden: flags.showHidden
 			});
 		}
 		const time = this.formatTime(syncTime, asyncTime ?? '');
