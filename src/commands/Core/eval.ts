@@ -16,7 +16,7 @@ import { inspect } from 'node:util';
 	aliases: ['ev'],
 	quotes: [],
 	permissionLevel: PermissionLevels.BotOwner,
-	flags: ['hidden', 'haste', 'silent', 's', 'type', 't', 'v', 'value', 'this', 'stack', 'del', 'd'],
+	flags: ['hidden', 'haste', 'silent', 's', 'type', 't', 'v', 'value', 'this', 'stack', 'del', 'd', 'async'],
 	options: ['depth'],
 	description: 'Evaluate some code',
 	guarded: true
@@ -140,7 +140,8 @@ export class UserCommand extends RadonCommand {
 		if (typeof result !== 'string') {
 			result = inspect(result, {
 				depth: flags.depth,
-				showHidden: flags.showHidden
+				showHidden: flags.showHidden,
+				customInspect: false
 			});
 		}
 		const time = this.formatTime(syncTime, asyncTime ?? '');
