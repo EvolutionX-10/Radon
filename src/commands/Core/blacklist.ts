@@ -7,24 +7,24 @@ import type { TextChannel } from 'discord.js';
 @ApplyOptions<RadonCommand.Options>({
 	description: `Blacklist a guild`,
 	permissionLevel: PermissionLevels.BotOwner,
-	subCommands: [
-		{
-			input: 'add',
-			default: true
-		},
-		{
-			input: 'remove'
-		},
-		{
-			input: 'rem',
-			output: 'remove'
-		}
-	],
 	flags: ['force'],
 	aliases: ['bl']
 })
 export class UserCommand extends RadonCommand {
-	public async add(message: RadonCommand.Message, args: RadonCommand.Args) {
+	public override async messageRun(message: RadonCommand.Message, args: RadonCommand.Args) {
+		const subcmd = await args.pick('string').catch(() => null);
+
+		switch (subcmd) {
+			case 'rm':
+			case 'remove':
+				return this.remove(message, args);
+			case 'add':
+			default:
+				return this.add(message, args);
+		}
+	}
+
+	private async add(message: RadonCommand.Message, args: RadonCommand.Args) {
 		const id = await args.pick('string').catch(() => null);
 		if (!id) return send(message, `Please provide a valid ID.`);
 
@@ -69,7 +69,7 @@ export class UserCommand extends RadonCommand {
 		});
 	}
 
-	public async remove(message: RadonCommand.Message, args: RadonCommand.Args) {
+	private async remove(message: RadonCommand.Message, args: RadonCommand.Args) {
 		const id = await args.pick('string').catch(() => null);
 		if (!id) return send(message, `Please provide a valid ID.`);
 

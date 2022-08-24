@@ -1,22 +1,20 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import { SubCommandPluginCommand } from '@sapphire/plugin-subcommands';
+import type { GuildSettings } from '#lib/structures';
+import type { GuildContextMenuInteraction, GuildInteraction, GuildMessage } from '#lib/types';
+import { PermissionLevels } from '#lib/types';
 import {
 	ApplicationCommandRegistry,
 	Args as SapphireArgs,
 	ChatInputCommandContext,
+	Command,
 	CommandOptionsRunTypeEnum,
 	ContextMenuCommandContext,
 	MessageCommandContext,
-	Piece,
-	PieceContext,
 	PreconditionContainerArray,
 	UserError
 } from '@sapphire/framework';
-import { PermissionLevels } from '#lib/types';
 import { AutocompleteInteraction, Permissions } from 'discord.js';
-import type { GuildSettings } from '#lib/structures';
-import type { GuildContextMenuInteraction, GuildInteraction, GuildMessage } from '#lib/types';
-export abstract class RadonCommand extends SubCommandPluginCommand<RadonCommand.Args, RadonCommand> {
+export abstract class RadonCommand extends Command {
 	/**
 	 * Whether the command can be disabled.
 	 */
@@ -34,7 +32,7 @@ export abstract class RadonCommand extends SubCommandPluginCommand<RadonCommand.
 	 */
 	public readonly community?: boolean;
 
-	public constructor(context: PieceContext, options: RadonCommand.Options) {
+	public constructor(context: Command.Context, options: RadonCommand.Options) {
 		const perms = new Permissions(options.requiredClientPermissions).add(
 			Permissions.FLAGS.SEND_MESSAGES,
 			Permissions.FLAGS.EMBED_LINKS,
@@ -43,7 +41,6 @@ export abstract class RadonCommand extends SubCommandPluginCommand<RadonCommand.
 		super(context, {
 			generateDashLessAliases: true,
 			requiredClientPermissions: perms,
-			subCommands: [],
 			runIn: [CommandOptionsRunTypeEnum.GuildAny],
 			...options
 		});
@@ -98,7 +95,7 @@ export namespace RadonCommand {
 	/**
 	 * The RadonCommand Options
 	 */
-	export type Options = SubCommandPluginCommand.Options & {
+	export type Options = Command.Options & {
 		/**
 		 * Whether the command can be disabled.
 		 */
@@ -120,18 +117,13 @@ export namespace RadonCommand {
 	export type ChatInputCommandInteraction = GuildInteraction;
 	export type ContextMenuCommandInteraction = GuildContextMenuInteraction;
 	export type AutoComplete = AutocompleteInteraction;
-	export type Context = ChatInputCommandContext | ContextMenuCommandContext;
+	export type Context = ChatInputCommandContext | ContextMenuCommandContext | Command.Context;
 	export type Args = SapphireArgs;
 	export type Message = GuildMessage;
 	export type Registry = ApplicationCommandRegistry;
 }
 
 declare module '@sapphire/framework' {
-	interface ArgType {
-		piece: Piece;
-		command: RadonCommand;
-		amount: string;
-	}
 	interface Preconditions {
 		BotOwner: never;
 		Everyone: never;
@@ -139,15 +131,6 @@ declare module '@sapphire/framework' {
 		Administrator: never;
 		ServerOwner: never;
 		Community: never;
-	}
-
-	interface DetailedDescriptionCommandObject {
-		usages?: string[];
-		extendedHelp?: string;
-		explainedUsage?: [string, string][];
-		possibleFormats?: [string, string][];
-		examples?: (null | string)[];
-		reminder?: string;
 	}
 }
 declare module 'discord.js' {

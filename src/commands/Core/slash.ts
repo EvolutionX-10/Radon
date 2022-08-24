@@ -8,20 +8,22 @@ import { send } from '@sapphire/plugin-editable-commands';
 	permissionLevel: PermissionLevels.BotOwner,
 	hidden: true,
 	guarded: true,
-	flags: true,
-	subCommands: [
-		{
-			input: 'default',
-			default: true
-		},
-		{
-			input: 'del',
-			output: 'delete'
-		}
-	]
+	flags: true
 })
 export class UserCommand extends RadonCommand {
-	public async default(message: RadonCommand.Message, args: RadonCommand.Args) {
+	public override async messageRun(message: RadonCommand.Message, args: RadonCommand.Args) {
+		const subcmd = await args.pick('string').catch(() => null);
+
+		switch (subcmd) {
+			case 'del':
+			case 'delete':
+				return this.delete(message, args);
+			default:
+				return this.default(message, args);
+		}
+	}
+
+	private async default(message: RadonCommand.Message, args: RadonCommand.Args) {
 		if (!message.guild) return;
 
 		let filtered: string;
@@ -58,7 +60,7 @@ export class UserCommand extends RadonCommand {
 		return send(message, content);
 	}
 
-	public async delete(message: RadonCommand.Message, args: RadonCommand.Args) {
+	private async delete(message: RadonCommand.Message, args: RadonCommand.Args) {
 		if (!message.guild) return;
 
 		const global = await this.container.client.application?.commands.fetch();

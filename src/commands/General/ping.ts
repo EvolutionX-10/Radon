@@ -1,12 +1,9 @@
-import type { CommandInteraction, Message } from 'discord.js';
 import { RadonCommand } from '#lib/structures';
-import { send } from '@sapphire/plugin-editable-commands';
-import { ApplyOptions } from '@sapphire/decorators';
-import { PermissionLevels } from '#lib/types';
 import { vars } from '#vars';
+import { ApplyOptions } from '@sapphire/decorators';
+import { send } from '@sapphire/plugin-editable-commands';
 @ApplyOptions<RadonCommand.Options>({
-	description: `Check my latency!`,
-	permissionLevel: PermissionLevels.Everyone
+	description: `Check my latency!`
 })
 export class UserCommand extends RadonCommand {
 	public override async messageRun(message: RadonCommand.Message) {
@@ -18,12 +15,12 @@ export class UserCommand extends RadonCommand {
 		return send(message, content);
 	}
 
-	public override async chatInputRun(interaction: CommandInteraction) {
+	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const msg = (await interaction.reply({
 			content: `Ping?`,
 			ephemeral: true,
 			fetchReply: true
-		})) as Message;
+		})) as RadonCommand.Message;
 		const { diff, ping } = this.getPing(msg, interaction);
 
 		return interaction.editReply({
@@ -44,7 +41,7 @@ export class UserCommand extends RadonCommand {
 		);
 	}
 
-	private getPing(message: Message, interaction: CommandInteraction) {
+	private getPing(message: RadonCommand.Message, interaction: RadonCommand.ChatInputCommandInteraction) {
 		const diff = (message.editedTimestamp || message.createdTimestamp) - interaction.createdTimestamp;
 		const ping = Math.round(this.container.client.ws.ping);
 
