@@ -99,7 +99,7 @@
 		"discord.js": "13.9.1",
 		"dotenv-cra": "3.0.2",
 		"gradient-string": "2.0.1",
-		"ioredis": "5.2.2"
+		"ioredis": "5.2.3"
 	},
 	"config": {
 		"commitizen": {
