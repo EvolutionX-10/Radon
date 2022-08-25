@@ -1,13 +1,13 @@
+import { Emojis, GuildIds } from '#constants';
+import { PermissionLevel } from '#lib/decorators';
 import { Confirmation, RadonCommand, Select, Timestamp } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
-import { PermissionLevel } from '#lib/decorators';
-import { GuildIds } from '#constants';
-import { ApplyOptions } from '@sapphire/decorators';
-import type { BufferResolvable, Collection, ColorResolvable, GuildMember, MessageSelectOptionData, PermissionResolvable, Role } from 'discord.js';
-import { all } from 'colornames';
-import { Stopwatch } from '@sapphire/stopwatch';
 import { sec } from '#lib/utility';
+import { ApplyOptions } from '@sapphire/decorators';
+import { Stopwatch } from '@sapphire/stopwatch';
 import { DurationFormatter } from '@sapphire/time-utilities';
+import { all } from 'colornames';
+import type { BufferResolvable, Collection, ColorResolvable, GuildMember, MessageSelectOptionData, PermissionResolvable, Role } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Manage Roles',
@@ -303,19 +303,21 @@ export class UserCommand extends RadonCommand {
 		const date = new Timestamp(role.createdTimestamp);
 
 		const basic =
-			`- Created At ${date.getShortDateTime()} [${date.getRelativeTime()}]\n` +
-			`- Hex: *\`${role.hexColor}\`*\n` +
-			`- Hoisted: ${role.hoist ? 'Yes' : 'No'}\n` +
-			`- Restricted to Bot: ${role.tags?.botId ? `Yes [<@${role.tags?.botId}>]` : 'No'}\n` +
-			`- Position: ${role.position}\n` +
-			`- Mentionable: ${role.mentionable ? 'Yes' : 'No'}\n` +
-			`- Managed externally: ${role.managed ? 'Yes' : 'No'}`;
+			`\` - \` Created At ${date.getShortDate()} [${date.getRelativeTime()}]\n` +
+			`\` - \` Hex: *\`${role.hexColor}\`*\n` +
+			`\` - \` Hoisted: ${role.hoist ? Emojis.Confirm : Emojis.Cross}\n` +
+			`\` - \` Restricted to Bot: ${role.tags?.botId ? `${Emojis.Confirm} [<@${role.tags?.botId}>]` : Emojis.Cross}\n` +
+			`\` - \` Position: ${role.position}\n` +
+			`\` - \` Mentionable: ${role.mentionable ? Emojis.Confirm : Emojis.Cross}\n` +
+			`\` - \` Managed externally: ${role.managed ? Emojis.Confirm : Emojis.Cross}`;
 
 		let perms = this.container.utils.format(role.permissions.toArray());
 		if (perms.includes('Administrator')) perms = ['Administrator'];
-
-		const adv = `- Key Permissions: ${perms.length ? perms.join(' | ') : 'None!'}\n- ID: *\`${role.id}\`*\n- Members: ${role.members.size}`;
-
+		// TODO make a priority order and sort/slice role perms
+		const adv = `\` - \`Key Permissions: ${perms.length ? perms.join(' | ') : 'None!'}\n\` - \`ID: *\`${role.id}\`*\n\` - \`Members: ${
+			role.members.size
+		}`;
+		const hex = role.hexColor.slice(1);
 		const embed = this.container.utils
 			.embed()
 			._author({
@@ -324,7 +326,7 @@ export class UserCommand extends RadonCommand {
 			._color(role.color)
 			._description(role.toString())
 			._timestamp()
-			._thumbnail(role.iconURL() ?? '')
+			._thumbnail(role.iconURL() ?? hex === '000000' ? '' : `https://singlecolorimage.com/get/${role.hexColor?.slice(1)}/400x400`)
 			._footer({
 				text: `Requested by ${interaction.user.username}`,
 				iconURL: interaction.user.displayAvatarURL({ dynamic: true })
