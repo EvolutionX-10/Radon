@@ -37,7 +37,7 @@ export class UserCommand extends RadonCommand {
 			code,
 			{
 				async: args.getFlags('async'),
-				depth: Number(args.getOption('depth')) || 0,
+				depth: Number(args.getOption('depth').unwrapOr(0)),
 				showHidden: args.getFlags('hidden'),
 				stack: args.getFlags('stack')
 			},
@@ -47,7 +47,7 @@ export class UserCommand extends RadonCommand {
 				success: false,
 				result: e.message,
 				time: '',
-				type: 'SyntaxError'
+				type: new Type(e)
 			};
 		});
 		const footer = codeBlock('ts', type);
