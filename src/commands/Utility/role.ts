@@ -313,10 +313,10 @@ export class UserCommand extends RadonCommand {
 
 		let perms = this.container.utils.format(role.permissions.toArray());
 		if (perms.includes('Administrator')) perms = ['Administrator'];
-		// TODO make a priority order and sort/slice role perms
-		const adv = `\` - \`Key Permissions: ${perms.length ? perms.join(' | ') : 'None!'}\n\` - \`ID: *\`${role.id}\`*\n\` - \`Members: ${
-			role.members.size
-		}`;
+
+		const adv = `\` - \` ID: *\`${role.id}\`*\n\` - \` Members: ${role.members.size}\n\` - \` Key Permissions: ${
+			perms.length ? perms.slice(0, 4).join(', ') : 'None!'
+		}\n`;
 		const hex = role.hexColor.slice(1);
 		const embed = this.container.utils
 			.embed()
@@ -405,8 +405,8 @@ export class UserCommand extends RadonCommand {
 		const menus: Select[] = [];
 
 		for (const [index, amount] of newarray.entries()) {
-			const perms = array.splice(0, amount).sort();
-			const formatted = this.container.utils.format(perms);
+			const perms = array.splice(0, amount);
+			const formatted = this.container.utils.format(perms, false).sort();
 
 			const options: MessageSelectOptionData[] = Array(amount)
 				.fill(null)
