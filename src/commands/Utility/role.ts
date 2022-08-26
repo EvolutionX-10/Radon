@@ -3,7 +3,7 @@ import { PermissionLevel } from '#lib/decorators';
 import { Confirmation, RadonCommand, Select, Timestamp } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { sec } from '#lib/utility';
-import { ApplyOptions } from '@sapphire/decorators';
+import { ApplyOptions, RequiresClientPermissions } from '@sapphire/decorators';
 import { Stopwatch } from '@sapphire/stopwatch';
 import { DurationFormatter } from '@sapphire/time-utilities';
 import { all } from 'colornames';
@@ -12,7 +12,6 @@ import type { BufferResolvable, Collection, ColorResolvable, GuildMember, Messag
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Manage Roles',
 	permissionLevel: PermissionLevels.Moderator,
-	requiredClientPermissions: ['MANAGE_ROLES'],
 	cooldownDelay: sec(30),
 	cooldownLimit: 2
 })
@@ -231,6 +230,7 @@ export class UserCommand extends RadonCommand {
 		);
 	}
 
+	@RequiresClientPermissions('MANAGE_ROLES')
 	private async add(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const role = interaction.options.getRole('role', true);
 		const target = interaction.options.getMember('target');
@@ -269,6 +269,7 @@ export class UserCommand extends RadonCommand {
 		});
 	}
 
+	@RequiresClientPermissions('MANAGE_ROLES')
 	private async remove(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const role = interaction.options.getRole('role', true);
 		const target = interaction.options.getMember('target');
@@ -352,6 +353,7 @@ export class UserCommand extends RadonCommand {
 		return interaction.reply({ embeds: [embed] });
 	}
 
+	@RequiresClientPermissions('MANAGE_ROLES')
 	private async create(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const message = (await interaction.deferReply({ fetchReply: true })) as RadonCommand.Message;
 
@@ -405,6 +407,60 @@ export class UserCommand extends RadonCommand {
 		});
 
 		return this.collector(message, role, interaction);
+	}
+
+	@RequiresClientPermissions('MANAGE_ROLES')
+	private async delete(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const role = interaction.options.getRole('role', true);
+		const reason = interaction.options.getString('reason') ?? undefined;
+
+		if (role.managed) {
+			return interaction.editReply("This role is managed by an integration, you can't delete it!");
+		}
+		if (role.position > interaction.guild.me!.roles?.highest?.position) {
+			return interaction.editReply(`I can't delete ${role} because its position is higher than my highest role!`);
+		}
+		await role.delete(reason);
+		return interaction.reply(`Role *${role.name}* deleted!`);
+	}
+
+	@PermissionLevel('Administrator')
+	private async bulk(interaction: RadonCommand.ChatInputCommandInteraction, option: bulkActions) {
+		const role = interaction.options.getRole('role', true);
+		const reason = interaction.options.getString('reason') ?? undefined;
+		const base = interaction.options.getRole('base_role') ?? interaction.guild.roles.everyone;
+
+		if (role.id === interaction.guildId) return interaction.reply(`You can't add @everyone role`);
+		if (role.tags) return interaction.reply(`I cannot add roles which are linked to bots/server`);
+
+		if (role.position > interaction.guild.me!.roles.highest!.position)
+			return interaction.reply({
+				content: `I can't add ${role} because its position is higher than my highest role!`
+			});
+
+		if (role.id === base.id) return interaction.reply(`You can't bulk ${option} same role as base role!`);
+
+		if (interaction.guild.bulkRoleInProgress) return interaction.reply(`A bulk role process is already in progress!`);
+
+		await interaction.guild.members.fetch();
+
+		let { members } = base;
+		members = members.filter((m) => (option === 'add' ? !m.roles.cache.has(role.id) : m.roles.cache.has(role.id)));
+
+		if (!members.size) return interaction.reply(`No members found for the action to proceed! Terminating...`);
+
+		const confirm = new Confirmation({
+			content: `Are you sure you want to ${option} ${role} ${option === 'add' ? 'to' : 'from'} every member ${
+				base.id === interaction.guildId ? 'in this server' : ` with ${base} role`
+			}?`,
+			onConfirm: async () => {
+				await this.bulkAction(interaction, members, option, role, reason);
+			},
+			onCancel: async ({ i }) => {
+				await i.editReply('Process cancelled!');
+			}
+		});
+		return confirm.run(interaction);
 	}
 
 	private gimmeMenu(array: string[]) {
@@ -491,59 +547,6 @@ export class UserCommand extends RadonCommand {
 
 			await role.setPermissions(perms as PermissionResolvable);
 		});
-	}
-
-	private async delete(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const role = interaction.options.getRole('role', true);
-		const reason = interaction.options.getString('reason') ?? undefined;
-
-		if (role.managed) {
-			return interaction.editReply("This role is managed by an integration, you can't delete it!");
-		}
-		if (role.position > interaction.guild.me!.roles?.highest?.position) {
-			return interaction.editReply(`I can't delete ${role} because its position is higher than my highest role!`);
-		}
-		await role.delete(reason);
-		return interaction.reply(`Role *${role.name}* deleted!`);
-	}
-
-	@PermissionLevel('Administrator')
-	private async bulk(interaction: RadonCommand.ChatInputCommandInteraction, option: bulkActions) {
-		const role = interaction.options.getRole('role', true);
-		const reason = interaction.options.getString('reason') ?? undefined;
-		const base = interaction.options.getRole('base_role') ?? interaction.guild.roles.everyone;
-
-		if (role.id === interaction.guildId) return interaction.reply(`You can't add @everyone role`);
-		if (role.tags) return interaction.reply(`I cannot add roles which are linked to bots/server`);
-
-		if (role.position > interaction.guild.me!.roles.highest!.position)
-			return interaction.reply({
-				content: `I can't add ${role} because its position is higher than my highest role!`
-			});
-
-		if (role.id === base.id) return interaction.reply(`You can't bulk ${option} same role as base role!`);
-
-		if (interaction.guild.bulkRoleInProgress) return interaction.reply(`A bulk role process is already in progress!`);
-
-		await interaction.guild.members.fetch();
-
-		let { members } = base;
-		members = members.filter((m) => (option === 'add' ? !m.roles.cache.has(role.id) : m.roles.cache.has(role.id)));
-
-		if (!members.size) return interaction.reply(`No members found for the action to proceed! Terminating...`);
-
-		const confirm = new Confirmation({
-			content: `Are you sure you want to ${option} ${role} ${option === 'add' ? 'to' : 'from'} every member ${
-				base.id === interaction.guildId ? 'in this server' : ` with ${base} role`
-			}?`,
-			onConfirm: async () => {
-				await this.bulkAction(interaction, members, option, role, reason);
-			},
-			onCancel: async ({ i }) => {
-				await i.editReply('Process cancelled!');
-			}
-		});
-		return confirm.run(interaction);
 	}
 
 	private async bulkAction(
