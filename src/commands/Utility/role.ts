@@ -254,7 +254,14 @@ export class UserCommand extends RadonCommand {
 
 		if (target.roles.cache.has(role.id)) return interaction.reply(`${target} already has ${role}`);
 
-		await target.roles.add(role, reason).catch((e) => console.log(e.message));
+		const added = await target.roles.add(role, reason).catch(() => null);
+
+		if (!added) {
+			return interaction.reply({
+				content: `Failed to add ${role} to ${target}`,
+				ephemeral: true
+			});
+		}
 
 		return interaction.reply({
 			content: `Added ${role} to ${target} successfully!`,
@@ -315,7 +322,7 @@ export class UserCommand extends RadonCommand {
 		if (perms.includes('Administrator')) perms = ['Administrator'];
 
 		const adv = `\` - \` ID: *\`${role.id}\`*\n\` - \` Members: ${role.members.size}\n\` - \` Key Permissions: ${
-			perms.length ? perms.slice(0, 4).join(', ') : 'None!'
+			perms.length ? perms.slice(0, 5).join(', ') : 'None!'
 		}\n`;
 		const hex = role.hexColor.slice(1);
 		const embed = this.container.utils
