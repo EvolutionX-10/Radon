@@ -311,19 +311,19 @@ export class UserCommand extends RadonCommand {
 		const date = new Timestamp(role.createdTimestamp);
 
 		const basic =
+			`\` - \` Rank: ${interaction.guild.roles.cache.size - role.position}\n` +
 			`\` - \` Created At ${date.getShortDate()} [${date.getRelativeTime()}]\n` +
 			`\` - \` Hex: *\`${role.hexColor}\`*\n` +
 			`\` - \` Hoisted: ${role.hoist ? Emojis.Confirm : Emojis.Cross}\n` +
 			`\` - \` Restricted to Bot: ${role.tags?.botId ? `${Emojis.Confirm} [<@${role.tags?.botId}>]` : Emojis.Cross}\n` +
-			`\` - \` Position: ${role.position}\n` +
 			`\` - \` Mentionable: ${role.mentionable ? Emojis.Confirm : Emojis.Cross}\n` +
 			`\` - \` Managed externally: ${role.managed ? Emojis.Confirm : Emojis.Cross}`;
 
 		let perms = this.container.utils.format(role.permissions.toArray());
 		if (perms.includes('Administrator')) perms = ['Administrator'];
 
-		const adv = `\` - \` ID: *\`${role.id}\`*\n\` - \` Members: ${role.members.size}\n\` - \` Key Permissions: ${
-			perms.length ? perms.slice(0, 5).join(', ') : 'None!'
+		const adv = `\` - \` ID: *\`${role.id}\`*\n\` - \` Members: ${role.members.size}\n\` - \` Key Permission: ${
+			perms.length ? perms[0] : 'None!'
 		}\n`;
 		const hex = role.hexColor.slice(1);
 		const embed = this.container.utils
@@ -331,10 +331,10 @@ export class UserCommand extends RadonCommand {
 			._author({
 				name: 'Role Information'
 			})
-			._color(role.color)
+			._color(hex === '000000' ? '#2f3136' : role.color)
 			._description(role.toString())
 			._timestamp()
-			._thumbnail(role.iconURL() ?? hex === '000000' ? '' : `https://singlecolorimage.com/get/${role.hexColor?.slice(1)}/400x400`)
+			._thumbnail(role.iconURL() ?? `https://singlecolorimage.com/get/${hex === '000000' ? '2f3136' : hex}/400x400`)
 			._footer({
 				text: `Requested by ${interaction.user.username}`,
 				iconURL: interaction.user.displayAvatarURL({ dynamic: true })
@@ -425,6 +425,7 @@ export class UserCommand extends RadonCommand {
 	}
 
 	@PermissionLevel('Administrator')
+	@RequiresClientPermissions('MANAGE_ROLES')
 	private async bulk(interaction: RadonCommand.ChatInputCommandInteraction, option: bulkActions) {
 		const role = interaction.options.getRole('role', true);
 		const reason = interaction.options.getString('reason') ?? undefined;
