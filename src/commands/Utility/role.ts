@@ -7,7 +7,16 @@ import { ApplyOptions, RequiresClientPermissions } from '@sapphire/decorators';
 import { Stopwatch } from '@sapphire/stopwatch';
 import { DurationFormatter } from '@sapphire/time-utilities';
 import { all } from 'colornames';
-import type { BufferResolvable, Collection, ColorResolvable, GuildMember, MessageSelectOptionData, PermissionResolvable, Role } from 'discord.js';
+import {
+	BufferResolvable,
+	Collection,
+	ColorResolvable,
+	GuildMember,
+	MessageSelectOptionData,
+	PermissionResolvable,
+	Permissions,
+	Role
+} from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Manage Roles',
@@ -387,7 +396,7 @@ export class UserCommand extends RadonCommand {
 		content = content.replace(name, role.toString());
 
 		let perms = (await interaction.guild.me?.fetch())?.permissions.toArray() ?? [];
-		if (perms.includes('ADMINISTRATOR')) perms = (await interaction.guild.fetchOwner()).permissions.toArray();
+		if (perms.includes('ADMINISTRATOR')) perms = new Permissions(Permissions.ALL).toArray();
 		perms = perms.filter((perm) => interaction.member.permissions.toArray().includes(perm));
 
 		if (!perms.length) return interaction.editReply(content);
@@ -469,14 +478,13 @@ export class UserCommand extends RadonCommand {
 		const menus: Select[] = [];
 
 		for (const [index, amount] of newarray.entries()) {
-			const perms = array.splice(0, amount);
-			const formatted = this.container.utils.format(perms, false).sort();
+			const perms = array.slice(0, amount).sort();
 
 			const options: MessageSelectOptionData[] = Array(amount)
 				.fill(null)
 				.map((_, i) => {
 					return {
-						label: formatted[i],
+						label: this.container.utils.format(perms[i]),
 						value: perms[i]
 					};
 				});
@@ -506,12 +514,13 @@ export class UserCommand extends RadonCommand {
 		collector.on('collect', async (i) => {
 			if (i.user.id !== interaction.user.id) {
 				return i.reply({
-					content: 'Not for you!',
+					content: "This maze ain't for you!",
 					ephemeral: true
 				});
 			}
 
 			if (i.isSelectMenu()) {
+				await i.deferUpdate();
 				switch (i.customId as SelectMenuCustomIds) {
 					case '@role/perms/menu/0':
 						perms1 = i.values;
@@ -522,25 +531,24 @@ export class UserCommand extends RadonCommand {
 				}
 				perms = [...new Set(perms1.concat(perms2))];
 			}
-
-			await i.deferUpdate();
 			collector.resetTimer();
 
 			if (i.customId === 'save') {
 				message.components.map((r) => r.components.map((c) => c.setDisabled()));
-				await message.edit({
-					content: message.content.concat('\nSaved with selected Permissions!'),
+				await i.update({
+					content: message.content.concat(`\n\n> Saved with ${perms.length ? 'selected' : 'no'} permissions!`),
 					components: message.components
 				});
-				collector.stop();
+				collector.stop('Saved');
 			}
 		});
 
-		collector.on('end', async (c) => {
-			if (c.size === 0 || !perms.length) {
+		collector.on('end', async (c, r) => {
+			if (r !== 'Saved') perms = [];
+			if ((c.size === 0 || !perms.length) && r !== 'Saved') {
 				message.components.map((r) => r.components.map((c) => c.setDisabled()));
 				await message.edit({
-					content: message.content.concat('\nRole was created with no permissions!'),
+					content: message.content.concat('\n\n> Role was created with no permissions!'),
 					components: message.components
 				});
 				return;
