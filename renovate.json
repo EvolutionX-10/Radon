@@ -2,7 +2,7 @@
 	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
 	"extends": ["config:base", "helpers:pinGitHubActionDigests"],
 	"labels": ["Type: Dependencies"],
-	"automerge": true,
+	"automerge": false,
 	"automergeType": "pr",
 	"automergeStrategy": "squash",
 	"major": {
@@ -12,11 +12,11 @@
 	},
 	"minor": {
 		"addLabels": ["Dependencies: Minor"],
-		"automerge": true
+		"automerge": false
 	},
 	"patch": {
 		"addLabels": ["Dependencies: Patch"],
-		"automerge": true
+		"automerge": false
 	},
 	"timezone": "Asia/Kolkata",
 	"schedule": ["before 6pm every weekday"],
