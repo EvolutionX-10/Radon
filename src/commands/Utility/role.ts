@@ -1,18 +1,26 @@
+import { Emojis, GuildIds } from '#constants';
+import { PermissionLevel } from '#lib/decorators';
 import { Confirmation, RadonCommand, Select, Timestamp } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
-import { PermissionLevel } from '#lib/decorators';
-import { GuildIds } from '#constants';
-import { ApplyOptions } from '@sapphire/decorators';
-import type { BufferResolvable, Collection, ColorResolvable, GuildMember, MessageSelectOptionData, PermissionResolvable, Role } from 'discord.js';
-import { all } from 'colornames';
-import { Stopwatch } from '@sapphire/stopwatch';
 import { sec } from '#lib/utility';
+import { ApplyOptions, RequiresClientPermissions } from '@sapphire/decorators';
+import { Stopwatch } from '@sapphire/stopwatch';
 import { DurationFormatter } from '@sapphire/time-utilities';
+import { all } from 'colornames';
+import {
+	BufferResolvable,
+	Collection,
+	ColorResolvable,
+	GuildMember,
+	MessageSelectOptionData,
+	PermissionResolvable,
+	Permissions,
+	Role
+} from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Manage Roles',
 	permissionLevel: PermissionLevels.Moderator,
-	requiredClientPermissions: ['MANAGE_ROLES'],
 	cooldownDelay: sec(30),
 	cooldownLimit: 2
 })
@@ -231,6 +239,7 @@ export class UserCommand extends RadonCommand {
 		);
 	}
 
+	@RequiresClientPermissions('MANAGE_ROLES')
 	private async add(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const role = interaction.options.getRole('role', true);
 		const target = interaction.options.getMember('target');
@@ -254,7 +263,14 @@ export class UserCommand extends RadonCommand {
 
 		if (target.roles.cache.has(role.id)) return interaction.reply(`${target} already has ${role}`);
 
-		await target.roles.add(role, reason).catch((e) => console.log(e.message));
+		const added = await target.roles.add(role, reason).catch(() => null);
+
+		if (!added) {
+			return interaction.reply({
+				content: `Failed to add ${role} to ${target}`,
+				ephemeral: true
+			});
+		}
 
 		return interaction.reply({
 			content: `Added ${role} to ${target} successfully!`,
@@ -262,6 +278,7 @@ export class UserCommand extends RadonCommand {
 		});
 	}
 
+	@RequiresClientPermissions('MANAGE_ROLES')
 	private async remove(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const role = interaction.options.getRole('role', true);
 		const target = interaction.options.getMember('target');
@@ -303,28 +320,30 @@ export class UserCommand extends RadonCommand {
 		const date = new Timestamp(role.createdTimestamp);
 
 		const basic =
-			`- Created At ${date.getShortDateTime()} [${date.getRelativeTime()}]\n` +
-			`- Hex: *\`${role.hexColor}\`*\n` +
-			`- Hoisted: ${role.hoist ? 'Yes' : 'No'}\n` +
-			`- Restricted to Bot: ${role.tags?.botId ? `Yes [<@${role.tags?.botId}>]` : 'No'}\n` +
-			`- Position: ${role.position}\n` +
-			`- Mentionable: ${role.mentionable ? 'Yes' : 'No'}\n` +
-			`- Managed externally: ${role.managed ? 'Yes' : 'No'}`;
+			`\` - \` Rank: ${interaction.guild.roles.cache.size - role.position}\n` +
+			`\` - \` Created At ${date.getShortDate()} [${date.getRelativeTime()}]\n` +
+			`\` - \` Hex: *\`${role.hexColor}\`*\n` +
+			`\` - \` Hoisted: ${role.hoist ? Emojis.Confirm : Emojis.Cross}\n` +
+			`\` - \` Restricted to Bot: ${role.tags?.botId ? `${Emojis.Confirm} [<@${role.tags?.botId}>]` : Emojis.Cross}\n` +
+			`\` - \` Mentionable: ${role.mentionable ? Emojis.Confirm : Emojis.Cross}\n` +
+			`\` - \` Managed externally: ${role.managed ? Emojis.Confirm : Emojis.Cross}`;
 
 		let perms = this.container.utils.format(role.permissions.toArray());
 		if (perms.includes('Administrator')) perms = ['Administrator'];
 
-		const adv = `- Key Permissions: ${perms.length ? perms.join(' | ') : 'None!'}\n- ID: *\`${role.id}\`*\n- Members: ${role.members.size}`;
-
+		const adv = `\` - \` ID: *\`${role.id}\`*\n\` - \` Members: ${role.members.size}\n\` - \` Key Permission: ${
+			perms.length ? perms[0] : 'None!'
+		}\n`;
+		const hex = role.hexColor.slice(1);
 		const embed = this.container.utils
 			.embed()
 			._author({
 				name: 'Role Information'
 			})
-			._color(role.color)
+			._color(hex === '000000' ? '#2f3136' : role.color)
 			._description(role.toString())
 			._timestamp()
-			._thumbnail(role.iconURL() ?? '')
+			._thumbnail(role.iconURL() ?? `https://singlecolorimage.com/get/${hex === '000000' ? '2f3136' : hex}/400x400`)
 			._footer({
 				text: `Requested by ${interaction.user.username}`,
 				iconURL: interaction.user.displayAvatarURL({ dynamic: true })
@@ -343,6 +362,7 @@ export class UserCommand extends RadonCommand {
 		return interaction.reply({ embeds: [embed] });
 	}
 
+	@RequiresClientPermissions('MANAGE_ROLES')
 	private async create(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const message = (await interaction.deferReply({ fetchReply: true })) as RadonCommand.Message;
 
@@ -376,7 +396,7 @@ export class UserCommand extends RadonCommand {
 		content = content.replace(name, role.toString());
 
 		let perms = (await interaction.guild.me?.fetch())?.permissions.toArray() ?? [];
-		if (perms.includes('ADMINISTRATOR')) perms = (await interaction.guild.fetchOwner()).permissions.toArray();
+		if (perms.includes('ADMINISTRATOR')) perms = new Permissions(Permissions.ALL).toArray();
 		perms = perms.filter((perm) => interaction.member.permissions.toArray().includes(perm));
 
 		if (!perms.length) return interaction.editReply(content);
@@ -398,92 +418,7 @@ export class UserCommand extends RadonCommand {
 		return this.collector(message, role, interaction);
 	}
 
-	private gimmeMenu(array: string[]) {
-		const newarray = this.container.utils.summableArray(array.length, 25);
-		const menus: Select[] = [];
-
-		for (const [index, amount] of newarray.entries()) {
-			const perms = array.splice(0, amount).sort();
-			const formatted = this.container.utils.format(perms);
-
-			const options: MessageSelectOptionData[] = Array(amount)
-				.fill(null)
-				.map((_, i) => {
-					return {
-						label: formatted[i],
-						value: perms[i]
-					};
-				});
-
-			const menu = this.container.utils
-				.select()
-				._customId(`@role/perms/menu/${index}`)
-				._label('Select some permissions!')
-				._min(0)
-				._max(amount)
-				._options(...options);
-
-			menus.push(menu);
-		}
-		return menus;
-	}
-
-	private collector(message: RadonCommand.Message, role: Role, interaction: RadonCommand.ChatInputCommandInteraction) {
-		const collector = message.createMessageComponentCollector({
-			time: this.container.utils.mins(1)
-		});
-
-		let perms: string[] = [];
-		let perms1: string[] = [];
-		let perms2: string[] = [];
-
-		collector.on('collect', async (i) => {
-			if (i.user.id !== interaction.user.id) {
-				return i.reply({
-					content: 'Not for you!',
-					ephemeral: true
-				});
-			}
-
-			if (i.isSelectMenu()) {
-				switch (i.customId as SelectMenuCustomIds) {
-					case '@role/perms/menu/0':
-						perms1 = i.values;
-						break;
-					case '@role/perms/menu/1':
-						perms2 = i.values;
-						break;
-				}
-				perms = [...new Set(perms1.concat(perms2))];
-			}
-
-			await i.deferUpdate();
-			collector.resetTimer();
-
-			if (i.customId === 'save') {
-				message.components.map((r) => r.components.map((c) => c.setDisabled()));
-				await message.edit({
-					content: message.content.concat('\nSaved with selected Permissions!'),
-					components: message.components
-				});
-				collector.stop();
-			}
-		});
-
-		collector.on('end', async (c) => {
-			if (c.size === 0 || !perms.length) {
-				message.components.map((r) => r.components.map((c) => c.setDisabled()));
-				await message.edit({
-					content: message.content.concat('\nRole was created with no permissions!'),
-					components: message.components
-				});
-				return;
-			}
-
-			await role.setPermissions(perms as PermissionResolvable);
-		});
-	}
-
+	@RequiresClientPermissions('MANAGE_ROLES')
 	private async delete(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const role = interaction.options.getRole('role', true);
 		const reason = interaction.options.getString('reason') ?? undefined;
@@ -499,6 +434,7 @@ export class UserCommand extends RadonCommand {
 	}
 
 	@PermissionLevel('Administrator')
+	@RequiresClientPermissions('MANAGE_ROLES')
 	private async bulk(interaction: RadonCommand.ChatInputCommandInteraction, option: bulkActions) {
 		const role = interaction.options.getRole('role', true);
 		const reason = interaction.options.getString('reason') ?? undefined;
@@ -535,6 +471,91 @@ export class UserCommand extends RadonCommand {
 			}
 		});
 		return confirm.run(interaction);
+	}
+
+	private gimmeMenu(array: string[]) {
+		const newarray = this.container.utils.summableArray(array.length, 25);
+		const menus: Select[] = [];
+
+		for (const [index, amount] of newarray.entries()) {
+			const perms = array.slice(0, amount).sort();
+
+			const options: MessageSelectOptionData[] = Array(amount)
+				.fill(null)
+				.map((_, i) => {
+					return {
+						label: this.container.utils.format(perms[i]),
+						value: perms[i]
+					};
+				});
+
+			const menu = this.container.utils
+				.select()
+				._customId(`@role/perms/menu/${index}`)
+				._label('Select some permissions!')
+				._min(0)
+				._max(amount)
+				._options(...options);
+
+			menus.push(menu);
+		}
+		return menus;
+	}
+
+	private collector(message: RadonCommand.Message, role: Role, interaction: RadonCommand.ChatInputCommandInteraction) {
+		const collector = message.createMessageComponentCollector({
+			time: this.container.utils.mins(1)
+		});
+
+		let perms: string[] = [];
+		let perms1: string[] = [];
+		let perms2: string[] = [];
+
+		collector.on('collect', async (i) => {
+			if (i.user.id !== interaction.user.id) {
+				return i.reply({
+					content: "This maze ain't for you!",
+					ephemeral: true
+				});
+			}
+
+			if (i.isSelectMenu()) {
+				await i.deferUpdate();
+				switch (i.customId as SelectMenuCustomIds) {
+					case '@role/perms/menu/0':
+						perms1 = i.values;
+						break;
+					case '@role/perms/menu/1':
+						perms2 = i.values;
+						break;
+				}
+				perms = [...new Set(perms1.concat(perms2))];
+			}
+			collector.resetTimer();
+
+			if (i.customId === 'save') {
+				message.components.map((r) => r.components.map((c) => c.setDisabled()));
+				await i.update({
+					content: message.content.concat(`\n\n> Saved with ${perms.length ? 'selected' : 'no'} permissions!`),
+					components: message.components
+				});
+				collector.stop('Saved');
+			}
+		});
+
+		collector.on('end', async (c, r) => {
+			if (r !== 'Saved') perms = [];
+			if ((c.size === 0 || !perms.length) && r !== 'Saved') {
+				message.components.map((r) => r.components.map((c) => c.setDisabled()));
+				await message.edit({
+					content: message.content.concat('\n\n> Role was created with no permissions!'),
+					components: message.components
+				});
+				return;
+			}
+
+			await role.setPermissions(perms as PermissionResolvable);
+		});
 	}
 
 	private async bulkAction(
