@@ -1,6 +1,7 @@
 import { RadonEvents } from '#lib/types';
-import { color, isOwner } from '#lib/utility';
+import { isOwner } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
+import { Color } from '#constants';
 import { Listener } from '@sapphire/framework';
 import axios from 'axios';
 import { CommandInteraction, MessageEmbed } from 'discord.js';
@@ -28,7 +29,7 @@ export class UserListener extends Listener {
 
 	private async addVoteMsg(interaction: CommandInteraction) {
 		const embed = new MessageEmbed()
-			.setColor(color.General)
+			.setColor(Color.General)
 			.setTitle('Thank you for using me')
 			.setDescription(
 				'If you liked the experience, please consider voting for me as it really helps the developer!' +

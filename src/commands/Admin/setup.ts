@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
-import { color, mins, sec } from '#lib/utility';
-import { GuildIds } from '#constants';
+import { mins, sec } from '#lib/utility';
+import { GuildIds, Color } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { container } from '@sapphire/framework';
 import { ButtonInteraction, Message, OverwriteResolvable, Permissions } from 'discord.js';
@@ -180,7 +180,7 @@ export class UserCommand extends RadonCommand {
 				});
 				const final = this.container.utils
 					.embed()
-					._color(color.Admin)
+					._color(Color.Admin)
 					._title('Overview')
 					._description('Here is a quick overview of your setup!')
 					._fields([
@@ -353,7 +353,7 @@ export class UserCommand extends RadonCommand {
 	private welcome() {
 		return this.container.utils
 			.embed()
-			._color(color.Admin)
+			._color(Color.Admin)
 			._thumbnail(this.container.client.user?.displayAvatarURL() ?? '')
 			._timestamp()
 			._title('Welcome to Radon!')

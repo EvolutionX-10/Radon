@@ -1,6 +1,6 @@
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
-import { color } from '#lib/utility';
+import { Color } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { send } from '@sapphire/plugin-editable-commands';
 import type { TextChannel } from 'discord.js';
@@ -56,7 +56,7 @@ export class UserCommand extends RadonCommand {
 		return webhook.send({
 			embeds: [
 				{
-					color: color.System,
+					color: Color.System,
 					thumbnail: {
 						url: guild?.iconURL() ?? ''
 					},
@@ -87,7 +87,7 @@ export class UserCommand extends RadonCommand {
 		return webhook.send({
 			embeds: [
 				{
-					color: color.System,
+					color: Color.System,
 					description,
 					timestamp: Date.now()
 				}
