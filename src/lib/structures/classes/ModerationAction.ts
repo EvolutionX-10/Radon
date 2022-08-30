@@ -5,7 +5,7 @@ import { runAllChecks } from '#lib/utility';
 export class ModerationAction {
 	public constructor(public readonly guild: Guild) {}
 
-	public invoke(data: ModActionData) {
+	public async invoke(data: ModActionData) {
 		const { moderator, target, action } = data;
 		const { content, result } = runAllChecks(moderator, target as GuildMember, action);
 		if (!result) throw new Error(content);
@@ -18,7 +18,7 @@ export class ModerationAction {
 			case 'timeout':
 				return this.timeout(data as TimeoutActionData);
 			case 'softban':
-				return this.ban(data, true);
+				return this.ban(data, true, 1);
 			default:
 				throw new Error(`Unknown action: ${data.action}`);
 		}
