@@ -1,7 +1,7 @@
 import { RadonCommand, RadonPaginatedMessageEmbedFields, Timestamp } from '#lib/structures';
 import { BaseWarnActionData, PermissionLevels, RadonEvents, WarnActionData } from '#lib/types';
-import { color, mins, runAllChecks, uid, warnSeverity, sec } from '#lib/utility';
-import { GuildIds, Emojis } from '#constants';
+import { mins, runAllChecks, uid, sec } from '#lib/utility';
+import { GuildIds, Emojis, Color, WarnSeverity } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { cutText } from '@sapphire/utilities';
 import { APIApplicationCommandOptionChoice, ApplicationCommandType } from 'discord-api-types/v9';
@@ -265,7 +265,7 @@ export class UserCommand extends RadonCommand {
 				{
 					description: `${member} (${member.user.tag}) has been warned`,
 					timestamp: new Date(),
-					color: color.Moderation
+					color: Color.Moderation
 				}
 			]
 		});
@@ -375,7 +375,7 @@ export class UserCommand extends RadonCommand {
 		}
 		const warns = data!.doc;
 		const warns_size = warns.warnlist.filter((e) => e?.id === member.id)[0].warns.length;
-		const embed_color = color.Moderation;
+		const embed_color = Color.Moderation;
 		const embed_title = `${member.user.tag}'s Warnings`;
 		const embed_description = `${member} has ${warns_size} warning(s)`;
 		const embed_fields = await Promise.all(
@@ -421,15 +421,15 @@ export class UserCommand extends RadonCommand {
 	private autoSeverity(num: number) {
 		switch (num as warnSeverityNum) {
 			case 1:
-				return warnSeverity.One;
+				return WarnSeverity.One;
 			case 2:
-				return warnSeverity.Two;
+				return WarnSeverity.Two;
 			case 3:
-				return warnSeverity.Three;
+				return WarnSeverity.Three;
 			case 4:
-				return warnSeverity.Four;
+				return WarnSeverity.Four;
 			case 5:
-				return warnSeverity.Five;
+				return WarnSeverity.Five;
 		}
 	}
 
