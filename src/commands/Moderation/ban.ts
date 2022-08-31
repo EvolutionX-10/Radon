@@ -1,7 +1,7 @@
 import { Confirmation, RadonCommand } from '#lib/structures';
 import { BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
-import { generateModLogDescription, runAllChecks, sec, severity } from '#lib/utility';
-import { GuildIds, Emojis } from '#constants';
+import { generateModLogDescription, runAllChecks, sec } from '#lib/utility';
+import { GuildIds, Emojis, Severity } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import type { APIApplicationCommandOptionChoice } from 'discord-api-types/v9';
 import type { GuildMember } from 'discord.js';
@@ -124,7 +124,7 @@ export class UserCommand extends RadonCommand {
 
 		const embed = this.container.utils
 			.embed()
-			._color(severity.ban)
+			._color(Severity.ban)
 			._author({
 				name: interaction.user.tag,
 				iconURL: interaction.user.displayAvatarURL({ dynamic: true })
