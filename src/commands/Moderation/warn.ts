@@ -1,4 +1,5 @@
 import { Color, Emojis, WarnSeverity } from '#constants';
+import { PermissionLevel } from '#lib/decorators';
 import { Embed, RadonCommand, RadonPaginatedMessageEmbedFields, Timestamp } from '#lib/structures';
 import type { warnAction } from '#lib/types';
 import { BaseWarnActionData, PermissionLevels, RadonEvents, WarnActionData } from '#lib/types';
@@ -475,6 +476,7 @@ export class UserCommand extends RadonCommand {
 		await paginatedMessage.run(interaction, interaction.user).catch(() => null);
 	}
 
+	@PermissionLevel('Administrator')
 	private async createAction(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const action = interaction.options.getString('action', true) as warnAction;
 		const severity = interaction.options.getInteger('severity', true);
@@ -540,6 +542,7 @@ export class UserCommand extends RadonCommand {
 		});
 	}
 
+	@PermissionLevel('Administrator')
 	private async removeAction(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const severity = interaction.options.getInteger('severity', true);
 		const rem = await interaction.guild.settings?.warns?.removeAction({ severity });
