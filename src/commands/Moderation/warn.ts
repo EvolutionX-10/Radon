@@ -306,10 +306,12 @@ export class UserCommand extends RadonCommand {
 				ephemeral: true
 			});
 		}
+		const person = warn.warnlist.find((warn) => warn.id === member.id);
 
-		const prevWarns_size = warn?.warnlist?.find((warn) => warn?.id === member?.id)?.warns.length ?? 0;
+		const totalSeverity = (person?.warns.reduce((acc, warn) => acc + warn.severity, 0) ?? 0) + severity;
+		const totalwarns = person?.warns.length === 1 ? 1 : person!.warns.length + 1;
+		const actions = await interaction.guild.settings?.warns.getActions();
 
-		const totalwarns = prevWarns_size + 1;
 		let content = `${member} has been warned for __${reason}__\nWarn ID: \`${warnId}\`\n*They now have ${totalwarns} warning(s)*`;
 		if (!silent) {
 			await member
@@ -342,6 +344,10 @@ export class UserCommand extends RadonCommand {
 
 		if (await interaction.guild.settings!.modlogs.modLogs_exist()) {
 			this.container.client.emit(RadonEvents.ModAction, data);
+		}
+
+		if (actions?.length) {
+			this.container.client.emit(RadonEvents.WarnAction, member, totalSeverity, actions);
 		}
 
 		if (deleteMsg) {
