@@ -1,12 +1,14 @@
+import { Emojis, GuildIds } from '#constants';
+import { PermissionLevel } from '#lib/decorators';
 import { RadonCommand, RadonPaginatedMessageEmbedFields, Timestamp } from '#lib/structures';
-import { BaseWarnActionData, PermissionLevels, RadonEvents, WarnActionData, warnAction } from '#lib/types';
-import { color, mins, runAllChecks, uid, warnSeverity, sec } from '#lib/utility';
-import { GuildIds, Emojis } from '#constants';
+import { BaseWarnActionData, PermissionLevels, RadonEvents, warnAction, WarnActionData } from '#lib/types';
+import { color, mins, runAllChecks, sec, uid, warnSeverity } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
+import { Duration, DurationFormatter } from '@sapphire/time-utilities';
 import { cutText } from '@sapphire/utilities';
 import { APIApplicationCommandOptionChoice, ApplicationCommandType } from 'discord-api-types/v9';
 import type { Collection, GuildMember, GuildTextBasedChannel, TextChannel } from 'discord.js';
-import { Duration, DurationFormatter } from '@sapphire/time-utilities';
+
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Manage warnings for a user',
 	permissionLevel: PermissionLevels.Moderator,
@@ -484,6 +486,7 @@ export class UserCommand extends RadonCommand {
 		await paginatedMessage.run(interaction, interaction.user).catch(() => null);
 	}
 
+	@PermissionLevel('Administrator')
 	private async createAction(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const action = interaction.options.getString('action', true) as warnAction;
 		const severity = interaction.options.getInteger('severity', true);
@@ -549,6 +552,7 @@ export class UserCommand extends RadonCommand {
 		});
 	}
 
+	@PermissionLevel('Administrator')
 	private async removeAction(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const severity = interaction.options.getInteger('severity', true);
 		const rem = await interaction.guild.settings?.warns?.removeAction({ severity });
