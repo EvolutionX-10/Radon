@@ -1,6 +1,5 @@
 import { RadonCommand, Timestamp } from '#lib/structures';
-import { color } from '#lib/utility';
-import { GuildIds } from '#constants';
+import { GuildIds, Color } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { version } from 'discord.js';
 import { version as sapphireVersion } from '@sapphire/framework';
@@ -57,7 +56,7 @@ export class UserCommand extends RadonCommand {
 			misc: `• **Lines of code**: ${misc.lines}\n• **Files**: ${misc.files}`
 		};
 
-		return this.container.utils.embed()._color(color.General)._fields(
+		return this.container.utils.embed()._color(Color.General)._fields(
 			{
 				name: titles.stats,
 				value: fields.stats
@@ -166,7 +165,7 @@ export class UserCommand extends RadonCommand {
 		embed._author({
 			name: this.container.client.user!.tag
 		});
-		embed._color(color.General);
+		embed._color(Color.General);
 		const str =
 			"Hey there! I'm Radon, a *moderation* bot dedicated to make your server a better place.\n" +
 			'The maxim of my developer behind this is to allow server owners and admins to __easily configure__ me according to their wish ' +

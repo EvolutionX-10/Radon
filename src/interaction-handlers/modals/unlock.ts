@@ -1,5 +1,5 @@
 import type { Embed } from '#lib/structures';
-import { color } from '#lib/utility';
+import { Color } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework';
 import { PermissionFlagsBits } from 'discord-api-types/v9';
@@ -70,7 +70,7 @@ export class ModalHandler extends InteractionHandler {
 			.embed()
 			._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
 			._title('Channel Unlocked')
-			._color(color.Utility)
+			._color(Color.Utility)
 			._description(result.reason)
 			._timestamp();
 
@@ -98,7 +98,7 @@ export class ModalHandler extends InteractionHandler {
 					.embed()
 					._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
 					._title('Channel Unlocked')
-					._color(color.Utility)
+					._color(Color.Utility)
 					._description(result.reason)
 					._timestamp()
 			);
@@ -157,7 +157,7 @@ export class ModalHandler extends InteractionHandler {
 				.embed()
 				._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
 				._title('Channel Unlocked')
-				._color(color.Utility)
+				._color(Color.Utility)
 				._description(result.reason)
 				._timestamp();
 
@@ -196,7 +196,7 @@ export class ModalHandler extends InteractionHandler {
 					.embed()
 					._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
 					._title('Channel Unlocked')
-					._color(color.Utility)
+					._color(Color.Utility)
 					._description(result.reason)
 					._timestamp()
 			);
@@ -242,7 +242,7 @@ export class ModalHandler extends InteractionHandler {
 					.embed()
 					._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
 					._title('Channel Unlocked')
-					._color(color.Utility)
+					._color(Color.Utility)
 					._description(result.reason)
 					._timestamp()
 			);
@@ -307,7 +307,7 @@ export class ModalHandler extends InteractionHandler {
 					.embed()
 					._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
 					._title('Channel Unlocked')
-					._color(color.Utility)
+					._color(Color.Utility)
 					._description(result.reason)
 					._timestamp()
 			);

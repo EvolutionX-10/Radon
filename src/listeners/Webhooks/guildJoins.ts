@@ -1,6 +1,7 @@
 import { GuildSettings, Timestamp } from '#lib/structures';
 import { RadonEvents } from '#lib/types';
-import { color, format } from '#lib/utility';
+import { format } from '#lib/utility';
+import { Color } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener } from '@sapphire/framework';
 import type { Guild, TextChannel } from 'discord.js';
@@ -61,7 +62,7 @@ export class UserListener extends Listener {
 					footer: {
 						text: `${this.container.client.guilds.cache.size} guilds now!`
 					},
-					color: color.System,
+					color: Color.System,
 					timestamp: Date.now()
 				}
 			]

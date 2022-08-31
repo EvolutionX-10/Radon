@@ -1,5 +1,6 @@
 import { BaseModActionData, ModActionData, RadonEvents, WarnActionData } from '#lib/types';
-import { generateModLogDescription, severity } from '#lib/utility';
+import { generateModLogDescription } from '#lib/utility';
+import { Severity } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener } from '@sapphire/framework';
 
@@ -14,7 +15,7 @@ export class UserListener extends Listener {
 	private sendModLog(data: ModActionData) {
 		const embed = this.container.utils
 			.embed()
-			._color(severity[data.action])
+			._color(Severity[data.action])
 			._author({
 				name: data.moderator.user.tag,
 				iconURL: data.moderator.user.displayAvatarURL({
