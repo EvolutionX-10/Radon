@@ -85,14 +85,14 @@
 		"@sapphire/time-utilities": "1.7.6",
 		"@sapphire/type": "2.2.4",
 		"@sapphire/utilities": "3.9.2",
-		"axios": "0.27.2",
 		"colorette": "2.0.19",
 		"colornames": "1.1.1",
 		"confusables": "1.1.1",
 		"discord-api-types": "0.33.5",
 		"discord.js": "13.10.3",
 		"dotenv-cra": "3.0.2",
-		"gradient-string": "2.0.1"
+		"gradient-string": "2.0.1",
+		"undici": "5.10.0"
 	},
 	"packageManager": "yarn@3.2.3",
 	"prettier": "@sapphire/prettier-config"

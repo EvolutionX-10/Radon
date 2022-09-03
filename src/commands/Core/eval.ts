@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import { Emojis } from '#constants';
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
@@ -10,8 +7,8 @@ import { send } from '@sapphire/plugin-editable-commands';
 import { Stopwatch } from '@sapphire/stopwatch';
 import { Type } from '@sapphire/type';
 import { codeBlock, isThenable } from '@sapphire/utilities';
-import axios from 'axios';
 import { inspect } from 'node:util';
+import { fetch } from 'undici';
 @ApplyOptions<RadonCommand.Options>({
 	aliases: ['ev'],
 	quotes: [],
@@ -93,7 +90,7 @@ export class UserCommand extends RadonCommand {
 		return send(message, `${codeBlock('ts', result)}\n${footer}\n${time}`);
 	}
 
-	// @ts-expect-error
+	// @ts-expect-error It is because args is unused
 	private async eval(message: RadonCommand.Message, code: string, flags: flags, args: RadonCommand.Args) {
 		const stopwatch = new Stopwatch();
 		if (code.includes('await')) flags.async = true;
@@ -101,10 +98,10 @@ export class UserCommand extends RadonCommand {
 		const last = ar.pop();
 		if (flags.async) code = `(async () => {\n${ar.join(';\n')}\nreturn ${last?.trim() ?? ' '}\n\n})();`;
 		const msg = message;
-		// @ts-ignore
+		// @ts-expect-error Unused variables
 		const { guild, channel, member } = msg;
 		const { container: ctn } = this;
-		// @ts-ignore
+		// @ts-expect-error Unused variables
 		const { client } = ctn;
 
 		let success: boolean;
@@ -153,8 +150,13 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private async getHaste(result: string, language = 'js') {
-		const { data } = await axios.post('https://hastebin.skyra.pw/documents', result);
-		return `https://hastebin.skyra.pw/${data.key}.${language}`;
+		const res = await fetch('https://hastebin.skyra.pw/documents', {
+			body: result,
+			method: 'POST'
+		});
+		const data = await res.json();
+
+		return `https://hastebin.skyra.pw/${(data as { key: string }).key}.${language}`;
 	}
 }
 

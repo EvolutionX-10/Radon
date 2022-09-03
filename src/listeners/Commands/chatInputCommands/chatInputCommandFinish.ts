@@ -1,10 +1,10 @@
+import { Color } from '#constants';
 import { RadonEvents } from '#lib/types';
 import { isOwner } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
-import { Color } from '#constants';
 import { Listener } from '@sapphire/framework';
-import axios from 'axios';
 import { CommandInteraction, MessageEmbed } from 'discord.js';
+import { fetch } from 'undici';
 
 @ApplyOptions<Listener.Options>({
 	event: RadonEvents.ChatInputCommandFinish
@@ -13,17 +13,17 @@ export class UserListener extends Listener {
 	public override async run(interaction: CommandInteraction) {
 		if (isOwner(interaction.user)) return;
 		const isvoted = await this.hasVoted(interaction);
-		if (!isvoted && chance(20)) await this.addVoteMsg(interaction);
+		if (!isvoted && chance(10) && interaction.commandName !== 'about') await this.addVoteMsg(interaction);
 	}
 
 	private async hasVoted(interaction: CommandInteraction) {
-		const { data }: { data: vote } = await axios({
-			url: `https://top.gg/api/bots/944833303226236989/check?userId=${interaction.user.id}`,
-			method: 'GET',
+		const res = await fetch(`https://top.gg/api/bots/944833303226236989/check?userId=${interaction.user.id}`, {
 			headers: {
-				Authorization: process.env.TOP_BOT_TOKEN as string
+				Authorization: process.env.TOP_BOT_TOKEN!
 			}
 		});
+		const data = (await res.json()) as vote;
+
 		return Boolean(data.voted);
 	}
 
