@@ -9,7 +9,7 @@
 			"#lib/*": ["lib/*"],
 			"#constants": ["lib/utility/constants.ts"],
 			"#config": ["lib/utility/config.ts"],
-			"#root/": ["*"]
+			"#root/*": ["*"]
 		},
 		"noEmit": true,
 		"skipLibCheck": true
