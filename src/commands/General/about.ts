@@ -148,15 +148,6 @@ export class UserCommand extends RadonCommand {
 			'please join the support server and let my developer know!\n\n' +
 			'Please take a moment to vote/rate me using the buttons below, it really helps my developer';
 		embed._description(str);
-		embed._fields({
-			name: 'Notice',
-			value:
-				`Radon is going through a rewrite and a big refactor,` +
-				`and will need your support and belief to continue,` +
-				`the release for v2.0 is nearing, there are new and exciting features to tell.\n` +
-				`Some of them being... wait, I'll tell them when my dev is near to finishing it. Can't spoil it for you now 😜\n` +
-				`To know more about it and help my developer by ideas or the code itself, please join support server using the button and contact them 🤗`
-		});
 		embed._thumbnail(this.container.client.user!.displayAvatarURL());
 		return embed;
 	}
