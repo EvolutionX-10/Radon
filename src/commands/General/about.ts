@@ -1,4 +1,4 @@
-import { Color, GuildIds } from '#constants';
+import { Color, Emojis, GuildIds } from '#constants';
 import { Button, Embed, RadonCommand, Row, Timestamp } from '#lib/structures';
 import { ApplyOptions } from '@sapphire/decorators';
 import { version as sapphireVersion } from '@sapphire/framework';
@@ -16,6 +16,8 @@ export class UserCommand extends RadonCommand {
 		switch (subcmd as SubCmd) {
 			case 'me':
 				return this.me(interaction);
+			case 'role':
+				return this.role(interaction);
 		}
 	}
 
@@ -29,6 +31,17 @@ export class UserCommand extends RadonCommand {
 						builder //
 							.setName('me')
 							.setDescription('Show info about me!')
+					)
+					.addSubcommand((builder) =>
+						builder //
+							.setName('role')
+							.setDescription('Show info about a role')
+							.addRoleOption((option) =>
+								option //
+									.setName('role')
+									.setDescription('The role to show info about')
+									.setRequired(true)
+							)
 					),
 			{
 				guildIds: GuildIds,
@@ -188,6 +201,53 @@ export class UserCommand extends RadonCommand {
 			files: `${numOfFiles}`
 		};
 	}
+
+	private role(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const role = interaction.options.getRole('role', true);
+		const date = new Timestamp(role.createdTimestamp);
+
+		const basic =
+			`\` - \` Rank: ${interaction.guild.roles.cache.size - role.position}\n` +
+			`\` - \` Created At ${date.getShortDate()} [${date.getRelativeTime()}]\n` +
+			`\` - \` Hex: *\`${role.hexColor}\`*\n` +
+			`\` - \` Hoisted: ${role.hoist ? Emojis.Confirm : Emojis.Cross}\n` +
+			`\` - \` Restricted to Bot: ${role.tags?.botId ? `${Emojis.Confirm} [<@${role.tags?.botId}>]` : Emojis.Cross}\n` +
+			`\` - \` Mentionable: ${role.mentionable ? Emojis.Confirm : Emojis.Cross}\n` +
+			`\` - \` Managed externally: ${role.managed ? Emojis.Confirm : Emojis.Cross}`;
+
+		let perms = this.container.utils.format(role.permissions.toArray());
+		if (perms.includes('Administrator')) perms = ['Administrator'];
+
+		const adv = `\` - \` ID: *\`${role.id}\`*\n\` - \` Members: ${role.members.size}\n\` - \` Key Permission: ${
+			perms.length ? perms[0] : 'None!'
+		}\n`;
+		const hex = role.hexColor.slice(1);
+		const embed = this.container.utils
+			.embed()
+			._author({
+				name: 'Role Information'
+			})
+			._color(hex === '000000' ? '#2f3136' : role.color)
+			._description(role.toString())
+			._timestamp()
+			._thumbnail(role.iconURL() ?? `https://singlecolorimage.com/get/${hex === '000000' ? '2f3136' : hex}/400x400`)
+			._footer({
+				text: `Requested by ${interaction.user.username}`,
+				iconURL: interaction.user.displayAvatarURL({ dynamic: true })
+			})
+			._fields(
+				{
+					name: 'Basic Info',
+					value: basic
+				},
+				{
+					name: 'Advanced Info',
+					value: adv
+				}
+			);
+
+		return interaction.reply({ embeds: [embed] });
+	}
 }
 
 const vote_top = new Button() //
@@ -241,4 +301,4 @@ interface StatsMisc {
 
 type Ids = 'back' | 'stats';
 
-type SubCmd = 'me';
+type SubCmd = 'me' | 'role';

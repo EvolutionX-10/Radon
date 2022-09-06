@@ -1,9 +1,9 @@
-import { Emojis, GuildIds } from '#constants';
+import { GuildIds } from '#constants';
 import { PermissionLevel } from '#lib/decorators';
-import { Confirmation, RadonCommand, Select, Timestamp } from '#lib/structures';
+import { Confirmation, RadonCommand, Select } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { sec } from '#lib/utility';
-import { ApplyOptions, RequiresClientPermissions } from '@sapphire/decorators';
+import { ApplyOptions } from '@sapphire/decorators';
 import { Stopwatch } from '@sapphire/stopwatch';
 import { DurationFormatter } from '@sapphire/time-utilities';
 import { all } from 'colornames';
@@ -21,6 +21,7 @@ import {
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Manage Roles',
 	permissionLevel: PermissionLevels.Moderator,
+	requiredClientPermissions: ['MANAGE_ROLES'],
 	cooldownDelay: sec(30),
 	cooldownLimit: 2
 })
@@ -37,8 +38,6 @@ export class UserCommand extends RadonCommand {
 				return this.add(interaction);
 			case 'remove':
 				return this.remove(interaction);
-			case 'info':
-				return this.info(interaction);
 			case 'create':
 				return this.create(interaction);
 			case 'delete':
@@ -109,17 +108,6 @@ export class UserCommand extends RadonCommand {
 									.setName('reason')
 									.setDescription('Reason for action')
 									.setRequired(false)
-							)
-					)
-					.addSubcommand((builder) =>
-						builder //
-							.setName('info')
-							.setDescription('Get info about a role')
-							.addRoleOption((option) =>
-								option //
-									.setName('role')
-									.setDescription('The role to get info about')
-									.setRequired(true)
 							)
 					)
 					.addSubcommand((builder) =>
@@ -239,7 +227,6 @@ export class UserCommand extends RadonCommand {
 		);
 	}
 
-	@RequiresClientPermissions('MANAGE_ROLES')
 	private async add(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const role = interaction.options.getRole('role', true);
 		const target = interaction.options.getMember('target');
@@ -278,7 +265,6 @@ export class UserCommand extends RadonCommand {
 		});
 	}
 
-	@RequiresClientPermissions('MANAGE_ROLES')
 	private async remove(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const role = interaction.options.getRole('role', true);
 		const target = interaction.options.getMember('target');
@@ -315,54 +301,6 @@ export class UserCommand extends RadonCommand {
 		});
 	}
 
-	private info(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const role = interaction.options.getRole('role', true);
-		const date = new Timestamp(role.createdTimestamp);
-
-		const basic =
-			`\` - \` Rank: ${interaction.guild.roles.cache.size - role.position}\n` +
-			`\` - \` Created At ${date.getShortDate()} [${date.getRelativeTime()}]\n` +
-			`\` - \` Hex: *\`${role.hexColor}\`*\n` +
-			`\` - \` Hoisted: ${role.hoist ? Emojis.Confirm : Emojis.Cross}\n` +
-			`\` - \` Restricted to Bot: ${role.tags?.botId ? `${Emojis.Confirm} [<@${role.tags?.botId}>]` : Emojis.Cross}\n` +
-			`\` - \` Mentionable: ${role.mentionable ? Emojis.Confirm : Emojis.Cross}\n` +
-			`\` - \` Managed externally: ${role.managed ? Emojis.Confirm : Emojis.Cross}`;
-
-		let perms = this.container.utils.format(role.permissions.toArray());
-		if (perms.includes('Administrator')) perms = ['Administrator'];
-
-		const adv = `\` - \` ID: *\`${role.id}\`*\n\` - \` Members: ${role.members.size}\n\` - \` Key Permission: ${
-			perms.length ? perms[0] : 'None!'
-		}\n`;
-		const hex = role.hexColor.slice(1);
-		const embed = this.container.utils
-			.embed()
-			._author({
-				name: 'Role Information'
-			})
-			._color(hex === '000000' ? '#2f3136' : role.color)
-			._description(role.toString())
-			._timestamp()
-			._thumbnail(role.iconURL() ?? `https://singlecolorimage.com/get/${hex === '000000' ? '2f3136' : hex}/400x400`)
-			._footer({
-				text: `Requested by ${interaction.user.username}`,
-				iconURL: interaction.user.displayAvatarURL({ dynamic: true })
-			})
-			._fields(
-				{
-					name: 'Basic Info',
-					value: basic
-				},
-				{
-					name: 'Advanced Info',
-					value: adv
-				}
-			);
-
-		return interaction.reply({ embeds: [embed] });
-	}
-
-	@RequiresClientPermissions('MANAGE_ROLES')
 	private async create(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const message = (await interaction.deferReply({ fetchReply: true })) as RadonCommand.Message;
 
@@ -418,7 +356,6 @@ export class UserCommand extends RadonCommand {
 		return this.collector(message, role, interaction);
 	}
 
-	@RequiresClientPermissions('MANAGE_ROLES')
 	private async delete(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const role = interaction.options.getRole('role', true);
 		const reason = interaction.options.getString('reason') ?? undefined;
@@ -434,7 +371,6 @@ export class UserCommand extends RadonCommand {
 	}
 
 	@PermissionLevel('Administrator')
-	@RequiresClientPermissions('MANAGE_ROLES')
 	private async bulk(interaction: RadonCommand.ChatInputCommandInteraction, option: bulkActions) {
 		const role = interaction.options.getRole('role', true);
 		const reason = interaction.options.getString('reason') ?? undefined;
@@ -589,7 +525,7 @@ export class UserCommand extends RadonCommand {
 	}
 }
 
-type Subcommands = 'add' | 'remove' | 'info' | 'create' | 'delete';
+type Subcommands = 'add' | 'remove' | 'create' | 'delete';
 type SelectMenuCustomIds = '@role/perms/menu/0' | '@role/perms/menu/1';
 type bulkActions = Extract<Subcommands, 'add' | 'remove'>;
 
