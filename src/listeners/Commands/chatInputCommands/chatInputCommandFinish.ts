@@ -1,9 +1,11 @@
 import { Color } from '#constants';
+import { Embed } from '#lib/structures';
 import { RadonEvents } from '#lib/types';
 import { isOwner } from '#lib/utility';
+import { voteRow } from '#root/commands/General/about';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener } from '@sapphire/framework';
-import { CommandInteraction, MessageEmbed } from 'discord.js';
+import type { CommandInteraction } from 'discord.js';
 import { fetch } from 'undici';
 
 @ApplyOptions<Listener.Options>({
@@ -28,44 +30,20 @@ export class UserListener extends Listener {
 	}
 
 	private async addVoteMsg(interaction: CommandInteraction) {
-		const embed = new MessageEmbed()
-			.setColor(Color.General)
-			.setTitle('Thank you for using me')
-			.setDescription(
-				'If you liked the experience, please consider voting for me as it really helps the developer!' +
-					'\n\n' +
-					'You can vote by clicking [here](https://top.gg/bot/944833303226236989/vote) for top.gg\n' +
-					'and [here](https://voidbots.net/bot/944833303226236989/vote) for void bots' +
-					' or by clicking the buttons below'
-			)
-			.setTimestamp()
-			.setFooter({
+		const embed = new Embed()
+			._color(Color.General)
+			._title('Thank you for using me')
+			._description('If you liked the experience, please consider voting for me as it really helps my developer!\n\n Click the buttons below')
+			._timestamp()
+			._footer({
 				text: 'Thank you <3',
 				iconURL: interaction.user.displayAvatarURL({ dynamic: true })
 			})
-			.setThumbnail(this.container.client.user?.displayAvatarURL() ?? '');
+			._thumbnail(this.container.client.user?.displayAvatarURL() ?? '');
 
 		await interaction.followUp({
 			embeds: [embed],
-			components: [
-				{
-					type: 'ACTION_ROW',
-					components: [
-						{
-							type: 'BUTTON',
-							label: 'Vote for me on Top.gg!',
-							url: `https://top.gg/bot/944833303226236989/vote`,
-							style: 'LINK'
-						},
-						{
-							type: 'BUTTON',
-							label: 'Vote for me on Void Bots!',
-							url: `https://voidbots.net/bot/944833303226236989/vote`,
-							style: 'LINK'
-						}
-					]
-				}
-			],
+			components: [voteRow],
 			ephemeral: chance(90)
 		});
 	}

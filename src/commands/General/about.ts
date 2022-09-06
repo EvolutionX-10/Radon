@@ -1,5 +1,5 @@
-import { RadonCommand, Timestamp } from '#lib/structures';
-import { GuildIds, Color } from '#constants';
+import { Color, GuildIds } from '#constants';
+import { Button, Embed, RadonCommand, Row, Timestamp } from '#lib/structures';
 import { ApplyOptions } from '@sapphire/decorators';
 import { version as sapphireVersion } from '@sapphire/framework';
 import { roundNumber } from '@sapphire/utilities';
@@ -56,7 +56,7 @@ export class UserCommand extends RadonCommand {
 			misc: `• **Lines of code**: ${misc.lines}\n• **Files**: ${misc.files}`
 		};
 
-		return this.container.utils.embed()._color(Color.General)._fields(
+		return new Embed()._color(Color.General)._fields(
 			{
 				name: titles.stats,
 				value: fields.stats
@@ -77,51 +77,26 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private async me(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const row = this.container.utils.row();
-		const stats = this.container.utils
-			.button()
+		const row = new Row();
+		const stats = new Button() //
 			._customId('stats')
 			._label('Funny Numbers here')
 			._emoji('<:eyesFlipped:260280968609398785>')
 			._style('SECONDARY');
-		const back = this.container.utils
-			.button()
+		const back = new Button() //
 			._customId('back')
 			._label("I'm confused, get me back")
 			._emoji('<:pepeOhno:891375539019976744>')
 			._style('SECONDARY');
 
-		const vote_top = this.container.utils
-			.button()
-			._label('Vote on Top.gg')
-			._style('LINK')
-			._emoji('<:topgg:918280202398875758>')
-			._url('https://top.gg/bot/944833303226236989/vote');
-		const vote_void = this.container.utils
-			.button()
-			._label('Vote on Void Bots')
-			._style('LINK')
-			._emoji('<:voidbots:742925293907607624>')
-			._url('https://voidbots.net/bot/944833303226236989/vote');
-		const vote_labs = this.container.utils
-			.button()
-			._label('Vote on Discord Labs')
-			._style('LINK')
-			._emoji('<:discordlabsicon:621472531735642130>')
-			._url('https://bots.discordlabs.org/bot/944833303226236989?vote');
-
-		const votes = [vote_top, vote_void, vote_labs];
-		const voteRow = this.container.utils.row()._components(votes);
-
 		const invite = this.container.client.generateInvite({
 			scopes: ['applications.commands', 'bot'],
 			permissions: 543276137727n
 		});
-		const inviteRow = this.container.utils
-			.row()
+		const inviteRow = new Row() //
 			._components(
-				this.container.utils.button()._label(`Add me to your server!`)._emoji('<:radon:959378366874664972>')._style('LINK')._url(invite),
-				this.container.utils.button()._label(`Join Support Server!`)._style('LINK')._emoji('🆘')._url(`https://discord.gg/YBFaDggpvt`)
+				new Button()._label(`Add me to your server!`)._emoji('<:radon:959378366874664972>')._style('LINK')._url(invite),
+				new Button()._label(`Join Support Server!`)._style('LINK')._emoji('🆘')._url(`https://discord.gg/YBFaDggpvt`)
 			);
 
 		const m = (await interaction.reply({
@@ -160,7 +135,7 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private story() {
-		const embed = this.container.utils.embed();
+		const embed = new Embed();
 		embed.setTitle('About me!');
 		embed._author({
 			name: this.container.client.user!.tag
@@ -223,6 +198,30 @@ export class UserCommand extends RadonCommand {
 		};
 	}
 }
+
+const vote_top = new Button() //
+	._label('Vote on Top.gg')
+	._style('LINK')
+	._emoji('<:topgg:918280202398875758>')
+	._url('https://top.gg/bot/944833303226236989/vote');
+const vote_void = new Button() //
+	._label('Vote on Void Bots')
+	._style('LINK')
+	._emoji('<:voidbots:742925293907607624>')
+	._url('https://voidbots.net/bot/944833303226236989/vote');
+const vote_labs = new Button() //
+	._label('Vote on Discord Labs')
+	._style('LINK')
+	._emoji('<:discordlabsicon:621472531735642130>')
+	._url('https://bots.discordlabs.org/bot/944833303226236989?vote');
+const vote_dbl = new Button() //
+	._label('Vote on Discord Bot List')
+	._style('LINK')
+	._emoji('<:dbl:757235965629825084>')
+	._url('https://discordbotlist.com/bots/radon-1595/upvote');
+
+const votes = [vote_top, vote_void, vote_labs, vote_dbl];
+export const voteRow = new Row()._components(votes);
 
 interface StatsGeneral {
 	channels: number;
