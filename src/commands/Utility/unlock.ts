@@ -1,12 +1,11 @@
+import { PermissionLevel } from '#lib/decorators';
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { sec } from '#lib/utility';
-import { GuildIds } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
-import { ChannelType } from 'discord-api-types/v9';
 import { BucketScope } from '@sapphire/framework';
+import { ChannelType } from 'discord-api-types/v9';
 import { CategoryChannel, GuildChannel, MessageActionRow, Modal, ModalActionRowComponent, Role, TextInputComponent, ThreadChannel } from 'discord.js';
-import { PermissionLevel } from '#lib/decorators';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Unlock!',
@@ -177,10 +176,7 @@ export class UserCommand extends RadonCommand {
 									.setRequired(false)
 							)
 					),
-			{
-				guildIds: GuildIds,
-				idHints: ['978320032541081662', '975667692465950770']
-			}
+			{ idHints: ['978320032541081662', '1019932180958412840'] }
 		);
 	}
 

@@ -1,4 +1,4 @@
-import { Emojis, GuildIds, Severity } from '#constants';
+import { Emojis, Severity } from '#constants';
 import { Confirmation, RadonCommand } from '#lib/structures';
 import { BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
 import { generateModLogDescription, runAllChecks, sec } from '#lib/utility';
@@ -78,10 +78,7 @@ export class UserCommand extends RadonCommand {
 							.setRequired(false)
 							.setChoices(...this.#DaysChoices)
 					),
-			{
-				guildIds: GuildIds,
-				idHints: ['947756361876389898', '951679301030387742']
-			}
+			{ idHints: ['947756361876389898', '1019931914922115133'] }
 		);
 	}
 

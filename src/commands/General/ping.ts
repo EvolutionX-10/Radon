@@ -36,7 +36,7 @@ export class UserCommand extends RadonCommand {
 					.setDescription(this.description),
 			{
 				guildIds: RadonGuildId, // * Only run in Radon Support *
-				idHints: ['961940451135479888', '951679296689287239']
+				idHints: ['961940451135479888', '1019934925547372554']
 			}
 		);
 	}

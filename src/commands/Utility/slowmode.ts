@@ -1,9 +1,9 @@
+import { Emojis } from '#constants';
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
-import { GuildIds, Emojis } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
+import { Duration, DurationFormatter } from '@sapphire/time-utilities';
 import type { TextChannel } from 'discord.js';
-import { DurationFormatter, Duration } from '@sapphire/time-utilities';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'View and Manage slowmode of current channel',
@@ -66,10 +66,7 @@ export class UserCommand extends RadonCommand {
 							.setDescription('The reason for the slowmode')
 							.setRequired(false)
 					),
-			{
-				guildIds: GuildIds,
-				idHints: ['954799793559986296', '954796834038112276']
-			}
+			{ idHints: ['954799793559986296', '1019932175539384320'] }
 		);
 	}
 }

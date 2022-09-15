@@ -1,4 +1,3 @@
-import { GuildIds } from '#constants';
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
@@ -69,10 +68,7 @@ export class UserCommand extends RadonCommand {
 							.setDescription('The ID of the message in the modlogs')
 							.setRequired(true)
 					),
-			{
-				guildIds: GuildIds,
-				idHints: ['952460616696741938', '952277309015093288']
-			}
+			{ idHints: ['952460616696741938', '1019931919087054899'] }
 		);
 	}
 }

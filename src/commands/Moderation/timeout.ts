@@ -1,7 +1,7 @@
+import { Emojis } from '#constants';
 import { RadonCommand, Timestamp } from '#lib/structures';
 import { PermissionLevels, RadonEvents, TimeoutActionData } from '#lib/types';
 import { runAllChecks } from '#lib/utility';
-import { GuildIds, Emojis } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Duration, DurationFormatter } from '@sapphire/time-utilities';
 
@@ -89,10 +89,7 @@ export class UserCommand extends RadonCommand {
 							.setDescription('The reason for the timeout')
 							.setRequired(true)
 					),
-			{
-				guildIds: GuildIds,
-				idHints: ['948096165017169943', '951679384476086353']
-			}
+			{ idHints: ['948096165017169943', '1019931999743512616'] }
 		);
 	}
 }

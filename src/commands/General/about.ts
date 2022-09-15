@@ -1,4 +1,4 @@
-import { Color, Emojis, GuildIds } from '#constants';
+import { Color, Emojis } from '#constants';
 import { Button, Embed, RadonCommand, Row, Timestamp } from '#lib/structures';
 import { ApplyOptions } from '@sapphire/decorators';
 import { version as sapphireVersion } from '@sapphire/framework';
@@ -44,8 +44,7 @@ export class UserCommand extends RadonCommand {
 							)
 					),
 			{
-				guildIds: GuildIds,
-				idHints: ['970217477126643752', '969450739757883433']
+				idHints: ['970217477126643752', '1019931911902208063']
 			}
 		);
 	}

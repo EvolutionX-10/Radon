@@ -46,4 +46,4 @@ export const Prefixes = process.env.NODE_ENV === 'development' ? ['$', ''] : ['$
 
 export const RadonGuildId = ['944833697251721246'];
 
-export const GuildIds = process.env.NODE_ENV === 'development' ? ['944833697251721246', '953175228899553312'] : [];
+export const TestServerGuildIds = ['953175228899553312', '991194621763919971'];

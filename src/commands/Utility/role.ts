@@ -1,4 +1,3 @@
-import { GuildIds } from '#constants';
 import { PermissionLevel } from '#lib/decorators';
 import { Confirmation, RadonCommand, Select } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
@@ -220,10 +219,7 @@ export class UserCommand extends RadonCommand {
 									)
 							)
 					),
-			{
-				guildIds: GuildIds,
-				idHints: ['991634355069915176', '989778331396374580']
-			}
+			{ idHints: ['991634355069915176', '1019932095428182167'] }
 		);
 	}
 

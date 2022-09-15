@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { Color } from '#constants';
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { mins, sec } from '#lib/utility';
-import { GuildIds, Color } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { container } from '@sapphire/framework';
 import { ButtonInteraction, Message, OverwriteResolvable, Permissions } from 'discord.js';
@@ -343,10 +343,7 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description),
-			{
-				guildIds: GuildIds,
-				idHints: ['951113445930065980', '951679292348174419']
-			}
+			{ idHints: ['951113445930065980', '1019931909528223765'] }
 		);
 	}
 

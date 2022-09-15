@@ -1,7 +1,7 @@
+import { Emojis } from '#constants';
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { sec } from '#lib/utility';
-import { GuildIds, Emojis } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 @ApplyOptions<RadonCommand.Options>({
 	cooldownDelay: sec(15),
@@ -99,10 +99,7 @@ export class UserCommand extends RadonCommand {
 							.setDescription('User to delete messages from')
 							.setRequired(false)
 					),
-			{
-				guildIds: GuildIds,
-				idHints: ['947723986521956433', '951679388976545852']
-			}
+			{ idHints: ['947723986521956433', '1019932085890326589'] }
 		);
 	}
 }
