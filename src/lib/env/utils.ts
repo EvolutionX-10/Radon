@@ -1,12 +1,5 @@
 import { isNullishOrEmpty } from '@sapphire/utilities';
-import type {
-	RadonEnv,
-	// RadonEnv,
-	RadonEnvAny,
-	RadonEnvBoolean,
-	RadonEnvInteger,
-	RadonEnvString
-} from './types.js';
+import type { RadonEnv, RadonEnvAny, RadonEnvBoolean, RadonEnvInteger, RadonEnvString } from './types.js';
 
 export function envParseInteger(key: RadonEnvInteger, defaultValue?: number): number {
 	const value = process.env[key];
