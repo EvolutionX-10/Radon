@@ -39,15 +39,21 @@ export class UserListener extends Listener {
 		console.log(
 			gradient.pastel(
 				[
-					'',
-					String.raw`_///////                _//                  `,
-					String.raw`_//    _//              _//                  `,
-					String.raw`_//    _//   _//        _//   _//   _// _//  `,
-					String.raw`_/ _//     _//  _// _// _// _//  _// _//  _//`,
-					String.raw`_//  _//  _//   _//_/   _//_//    _//_//  _//`,
-					String.raw`_//    _//_//   _//_/   _// _//  _// _//  _//`,
-					String.raw`_//      _//_// _///_// _//   _//   _///  _//`,
-					String.raw`                                             `
+					String.raw`                                                                      `,
+					String.raw`                                                                      `,
+					String.raw`________                   ___                                        `,
+					String.raw`${'`'}MMMMMMMb.                 ${'`'}MM                              `,
+					String.raw` MM    ${'`'}Mb                  MM                                   `,
+					String.raw` MM     MM     ___      ____MM   _____   ___  __                      `,
+					String.raw` MM     MM   6MMMMb    6MMMMMM  6MMMMMb  ${'`'}MM 6MMb                `,
+					String.raw` MM    .M9  8M'  ${'`'}Mb  6M'  ${'`'}MM 6M'   ${'`'}Mb  MMM9 ${'`'}Mb`,
+					String.raw` MMMMMMM9'      ,oMM  MM    MM MM     MM  MM'   MM                    `,
+					String.raw` MM  \M\    ,6MM9'MM  MM    MM MM     MM  MM    MM                    `,
+					String.raw` MM   \M\   MM'   MM  MM    MM MM     MM  MM    MM                    `,
+					String.raw` MM    \M\  MM.  ,MM  YM.  ,MM YM.   ,M9  MM    MM                    `,
+					String.raw`_MM_    \M\_${'`'}YMMM9'Yb. YMMMMMM  YMMMMM9  _MM_  _MM_              `,
+					String.raw`                                                                      `,
+					String.raw`                                                                      `
 				]
 					.concat(this.printStoreDebugInformation())
 					.join('\n')
