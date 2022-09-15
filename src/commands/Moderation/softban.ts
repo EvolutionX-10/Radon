@@ -1,7 +1,7 @@
+import { Emojis } from '#constants';
 import { RadonCommand } from '#lib/structures';
 import { BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
 import { runAllChecks, sec } from '#lib/utility';
-import { GuildIds, Emojis } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import type { APIApplicationCommandOptionChoice } from 'discord-api-types/v9';
 @ApplyOptions<RadonCommand.Options>({
@@ -83,10 +83,7 @@ export class UserCommand extends RadonCommand {
 							.setRequired(false)
 							.setChoices(...this.#DaysChoices)
 					),
-			{
-				guildIds: GuildIds,
-				idHints: ['948096163398160415', '951679382991282186']
-			}
+			{ idHints: ['948096163398160415', '1019931997696708739'] }
 		);
 	}
 }

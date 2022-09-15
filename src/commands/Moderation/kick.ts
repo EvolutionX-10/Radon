@@ -1,7 +1,7 @@
+import { Emojis } from '#constants';
 import { RadonCommand } from '#lib/structures';
 import { BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
 import { runAllChecks, sec } from '#lib/utility';
-import { GuildIds, Emojis } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 @ApplyOptions<RadonCommand.Options>({
 	description: `Kick a member`,
@@ -69,10 +69,7 @@ export class UserCommand extends RadonCommand {
 							.setDescription('The reason for the kick')
 							.setRequired(false)
 					),
-			{
-				guildIds: GuildIds,
-				idHints: ['947723984949092392', '951679380692828180']
-			}
+			{ idHints: ['947723984949092392', '1019931917417730058'] }
 		);
 	}
 }

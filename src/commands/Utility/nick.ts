@@ -1,10 +1,9 @@
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { runAllChecks } from '#lib/utility';
-import { GuildIds } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
-import { ApplicationCommandType } from 'discord-api-types/v9';
 import { clean } from 'confusables';
+import { ApplicationCommandType } from 'discord-api-types/v9';
 @ApplyOptions<RadonCommand.Options>({
 	description: `Manage nicknames`,
 	requiredClientPermissions: ['MANAGE_NICKNAMES'],
@@ -85,20 +84,14 @@ export class UserCommand extends RadonCommand {
 									.setRequired(false)
 							)
 					),
-			{
-				guildIds: GuildIds,
-				idHints: ['954251737290661939', '954226414759055400']
-			}
+			{ idHints: ['954251737290661939', '1019932090562789397'] }
 		);
 		registry.registerContextMenuCommand(
 			(builder) =>
 				builder //
-					.setName('Decancer')
+					.setName('Nick Decancer')
 					.setType(ApplicationCommandType.User),
-			{
-				guildIds: GuildIds,
-				idHints: ['954251739077431346', '954249587047170048']
-			}
+			{ idHints: ['954251739077431346', '1019932092592820294'] }
 		);
 	}
 

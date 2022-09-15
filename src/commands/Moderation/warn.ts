@@ -1,12 +1,12 @@
+import { Color, Emojis, WarnSeverity } from '#constants';
 import { RadonCommand, RadonPaginatedMessageEmbedFields, Timestamp } from '#lib/structures';
 import { BaseWarnActionData, PermissionLevels, RadonEvents, WarnActionData } from '#lib/types';
-import { mins, runAllChecks, uid, sec } from '#lib/utility';
-import { GuildIds, Emojis, Color, WarnSeverity } from '#constants';
+import { mins, runAllChecks, sec, uid } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
+import { Duration } from '@sapphire/time-utilities';
 import { cutText } from '@sapphire/utilities';
 import { APIApplicationCommandOptionChoice, ApplicationCommandType } from 'discord-api-types/v9';
 import type { Collection, GuildMember, GuildTextBasedChannel, TextChannel } from 'discord.js';
-import { Duration } from '@sapphire/time-utilities';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Manage warnings for a user',
@@ -172,20 +172,14 @@ export class UserCommand extends RadonCommand {
 									.setRequired(true)
 							)
 					),
-			{
-				guildIds: GuildIds,
-				idHints: ['960410676797509702', '957277610788921374']
-			}
+			{ idHints: ['960410676797509702', '1019932004877348924'] }
 		);
 		registry.registerContextMenuCommand(
 			(builder) =>
 				builder //
 					.setName('Warn List')
 					.setType(ApplicationCommandType.User),
-			{
-				guildIds: GuildIds,
-				idHints: ['960410679070851122', '958685725358977024']
-			}
+			{ idHints: ['960410679070851122', '1019932007117094982'] }
 		);
 	}
 

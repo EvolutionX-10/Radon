@@ -1,7 +1,7 @@
+import { Emojis } from '#constants';
 import { RadonCommand } from '#lib/structures';
 import { BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
 import { sec } from '#lib/utility';
-import { GuildIds, Emojis } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 @ApplyOptions<RadonCommand.Options>({
 	cooldownDelay: sec(10),
@@ -60,10 +60,7 @@ export class UserCommand extends RadonCommand {
 							.setDescription('The reason for the ban uplift')
 							.setRequired(false)
 					),
-			{
-				guildIds: GuildIds,
-				idHints: ['947830619386302525', '951679387084922930']
-			}
+			{ idHints: ['947830619386302525', '1019932001790349312'] }
 		);
 	}
 }
