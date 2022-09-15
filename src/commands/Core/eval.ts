@@ -34,7 +34,7 @@ export class UserCommand extends RadonCommand {
 			code,
 			{
 				async: args.getFlags('async'),
-				depth: Number(args.getOption('depth').unwrapOr(0)),
+				depth: Number(args.getOption('depth')),
 				showHidden: args.getFlags('hidden'),
 				stack: args.getFlags('stack')
 			},
