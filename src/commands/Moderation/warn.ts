@@ -525,7 +525,9 @@ export class UserCommand extends RadonCommand {
 				});
 
 			return interaction.editReply({
-				content: `Successfully added a timeout action with a duration of ${new DurationFormatter().format(duration)}\n${content}`
+				content: `${Emojis.Confirm} Successfully added a timeout action with a duration of ${new DurationFormatter().format(
+					duration
+				)}\n${content}`
 			});
 		}
 
@@ -545,7 +547,7 @@ export class UserCommand extends RadonCommand {
 
 		if (time) content += `\n\n> Note: The duration will be ignored here since the action is not a timeout.`;
 		return interaction.editReply({
-			content: `Successfully added a ${action} action.\n${content}`
+			content: `${Emojis.Confirm} Successfully added a ${action} action.\n${content}`
 		});
 	}
 
@@ -559,7 +561,7 @@ export class UserCommand extends RadonCommand {
 				ephemeral: true
 			});
 		return interaction.reply({
-			content: `Successfully removed the ${rem.action} action for ${rem.severity} severity`
+			content: `${Emojis.Confirm} Successfully removed the ${rem.action} action for ${rem.severity} severity`
 		});
 	}
 
@@ -595,6 +597,7 @@ export class UserCommand extends RadonCommand {
 			._footer({ text: embed_footer })
 			._timestamp(embed_timestamp)
 			._thumbnail(embed_thumbnail.url ?? '');
+
 		const paginatedMessage = new RadonPaginatedMessageEmbedFields() //
 			.setTemplate(template)
 			.setItems(embed_fields)
