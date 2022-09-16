@@ -9,6 +9,7 @@ import { Duration, DurationFormatter } from '@sapphire/time-utilities';
 import { cutText } from '@sapphire/utilities';
 import { APIApplicationCommandOptionChoice, ApplicationCommandType } from 'discord-api-types/v9';
 import type { Collection, GuildMember, GuildTextBasedChannel } from 'discord.js';
+
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Manage warnings for a user',
 	permissionLevel: PermissionLevels.Moderator,
