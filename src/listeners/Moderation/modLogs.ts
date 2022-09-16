@@ -1,6 +1,6 @@
+import { Severity } from '#constants';
 import { BaseModActionData, ModActionData, RadonEvents, WarnActionData } from '#lib/types';
 import { generateModLogDescription } from '#lib/utility';
-import { Severity } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener } from '@sapphire/framework';
 
@@ -13,15 +13,6 @@ export class UserListener extends Listener {
 	}
 
 	private sendModLog(data: ModActionData) {
-		const embed = this.container.utils
-			.embed()
-			._color(Severity[data.action])
-			._author({
-				name: data.moderator.user.tag,
-				iconURL: data.moderator.user.displayAvatarURL({
-					dynamic: true
-				})
-			});
 		const des = generateModLogDescription({
 			action: action[data.action],
 			member: data.target,
@@ -30,7 +21,16 @@ export class UserListener extends Listener {
 			warnId: (data as WarnActionData).warnId
 		});
 
-		embed._description(des);
+		const embed = this.container.utils
+			.embed()
+			._color(Severity[data.action])
+			._author({
+				name: data.moderator.user.tag,
+				iconURL: data.moderator.user.displayAvatarURL({
+					dynamic: true
+				})
+			})
+			._description(des);
 
 		return data.moderator.guild.settings?.modlogs.sendModLog(embed);
 	}

@@ -118,7 +118,7 @@ export class Warn {
 		});
 
 		if (doc) {
-			const person = doc?.warnlist.filter((e) => e.id === member.id)?.[0];
+			const person = doc?.warnlist.find((e) => e.id === member.id);
 			if (person) {
 				return {
 					person,

@@ -1,14 +1,15 @@
-import { Emojis, Severity } from '#constants';
+import { Emojis } from '#constants';
 import { Confirmation, RadonCommand } from '#lib/structures';
 import { BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
-import { generateModLogDescription, runAllChecks, sec } from '#lib/utility';
+import { runAllChecks, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import type { APIApplicationCommandOptionChoice } from 'discord-api-types/v9';
 import type { User } from 'discord.js';
+
 @ApplyOptions<RadonCommand.Options>({
+	description: `Ban a user`,
 	cooldownDelay: sec(10),
 	cooldownLimit: 3,
-	description: `Ban a member`,
 	permissionLevel: PermissionLevels.Moderator,
 	requiredClientPermissions: ['BAN_MEMBERS']
 })
@@ -33,8 +34,7 @@ export class UserCommand extends RadonCommand {
 		if (!result) return interaction.reply({ content: ctn, ephemeral: true });
 
 		const confirm = new Confirmation({
-			content: `Are you sure you want to ban ${user}?${reason ? `\nReason: ${reason}` : ''}`,
-			ephemeral: interaction.channel.visible,
+			content: `Are you sure you want to ban ${user}? ${reason ? `\nReason: ${reason}` : ''}`,
 			onConfirm: async () => {
 				await this.ban(interaction, user, reason, days, dm);
 			},
@@ -56,7 +56,7 @@ export class UserCommand extends RadonCommand {
 					.addUserOption((option) =>
 						option //
 							.setName('user')
-							.setDescription('The user to ban')
+							.setDescription('The user to ban (You can enter ID as well)')
 							.setRequired(true)
 					)
 					.addStringOption((option) =>
@@ -92,7 +92,7 @@ export class UserCommand extends RadonCommand {
 				.send({
 					content: `You have been banned from ${interaction.guild.name}\n${reason ? `Reason: ${reason}` : ''}`
 				})
-				.catch(() => (content += `\n${Emojis.Cross} Couldn't DM user!`));
+				.catch(() => (content += `\n\n> ${Emojis.Cross} Couldn't DM user!`));
 		}
 
 		await interaction.guild.bans.create(user, {
@@ -107,21 +107,7 @@ export class UserCommand extends RadonCommand {
 			action: 'ban'
 		};
 
-		const embed = this.container.utils
-			.embed()
-			._color(Severity.ban)
-			._author({
-				name: interaction.user.tag,
-				iconURL: interaction.user.displayAvatarURL({ dynamic: true })
-			});
-		const description = generateModLogDescription({
-			member: user,
-			action: 'Ban',
-			reason
-		});
-		embed._description(description);
-
-		if (await interaction.guild!.settings?.modlogs.modLogs_exist()) {
+		if (await interaction.guild.settings?.modlogs.modLogs_exist()) {
 			this.container.client.emit(RadonEvents.ModAction, data);
 		}
 

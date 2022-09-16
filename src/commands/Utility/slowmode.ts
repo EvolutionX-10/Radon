@@ -27,12 +27,12 @@ export class UserCommand extends RadonCommand {
 		const duration = new Duration(time).offset;
 		if (isNaN(duration))
 			return interaction.reply({
-				content: 'Invalid duration! Valid examples: `1h`, `1m`, `1s`, `2 hours`\nTo remove slowmode just put `0` as the duration.',
+				content: `${Emojis.Cross} Invalid duration! Valid examples: \`1h\`, \`1m\`, \`1s\`, \`2 hours\`\nTo remove slowmode just put \`0\` as the duration.`,
 				ephemeral: true
 			});
 		if (duration > 21600000) {
 			return interaction.reply({
-				content: 'You cannot set slowmode for more than 6hrs!'
+				content: `${Emojis.Cross} You cannot set slowmode for more than 6hrs!`
 			});
 		}
 		let content = `${Emojis.Confirm} Set the slowmode for ${new DurationFormatter().format(duration)} in ${interaction.channel}`;

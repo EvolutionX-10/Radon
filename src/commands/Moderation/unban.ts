@@ -3,10 +3,11 @@ import { RadonCommand } from '#lib/structures';
 import { BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
 import { sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
+
 @ApplyOptions<RadonCommand.Options>({
+	description: `Remove a ban from a user`,
 	cooldownDelay: sec(10),
 	cooldownLimit: 3,
-	description: `Remove a ban from a user`,
 	permissionLevel: PermissionLevels.Moderator,
 	requiredClientPermissions: ['BAN_MEMBERS']
 })
@@ -36,10 +37,7 @@ export class UserCommand extends RadonCommand {
 			this.container.client.emit(RadonEvents.ModAction, data);
 		}
 
-		return interaction.reply({
-			content,
-			ephemeral: true
-		});
+		return interaction.reply({ content });
 	}
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {

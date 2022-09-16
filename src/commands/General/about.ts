@@ -7,7 +7,7 @@ import { version } from 'discord.js';
 import { uptime } from 'node:os';
 
 @ApplyOptions<RadonCommand.Options>({
-	description: 'About me!'
+	description: 'About things!'
 })
 export class UserCommand extends RadonCommand {
 	public override chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
@@ -43,9 +43,7 @@ export class UserCommand extends RadonCommand {
 									.setRequired(true)
 							)
 					),
-			{
-				idHints: ['970217477126643752', '1019931911902208063']
-			}
+			{ idHints: ['970217477126643752', '1019931911902208063'] }
 		);
 	}
 

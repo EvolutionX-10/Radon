@@ -3,41 +3,45 @@ import { RadonCommand } from '#lib/structures';
 import { BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
 import { runAllChecks, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
+
 @ApplyOptions<RadonCommand.Options>({
 	description: `Kick a member`,
-	permissionLevel: PermissionLevels.Moderator,
 	cooldownDelay: sec(10),
 	cooldownLimit: 3,
+	permissionLevel: PermissionLevels.Moderator,
 	requiredClientPermissions: ['KICK_MEMBERS']
 })
 export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const member = interaction.options.getMember('member');
+		const member = interaction.options.getMember('target');
 		const reason = interaction.options.getString('reason') ?? undefined;
+
 		if (!member) {
 			return interaction.reply({
-				content: `${Emojis.Cross} You must specify a valid member`,
+				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
 				ephemeral: true
 			});
 		}
+
 		const { content: ctn, result } = runAllChecks(interaction.member, member, 'kick');
 		if (!result) return interaction.reply({ content: ctn, ephemeral: true });
+
 		let content = `${Emojis.Confirm} ${member.user.tag} has been kicked ${reason ? `for the following reason: ${reason}` : ''}`;
+
 		await member
 			.send({
 				content: `You have been kicked from ${member.guild.name} ${reason ? `for the following reason: ${reason}` : ''}`
 			})
-			.catch(() => (content += `\n${Emojis.Cross} Couldn't DM ${member}`));
+			.catch(() => (content += `\n\n> ${Emojis.Cross} Couldn't DM member!`));
+
 		const kicked = await member.kick(reason).catch(() => null);
 		if (!kicked)
 			return interaction.reply({
-				content: `Kick failed`,
+				content: `Kick failed due to missing permissions, please contact support server if this persists!`,
 				ephemeral: true
 			});
-		await interaction.reply({
-			content,
-			ephemeral: true
-		});
+
+		await interaction.reply(content);
 
 		const data: BaseModActionData = {
 			moderator: interaction.member,
@@ -59,8 +63,8 @@ export class UserCommand extends RadonCommand {
 					.setDescription(this.description)
 					.addUserOption((option) =>
 						option //
-							.setName('member')
-							.setDescription('The member to kick')
+							.setName('target')
+							.setDescription('The target to kick')
 							.setRequired(true)
 					)
 					.addStringOption((option) =>

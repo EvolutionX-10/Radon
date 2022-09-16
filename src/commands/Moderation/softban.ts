@@ -4,10 +4,11 @@ import { BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
 import { runAllChecks, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import type { APIApplicationCommandOptionChoice } from 'discord-api-types/v9';
+
 @ApplyOptions<RadonCommand.Options>({
+	description: `Quickly bans and unbans, acts as a quick purge`,
 	cooldownDelay: sec(15),
 	cooldownLimit: 2,
-	description: `Quickly bans and unbans, acts as a quick purge`,
 	permissionLevel: PermissionLevels.Moderator,
 	requiredClientPermissions: ['BAN_MEMBERS']
 })
@@ -24,25 +25,25 @@ export class UserCommand extends RadonCommand {
 
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		await interaction.deferReply({ ephemeral: true, fetchReply: true });
-		const member = interaction.options.getMember('member');
+		const member = interaction.options.getMember('target');
 		if (!member)
 			return interaction.editReply({
-				content: `${Emojis.Cross} You must specify a valid member`
+				content: `${Emojis.Cross} You must specify a valid member that is in this server!`
 			});
 		const reason = interaction.options.getString('reason') ?? undefined;
 		const days = interaction.options.getInteger('days') ?? 1;
 
 		const { content: ctn, result } = runAllChecks(interaction.member, member, 'soft ban');
 		if (!result) return interaction.editReply(ctn);
-		const content = `${Emojis.Confirm} ${member.user.tag} has been soft banned ${reason ? `for the following reason: ${reason}` : ''}`;
-		const { id } = member;
+
+		const content = `${Emojis.Confirm} ${member} has been soft banned ${reason ? `for the following reason: ${reason}` : ''}`;
 
 		await member.ban({
 			days,
 			reason
 		});
 
-		await interaction.guild.members.unban(id, reason);
+		await interaction.guild.members.unban(member.id, reason);
 
 		const data: BaseModActionData = {
 			action: 'softban',
@@ -66,8 +67,8 @@ export class UserCommand extends RadonCommand {
 					.setDescription(this.description)
 					.addUserOption((option) =>
 						option //
-							.setName('member')
-							.setDescription('The member to soft ban')
+							.setName('target')
+							.setDescription('The target to soft ban')
 							.setRequired(true)
 					)
 					.addStringOption((option) =>

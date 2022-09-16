@@ -2,6 +2,7 @@ import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
 import { MessageActionRow, Modal, TextChannel, TextInputComponent } from 'discord.js';
+
 @ApplyOptions<RadonCommand.Options>({
 	description: `Change the reason for the action`,
 	permissionLevel: PermissionLevels.Moderator
@@ -13,7 +14,7 @@ export class UserCommand extends RadonCommand {
 		const channelID = await interaction.guild.settings?.modlogs.modLogs_exist();
 		if (!channelID) {
 			return interaction.reply({
-				content: `The modlogs aren't set up for this server.\nPlease inform admins to use \`/setup\``
+				content: `The modlogs aren't set up for this server.\nPlease inform admins to use </setup:951113445930065980>`
 			});
 		}
 
@@ -21,7 +22,7 @@ export class UserCommand extends RadonCommand {
 
 		if (!channel) {
 			return interaction.reply({
-				content: `The modlogs channel seems to be deleted.\nPlease inform admins to use \`/setup\``
+				content: `The modlogs channel seems to be deleted.\nPlease inform admins to use </setup:951113445930065980> to create new channel`
 			});
 		}
 
@@ -35,7 +36,7 @@ export class UserCommand extends RadonCommand {
 
 		if (message.author.id !== this.container.client.user!.id) {
 			return interaction.editReply({
-				content: `This message isn't from me!`
+				content: `This message isn't from me hence I can't edit!`
 			});
 		}
 
@@ -65,7 +66,7 @@ export class UserCommand extends RadonCommand {
 					.addStringOption((option) =>
 						option //
 							.setName('id')
-							.setDescription('The ID of the message in the modlogs')
+							.setDescription('The ID of the message in the modlogs channel')
 							.setRequired(true)
 					),
 			{ idHints: ['952460616696741938', '1019931919087054899'] }

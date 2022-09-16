@@ -182,14 +182,16 @@ export class UserCommand extends RadonCommand {
 
 	private lockText(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const channel = interaction.options.getChannel('channel', true);
-		if (!channel) return interaction.reply('Invalid channel!');
+
 		if (!channel.permissionsFor(this.container.client.user!)!.has('MANAGE_ROLES'))
 			return interaction.reply('I do not have permission to lock channels!');
 
 		const role = interaction.options.getRole('role') ?? interaction.guild.roles.everyone;
+
 		if (!this.checkRole(role)) {
 			return interaction.reply('This role is integrated to a bot or higher than my highest role! Action cancelled.');
 		}
+
 		if (this.isLocked(channel, role)) return interaction.reply(`<#${channel.id}> is already locked for ${role}!`);
 
 		const modal = new Modal();
@@ -215,7 +217,7 @@ export class UserCommand extends RadonCommand {
 
 	private lockVoice(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const channel = interaction.options.getChannel('channel', true);
-		if (!channel) return interaction.reply('Invalid channel!');
+
 		if (!channel.permissionsFor(this.container.client.user!)!.has('MANAGE_ROLES'))
 			return interaction.reply('I do not have permission to lock channels!');
 
@@ -237,7 +239,7 @@ export class UserCommand extends RadonCommand {
 					reason: 'Creating permissions to avoid self lock out'
 				}
 			)
-			.catch(() => (content += `\nFailed to create self permissions, please report this to my developers!`));
+			.catch(() => (content += `\n\n> Failed to create self permissions, please report this in support server!`));
 		channel.permissionOverwrites
 			.edit(
 				role,
@@ -256,7 +258,7 @@ export class UserCommand extends RadonCommand {
 
 	private lockCategory(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const category = interaction.options.getChannel('channel', true) as CategoryChannel;
-		if (!category) return interaction.reply('Invalid category!');
+
 		if (!category.permissionsFor(this.container.client.user!)!.has('MANAGE_ROLES'))
 			return interaction.reply('I do not have permission to lock channels!');
 
@@ -359,7 +361,7 @@ export class UserCommand extends RadonCommand {
 		let content = `Successfully locked all voice channels for ${role}!\n\nIssues Found:`;
 		const channels = interaction.guild!.channels.cache.filter((c) => c.type === 'GUILD_VOICE');
 
-		for await (const channel of channels.values()) {
+		for (const channel of channels.values()) {
 			if (this.isLocked(channel, role) || channel.type !== 'GUILD_VOICE') continue;
 			await this.container.utils.wait(500);
 			channel.permissionOverwrites
