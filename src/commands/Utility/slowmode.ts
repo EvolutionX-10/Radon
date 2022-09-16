@@ -3,7 +3,6 @@ import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Duration, DurationFormatter } from '@sapphire/time-utilities';
-import type { TextChannel } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'View and Manage slowmode of current channel',
@@ -17,8 +16,8 @@ export class UserCommand extends RadonCommand {
 			await interaction.deferReply({ ephemeral: true });
 			return interaction.editReply({
 				content: `Currently Slowmode is ${
-					(interaction.channel as TextChannel).rateLimitPerUser
-						? `${new DurationFormatter().format((interaction.channel as TextChannel).rateLimitPerUser * 1000)}`
+					interaction.channel.rateLimitPerUser
+						? `${new DurationFormatter().format(interaction.channel.rateLimitPerUser * 1000)}`
 						: 'disabled'
 				}`
 			});
@@ -27,12 +26,14 @@ export class UserCommand extends RadonCommand {
 		const duration = new Duration(time).offset;
 		if (isNaN(duration))
 			return interaction.reply({
-				content: 'Invalid duration! Valid examples: `1h`, `1m`, `1s`, `2 hours`\nTo remove slowmode just put `0` as the duration.',
+				content: `${Emojis.Cross} Invalid duration! Valid examples: \`1h\`, \`1m\`, \`1s\`, \`2 hours\`\nTo remove slowmode just put \`0\` as the duration.`,
 				ephemeral: true
 			});
-		if (duration > 21600000) {
+
+		const MAX_SLOWMODE_DURATION = new Duration('6hr').offset;
+		if (duration > MAX_SLOWMODE_DURATION) {
 			return interaction.reply({
-				content: 'You cannot set slowmode for more than 6hrs!'
+				content: `${Emojis.Cross} You cannot set slowmode for more than 6hrs!`
 			});
 		}
 		let content = `${Emojis.Confirm} Set the slowmode for ${new DurationFormatter().format(duration)} in ${interaction.channel}`;
@@ -42,10 +43,9 @@ export class UserCommand extends RadonCommand {
 		const reason =
 			(interaction.options.getString('reason', false) ? `${interaction.options.getString('reason', false)} (${interaction.user.tag})` : null) ??
 			`Done by ${interaction.user.tag}`;
+
 		await interaction.channel.setRateLimitPerUser(Math.floor(duration / 1000), reason);
-		await interaction.reply({
-			content
-		});
+		await interaction.reply({ content });
 	}
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {

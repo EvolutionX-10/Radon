@@ -1,9 +1,11 @@
+import { Emojis } from '#constants';
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { runAllChecks } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { clean } from 'confusables';
 import { ApplicationCommandType } from 'discord-api-types/v9';
+
 @ApplyOptions<RadonCommand.Options>({
 	description: `Manage nicknames`,
 	requiredClientPermissions: ['MANAGE_NICKNAMES'],
@@ -38,7 +40,7 @@ export class UserCommand extends RadonCommand {
 							.setDescription('Decancer the username of the member')
 							.addUserOption((option) =>
 								option //
-									.setName('member')
+									.setName('target')
 									.setDescription("The member who's nickname to decancer")
 									.setRequired(true)
 							)
@@ -49,7 +51,7 @@ export class UserCommand extends RadonCommand {
 							.setDescription('Set a nickname for the member')
 							.addUserOption((option) =>
 								option //
-									.setName('member')
+									.setName('target')
 									.setDescription("The member who's nickname to set")
 									.setRequired(true)
 							)
@@ -73,7 +75,7 @@ export class UserCommand extends RadonCommand {
 							.setDescription('Clear the nickname of the member')
 							.addUserOption((option) =>
 								option //
-									.setName('member')
+									.setName('target')
 									.setDescription("The member who's nickname to clear")
 									.setRequired(true)
 							)
@@ -96,17 +98,17 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private async decancer(interaction: RadonCommand.ChatInputCommandInteraction | RadonCommand.ContextMenuCommandInteraction) {
-		const member = interaction.options.getMember('member') ?? interaction.options.getMember('user');
+		const member = interaction.options.getMember('target') ?? interaction.options.getMember('user');
 		if (!member) {
 			return interaction.reply({
-				content: 'No member found',
+				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
 				ephemeral: true
 			});
 		}
 		const reason = `Done by ${interaction.user.tag}`;
 		if (member.id === interaction.guild.ownerId) {
 			return interaction.reply({
-				content: 'I cannot decancer the owner of the server',
+				content: `${Emojis.Cross} I cannot decancer the owner of the server`,
 				ephemeral: true
 			});
 		}
@@ -131,10 +133,10 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private async set(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const member = interaction.options.getMember('member');
+		const member = interaction.options.getMember('target');
 		if (!member) {
 			return interaction.reply({
-				content: 'No member found',
+				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
 				ephemeral: true
 			});
 		}
@@ -142,12 +144,14 @@ export class UserCommand extends RadonCommand {
 		const reason =
 			(interaction.options.getString('reason', false) ? `${interaction.options.getString('reason', false)} (${interaction.user.tag})` : null) ??
 			`Done by ${interaction.user.tag}`;
+
 		if (member.id === interaction.guild.ownerId) {
 			return interaction.reply({
-				content: 'I cannot set the nickname of the guild owner',
+				content: 'I cannot set the nickname of the server owner',
 				ephemeral: true
 			});
 		}
+
 		const { result, content } = runAllChecks(interaction.member, member, 'nickname set');
 		if (!result) {
 			return interaction.reply({
@@ -155,6 +159,7 @@ export class UserCommand extends RadonCommand {
 				ephemeral: true
 			});
 		}
+
 		if (member.displayName === nickname) {
 			return interaction.reply({
 				content: `${member}'s display name is already set to ${nickname}`,
@@ -163,15 +168,15 @@ export class UserCommand extends RadonCommand {
 		}
 		await member.setNickname(nickname, reason);
 		return interaction.reply({
-			content: `Nickname \`${nickname}\` set for ${member.user.tag}`
+			content: `Nickname \`${nickname}\` set for ${member}`
 		});
 	}
 
 	private async clear(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const member = interaction.options.getMember('member');
+		const member = interaction.options.getMember('target');
 		if (!member) {
 			return interaction.reply({
-				content: 'No member found',
+				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
 				ephemeral: true
 			});
 		}
@@ -180,7 +185,7 @@ export class UserCommand extends RadonCommand {
 			`Done by ${interaction.user.tag}`;
 		if (member.id === interaction.guild.ownerId) {
 			return interaction.reply({
-				content: 'I cannot clear the nickname of the guild owner',
+				content: 'I cannot clear the nickname of the server owner',
 				ephemeral: true
 			});
 		}
@@ -199,7 +204,7 @@ export class UserCommand extends RadonCommand {
 		}
 		await member.setNickname(null, reason);
 		return interaction.reply({
-			content: `Nickname cleared for ${member.user.tag}`
+			content: `Nickname cleared for ${member}`
 		});
 	}
 }

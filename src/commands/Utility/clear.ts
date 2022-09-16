@@ -3,6 +3,7 @@ import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
+
 @ApplyOptions<RadonCommand.Options>({
 	cooldownDelay: sec(15),
 	description: `Deletes messages from current channel`,
@@ -21,7 +22,7 @@ export class UserCommand extends RadonCommand {
 		const content = `No messages were deleted! Try filtering correctly\nNote that the messages are older than 2 weeks will NOT be deleted!`;
 		if (count > 100) {
 			const arr = this.container.utils.summableArray(count, 100);
-			const p = new Promise((resolve: (value: unknown) => void) => {
+			const p = new Promise<string>((resolve) => {
 				arr.forEach((num, i, ar) => {
 					setTimeout(async () => {
 						const messages = (

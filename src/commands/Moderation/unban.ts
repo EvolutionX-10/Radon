@@ -3,10 +3,11 @@ import { RadonCommand } from '#lib/structures';
 import { BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
 import { sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
+
 @ApplyOptions<RadonCommand.Options>({
+	description: `Remove a ban from a user`,
 	cooldownDelay: sec(10),
 	cooldownLimit: 3,
-	description: `Remove a ban from a user`,
 	permissionLevel: PermissionLevels.Moderator,
 	requiredClientPermissions: ['BAN_MEMBERS']
 })
@@ -18,11 +19,11 @@ export class UserCommand extends RadonCommand {
 
 		if (!ban)
 			return interaction.reply({
-				content: `${Emojis.Cross} ${user.tag} is not banned!`,
+				content: `${Emojis.Cross} ${user} is not banned!`,
 				ephemeral: true
 			});
 
-		const content = `${Emojis.Confirm} ${user.tag} has been unbanned ${reason ? `for the following reason: ${reason}` : ''}`;
+		const content = `${Emojis.Confirm} ${user} has been unbanned ${reason ? `for the following reason: ${reason}` : ''}`;
 		await interaction.guild.bans.remove(user, reason);
 
 		const data: BaseModActionData = {
@@ -36,10 +37,7 @@ export class UserCommand extends RadonCommand {
 			this.container.client.emit(RadonEvents.ModAction, data);
 		}
 
-		return interaction.reply({
-			content,
-			ephemeral: true
-		});
+		return interaction.reply({ content });
 	}
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {

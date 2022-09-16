@@ -1,5 +1,6 @@
+import { Emojis } from '#constants';
 import { PermissionLevel } from '#lib/decorators';
-import { Confirmation, RadonCommand, Select } from '#lib/structures';
+import { Button, Confirmation, RadonCommand, Row, Select } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
@@ -66,7 +67,7 @@ export class UserCommand extends RadonCommand {
 					.addSubcommand((builder) =>
 						builder //
 							.setName('add')
-							.setDescription('Add a role to a user')
+							.setDescription('Add a role to a member')
 							.addRoleOption((option) =>
 								option //
 									.setName('role')
@@ -175,7 +176,7 @@ export class UserCommand extends RadonCommand {
 							.addSubcommand((builder) =>
 								builder //
 									.setName('add')
-									.setDescription('Add roles to multiple users')
+									.setDescription('Add roles to multiple members')
 									.addRoleOption((option) =>
 										option //
 											.setName('role')
@@ -185,7 +186,7 @@ export class UserCommand extends RadonCommand {
 									.addRoleOption((option) =>
 										option //
 											.setName('base_role')
-											.setDescription('Base role user should have for role to be added (defaults to @everyone)')
+											.setDescription('Base role member should have for role to be added (defaults to @everyone)')
 											.setRequired(false)
 									)
 									.addStringOption((option) =>
@@ -198,7 +199,7 @@ export class UserCommand extends RadonCommand {
 							.addSubcommand((builder) =>
 								builder //
 									.setName('remove')
-									.setDescription('Remove roles from multiple users')
+									.setDescription('Remove roles from multiple members')
 									.addRoleOption((option) =>
 										option //
 											.setName('role')
@@ -208,7 +209,7 @@ export class UserCommand extends RadonCommand {
 									.addRoleOption((option) =>
 										option //
 											.setName('base_role')
-											.setDescription('Base role user should have for role to be removed (defaults to @everyone)')
+											.setDescription('Base role member should have for role to be removed (defaults to @everyone)')
 											.setRequired(false)
 									)
 									.addStringOption((option) =>
@@ -235,13 +236,13 @@ export class UserCommand extends RadonCommand {
 
 		if (!target)
 			return interaction.reply({
-				content: 'Invalid Target!',
+				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
 				ephemeral: true
 			});
 
 		if (role.position > interaction.guild.me!.roles.highest!.position)
 			return interaction.reply({
-				content: `I can't add ${role} because its position is higher than my highest role!`
+				content: `${Emojis.Cross} I can't add ${role} because its position is higher than my highest role!`
 			});
 
 		if (target.roles.cache.has(role.id)) return interaction.reply(`${target} already has ${role}`);
@@ -250,7 +251,7 @@ export class UserCommand extends RadonCommand {
 
 		if (!added) {
 			return interaction.reply({
-				content: `Failed to add ${role} to ${target}`,
+				content: `${Emojis.Cross} Failed to add ${role} to ${target}`,
 				ephemeral: true
 			});
 		}
@@ -271,13 +272,13 @@ export class UserCommand extends RadonCommand {
 
 		if (!target)
 			return interaction.reply({
-				content: 'Invalid Target!',
+				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
 				ephemeral: true
 			});
 
 		if (role.position > interaction.guild.me!.roles.highest.position)
 			return interaction.reply({
-				content: `I can't remove ${role} because its position is higher than my highest role!`
+				content: `${Emojis.Cross} I can't remove ${role} because its position is higher than my highest role!`
 			});
 
 		if (!target.roles.cache.has(role.id)) return interaction.reply(`${target} doesn't have ${role}`);
@@ -286,7 +287,7 @@ export class UserCommand extends RadonCommand {
 
 		if (!removed) {
 			return interaction.reply({
-				content: `Failed to remove ${role} from ${target}`,
+				content: `${Emojis.Cross} Failed to remove ${role} from ${target}`,
 				ephemeral: true
 			});
 		}
@@ -338,15 +339,15 @@ export class UserCommand extends RadonCommand {
 		const menus = this.gimmeMenu(perms);
 		const rows = Array(menus.length)
 			.fill(null)
-			.map((_, i) => this.container.utils.row()._components(menus[i]));
+			.map((_, i) => new Row()._components(menus[i]));
 
-		const save = this.container.utils.button()._customId('save')._label('Save Selection')._style('SUCCESS');
+		const save = new Button()._customId('save')._label('Save Selection')._style('SUCCESS');
 
-		const row = this.container.utils.row()._components(save);
+		const row = new Row()._components(save);
 
 		await interaction.editReply({
 			content,
-			components: rows.concat(row)
+			components: [...rows, row]
 		});
 
 		return this.collector(message, role, interaction);
@@ -360,10 +361,10 @@ export class UserCommand extends RadonCommand {
 			return interaction.editReply("This role is managed by an integration, you can't delete it!");
 		}
 		if (role.position > interaction.guild.me!.roles?.highest?.position) {
-			return interaction.editReply(`I can't delete ${role} because its position is higher than my highest role!`);
+			return interaction.editReply(`${Emojis.Cross} I can't delete ${role} because its position is higher than my highest role!`);
 		}
 		await role.delete(reason);
-		return interaction.reply(`Role *${role.name}* deleted!`);
+		return interaction.reply(`Role __*${role.name}*__ deleted!`);
 	}
 
 	@PermissionLevel('Administrator')
@@ -377,19 +378,19 @@ export class UserCommand extends RadonCommand {
 
 		if (role.position > interaction.guild.me!.roles.highest!.position)
 			return interaction.reply({
-				content: `I can't add ${role} because its position is higher than my highest role!`
+				content: `${Emojis.Cross} I can't add ${role} because its position is higher than my highest role!`
 			});
 
-		if (role.id === base.id) return interaction.reply(`You can't bulk ${option} same role as base role!`);
+		if (role.id === base.id) return interaction.reply(`${Emojis.Cross} You can't bulk ${option} same role as base role!`);
 
-		if (interaction.guild.bulkRoleInProgress) return interaction.reply(`A bulk role process is already in progress!`);
+		if (interaction.guild.bulkRoleInProgress) return interaction.reply(`${Emojis.Cross} A bulk role process is already in progress!`);
 
 		await interaction.guild.members.fetch();
 
 		let { members } = base;
 		members = members.filter((m) => (option === 'add' ? !m.roles.cache.has(role.id) : m.roles.cache.has(role.id)));
 
-		if (!members.size) return interaction.reply(`No members found for the action to proceed! Terminating...`);
+		if (!members.size) return interaction.reply(`${Emojis.Cross} No members found for the action to proceed! Terminating...`);
 
 		const confirm = new Confirmation({
 			content: `Are you sure you want to ${option} ${role} ${option === 'add' ? 'to' : 'from'} every member ${

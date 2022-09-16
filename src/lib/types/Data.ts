@@ -22,6 +22,7 @@ export type WarnActionData = BaseWarnActionData & {
 };
 
 export interface TimeoutActionData extends BaseModActionData {
+	action: 'timeout';
 	duration: Timestamp;
 }
 

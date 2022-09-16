@@ -9,6 +9,7 @@ import { Type } from '@sapphire/type';
 import { codeBlock, isThenable } from '@sapphire/utilities';
 import { inspect } from 'node:util';
 import { fetch } from 'undici';
+
 @ApplyOptions<RadonCommand.Options>({
 	aliases: ['ev'],
 	quotes: [],

@@ -8,7 +8,7 @@ import { send } from '@sapphire/plugin-editable-commands';
 	permissionLevel: PermissionLevels.BotOwner,
 	hidden: true,
 	guarded: true,
-	flags: true
+	flags: ['user', 'm', 'msg', 'message']
 })
 export class UserCommand extends RadonCommand {
 	public override async messageRun(message: RadonCommand.Message, args: RadonCommand.Args) {
@@ -79,7 +79,7 @@ export class UserCommand extends RadonCommand {
 		await new Confirmation({
 			onConfirm: async ({ i }) => {
 				await cmd.delete();
-				return i.editReply(`Deleted ${cmd.name}`);
+				return i.editReply(`Deleted ${cmd.name} *(${cmd.id})*`);
 			},
 			onCancel: ({ i }) => {
 				return i.editReply(`Cancelled deletion of ${cmd.name} *(${cmd.id})*`);

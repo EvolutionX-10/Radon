@@ -4,6 +4,7 @@ import { Color } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { send } from '@sapphire/plugin-editable-commands';
 import type { TextChannel } from 'discord.js';
+
 @ApplyOptions<RadonCommand.Options>({
 	description: `Blacklist a guild`,
 	permissionLevel: PermissionLevels.BotOwner,
