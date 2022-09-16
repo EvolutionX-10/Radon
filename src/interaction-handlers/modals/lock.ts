@@ -1,9 +1,9 @@
-import type { Embed } from '#lib/structures';
 import { Color } from '#constants';
+import type { Embed } from '#lib/structures';
 import { ApplyOptions } from '@sapphire/decorators';
 import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework';
-import { CategoryChannel, GuildChannel, ModalSubmitInteraction, Role, TextChannel, ThreadChannel } from 'discord.js';
 import { PermissionFlagsBits } from 'discord-api-types/v9';
+import { CategoryChannel, GuildChannel, ModalSubmitInteraction, Role, TextChannel, ThreadChannel } from 'discord.js';
 
 @ApplyOptions<InteractionHandler.Options>({
 	interactionHandlerType: InteractionHandlerTypes.ModalSubmit
@@ -105,7 +105,7 @@ export class ModalHandler extends InteractionHandler {
 			);
 		}
 
-		for await (const channel of category.children.values()) {
+		for (const channel of category.children.values()) {
 			if (this.isLocked(channel, role)) continue;
 			await this.container.utils.wait(1_000);
 
@@ -209,7 +209,7 @@ export class ModalHandler extends InteractionHandler {
 			);
 		}
 		const channels = interaction.guild!.channels.cache.filter((c) => c.type === 'GUILD_TEXT');
-		for await (const channel of channels.values()) {
+		for (const channel of channels.values()) {
 			if (this.isLocked(channel, role) || channel.type !== 'GUILD_TEXT') continue;
 			await this.container.utils.wait(1_000);
 
@@ -323,7 +323,7 @@ export class ModalHandler extends InteractionHandler {
 		if (!deep) {
 			const channels = interaction.guild!.channels.cache;
 			let i = 0;
-			for await (const channel of channels.values()) {
+			for (const channel of channels.values()) {
 				if (this.isLocked(channel, role) || channel.type !== 'GUILD_TEXT') continue;
 				await this.container.utils.wait(1_000);
 				embeds.length ? channel.send({ embeds }).catch(() => i++) : null;
@@ -346,7 +346,7 @@ export class ModalHandler extends InteractionHandler {
 			return interaction.editReply(content);
 		}
 		const channels = interaction.guild!.channels.cache;
-		for await (const channel of channels.values()) {
+		for (const channel of channels.values()) {
 			if (this.isLocked(channel, role) || channel instanceof ThreadChannel) continue;
 			await this.container.utils.wait(1_000);
 

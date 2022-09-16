@@ -345,7 +345,7 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private async list(interaction: RadonCommand.ChatInputCommandInteraction | RadonCommand.ContextMenuCommandInteraction) {
-		const member = interaction.options.getMember('target');
+		const member = interaction.options.getMember('target') ?? interaction.options.getMember('user');
 		if (!member) {
 			return interaction.reply({
 				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,

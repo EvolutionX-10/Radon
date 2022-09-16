@@ -68,7 +68,7 @@ export class UserCommand extends RadonCommand {
 					.addUserOption((option) =>
 						option //
 							.setName('target')
-							.setDescription('The target to soft ban')
+							.setDescription('The member to soft ban')
 							.setRequired(true)
 					)
 					.addStringOption((option) =>

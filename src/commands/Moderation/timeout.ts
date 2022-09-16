@@ -85,7 +85,7 @@ export class UserCommand extends RadonCommand {
 					.addUserOption((option) =>
 						option //
 							.setName('target')
-							.setDescription('The target to timeout')
+							.setDescription('The member to timeout')
 							.setRequired(true)
 					)
 					.addStringOption((option) =>
