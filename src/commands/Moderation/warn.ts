@@ -47,7 +47,7 @@ export class UserCommand extends RadonCommand {
 			return this.noAutocompleteResults(interaction);
 		}
 
-		const id = interaction.options.get('user')?.value as string;
+		const id = interaction.options.get('target')?.value as string;
 		// if id is not there return no result
 		if (!id) {
 			return this.noAutocompleteResults(interaction);
@@ -58,7 +58,6 @@ export class UserCommand extends RadonCommand {
 		}
 		const data = await interaction.guild?.settings?.warns.get({ member });
 		if (!data) return this.noAutocompleteResults(interaction);
-
 		const warns = data?.person?.warns?.map((w) => w.id);
 
 		if (!warns?.length) {
@@ -243,7 +242,7 @@ export class UserCommand extends RadonCommand {
 		const prevWarns_size = warn?.warnlist?.find((warn) => warn?.id === member?.id)?.warns.length ?? 0;
 
 		const totalwarns = prevWarns_size + 1;
-		let content = `${member} (${member.user.tag}) has been warned for __${reason}__\nWarn ID: \`${warnId}\`\n*They now have ${totalwarns} warning(s)*`;
+		let content = `${member} has been warned for __${reason}__\nWarn ID: \`${warnId}\`\n*They now have ${totalwarns} warning(s)*`;
 		if (!silent) {
 			await member
 				.send({
@@ -257,8 +256,7 @@ export class UserCommand extends RadonCommand {
 		await interaction.channel.send({
 			embeds: [
 				{
-					description: `${member} (${member.user.tag}) has been warned`,
-					timestamp: new Date(),
+					description: `${member} has been warned`,
 					color: Color.Moderation
 				}
 			]
@@ -330,7 +328,7 @@ export class UserCommand extends RadonCommand {
 		const prevWarns_size = warn.warnlist.find((warn) => warn?.id === member.id)?.warns.length ?? 0;
 
 		const totalwarns = prevWarns_size - 1;
-		const content = `${member} (${member.user.tag}) has had their warning removed\n*They now have ${totalwarns} warning(s)*`;
+		const content = `${member} has had their warning removed\n*They now have ${totalwarns} warning(s)*`;
 		await interaction.reply({ content, ephemeral: false });
 
 		const data: BaseWarnActionData = {
@@ -386,7 +384,7 @@ export class UserCommand extends RadonCommand {
 					};
 				})
 		);
-		const embed_footer = `Active warnings of ${member.user.tag}`;
+		const embed_footer = `Active warnings of ${member.displayName}`;
 		const embed_timestamp = new Date();
 		const embed_thumbnail = {
 			url: member.user.displayAvatarURL({

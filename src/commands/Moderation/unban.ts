@@ -19,11 +19,11 @@ export class UserCommand extends RadonCommand {
 
 		if (!ban)
 			return interaction.reply({
-				content: `${Emojis.Cross} ${user.tag} is not banned!`,
+				content: `${Emojis.Cross} ${user} is not banned!`,
 				ephemeral: true
 			});
 
-		const content = `${Emojis.Confirm} ${user.tag} has been unbanned ${reason ? `for the following reason: ${reason}` : ''}`;
+		const content = `${Emojis.Confirm} ${user} has been unbanned ${reason ? `for the following reason: ${reason}` : ''}`;
 		await interaction.guild.bans.remove(user, reason);
 
 		const data: BaseModActionData = {

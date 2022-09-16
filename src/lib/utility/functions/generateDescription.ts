@@ -14,7 +14,7 @@ export function generateModLogDescription({
 	duration?: Timestamp;
 	warnId?: string;
 }) {
-	let description = `**Member**: ${member instanceof GuildMember ? member.user.tag : member.tag} [\`${member.id}\`]`;
+	let description = `**Target**: ${member instanceof GuildMember ? member.user.tag : member.tag} [\`${member.id}\`]`;
 	description += `\n**Action**: ${action}`;
 	description += `\n**Reason**: ${reason ?? 'Not Provided'}`;
 	if (duration) description += `\n**Expires**: ${duration.getShortDateTime()} [${duration.getRelativeTime()}]`;

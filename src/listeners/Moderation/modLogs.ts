@@ -1,4 +1,5 @@
 import { Severity } from '#constants';
+import { Embed } from '#lib/structures';
 import { BaseModActionData, ModActionData, RadonEvents, WarnActionData } from '#lib/types';
 import { generateModLogDescription } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
@@ -21,8 +22,7 @@ export class UserListener extends Listener {
 			warnId: (data as WarnActionData).warnId
 		});
 
-		const embed = this.container.utils
-			.embed()
+		const embed = new Embed()
 			._color(Severity[data.action])
 			._author({
 				name: data.moderator.user.tag,
@@ -30,7 +30,8 @@ export class UserListener extends Listener {
 					dynamic: true
 				})
 			})
-			._description(des);
+			._description(des)
+			._timestamp();
 
 		return data.moderator.guild.settings?.modlogs.sendModLog(embed);
 	}

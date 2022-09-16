@@ -84,7 +84,7 @@ export class UserCommand extends RadonCommand {
 
 	private async ban(interaction: RadonCommand.ChatInputCommandInteraction, user: User, reason: string | undefined, days: number, dm = false) {
 		let content = `${Emojis.Confirm} ${user} has been [banned](https://tenor.com/view/11035060) ${
-			reason ? `for the following reason: ${reason}` : ''
+			reason ? `for the following reason: __${reason}__` : ''
 		}`;
 
 		if (dm) {
