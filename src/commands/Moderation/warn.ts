@@ -77,7 +77,7 @@ export class UserCommand extends RadonCommand {
 		}
 		const data = await interaction.guild?.settings?.warns.get({ member });
 		if (!data) return this.noAutocompleteResults(interaction);
-		const warns = data?.person?.warns?.map((w) => w.id);
+		const warns = data.person.warns?.map((w) => w.id);
 
 		if (!warns?.length) {
 			return this.noAutocompleteResults(interaction);
@@ -498,14 +498,14 @@ export class UserCommand extends RadonCommand {
 
 			if (isNaN(duration))
 				return interaction.editReply({
-					content: 'Invalid duration! Valid examples: `1d`, `1h`, `1m`, `1s`\nTo remove a timeout just put `0` as the duration.'
+					content: `${Emojis.Cross} Invalid duration! Valid examples: \`1d\`, \`1h\`, \`1m\`, \`1s\`\nTo remove a timeout just put \`0\` as the duration.`
 				});
 
 			const MAX_TIMEOUT_DURATION = new Duration('28d').offset;
 
 			if (duration > MAX_TIMEOUT_DURATION) {
 				return interaction.editReply({
-					content: 'You cannot timeout a user for more than 28 days!'
+					content: `${Emojis.Cross} You cannot timeout a member for more than 28 days!`
 				});
 			}
 			const added = await interaction.guild.settings!.warns.addAction({
@@ -518,6 +518,7 @@ export class UserCommand extends RadonCommand {
 				return interaction.editReply({
 					content: `An action already exists for severity ${severity}`
 				});
+
 			if (added === undefined)
 				return interaction.editReply({
 					content: `You have 10 actions already! There is a limit of 10 actions\nRemove actions in order to create new!`
