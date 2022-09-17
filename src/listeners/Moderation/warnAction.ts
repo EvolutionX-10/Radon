@@ -16,7 +16,7 @@ export class UserListener extends Listener {
 			action: action.action,
 			moderator: member.guild.me!,
 			target: member,
-			reason: 'Automated Warn Action',
+			reason: `Automated Action (Crossed ${action.severity} severity)`,
 			duration: action.action === 'timeout' ? new Timestamp(Date.now() + (action as TimeoutWarnAction).expiration) : undefined
 		};
 

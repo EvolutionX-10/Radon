@@ -584,7 +584,7 @@ export class UserCommand extends RadonCommand {
 				inline: false
 			};
 		});
-		const embed_footer = `Warn Actions for ${interaction.guild.name}`;
+		const embed_footer = interaction.guild.name;
 		const embed_timestamp = new Date();
 		const embed_thumbnail = {
 			url: interaction.guild.iconURL({
