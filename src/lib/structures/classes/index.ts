@@ -1,6 +1,6 @@
 export * from './JustButtons.js';
 export * from './RadonPaginatedMessage.js';
-export * from './Unix.js';
+export * from './Timestamp.js';
 export * from './GuildSettings.js';
 export * from './Settings.js';
 export * from './GuildChannel.js';
