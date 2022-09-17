@@ -479,8 +479,8 @@ export class UserCommand extends RadonCommand {
 			.setItems(embed_fields)
 			.setItemsPerPage(2)
 			.make();
-		await interaction.deferReply();
-		await paginatedMessage.run(interaction, interaction.user).catch(() => null);
+
+		return paginatedMessage.run(interaction).catch(() => null);
 	}
 
 	@PermissionLevel('Administrator')
@@ -489,13 +489,17 @@ export class UserCommand extends RadonCommand {
 		const severity = interaction.options.getInteger('severity', true);
 		let time = interaction.options.getString('duration');
 		await interaction.deferReply();
-		let content = `It will be applied to any user that crosses the threshold of ${severity} severity in warnings.`;
+
+		let content = `\nIt will be applied to any user that crosses the threshold of \`${severity}\` severity in warnings.`;
+
 		if (action === 'timeout' && !time) return interaction.editReply(`Please provide a duration for timeout!`);
+
+		let duration: number | undefined;
 
 		if (action === 'timeout') {
 			if (!isNaN(Number(time))) time += 's';
 
-			const duration = new Duration(time!).offset;
+			duration = new Duration(time!).offset;
 
 			if (isNaN(duration))
 				return interaction.editReply({
@@ -509,46 +513,29 @@ export class UserCommand extends RadonCommand {
 					content: `${Emojis.Cross} You cannot timeout a member for more than 28 days!`
 				});
 			}
-			const added = await interaction.guild.settings!.warns.addAction({
-				action,
-				severity,
-				expiration: duration
-			});
-
-			if (added === null)
-				return interaction.editReply({
-					content: `An action already exists for severity ${severity}`
-				});
-
-			if (added === undefined)
-				return interaction.editReply({
-					content: `You have 10 actions already! There is a limit of 10 actions\nRemove actions in order to create new!`
-				});
-
-			return interaction.editReply({
-				content: `${Emojis.Confirm} Successfully added a timeout action with a duration of ${new DurationFormatter().format(
-					duration
-				)}\n${content}`
-			});
 		}
 
 		const added = await interaction.guild.settings!.warns.addAction({
 			action,
-			severity
+			severity,
+			expiration: duration
 		});
 
 		if (added === null)
 			return interaction.editReply({
-				content: `An action already exists for severity ${severity}`
+				content: `${Emojis.Cross} An action already exists for severity ${severity}`
 			});
 		if (added === undefined)
 			return interaction.editReply({
 				content: `You have 10 actions already! There is a limit of 10 actions\nRemove actions in order to create new!`
 			});
 
-		if (time) content += `\n\n> Note: The duration will be ignored here since the action is not a timeout.`;
+		if (time && action !== 'timeout') content += `\n\n> Note: The duration will be ignored here since the action is not a timeout.`;
+
+		const timeoutcontent = time && action === 'timeout' ? ` with a duration of __${new DurationFormatter().format(duration!)}__.` : '.';
+
 		return interaction.editReply({
-			content: `${Emojis.Confirm} Successfully added a ${action} action.\n${content}`
+			content: `${Emojis.Confirm} Successfully added a ${action} action${timeoutcontent}\n${content}`
 		});
 	}
 
