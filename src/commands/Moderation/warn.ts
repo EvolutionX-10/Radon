@@ -309,8 +309,8 @@ export class UserCommand extends RadonCommand {
 		}
 		const person = warn.warnlist.find((warn) => warn.id === member.id);
 
-		const totalSeverity = (person?.warns.reduce((acc, warn) => acc + warn.severity, 0) ?? 0) + severity;
-		const totalwarns = person?.warns.length === 1 ? 1 : person!.warns.length + 1;
+		const totalSeverity = person?.warns.reduce((acc, warn) => acc + warn.severity, 0) ?? severity;
+		const totalwarns = person!.warns.length;
 		const actions = await interaction.guild.settings?.warns.getActions();
 
 		let content = `${member} has been warned for __${reason}__\nWarn ID: \`${warnId}\`\n*They now have ${totalwarns} warning(s)*`;
@@ -354,7 +354,7 @@ export class UserCommand extends RadonCommand {
 		if (deleteMsg) {
 			if (!interaction.guild.me?.permissions.has('MANAGE_MESSAGES')) {
 				return interaction.followUp({
-					content: "I don't have the `MANAGE_MESSAGES` permission, so I couldn't delete messages.",
+					content: "I don't have the `Manage Messages` permission, so I couldn't delete messages.",
 					ephemeral: true
 				});
 			}
@@ -385,6 +385,7 @@ export class UserCommand extends RadonCommand {
 				ephemeral: true
 			});
 		}
+
 		const warn = await interaction.guild.settings?.warns.remove({
 			warnId,
 			member
@@ -400,10 +401,9 @@ export class UserCommand extends RadonCommand {
 			});
 		}
 
-		const prevWarns_size = warn.warnlist.find((warn) => warn?.id === member.id)?.warns.length ?? 0;
+		const totalwarns = warn.warnlist.find((warn) => warn?.id === member.id)?.warns.length ?? 0;
 
-		const totalwarns = prevWarns_size - 1;
-		const content = `${member} has had their warning removed\n*They now have ${totalwarns} warning(s)*`;
+		const content = `${member} had their warning removed\n*They now have ${totalwarns} warning(s)*`;
 		await interaction.reply({ content, ephemeral: false });
 
 		const data: BaseWarnActionData = {
@@ -414,7 +414,7 @@ export class UserCommand extends RadonCommand {
 			action: 'warn_remove'
 		};
 
-		if (await interaction.guild.settings!.modlogs.modLogs_exist()) {
+		if (await interaction.guild.settings?.modlogs.modLogs_exist()) {
 			this.container.client.emit(RadonEvents.ModAction, data);
 		}
 	}

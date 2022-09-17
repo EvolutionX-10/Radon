@@ -37,31 +37,11 @@ export class Warn {
 			date: new Date()
 		};
 
-		if (data) {
-			const person = data.warnlist.filter((e) => e.id === member.id)?.[0];
-			if (person) {
-				if (person.warns.length >= 50) return undefined;
-				await prisma.guildWarns.update({
-					where: {
-						id: this.guild.id
-					},
-					data: {
-						warnlist: {
-							set: { id: member.id, warns: [...person.warns, warn] }
-						}
-					},
-					select: {
-						warnlist: {
-							select: {
-								id: true
-							}
-						}
-					}
-				});
-				return data;
-			}
-		}
-		const doc = await prisma.guildWarns.upsert({
+		const existingWarns = data?.warnlist.find((w) => w.id === member.id)?.warns;
+
+		if (existingWarns && existingWarns.length >= 50) return undefined;
+
+		return prisma.guildWarns.upsert({
 			create: {
 				id: this.guild.id,
 				warnlist: {
@@ -70,14 +50,16 @@ export class Warn {
 			},
 			update: {
 				warnlist: {
-					set: { id: member.id, warns: [warn] }
+					set: {
+						id: member.id,
+						warns: existingWarns //
+							? [...existingWarns, warn]
+							: [warn]
+					}
 				}
 			},
-			where: {
-				id: this.guild.id
-			}
+			where: { id: this.guild.id }
 		});
-		return doc;
 	}
 
 	public async remove({ warnId, member }: { warnId: string; member: GuildMember }) {
@@ -92,7 +74,7 @@ export class Warn {
 			const warn = person?.warns.find((e) => e.id === warnId);
 			if (person && warn) {
 				const warns = person.warns.filter((e) => e.id !== warnId);
-				await prisma.guildWarns.update({
+				return prisma.guildWarns.update({
 					where: {
 						id: this.guild.id
 					},
@@ -102,7 +84,6 @@ export class Warn {
 						}
 					}
 				});
-				return data;
 			}
 			return null;
 		}
@@ -117,7 +98,7 @@ export class Warn {
 		});
 
 		if (doc) {
-			const person = doc?.warnlist.find((e) => e.id === member.id);
+			const person = doc.warnlist.find((e) => e.id === member.id);
 			if (person) {
 				return {
 					person,
@@ -149,7 +130,7 @@ export class Warn {
 		});
 
 		if (doc) {
-			const person = doc?.warnlist.filter((e) => e.id === member.id)?.[0];
+			const person = doc.warnlist.find((e) => e.id === member.id);
 			if (person) {
 				const severity = person.warns.reduce((a, b) => a + b.severity, 0);
 				return severity;
@@ -165,29 +146,22 @@ export class Warn {
 			}
 		});
 
-		if (data) {
-			const { actions } = data;
-			const exists = data.actions.find((e) => e.severity === severity);
-			if (exists) return null;
-			if (data.actions.length >= 10) return undefined;
-			await prisma.guildWarns.update({
-				where: {
-					id: this.guild.id
-				},
-				data: {
-					actions: {
-						set: [...actions, { action, severity, expiration }]
-					}
-				}
-			});
-			return data;
-		}
-		return prisma.guildWarns.create({
-			data: {
+		const existingActions = data?.actions;
+
+		if (existingActions && existingActions.length >= 10) return undefined;
+
+		return prisma.guildWarns.upsert({
+			create: {
 				id: this.guild.id,
-				actions: {
-					set: [{ action, severity, expiration }]
-				}
+				actions: { set: { action, severity, expiration } }
+			},
+			update: {
+				actions: existingActions //
+					? [...existingActions, { action, severity, expiration }]
+					: { action, expiration, severity }
+			},
+			where: {
+				id: this.guild.id
 			}
 		});
 	}
@@ -224,9 +198,6 @@ export class Warn {
 			}
 		});
 
-		if (data) {
-			return data.actions;
-		}
-		return null;
+		return data ? data.actions : null;
 	}
 }
