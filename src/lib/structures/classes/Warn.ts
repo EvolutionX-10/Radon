@@ -198,6 +198,6 @@ export class Warn {
 			}
 		});
 
-		return data ? data.actions : null;
+		return data ? data.actions.sort((a, b) => a.severity - b.severity) : null;
 	}
 }

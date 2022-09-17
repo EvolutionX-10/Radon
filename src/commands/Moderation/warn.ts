@@ -63,26 +63,34 @@ export class UserCommand extends RadonCommand {
 	public override async autocompleteRun(interaction: RadonCommand.AutoComplete) {
 		const focus = interaction.options.getFocused(true);
 
-		if (focus.name !== 'warn_id') {
-			return this.noAutocompleteResults(interaction);
+		if (focus.name === 'severity') {
+			const actions = await interaction.guild?.settings?.warns?.getActions();
+
+			if (!actions?.length) return this.noAutocompleteResults(interaction, 'action');
+
+			const choices: APIApplicationCommandOptionChoice[] = actions.map((action) => {
+				return {
+					name: `Action: ${action.action} | Severity: ${action.severity}`,
+					value: action.severity
+				};
+			});
+
+			const filtered = choices.filter((choice) => choice.name.toLowerCase().includes((focus.value as string).toLowerCase())).slice(0, 24);
+			return interaction.respond(filtered);
 		}
 
 		const id = interaction.options.get('target')?.value as string;
 		// if id is not there return no result
-		if (!id) {
-			return this.noAutocompleteResults(interaction);
-		}
+		if (!id) return this.noAutocompleteResults(interaction);
+
 		const member = (await interaction.guild?.members.fetch(id).catch(() => null)) as GuildMember;
-		if (!member) {
-			return this.noAutocompleteResults(interaction);
-		}
+		if (!member) return this.noAutocompleteResults(interaction);
+
 		const data = await interaction.guild?.settings?.warns.get({ member });
 		if (!data) return this.noAutocompleteResults(interaction);
 		const warns = data.person.warns?.map((w) => w.id);
 
-		if (!warns?.length) {
-			return this.noAutocompleteResults(interaction);
-		}
+		if (!warns?.length) return this.noAutocompleteResults(interaction);
 
 		const choices: APIApplicationCommandOptionChoice[] = [];
 
@@ -104,6 +112,7 @@ export class UserCommand extends RadonCommand {
 				value: warnsForUser.id
 			});
 		}
+
 		const filtered = choices.filter((choice) => choice.name.toLowerCase().includes((focus.value as string).toLowerCase())).slice(0, 24);
 		return interaction.respond(filtered);
 	}
@@ -231,6 +240,7 @@ export class UserCommand extends RadonCommand {
 											.setDescription('The severity trigger of the action')
 											.setMinValue(1)
 											.setMaxValue(250)
+											.setAutocomplete(true)
 											.setRequired(true)
 									)
 							)
@@ -427,9 +437,7 @@ export class UserCommand extends RadonCommand {
 				ephemeral: true
 			});
 		}
-		const data = await interaction.guild.settings?.warns.get({
-			member
-		});
+		const data = await interaction.guild.settings?.warns.get({ member });
 		if (!data?.doc || !data.person.warns.length) {
 			return interaction.reply({
 				content: `${member} has no warnings`,
@@ -554,13 +562,14 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private async listActions(interaction: RadonCommand.ChatInputCommandInteraction) {
-		let actions = await interaction.guild.settings?.warns?.getActions();
+		const actions = await interaction.guild.settings?.warns?.getActions();
+
 		if (!actions?.length)
 			return interaction.reply({
 				content: 'No actions found',
 				ephemeral: true
 			});
-		actions = actions.sort((a, b) => a.severity - b.severity);
+
 		const embed_color = Color.Moderation;
 		const embed_title = 'Warn Actions';
 		const embed_description = 'Actions that will be applied to users when they cross the threshold of a certain severity in warnings';
@@ -595,10 +604,10 @@ export class UserCommand extends RadonCommand {
 		await paginatedMessage.run(interaction, interaction.user).catch(() => null);
 	}
 
-	private noAutocompleteResults(interaction: RadonCommand.AutoComplete) {
+	private noAutocompleteResults(interaction: RadonCommand.AutoComplete, result = 'warning') {
 		return interaction.respond([
 			{
-				name: 'No warnings found!',
+				name: `No ${result}s found!`,
 				value: ''
 			}
 		]);
