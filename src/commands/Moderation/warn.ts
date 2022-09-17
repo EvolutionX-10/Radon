@@ -601,7 +601,7 @@ export class UserCommand extends RadonCommand {
 			.setItemsPerPage(2)
 			.make();
 
-		await paginatedMessage.run(interaction, interaction.user).catch(() => null);
+		return paginatedMessage.run(interaction).catch(() => null);
 	}
 
 	private noAutocompleteResults(interaction: RadonCommand.AutoComplete, result = 'warning') {
