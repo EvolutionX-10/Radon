@@ -182,7 +182,14 @@ export class Warn {
 			});
 			return data;
 		}
-		return null;
+		return prisma.guildWarns.create({
+			data: {
+				id: this.guild.id,
+				actions: {
+					set: [{ action, severity, expiration }]
+				}
+			}
+		});
 	}
 
 	public async removeAction({ severity }: { severity: number }) {
