@@ -9,9 +9,10 @@ import type { GuildMember } from 'discord.js';
 })
 export class UserListener extends Listener {
 	public override async run(member: GuildMember, severity: number, actions: WarnAction[]) {
-		const action = actions.sort((a, b) => b.severity - a.severity).find((e) => e.severity <= severity) as WarnAction;
+		const action = actions.sort((a, b) => b.severity - a.severity).find((e) => e.severity <= severity);
+
 		if (!action) return;
-		// execute action
+
 		const data = {
 			action: action.action,
 			moderator: member.guild.me!,
