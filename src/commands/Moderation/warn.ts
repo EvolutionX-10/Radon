@@ -608,7 +608,7 @@ export class UserCommand extends RadonCommand {
 		return interaction.respond([
 			{
 				name: `No ${result}s found!`,
-				value: ''
+				value: result === 'warning' ? '' : 0
 			}
 		]);
 	}
