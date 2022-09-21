@@ -5,7 +5,7 @@ import { PermissionLevels } from '#lib/types';
 import { sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Stopwatch } from '@sapphire/stopwatch';
-import { DurationFormatter } from '@sapphire/time-utilities';
+import { DurationFormatter } from '@sapphire/duration';
 import { all } from 'colornames';
 import {
 	BufferResolvable,

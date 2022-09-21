@@ -4,7 +4,7 @@ import { Owners } from '#constants';
 import { envParseBoolean } from '#lib/env';
 import type { BotList } from '@devtomio/plugin-botlist';
 import { BucketScope, ClientLoggerOptions, CooldownOptions, LogLevel } from '@sapphire/framework';
-import { Time } from '@sapphire/time-utilities';
+import { Time } from '@sapphire/duration';
 import {
 	BitFieldResolvable,
 	ClientOptions,
