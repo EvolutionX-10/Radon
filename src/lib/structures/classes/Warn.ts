@@ -1,5 +1,5 @@
 import type { warnAction } from '#lib/types';
-import type { GuildWarnsWarnlist } from '@prisma/client';
+import type { MemberWarnData } from '@prisma/client';
 import { container } from '@sapphire/framework';
 import type { Guild, GuildMember } from 'discord.js';
 const { prisma } = container;
@@ -118,7 +118,7 @@ export class Warn {
 		return null;
 	}
 
-	public update(warnlist: GuildWarnsWarnlist[]) {
+	public update(warnlist: MemberWarnData[]) {
 		return prisma.guildWarns.update({
 			where: {
 				id: this.guild.id

@@ -10,7 +10,6 @@ export class RadonClient<Ready extends boolean = boolean> extends SapphireClient
 
 	public override async login(token?: string): Promise<string> {
 		container.prisma = new PrismaClient();
-		await container.prisma.$connect();
 		return super.login(token);
 	}
 
