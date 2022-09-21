@@ -3,7 +3,7 @@ import { RadonCommand, Timestamp } from '#lib/structures';
 import { PermissionLevels, RadonEvents, TimeoutActionData } from '#lib/types';
 import { runAllChecks } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
-import { Duration, DurationFormatter } from '@sapphire/time-utilities';
+import { Duration, DurationFormatter } from '@sapphire/duration';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: `Temporarily mute a member`,

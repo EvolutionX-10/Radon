@@ -5,7 +5,7 @@ import type { warnAction } from '#lib/types';
 import { BaseWarnActionData, PermissionLevels, RadonEvents, WarnActionData } from '#lib/types';
 import { mins, runAllChecks, sec, uid } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
-import { Duration, DurationFormatter } from '@sapphire/time-utilities';
+import { Duration, DurationFormatter } from '@sapphire/duration';
 import { cutText } from '@sapphire/utilities';
 import { APIApplicationCommandOptionChoice, ApplicationCommandType } from 'discord-api-types/v9';
 import type { Collection, GuildMember, GuildTextBasedChannel } from 'discord.js';

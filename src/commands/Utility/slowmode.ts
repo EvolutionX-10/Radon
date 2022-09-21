@@ -2,7 +2,7 @@ import { Emojis } from '#constants';
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
-import { Duration, DurationFormatter } from '@sapphire/time-utilities';
+import { Duration, DurationFormatter } from '@sapphire/duration';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'View and Manage slowmode of current channel',
