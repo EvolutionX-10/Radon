@@ -1,9 +1,11 @@
 import { Color, Emojis, WarnSeverity } from '#constants';
+import { PermissionLevel } from '#lib/decorators';
 import { Embed, RadonCommand, RadonPaginatedMessageEmbedFields, Timestamp } from '#lib/structures';
+import type { warnAction } from '#lib/types';
 import { BaseWarnActionData, PermissionLevels, RadonEvents, WarnActionData } from '#lib/types';
 import { mins, runAllChecks, sec, uid } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
-import { Duration } from '@sapphire/time-utilities';
+import { Duration, DurationFormatter } from '@sapphire/time-utilities';
 import { cutText } from '@sapphire/utilities';
 import { APIApplicationCommandOptionChoice, ApplicationCommandType } from 'discord-api-types/v9';
 import type { Collection, GuildMember, GuildTextBasedChannel } from 'discord.js';
@@ -23,9 +25,27 @@ export class UserCommand extends RadonCommand {
 		{ name: '5 | 4 weeks', value: 5 }
 	];
 
+	readonly #WarnActions: APIApplicationCommandOptionChoice<warnAction>[] = [
+		{ name: 'Kick', value: 'kick' },
+		{ name: 'Ban', value: 'ban' },
+		{ name: 'Softban', value: 'softban' },
+		{ name: 'Timeout', value: 'timeout' }
+	];
+
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const subcmd = interaction.options.getSubcommand();
-		switch (subcmd) {
+		const subcmdgroup = interaction.options.getSubcommandGroup(false);
+		if (subcmdgroup) {
+			switch (subcmd as actionCommand) {
+				case 'create':
+					return this.createAction(interaction);
+				case 'remove':
+					return this.removeAction(interaction);
+				case 'list':
+					return this.listActions(interaction);
+			}
+		}
+		switch (subcmd as subCommand) {
 			case 'add':
 				return this.add(interaction);
 			case 'remove':
@@ -35,7 +55,7 @@ export class UserCommand extends RadonCommand {
 		}
 	}
 
-	public override async contextMenuRun(interaction: RadonCommand.ContextMenuCommandInteraction) {
+	public override contextMenuRun(interaction: RadonCommand.ContextMenuCommandInteraction) {
 		return this.list(interaction);
 	}
 
@@ -43,26 +63,34 @@ export class UserCommand extends RadonCommand {
 	public override async autocompleteRun(interaction: RadonCommand.AutoComplete) {
 		const focus = interaction.options.getFocused(true);
 
-		if (focus.name !== 'warn_id') {
-			return this.noAutocompleteResults(interaction);
+		if (focus.name === 'severity') {
+			const actions = await interaction.guild?.settings?.warns?.getActions();
+
+			if (!actions?.length) return this.noAutocompleteResults(interaction, 'action');
+
+			const choices: APIApplicationCommandOptionChoice[] = actions.map((action) => {
+				return {
+					name: `Action: ${action.action} | Severity: ${action.severity}`,
+					value: action.severity
+				};
+			});
+
+			const filtered = choices.filter((choice) => choice.name.toLowerCase().includes((focus.value as string).toLowerCase())).slice(0, 24);
+			return interaction.respond(filtered);
 		}
 
 		const id = interaction.options.get('target')?.value as string;
 		// if id is not there return no result
-		if (!id) {
-			return this.noAutocompleteResults(interaction);
-		}
-		const member = (await interaction.guild?.members.fetch(id).catch(() => null)) as GuildMember;
-		if (!member) {
-			return this.noAutocompleteResults(interaction);
-		}
-		const data = await interaction.guild?.settings?.warns.get({ member });
-		if (!data) return this.noAutocompleteResults(interaction);
-		const warns = data?.person?.warns?.map((w) => w.id);
+		if (!id) return this.noAutocompleteResults(interaction);
 
-		if (!warns?.length) {
-			return this.noAutocompleteResults(interaction);
-		}
+		const member = (await interaction.guild?.members.fetch(id).catch(() => null)) as GuildMember;
+		if (!member) return this.noAutocompleteResults(interaction);
+
+		const data = await interaction.guild?.settings?.warns.get(member);
+		if (!data) return this.noAutocompleteResults(interaction);
+		const warns = data.person.warns?.map((w) => w.id);
+
+		if (!warns?.length) return this.noAutocompleteResults(interaction);
 
 		const choices: APIApplicationCommandOptionChoice[] = [];
 
@@ -84,6 +112,7 @@ export class UserCommand extends RadonCommand {
 				value: warnsForUser.id
 			});
 		}
+
 		const filtered = choices.filter((choice) => choice.name.toLowerCase().includes((focus.value as string).toLowerCase())).slice(0, 24);
 		return interaction.respond(filtered);
 	}
@@ -170,6 +199,56 @@ export class UserCommand extends RadonCommand {
 									.setDescription('The member to list warns for')
 									.setRequired(true)
 							)
+					)
+					.addSubcommandGroup((builder) =>
+						builder //
+							.setName('action')
+							.setDescription('Perform automated actions based on warns')
+							.addSubcommand((builder) =>
+								builder //
+									.setName('create')
+									.setDescription('Create a new automated action')
+									.addStringOption((option) =>
+										option //
+											.setName('action')
+											.setDescription('The action to perform')
+											.setRequired(true)
+											.setChoices(...this.#WarnActions)
+									)
+									.addIntegerOption((option) =>
+										option //
+											.setName('severity')
+											.setDescription('The severity at which the action should be triggered [1 - 250]')
+											.setMinValue(1)
+											.setMaxValue(250)
+											.setRequired(true)
+									)
+									.addStringOption((option) =>
+										option //
+											.setName('duration')
+											.setDescription('The duration of the action (only for Timeout)')
+											.setRequired(false)
+									)
+							)
+							.addSubcommand((builder) =>
+								builder //
+									.setName('remove')
+									.setDescription('Remove an automated action')
+									.addIntegerOption((option) =>
+										option //
+											.setName('severity')
+											.setDescription('The severity trigger of the action')
+											.setMinValue(1)
+											.setMaxValue(250)
+											.setAutocomplete(true)
+											.setRequired(true)
+									)
+							)
+							.addSubcommand((builder) =>
+								builder //
+									.setName('list')
+									.setDescription('List all automated actions')
+							)
 					),
 			{ idHints: ['960410676797509702', '1019932004877348924'] }
 		);
@@ -199,7 +278,7 @@ export class UserCommand extends RadonCommand {
 			});
 		const deleteMsg = interaction.options.getBoolean('delete_messages') ?? false;
 		const severity = (interaction.options.getInteger('severity') ?? 1) as warnSeverityNum;
-		const expires = interaction.options.getString('expiration') ?? this.autoSeverity(severity);
+		const expires = interaction.options.getString('expiration') ?? expirationFromSeverity[severity];
 		const silent = interaction.options.getBoolean('silent') ?? false;
 
 		if (isNaN(new Duration(expires).offset)) {
@@ -238,10 +317,12 @@ export class UserCommand extends RadonCommand {
 				ephemeral: true
 			});
 		}
+		const person = warn.warnlist.find((warn) => warn.id === member.id);
 
-		const prevWarns_size = warn?.warnlist?.find((warn) => warn?.id === member?.id)?.warns.length ?? 0;
+		const totalSeverity = person?.warns.reduce((acc, warn) => acc + warn.severity, 0) ?? severity;
+		const totalwarns = person!.warns.length;
+		const actions = await interaction.guild.settings?.warns.getActions();
 
-		const totalwarns = prevWarns_size + 1;
 		let content = `${member} has been warned for __${reason}__\nWarn ID: \`${warnId}\`\n*They now have ${totalwarns} warning(s)*`;
 		if (!silent) {
 			await member
@@ -276,10 +357,14 @@ export class UserCommand extends RadonCommand {
 			this.container.client.emit(RadonEvents.ModAction, data);
 		}
 
+		if (actions?.length) {
+			this.container.client.emit(RadonEvents.WarnAction, member, totalSeverity, actions);
+		}
+
 		if (deleteMsg) {
 			if (!interaction.guild.me?.permissions.has('MANAGE_MESSAGES')) {
 				return interaction.followUp({
-					content: "I don't have the `MANAGE_MESSAGES` permission, so I couldn't delete messages.",
+					content: "I don't have the `Manage Messages` permission, so I couldn't delete messages.",
 					ephemeral: true
 				});
 			}
@@ -310,10 +395,8 @@ export class UserCommand extends RadonCommand {
 				ephemeral: true
 			});
 		}
-		const warn = await interaction.guild.settings?.warns.remove({
-			warnId,
-			member
-		});
+
+		const warn = await interaction.guild.settings?.warns.remove(warnId, member);
 
 		if (!warn) {
 			return interaction.reply({
@@ -325,10 +408,9 @@ export class UserCommand extends RadonCommand {
 			});
 		}
 
-		const prevWarns_size = warn.warnlist.find((warn) => warn?.id === member.id)?.warns.length ?? 0;
+		const totalwarns = warn.warnlist.find((warn) => warn?.id === member.id)?.warns.length ?? 0;
 
-		const totalwarns = prevWarns_size - 1;
-		const content = `${member} has had their warning removed\n*They now have ${totalwarns} warning(s)*`;
+		const content = `${member} had their warning removed\n*They now have ${totalwarns} warning(s)*`;
 		await interaction.reply({ content, ephemeral: false });
 
 		const data: BaseWarnActionData = {
@@ -339,7 +421,7 @@ export class UserCommand extends RadonCommand {
 			action: 'warn_remove'
 		};
 
-		if (await interaction.guild.settings!.modlogs.modLogs_exist()) {
+		if (await interaction.guild.settings?.modlogs.modLogs_exist()) {
 			this.container.client.emit(RadonEvents.ModAction, data);
 		}
 	}
@@ -352,9 +434,7 @@ export class UserCommand extends RadonCommand {
 				ephemeral: true
 			});
 		}
-		const data = await interaction.guild.settings?.warns.get({
-			member
-		});
+		const data = await interaction.guild.settings?.warns.get(member);
 		if (!data?.doc || !data.person.warns.length) {
 			return interaction.reply({
 				content: `${member} has no warnings`,
@@ -404,33 +484,148 @@ export class UserCommand extends RadonCommand {
 			.setItems(embed_fields)
 			.setItemsPerPage(2)
 			.make();
+
+		return paginatedMessage.run(interaction).catch(() => null);
+	}
+
+	@PermissionLevel('Administrator')
+	private async createAction(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const action = interaction.options.getString('action', true) as warnAction;
+		const severity = interaction.options.getInteger('severity', true);
+		let time = interaction.options.getString('duration');
 		await interaction.deferReply();
-		await paginatedMessage.run(interaction, interaction.user).catch(() => null);
-	}
 
-	private autoSeverity(num: number) {
-		switch (num as warnSeverityNum) {
-			case 1:
-				return WarnSeverity.One;
-			case 2:
-				return WarnSeverity.Two;
-			case 3:
-				return WarnSeverity.Three;
-			case 4:
-				return WarnSeverity.Four;
-			case 5:
-				return WarnSeverity.Five;
+		let content = `\nIt will be applied to any user that crosses the threshold of \`${severity}\` severity in warnings.`;
+
+		if (action === 'timeout' && !time) return interaction.editReply(`Please provide a duration for timeout!`);
+
+		let duration: number | undefined;
+
+		if (action === 'timeout') {
+			if (!isNaN(Number(time))) time += 's';
+
+			duration = new Duration(time!).offset;
+
+			if (isNaN(duration))
+				return interaction.editReply({
+					content: `${Emojis.Cross} Invalid duration! Valid examples: \`1d\`, \`1h\`, \`1m\`, \`1s\`\nTo remove a timeout just put \`0\` as the duration.`
+				});
+
+			const MAX_TIMEOUT_DURATION = new Duration('28d').offset;
+
+			if (duration > MAX_TIMEOUT_DURATION) {
+				return interaction.editReply({
+					content: `${Emojis.Cross} You cannot timeout a member for more than 28 days!`
+				});
+			}
 		}
+
+		const added = await interaction.guild.settings!.warns.addAction({
+			action,
+			severity,
+			expiration: duration
+		});
+
+		if (added === null)
+			return interaction.editReply({
+				content: `${Emojis.Cross} An action already exists for severity ${severity}`
+			});
+		if (added === undefined)
+			return interaction.editReply({
+				content: `You have 10 actions already! There is a limit of 10 actions\nRemove actions in order to create new!`
+			});
+
+		if (time && action !== 'timeout') content += `\n\n> Note: The duration will be ignored here since the action is not a timeout.`;
+
+		const timeoutcontent = time && action === 'timeout' ? ` with a duration of __${new DurationFormatter().format(duration!)}__.` : '.';
+
+		return interaction.editReply({
+			content: `${Emojis.Confirm} Successfully added a ${action} action${timeoutcontent}\n${content}`
+		});
 	}
 
-	private noAutocompleteResults(interaction: RadonCommand.AutoComplete) {
+	@PermissionLevel('Administrator')
+	private async removeAction(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const severity = interaction.options.getInteger('severity', true);
+		const rem = await interaction.guild.settings?.warns?.removeAction(severity);
+		if (!rem)
+			return interaction.reply({
+				content: 'No action found for this severity',
+				ephemeral: true
+			});
+		return interaction.reply({
+			content: `${Emojis.Confirm} Successfully removed the ${rem.action} action for ${rem.severity} severity`
+		});
+	}
+
+	private async listActions(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const actions = await interaction.guild.settings?.warns?.getActions();
+
+		if (!actions?.length)
+			return interaction.reply({
+				content: 'No actions found',
+				ephemeral: true
+			});
+
+		const embed_color = Color.Moderation;
+		const embed_title = 'Warn Actions';
+		const embed_description = 'Actions that will be applied to users when they cross the threshold of a certain severity in warnings';
+		const embed_fields = actions.map((e) => {
+			return {
+				name: `Severity: ${e.severity}`,
+				value: `> Action: ${action[e.action as warnAction]} ${e.expiration ? `[${new DurationFormatter().format(e.expiration)}]` : ''}`,
+				inline: false
+			};
+		});
+		const embed_footer = interaction.guild.name;
+		const embed_timestamp = new Date();
+		const embed_thumbnail = {
+			url: interaction.guild.iconURL({
+				dynamic: true
+			})
+		};
+		const template = new Embed()
+			._color(embed_color)
+			._title(embed_title)
+			._description(embed_description)
+			._footer({ text: embed_footer })
+			._timestamp(embed_timestamp)
+			._thumbnail(embed_thumbnail.url ?? '');
+
+		const paginatedMessage = new RadonPaginatedMessageEmbedFields() //
+			.setTemplate(template)
+			.setItems(embed_fields)
+			.setItemsPerPage(2)
+			.make();
+
+		return paginatedMessage.run(interaction).catch(() => null);
+	}
+
+	private noAutocompleteResults(interaction: RadonCommand.AutoComplete, result = 'warning') {
 		return interaction.respond([
 			{
-				name: 'No warnings found!',
-				value: ''
+				name: `No ${result}s found!`,
+				value: result === 'warning' ? '' : 0
 			}
 		]);
 	}
 }
 
+const expirationFromSeverity = {
+	1: WarnSeverity.One,
+	2: WarnSeverity.Two,
+	3: WarnSeverity.Three,
+	4: WarnSeverity.Four,
+	5: WarnSeverity.Five
+};
+
+const action = {
+	timeout: 'Timeout',
+	ban: 'Ban',
+	kick: 'Kick',
+	softban: 'Softban'
+};
+
 type warnSeverityNum = 1 | 2 | 3 | 4 | 5;
+type subCommand = 'add' | 'remove' | 'list';
+type actionCommand = 'create' | 'remove' | 'list';

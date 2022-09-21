@@ -1,5 +1,6 @@
 import { Emojis } from '#constants';
 import { GuildMember, User } from 'discord.js';
+import { isAdmin } from './permissions.js';
 /**
  * Runs all checks before executing a moderation command
  * @param executor The member who executed the command
@@ -12,7 +13,7 @@ export function runAllChecks(executor: GuildMember, target: GuildMember | User, 
 	if (target instanceof User) {
 		result = true;
 		content = '';
-	} else if (!target.manageable) {
+	} else if (!target.manageable || isAdmin(target)) {
 		result = false;
 		content = `${Emojis.Cross} I can't ${action} ${target}`;
 	} else if (executor.roles.highest.position === target.roles.highest.position) {

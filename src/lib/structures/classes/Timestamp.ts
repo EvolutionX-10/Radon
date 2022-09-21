@@ -4,7 +4,7 @@ export class Timestamp {
 	 * @param timestamp The timestamp to convert to a readable string
 	 * @requires [UNIX](https://en.wikipedia.org/wiki/Unix_time) timestamp in `milliseconds`
 	 */
-	public constructor(private readonly timestamp: number) {
+	public constructor(public readonly timestamp: number) {
 		if (this.timestamp < 0) throw new Error('Timestamp must be a positive number');
 	}
 

@@ -21,7 +21,7 @@ export class ModalHandler extends InteractionHandler {
 			embeds: message.embeds
 		});
 
-		if (message.embeds[0].description.includes('**Action**: Warn')) {
+		if (message.embeds[0].description.includes('**Action**: Warn\n')) {
 			const id = this.getID(message);
 
 			const member = await interaction.guild.members.fetch(id!.memberID!).catch(() => null);
@@ -51,12 +51,17 @@ export class ModalHandler extends InteractionHandler {
 	}
 
 	private async updateReason(member: GuildMember, id: string, reason: string) {
-		const warns = await member.guild.settings?.warns.get({ member });
+		const warns = await member.guild.settings?.warns.get(member);
 		if (!warns || !warns?.doc || !warns?.person) return;
 		const warn = warns.person.warns.find((warn) => warn.id === id);
 		if (!warn) return;
 		warn.reason = reason;
-		return member.guild.settings?.warns.update({ member, warns: warns.person.warns });
+
+		warns.doc.warnlist.forEach((person) => {
+			if (person.id === member.id) person.warns = warns.person.warns;
+		});
+
+		return member.guild.settings?.warns.update(warns.doc.warnlist);
 	}
 
 	private getID(message: Message) {
