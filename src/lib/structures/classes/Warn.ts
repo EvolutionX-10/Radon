@@ -1,5 +1,5 @@
 import type { warnAction } from '#lib/types';
-import type { GuildWarnsWarnlistWarns } from '@prisma/client';
+import type { GuildWarnsWarnlist } from '@prisma/client';
 import { container } from '@sapphire/framework';
 import type { Guild, GuildMember } from 'discord.js';
 const { prisma } = container;
@@ -37,10 +37,28 @@ export class Warn {
 			date: new Date()
 		};
 
-		const existingWarns = data?.warnlist.find((w) => w.id === member.id)?.warns;
+		const existingWarnList = data?.warnlist;
+		const existingWarns = existingWarnList?.find((w) => w.id === member.id)?.warns;
 
 		if (existingWarns && existingWarns.length >= 50) return undefined;
 
+		const warns = existingWarns //
+			? [...existingWarns, warn]
+			: [warn];
+
+		if (existingWarnList) {
+			existingWarnList.forEach((person) => {
+				// * Warns of that person is found, mutating the object!
+				if (person.id === member.id) person.warns = warns;
+			});
+			if (!existingWarnList.find((m) => m.id === member.id)) {
+				// * new person's warn data;
+				existingWarnList.push({
+					id: member.id,
+					warns
+				});
+			}
+		}
 		return prisma.guildWarns.upsert({
 			create: {
 				id: this.guild.id,
@@ -49,20 +67,13 @@ export class Warn {
 				}
 			},
 			update: {
-				warnlist: {
-					set: {
-						id: member.id,
-						warns: existingWarns //
-							? [...existingWarns, warn]
-							: [warn]
-					}
-				}
+				warnlist: existingWarnList
 			},
 			where: { id: this.guild.id }
 		});
 	}
 
-	public async remove({ warnId, member }: { warnId: string; member: GuildMember }) {
+	public async remove(warnId: string, member: GuildMember) {
 		const data = await prisma.guildWarns.findUnique({
 			where: {
 				id: this.guild.id
@@ -70,27 +81,25 @@ export class Warn {
 		});
 
 		if (data) {
-			const person = data.warnlist.find((e) => e.id === member.id);
+			const existingWarnList = data.warnlist;
+			const person = existingWarnList.find((e) => e.id === member.id);
 			const warn = person?.warns.find((e) => e.id === warnId);
 			if (person && warn) {
-				const warns = person.warns.filter((e) => e.id !== warnId);
+				person.warns = person.warns.filter((e) => e.id !== warnId);
 				return prisma.guildWarns.update({
 					where: {
 						id: this.guild.id
 					},
 					data: {
-						warnlist: {
-							set: { id: member.id, warns }
-						}
+						warnlist: existingWarnList
 					}
 				});
 			}
-			return null;
 		}
 		return null;
 	}
 
-	public async get({ member }: { member: GuildMember }) {
+	public async get(member: GuildMember) {
 		const doc = await prisma.guildWarns.findUnique({
 			where: {
 				id: this.guild.id
@@ -109,20 +118,18 @@ export class Warn {
 		return null;
 	}
 
-	public update({ member, warns }: { member: GuildMember; warns: GuildWarnsWarnlistWarns[] }) {
+	public update(warnlist: GuildWarnsWarnlist[]) {
 		return prisma.guildWarns.update({
 			where: {
 				id: this.guild.id
 			},
 			data: {
-				warnlist: {
-					set: { id: member.id, warns }
-				}
+				warnlist
 			}
 		});
 	}
 
-	public async getSeverity({ member }: { member: GuildMember }) {
+	public async getSeverity(member: GuildMember) {
 		const doc = await prisma.guildWarns.findUnique({
 			where: {
 				id: this.guild.id
@@ -166,7 +173,7 @@ export class Warn {
 		});
 	}
 
-	public async removeAction({ severity }: { severity: number }) {
+	public async removeAction(severity: number) {
 		const data = await prisma.guildWarns.findUnique({
 			where: {
 				id: this.guild.id

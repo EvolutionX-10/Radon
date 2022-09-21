@@ -86,7 +86,7 @@ export class UserCommand extends RadonCommand {
 		const member = (await interaction.guild?.members.fetch(id).catch(() => null)) as GuildMember;
 		if (!member) return this.noAutocompleteResults(interaction);
 
-		const data = await interaction.guild?.settings?.warns.get({ member });
+		const data = await interaction.guild?.settings?.warns.get(member);
 		if (!data) return this.noAutocompleteResults(interaction);
 		const warns = data.person.warns?.map((w) => w.id);
 
@@ -396,10 +396,7 @@ export class UserCommand extends RadonCommand {
 			});
 		}
 
-		const warn = await interaction.guild.settings?.warns.remove({
-			warnId,
-			member
-		});
+		const warn = await interaction.guild.settings?.warns.remove(warnId, member);
 
 		if (!warn) {
 			return interaction.reply({
@@ -437,7 +434,7 @@ export class UserCommand extends RadonCommand {
 				ephemeral: true
 			});
 		}
-		const data = await interaction.guild.settings?.warns.get({ member });
+		const data = await interaction.guild.settings?.warns.get(member);
 		if (!data?.doc || !data.person.warns.length) {
 			return interaction.reply({
 				content: `${member} has no warnings`,
@@ -550,7 +547,7 @@ export class UserCommand extends RadonCommand {
 	@PermissionLevel('Administrator')
 	private async removeAction(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const severity = interaction.options.getInteger('severity', true);
-		const rem = await interaction.guild.settings?.warns?.removeAction({ severity });
+		const rem = await interaction.guild.settings?.warns?.removeAction(severity);
 		if (!rem)
 			return interaction.reply({
 				content: 'No action found for this severity',

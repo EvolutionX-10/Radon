@@ -22,10 +22,7 @@ export class UserListener extends Listener {
 								if (guild) {
 									const member = await guild.members.fetch(warnlist.id).catch(() => null);
 									if (member) {
-										await guild.settings?.warns.remove({
-											member,
-											warnId: warn.id
-										});
+										await guild.settings?.warns.remove(warn.id, member);
 									}
 								}
 							}
