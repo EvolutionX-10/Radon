@@ -15,6 +15,7 @@ export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const member = interaction.options.getMember('target');
 		const reason = interaction.options.getString('reason') ?? undefined;
+		const dm = interaction.options.getBoolean('dm') ?? false;
 
 		if (!member) {
 			return interaction.reply({
@@ -28,11 +29,13 @@ export class UserCommand extends RadonCommand {
 
 		let content = `${Emojis.Confirm} ${member.user.tag} has been kicked ${reason ? `for the following reason: ${reason}` : ''}`;
 
-		await member
-			.send({
-				content: `You have been kicked from ${member.guild.name} ${reason ? `for the following reason: ${reason}` : ''}`
-			})
-			.catch(() => (content += `\n\n> ${Emojis.Cross} Couldn't DM member!`));
+		if (dm) {
+			await member
+				.send({
+					content: `You have been kicked from ${member.guild.name} ${reason ? `for the following reason: ${reason}` : ''}`
+				})
+				.catch(() => (content += `\n\n> ${Emojis.Cross} Couldn't DM member!`));
+		}
 
 		const kicked = await member.kick(reason).catch(() => null);
 		if (!kicked)
@@ -71,6 +74,12 @@ export class UserCommand extends RadonCommand {
 						option //
 							.setName('reason')
 							.setDescription('The reason for the kick')
+							.setRequired(false)
+					)
+					.addBooleanOption((option) =>
+						option //
+							.setName('dm')
+							.setDescription('Send a DM to the kicked user (default: false)')
 							.setRequired(false)
 					),
 			{ idHints: ['947723984949092392', '1019931917417730058'] }

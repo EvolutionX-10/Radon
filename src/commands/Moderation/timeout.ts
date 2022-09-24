@@ -14,6 +14,8 @@ export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		await interaction.deferReply({ fetchReply: true });
 		const member = interaction.options.getMember('target');
+		const dm = interaction.options.getBoolean('dm') ?? false;
+
 		if (!member)
 			return interaction.editReply({
 				content: `${Emojis.Cross} You must specify a valid member that is in this server!`
@@ -52,7 +54,7 @@ export class UserCommand extends RadonCommand {
 		const reason = interaction.options.getString('reason') ?? undefined;
 		await member.timeout(duration, reason);
 
-		if (duration !== 0) {
+		if (duration !== 0 && dm) {
 			await member
 				.send({
 					content: `You have been timed out for ${new DurationFormatter().format(duration)}!\nServer: ${interaction.guild.name}`
@@ -98,7 +100,13 @@ export class UserCommand extends RadonCommand {
 						option //
 							.setName('reason')
 							.setDescription('The reason for the timeout')
-							.setRequired(true)
+							.setRequired(false)
+					)
+					.addBooleanOption((option) =>
+						option //
+							.setName('dm')
+							.setDescription('Send a DM to the timed out user (default: false)')
+							.setRequired(false)
 					),
 			{ idHints: ['948096165017169943', '1019931999743512616'] }
 		);
