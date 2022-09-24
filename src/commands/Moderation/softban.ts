@@ -26,6 +26,8 @@ export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		await interaction.deferReply({ ephemeral: true, fetchReply: true });
 		const member = interaction.options.getMember('target');
+		const dm = interaction.options.getBoolean('dm') ?? false;
+
 		if (!member)
 			return interaction.editReply({
 				content: `${Emojis.Cross} You must specify a valid member that is in this server!`
@@ -36,14 +38,19 @@ export class UserCommand extends RadonCommand {
 		const { content: ctn, result } = runAllChecks(interaction.member, member, 'soft ban');
 		if (!result) return interaction.editReply(ctn);
 
-		const content = `${Emojis.Confirm} ${member} has been soft banned ${reason ? `for the following reason: ${reason}` : ''}`;
+		let content = `${Emojis.Confirm} ${member} has been soft banned ${reason ? `for the following reason: ${reason}` : ''}`;
 
-		await member.ban({
-			days,
-			reason
-		});
+		await member.ban({ days, reason });
 
 		await interaction.guild.members.unban(member.id, reason);
+
+		if (dm) {
+			await member
+				.send({
+					content: `You have been soft banned from ${interaction.guild.name}\n${reason ? `Reason: ${reason}` : ''}`
+				})
+				.catch(() => (content += `\n\n> ${Emojis.Cross} Couldn't DM member!`));
+		}
 
 		const data: BaseModActionData = {
 			action: 'softban',
@@ -83,6 +90,12 @@ export class UserCommand extends RadonCommand {
 							.setDescription('The days of messages to delete (not a temp ban)')
 							.setRequired(false)
 							.setChoices(...this.#DaysChoices)
+					)
+					.addBooleanOption((option) =>
+						option //
+							.setName('dm')
+							.setDescription('Send a DM to the timed out user (default: false)')
+							.setRequired(false)
 					),
 			{ idHints: ['948096163398160415', '1019931997696708739'] }
 		);
