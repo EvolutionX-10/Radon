@@ -4,6 +4,7 @@ import { PermissionLevels } from '#lib/types';
 import { mins, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { container } from '@sapphire/framework';
+import { PermissionFlagsBits } from 'discord-api-types/v9';
 import { ButtonInteraction, Message, OverwriteResolvable, Permissions } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
@@ -342,7 +343,9 @@ export class UserCommand extends RadonCommand {
 			(builder) =>
 				builder //
 					.setName(this.name)
-					.setDescription(this.description),
+					.setDescription(this.description)
+					.setDMPermission(false)
+					.setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 			{ idHints: ['951113445930065980', '1019931909528223765'] }
 		);
 	}

@@ -4,7 +4,7 @@ import { PermissionLevels } from '#lib/types';
 import { runAllChecks } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { clean } from 'confusables';
-import { ApplicationCommandType } from 'discord-api-types/v9';
+import { ApplicationCommandType, PermissionFlagsBits } from 'discord-api-types/v9';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: `Manage nicknames`,
@@ -34,6 +34,8 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
+					.setDMPermission(false)
+					.setDefaultMemberPermissions(PermissionFlagsBits.ManageNicknames)
 					.addSubcommand((builder) =>
 						builder //
 							.setName('decancer')
@@ -92,7 +94,9 @@ export class UserCommand extends RadonCommand {
 			(builder) =>
 				builder //
 					.setName('Nick Decancer')
-					.setType(ApplicationCommandType.User),
+					.setType(ApplicationCommandType.User)
+					.setDMPermission(false)
+					.setDefaultMemberPermissions(PermissionFlagsBits.ManageNicknames),
 			{ idHints: ['954251739077431346', '1019932092592820294'] }
 		);
 	}

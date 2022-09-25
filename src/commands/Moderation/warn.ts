@@ -123,6 +123,7 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
+					.setDMPermission(false)
 					.addSubcommand((builder) =>
 						builder //
 							.setName('add')
@@ -256,7 +257,8 @@ export class UserCommand extends RadonCommand {
 			(builder) =>
 				builder //
 					.setName('Warn List')
-					.setType(ApplicationCommandType.User),
+					.setType(ApplicationCommandType.User)
+					.setDMPermission(false),
 			{ idHints: ['960410679070851122', '1019932007117094982'] }
 		);
 	}

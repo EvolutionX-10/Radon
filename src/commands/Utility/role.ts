@@ -17,6 +17,7 @@ import {
 	Permissions,
 	Role
 } from 'discord.js';
+import { PermissionFlagsBits } from 'discord-api-types/v9';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Manage Roles',
@@ -64,6 +65,8 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
+					.setDMPermission(false)
+					.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
 					.addSubcommand((builder) =>
 						builder //
 							.setName('add')
