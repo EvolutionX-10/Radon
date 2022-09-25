@@ -4,7 +4,7 @@ import { PermissionLevels } from '#lib/types';
 import { sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { BucketScope } from '@sapphire/framework';
-import { ChannelType } from 'discord-api-types/v9';
+import { ChannelType, PermissionFlagsBits } from 'discord-api-types/v9';
 import { CategoryChannel, GuildChannel, MessageActionRow, Modal, ModalActionRowComponent, Role, TextInputComponent, ThreadChannel } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
@@ -49,6 +49,8 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
+					.setDMPermission(false)
+					.setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels | PermissionFlagsBits.ManageRoles)
 					.addSubcommand((builder) =>
 						builder //
 							.setName('text')

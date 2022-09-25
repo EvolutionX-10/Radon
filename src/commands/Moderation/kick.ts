@@ -3,6 +3,7 @@ import { RadonCommand } from '#lib/structures';
 import { BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
 import { runAllChecks, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
+import { PermissionFlagsBits } from 'discord-api-types/v9';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: `Kick a member`,
@@ -64,6 +65,8 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
+					.setDMPermission(false)
+					.setDefaultMemberPermissions(PermissionFlagsBits.KickMembers)
 					.addUserOption((option) =>
 						option //
 							.setName('target')

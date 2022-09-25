@@ -3,7 +3,7 @@ import { RadonCommand } from '#lib/structures';
 import { BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
 import { runAllChecks, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
-import type { APIApplicationCommandOptionChoice } from 'discord-api-types/v9';
+import { APIApplicationCommandOptionChoice, PermissionFlagsBits } from 'discord-api-types/v9';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: `Quickly bans and unbans, acts as a quick purge`,
@@ -72,6 +72,8 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
+					.setDMPermission(false)
+					.setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
 					.addUserOption((option) =>
 						option //
 							.setName('target')

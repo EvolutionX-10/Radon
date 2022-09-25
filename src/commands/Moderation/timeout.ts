@@ -4,6 +4,7 @@ import { PermissionLevels, RadonEvents, TimeoutActionData } from '#lib/types';
 import { runAllChecks } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Duration, DurationFormatter } from '@sapphire/duration';
+import { PermissionFlagsBits } from 'discord-api-types/v9';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: `Temporarily mute a member`,
@@ -84,6 +85,8 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
+					.setDMPermission(false)
+					.setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
 					.addUserOption((option) =>
 						option //
 							.setName('target')

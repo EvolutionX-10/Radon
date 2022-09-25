@@ -27,6 +27,7 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
+					.setDMPermission(false)
 					.addSubcommand((builder) =>
 						builder //
 							.setName('me')

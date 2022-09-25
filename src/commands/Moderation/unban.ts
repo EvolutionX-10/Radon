@@ -3,6 +3,7 @@ import { RadonCommand } from '#lib/structures';
 import { BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
 import { sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
+import { PermissionFlagsBits } from 'discord-api-types/v9';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: `Remove a ban from a user`,
@@ -46,6 +47,8 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
+					.setDMPermission(false)
+					.setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
 					.addUserOption((option) =>
 						option //
 							.setName('user')

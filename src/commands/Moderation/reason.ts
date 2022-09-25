@@ -63,6 +63,7 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
+					.setDMPermission(false)
 					.addStringOption((option) =>
 						option //
 							.setName('id')
