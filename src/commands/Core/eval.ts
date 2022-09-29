@@ -29,8 +29,7 @@ export class UserCommand extends RadonCommand {
 		if (!code.length) return;
 
 		if (args.getFlags('d', 'del')) await message.delete().catch(() => null);
-
-		const { success, result, time, type } = await this.eval(
+		let { success, result, time, type } = await this.eval(
 			message,
 			code,
 			{
@@ -51,6 +50,7 @@ export class UserCommand extends RadonCommand {
 		const footer = codeBlock('ts', type);
 
 		if (typeof result !== 'string') return;
+		result = clean(result);
 
 		if (args.getFlags('haste')) {
 			const url = await this.getHaste(result).catch(() => undefined);
@@ -85,13 +85,13 @@ export class UserCommand extends RadonCommand {
 		}
 
 		if (args.getFlags('v', 'value')) {
-			return send(message, success ? result : 'Error occured');
+			return send(message, result);
 		}
 
 		return send(message, `${codeBlock('ts', result)}\n${footer}\n${time}`);
 	}
 
-	// @ts-expect-error It is because args is unused
+	// @ts-ignore It is because args is unused
 	private async eval(message: RadonCommand.Message, code: string, flags: flags, args: RadonCommand.Args) {
 		const stopwatch = new Stopwatch();
 		if (code.includes('await')) flags.async = true;
@@ -99,10 +99,10 @@ export class UserCommand extends RadonCommand {
 		const last = ar.pop();
 		if (flags.async) code = `(async () => {\n${ar.join(';\n')}\nreturn ${last?.trim() ?? ' '}\n\n})();`;
 		const msg = message;
-		// @ts-expect-error Unused variables
+		// @ts-ignore Unused variables
 		const { guild, channel, member } = msg;
 		const { container: ctn } = this;
-		// @ts-expect-error Unused variables
+		// @ts-ignore Unused variables
 		const { client } = ctn;
 
 		let success: boolean;
