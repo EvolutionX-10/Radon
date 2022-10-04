@@ -91,7 +91,7 @@ export class UserCommand extends RadonCommand {
 		return send(message, `${codeBlock('ts', result)}\n${footer}\n${time}`);
 	}
 
-	// @ts-ignore It is because args is unused
+	// @ts-expect-error It is because args is unused
 	private async eval(message: RadonCommand.Message, code: string, flags: flags, args: RadonCommand.Args) {
 		const stopwatch = new Stopwatch();
 		if (code.includes('await')) flags.async = true;
@@ -99,10 +99,10 @@ export class UserCommand extends RadonCommand {
 		const last = ar.pop();
 		if (flags.async) code = `(async () => {\n${ar.join(';\n')}\nreturn ${last?.trim() ?? ' '}\n\n})();`;
 		const msg = message;
-		// @ts-ignore Unused variables
+		// @ts-expect-error Unused variables
 		const { guild, channel, member } = msg;
 		const { container: ctn } = this;
-		// @ts-ignore Unused variables
+		// @ts-expect-error Unused variables
 		const { client } = ctn;
 
 		let success: boolean;
