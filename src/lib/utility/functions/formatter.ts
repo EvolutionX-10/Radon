@@ -4,7 +4,7 @@ import type { PermissionString } from 'discord.js';
  * It takes an array of strings, splits each string by underscores, capitalizes the first letter of
  * each word, and joins them back together
  * @param {string[]} perm - The array of strings to format.
- * @param {boolean} key - Should it filter and return only key permissions? (default: false)
+ * @param {boolean} key - Should it filter and return only key permissions? (default: true)
  * @returns {string[]} An array of strings.
  * @example
  * format(['SEND_MESSAGES']) -> ['Send Messages']
@@ -26,7 +26,7 @@ export function format(perm: string[] | string, key = true) {
 			.map((e) =>
 				e
 					.split(`_`)
-					.map((i) => i[0] + i.match(/\B(\w+)/)?.[1]?.toLowerCase())
+					.map((i) => (i.length > 1 ? i[0] + i.match(/\B(\w+)/)?.[1]?.toLowerCase() : i.toUpperCase()))
 					.join(` `)
 			)
 			.map((s) => {

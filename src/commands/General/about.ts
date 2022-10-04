@@ -1,10 +1,8 @@
-import { Color, Emojis } from '#constants';
+import { Color, Emojis, UserFlags } from '#constants';
 import { Button, Embed, RadonCommand, Row, Timestamp } from '#lib/structures';
 import { ApplyOptions } from '@sapphire/decorators';
-import { version as sapphireVersion } from '@sapphire/framework';
-import { roundNumber } from '@sapphire/utilities';
-import { version } from 'discord.js';
-import { uptime } from 'node:os';
+import { story } from '#lib/messages';
+import { isOwner } from '#lib/utility';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'About things!'
@@ -18,6 +16,8 @@ export class UserCommand extends RadonCommand {
 				return this.me(interaction);
 			case 'role':
 				return this.role(interaction);
+			case 'user':
+				return this.user(interaction);
 		}
 	}
 
@@ -43,63 +43,23 @@ export class UserCommand extends RadonCommand {
 									.setDescription('The role to show info about')
 									.setRequired(true)
 							)
+					)
+					.addSubcommand((builder) =>
+						builder //
+							.setName('user')
+							.setDescription('Show info about a user')
+							.addUserOption((option) =>
+								option //
+									.setName('user')
+									.setDescription('The user to show info about')
+									.setRequired(true)
+							)
 					),
 			{ idHints: ['970217477126643752', '1019931911902208063'] }
 		);
 	}
 
-	public buildEmbed() {
-		const titles = {
-			stats: 'Statistics',
-			uptime: 'Uptime',
-			serverUsage: 'Server Usage',
-			misc: 'Misc'
-		};
-		const stats = this.generalStatistics;
-		const uptime = this.uptimeStatistics;
-		const usage = this.usageStatistics;
-		const misc = this.miscStatistics;
-
-		const fields = {
-			stats: `• **Users**: ${stats.users}\n• **Servers**: ${stats.guilds}\n• **Channels**: ${stats.channels}\n• **Discord.js**: ${stats.version}\n• **Node.js**: ${stats.nodeJs}\n• **Framework**: ${stats.sapphireVersion}`,
-			uptime: `• **Host**: ${uptime.host}\n• **Total**: ${uptime.total}\n• **Client**: ${uptime.client}`,
-			serverUsage: `• **Heap**: ${usage.ramUsed}MB (Total: ${usage.ramTotal}MB)`,
-			misc: `• **Lines of code**: ${misc.lines}\n• **Files**: ${misc.files}`
-		};
-
-		return new Embed()._color(Color.General)._fields(
-			{
-				name: titles.stats,
-				value: fields.stats
-			},
-			{
-				name: titles.uptime,
-				value: fields.uptime
-			},
-			{
-				name: titles.serverUsage,
-				value: fields.serverUsage
-			},
-			{
-				name: titles.misc,
-				value: fields.misc
-			}
-		);
-	}
-
 	private async me(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const row = new Row();
-		const stats = new Button() //
-			._customId('stats')
-			._label('Funny Numbers here')
-			._emoji('<:eyesFlipped:260280968609398785>')
-			._style('SECONDARY');
-		const back = new Button() //
-			._customId('back')
-			._label("I'm confused, get me back")
-			._emoji('<:pepeOhno:891375539019976744>')
-			._style('SECONDARY');
-
 		const invite = this.container.client.generateInvite({
 			scopes: ['applications.commands', 'bot'],
 			permissions: 543276137727n
@@ -110,94 +70,21 @@ export class UserCommand extends RadonCommand {
 				new Button()._label(`Join Support Server!`)._style('LINK')._emoji('🆘')._url(`https://discord.gg/YBFaDggpvt`)
 			);
 
-		const m = (await interaction.reply({
-			embeds: [this.story()],
-			components: [row._components(stats), voteRow, inviteRow],
-			fetchReply: true
-		})) as RadonCommand.Message;
-
-		const collector = m.createMessageComponentCollector({
-			time: this.container.utils.sec(15)
-		});
-		collector.on('collect', (i) => {
-			switch (i.customId as Ids) {
-				case 'back':
-					collector.resetTimer();
-					return i.update({
-						embeds: [this.story()],
-						components: [row._components(stats), voteRow, inviteRow]
-					});
-				case 'stats':
-					collector.resetTimer();
-					return i.update({
-						embeds: [this.buildEmbed()],
-						components: [row._components(back), voteRow, inviteRow]
-					});
-			}
-		});
-
-		collector.on('end', async () => {
-			for (const button of m.components[0].components) {
-				button.setDisabled();
-			}
-
-			await m.edit({ components: m.components });
+		await interaction.reply({
+			embeds: [this.storyEmbed()],
+			components: [voteRow, inviteRow]
 		});
 	}
 
-	private story() {
-		const embed = new Embed();
-		embed.setTitle('About me!');
-		embed._author({
-			name: this.container.client.user!.tag
-		});
-		embed._color(Color.General);
-		const str =
-			"Hey there! I'm Radon, a *moderation* bot dedicated to make your server a better place.\n" +
-			'The maxim of my developer behind this is to allow server owners and admins to __easily configure__ me according to their wish ' +
-			'*without needing to leave discord*. Configuring a moderation bot has never been this easy! If you have any suggestions/feedback, ' +
-			'please join the support server and let my developer know!\n\n' +
-			'Please take a moment to vote/rate me using the buttons below, it really helps my developer';
-		embed._description(str);
-		embed._thumbnail(this.container.client.user!.displayAvatarURL());
-		return embed;
-	}
-
-	private get generalStatistics(): StatsGeneral {
-		const { client } = this.container;
-		return {
-			channels: client.channels.cache.size,
-			guilds: client.guilds.cache.size,
-			nodeJs: process.version,
-			users: client.guilds.cache.reduce((acc, val) => acc + (val.memberCount ?? 0), 0),
-			version: `v${version}`,
-			sapphireVersion: `v${sapphireVersion}`
-		};
-	}
-
-	private get uptimeStatistics(): StatsUptime {
-		const now = Date.now();
-		return {
-			client: new Timestamp(now - this.container.client.uptime!).getRelativeTime(),
-			host: new Timestamp(now - uptime() * 1000).getRelativeTime(),
-			total: new Timestamp(roundNumber(now - process.uptime() * 1000)).getRelativeTime()
-		};
-	}
-
-	private get usageStatistics(): StatsUsage {
-		const usage = process.memoryUsage();
-		return {
-			ramTotal: `${(usage.heapTotal / 1048576).toFixed(2)}`,
-			ramUsed: `${(usage.heapUsed / 1048576).toFixed(2)}`
-		};
-	}
-
-	private get miscStatistics(): StatsMisc {
-		const { linesOfCode, numOfFiles } = this.container.utils.countlines('dist');
-		return {
-			lines: `${linesOfCode}`,
-			files: `${numOfFiles}`
-		};
+	private storyEmbed() {
+		return new Embed()
+			._title('About me!')
+			._author({
+				name: this.container.client.user!.tag
+			})
+			._color(Color.General)
+			._description(story)
+			._thumbnail(this.container.client.user!.displayAvatarURL());
 	}
 
 	private role(interaction: RadonCommand.ChatInputCommandInteraction) {
@@ -213,8 +100,7 @@ export class UserCommand extends RadonCommand {
 			`\` - \` Mentionable: ${role.mentionable ? Emojis.Confirm : Emojis.Cross}\n` +
 			`\` - \` Managed externally: ${role.managed ? Emojis.Confirm : Emojis.Cross}`;
 
-		let perms = this.container.utils.format(role.permissions.toArray());
-		if (perms.includes('Administrator')) perms = ['Administrator'];
+		const perms = this.container.utils.format(role.permissions.toArray());
 
 		const adv = `\` - \` ID: *\`${role.id}\`*\n\` - \` Members: ${role.members.size}\n\` - \` Key Permission: ${
 			perms.length ? perms[0] : 'None!'
@@ -228,7 +114,7 @@ export class UserCommand extends RadonCommand {
 			._color(hex === '000000' ? '#2f3136' : role.color)
 			._description(role.toString())
 			._timestamp()
-			._thumbnail(role.iconURL() ?? `https://singlecolorimage.com/get/${hex === '000000' ? '2f3136' : hex}/400x400`)
+			._thumbnail(role.iconURL({ size: 4096 }) ?? `https://singlecolorimage.com/get/${hex === '000000' ? '2f3136' : hex}/400x400`)
 			._footer({
 				text: `Requested by ${interaction.user.username}`,
 				iconURL: interaction.user.displayAvatarURL({ dynamic: true })
@@ -245,6 +131,59 @@ export class UserCommand extends RadonCommand {
 			);
 
 		return interaction.reply({ embeds: [embed] });
+	}
+
+	private async user(interaction: RadonCommand.ChatInputCommandInteraction) {
+		await interaction.deferReply();
+		const user = await interaction.options.getUser('user', true).fetch(true);
+		const member = interaction.options.getMember('user');
+		const pfp = member?.displayAvatarURL({ dynamic: true, size: 4096 }) ?? user.displayAvatarURL({ dynamic: true, size: 4096 });
+		const banner = user.bannerURL({ dynamic: true, size: 4096 }) ?? '';
+		const createdAt = new Timestamp(user.createdTimestamp);
+		const guildJoinDate = member?.joinedTimestamp ? new Timestamp(member.joinedTimestamp) : null;
+		const perm = member
+			? member.id === member.guild.ownerId
+				? 'Server Owner'
+				: this.container.utils.format(member.permissions.toArray())[0]
+			: null;
+
+		const embed = new Embed() //
+			._title(user.tag)
+			._color(user.hexAccentColor ?? Color.General)
+			._footer({
+				text: `Requested by ${interaction.user.username}`,
+				iconURL: interaction.user.displayAvatarURL({ dynamic: true })
+			})
+			._fields({
+				name: 'Created At',
+				value: `${createdAt.getLongDate()} [${createdAt.getRelativeTime()}]`,
+				inline: true
+			})
+			._timestamp()
+			._image(banner)
+			._thumbnail(pfp);
+
+		if (guildJoinDate)
+			embed.addFields({ name: 'Joined At', value: `${guildJoinDate.getLongDate()} [${guildJoinDate.getRelativeTime()}]`, inline: true });
+
+		const flags = await user.fetchFlags(true);
+		let flagValue = flags
+			.toArray()
+			.map((f) => UserFlags[f])
+			.join(' ')
+			.trim();
+
+		if (flagValue.length) {
+			if (isOwner(user)) flagValue = `${Emojis.Owner} ${flagValue}`;
+			flagValue.length > 230 ? embed._description(flagValue) : embed._title(user.tag.concat(` ${flagValue}`));
+		}
+
+		embed.addFields({ name: 'ID', value: `\`${user.id}\``, inline: false });
+
+		if (member?.nickname) embed.addFields({ name: 'Nickname', value: member.nickname, inline: true });
+		if (member) embed.addFields({ name: 'Key Permission', value: perm!, inline: true });
+
+		return interaction.editReply({ embeds: [embed] });
 	}
 }
 
@@ -272,31 +211,4 @@ const vote_dbl = new Button() //
 const votes = [vote_top, vote_void, vote_labs, vote_dbl];
 export const voteRow = new Row()._components(votes);
 
-interface StatsGeneral {
-	channels: number;
-	guilds: number;
-	nodeJs: string;
-	users: number;
-	version: string;
-	sapphireVersion: string;
-}
-
-interface StatsUptime {
-	client: string;
-	host: string;
-	total: string;
-}
-
-interface StatsUsage {
-	ramTotal: string;
-	ramUsed: string;
-}
-
-interface StatsMisc {
-	lines: string;
-	files: string;
-}
-
-type Ids = 'back' | 'stats';
-
-type SubCmd = 'me' | 'role';
+type SubCmd = 'me' | 'role' | 'user';
