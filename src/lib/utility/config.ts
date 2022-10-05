@@ -1,7 +1,7 @@
 process.env.NODE_ENV ??= 'development';
 
 import { Owners } from '#constants';
-import { envParseBoolean } from '#lib/env';
+import { envParseBoolean, envParseInteger, envParseString } from '#lib/env';
 import type { BotList } from '@devtomio/plugin-botlist';
 import { BucketScope, ClientLoggerOptions, CooldownOptions, LogLevel } from '@sapphire/framework';
 import { Time } from '@sapphire/duration';
@@ -16,10 +16,21 @@ import {
 	SweeperOptions
 } from 'discord.js';
 import { config as dotenv } from 'dotenv-cra';
+import type { ScheduledTasksOptions } from '@sapphire/plugin-scheduled-tasks';
+import { ScheduledTaskRedisStrategy } from '@sapphire/plugin-scheduled-tasks/register-redis';
+import type { RedisOptions } from 'bullmq';
 
 dotenv({
 	debug: process.env.DOTENV_DEBUG_ENABLED ? envParseBoolean('DOTENV_DEBUG_ENABLED') : undefined
 });
+
+export function parseRedisOption(): Pick<RedisOptions, 'port' | 'password' | 'host' | 'db'> {
+	return {
+		port: envParseInteger('REDIS_PORT'),
+		password: envParseString('REDIS_PASSWORD'),
+		host: envParseString('REDIS_HOST')
+	};
+}
 
 export const config: config = {
 	intents: [
@@ -95,6 +106,11 @@ export const config: config = {
 				type: 'WATCHING'
 			}
 		]
+	},
+	tasks: {
+		strategy: new ScheduledTaskRedisStrategy({
+			bull: { connection: parseRedisOption() }
+		})
 	}
 };
 interface config {
@@ -106,6 +122,7 @@ interface config {
 	sweepers: SweeperOptions;
 	botlist: BotList.Options;
 	presence: PresenceData;
+	tasks: ScheduledTasksOptions;
 }
 export const ClientConfig: ClientOptions = {
 	intents: config.intents,
@@ -122,5 +139,6 @@ export const ClientConfig: ClientOptions = {
 	preventFailedToFetchLogForGuilds: true,
 	botList: config.botlist,
 	sweepers: config.sweepers,
-	presence: config.presence
+	presence: config.presence,
+	tasks: config.tasks
 };
