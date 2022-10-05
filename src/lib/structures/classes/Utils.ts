@@ -1,23 +1,23 @@
 import type { RadonClient } from '#lib/RadonClient';
 import {
+	countlines,
+	format,
 	formatDuration,
 	generateModLogDescription,
+	getCache,
+	hours,
 	isAdmin,
 	isGuildOwner,
 	isModerator,
 	isOwner,
 	managable,
+	mins,
 	pickRandom,
 	runAllChecks,
+	sec,
+	summableArray,
 	time,
 	uid,
-	hours,
-	mins,
-	sec,
-	countlines,
-	getCache,
-	format,
-	summableArray,
 	wait
 } from '#lib/utility';
 import { Button } from './Button.js';

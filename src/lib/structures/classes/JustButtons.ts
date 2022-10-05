@@ -1,4 +1,4 @@
-import { PaginatedMessagePage, PaginatedMessage, PaginatedMessageOptions } from '@sapphire/discord.js-utilities';
+import { PaginatedMessage, PaginatedMessageOptions, PaginatedMessagePage } from '@sapphire/discord.js-utilities';
 /**
  * Extends Paginated message with custom order and no select menus
  * as well as unlimited pages

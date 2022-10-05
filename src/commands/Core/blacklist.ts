@@ -1,6 +1,6 @@
+import { Color } from '#constants';
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
-import { Color } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { send } from '@sapphire/plugin-editable-commands';
 import type { TextChannel } from 'discord.js';

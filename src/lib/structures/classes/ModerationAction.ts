@@ -1,6 +1,6 @@
-import { Guild, GuildMember, User } from 'discord.js';
 import type { GuildInteraction, ModActionData, TimeoutActionData } from '#lib/types';
 import { runAllChecks } from '#lib/utility';
+import { Guild, GuildMember, User } from 'discord.js';
 
 export class ModerationAction {
 	public constructor(public readonly guild: Guild) {}
