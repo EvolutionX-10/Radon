@@ -1,4 +1,4 @@
-import { Color, Emojis, UserFlags } from '#constants';
+import { Color, Emojis, UserFlags, voteRow } from '#constants';
 import { Button, Embed, RadonCommand, Row, Timestamp } from '#lib/structures';
 import { ApplyOptions } from '@sapphire/decorators';
 import { story } from '#lib/messages';
@@ -186,29 +186,5 @@ export class UserCommand extends RadonCommand {
 		return interaction.editReply({ embeds: [embed] });
 	}
 }
-
-const vote_top = new Button() //
-	._label('Vote on Top.gg')
-	._style('LINK')
-	._emoji('<:topgg:918280202398875758>')
-	._url('https://top.gg/bot/944833303226236989/vote');
-const vote_void = new Button() //
-	._label('Vote on Void Bots')
-	._style('LINK')
-	._emoji('<:voidbots:742925293907607624>')
-	._url('https://voidbots.net/bot/944833303226236989/vote');
-const vote_labs = new Button() //
-	._label('Vote on Discord Labs')
-	._style('LINK')
-	._emoji('<:discordlabsicon:621472531735642130>')
-	._url('https://bots.discordlabs.org/bot/944833303226236989?vote');
-const vote_dbl = new Button() //
-	._label('Vote on Discord Bot List')
-	._style('LINK')
-	._emoji('<:dbl:757235965629825084>')
-	._url('https://discordbotlist.com/bots/radon-1595/upvote');
-
-const votes = [vote_top, vote_void, vote_labs, vote_dbl];
-export const voteRow = new Row()._components(votes);
 
 type SubCmd = 'me' | 'role' | 'user';

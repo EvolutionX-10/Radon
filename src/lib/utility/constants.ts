@@ -1,3 +1,4 @@
+import { Button, Row } from '#lib/structures';
 import type { UserFlagsString } from 'discord.js';
 
 process.env.NODE_ENV ??= 'development';
@@ -67,3 +68,26 @@ export const UserFlags: Record<UserFlagsString, string> = {
 	PARTNERED_SERVER_OWNER: '<:BadgePartner:1024918407335919646>',
 	TEAM_USER: ''
 };
+
+const vote_topgg = new Button() //
+	._label('Vote on Top.gg')
+	._style('LINK')
+	._emoji('<:topgg:918280202398875758>')
+	._url('https://top.gg/bot/944833303226236989/vote');
+const vote_void = new Button() //
+	._label('Vote on Void Bots')
+	._style('LINK')
+	._emoji('<:voidbots:742925293907607624>')
+	._url('https://voidbots.net/bot/944833303226236989/vote');
+const vote_labs = new Button() //
+	._label('Vote on Discord Labs')
+	._style('LINK')
+	._emoji('<:discordlabsicon:621472531735642130>')
+	._url('https://bots.discordlabs.org/bot/944833303226236989?vote');
+const vote_dbl = new Button() //
+	._label('Vote on Discord Bot List')
+	._style('LINK')
+	._emoji('<:dbl:757235965629825084>')
+	._url('https://discordbotlist.com/bots/radon-1595/upvote');
+
+export const voteRow = new Row()._components([vote_topgg, vote_void, vote_labs, vote_dbl]);
