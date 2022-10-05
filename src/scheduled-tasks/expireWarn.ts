@@ -16,6 +16,8 @@ export class ExpireWarnTask extends ScheduledTask {
 			select: { id: true, warnlist: true }
 		});
 
+		if (!data.length) return;
+
 		for (const { id, warnlist } of data) {
 			const guild = this.container.client.guilds.cache.get(id);
 			if (!guild) continue;
