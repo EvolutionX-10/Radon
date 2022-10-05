@@ -1,7 +1,6 @@
 import { PaginatedMessage, PaginatedMessageOptions } from '@sapphire/discord.js-utilities';
 /**
- * Extends Paginated message with custom order and no select menus
- * as well as unlimited pages
+ * Extends Paginated message with custom order
  */
 export class RadonPaginatedMessage extends PaginatedMessage {
 	public constructor(options: PaginatedMessageOptions = {}) {
