@@ -13,15 +13,13 @@ export class ExpireWarnTask extends ScheduledTask {
 			where: {
 				warnlist: { some: { warns: { some: { expiration: { lte: now } } } } }
 			},
-			select: {
-				id: true,
-				warnlist: true
-			}
+			select: { id: true, warnlist: true }
 		});
 
 		for (const { id, warnlist } of data) {
 			const guild = this.container.client.guilds.cache.get(id);
 			if (!guild) continue;
+
 			const warns = warnlist.map((warn) => warn.warns.filter((w) => w.expiration < now)).flat();
 
 			const membersPromise = warns.map(async (w) => {
@@ -33,6 +31,7 @@ export class ExpireWarnTask extends ScheduledTask {
 				const warn = warns[i];
 				const member = await membersPromise[i];
 				if (!member || !warn) return;
+
 				await guild.settings?.warns.remove(warn.id, member);
 			}
 		}
