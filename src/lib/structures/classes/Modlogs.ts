@@ -1,14 +1,13 @@
-import { container } from '@sapphire/framework';
+import type { PrismaClient } from '@prisma/client';
 import type { Guild, MessageEmbed } from 'discord.js';
-const { prisma } = container;
 
 export class Modlogs {
-	public constructor(private readonly guild: Guild) {
+	public constructor(private readonly guild: Guild, private readonly prisma: PrismaClient) {
 		this.guild = guild;
 	}
 
 	public async modLogs_exist() {
-		const data = await prisma.guildSettings.findUnique({
+		const data = await this.prisma.guildSettings.findUnique({
 			where: {
 				id: this.guild.id
 			}
@@ -18,7 +17,7 @@ export class Modlogs {
 	}
 
 	public async sendModLog(embed: MessageEmbed) {
-		const data = await prisma.guildSettings.findUnique({
+		const data = await this.prisma.guildSettings.findUnique({
 			where: {
 				id: this.guild.id
 			}

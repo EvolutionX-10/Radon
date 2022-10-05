@@ -24,7 +24,7 @@ export class UserListener extends Listener {
 		const bots = guild.members.cache.filter((m) => m.user.bot).size;
 		const humans = guild.members.cache.filter((m) => !m.user.bot).size;
 
-		guild.settings = new GuildSettings(guild);
+		guild.settings = new GuildSettings(guild, this.container.prisma);
 		await this.container.client.guilds.fetch();
 		const channel = (await this.container.client.channels.fetch('950646167715328000').catch(() => null)) as TextChannel;
 		if (!channel) return;

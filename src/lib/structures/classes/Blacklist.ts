@@ -1,8 +1,10 @@
-import { container } from '@sapphire/framework';
-const { prisma } = container;
+import type { PrismaClient } from '@prisma/client';
+
 export class Blacklist {
+	public constructor(private readonly prisma: PrismaClient) {}
+
 	public async add(id: string, reason: string) {
-		const doc = await prisma.blacklist.upsert({
+		const doc = await this.prisma.blacklist.upsert({
 			create: {
 				id,
 				reason
@@ -20,7 +22,7 @@ export class Blacklist {
 	}
 
 	public async isBlacklisted(id: string) {
-		const exists = await prisma.blacklist.findUnique({
+		const exists = await this.prisma.blacklist.findUnique({
 			where: {
 				id
 			}
@@ -29,7 +31,7 @@ export class Blacklist {
 	}
 
 	public async remove(id: string) {
-		const doc = await prisma.blacklist.delete({
+		const doc = await this.prisma.blacklist.delete({
 			where: {
 				id
 			}

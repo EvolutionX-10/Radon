@@ -12,7 +12,7 @@ import gradient from 'gradient-string';
 })
 export class UserListener extends Listener {
 	public override run(client: RadonClient) {
-		this.container.settings = new Settings();
+		this.container.settings = new Settings(this.container.prisma);
 		this.container.utils = new Utils(client);
 
 		this.container.client = client;
@@ -22,7 +22,7 @@ export class UserListener extends Listener {
 
 		const guilds = client.guilds.cache;
 		for (const guild of guilds.values()) {
-			guild.settings = new GuildSettings(guild);
+			guild.settings = new GuildSettings(guild, this.container.prisma);
 		}
 	}
 

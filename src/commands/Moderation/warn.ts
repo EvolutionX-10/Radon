@@ -1,9 +1,10 @@
 import { Color, Emojis, WarnSeverity } from '#constants';
 import { PermissionLevel } from '#lib/decorators';
-import { Embed, RadonCommand, RadonPaginatedMessageEmbedFields, Timestamp } from '#lib/structures';
+import { Embed, JustButtons, RadonCommand, RadonPaginatedMessageEmbedFields, Timestamp } from '#lib/structures';
 import type { warnAction } from '#lib/types';
 import { BaseWarnActionData, PermissionLevels, RadonEvents, WarnActionData } from '#lib/types';
 import { mins, runAllChecks, sec, uid } from '#lib/utility';
+import type { MemberWarnData } from '@prisma/client';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Duration, DurationFormatter } from '@sapphire/duration';
 import { cutText } from '@sapphire/utilities';
@@ -52,6 +53,8 @@ export class UserCommand extends RadonCommand {
 				return this.remove(interaction);
 			case 'list':
 				return this.list(interaction);
+			case 'list_all':
+				return this.list_all(interaction);
 		}
 	}
 
@@ -200,6 +203,11 @@ export class UserCommand extends RadonCommand {
 									.setDescription('The member to list warns for')
 									.setRequired(true)
 							)
+					)
+					.addSubcommand((builder) =>
+						builder //
+							.setName('list_all')
+							.setDescription('List all warns of all members')
 					)
 					.addSubcommandGroup((builder) =>
 						builder //
@@ -437,49 +445,44 @@ export class UserCommand extends RadonCommand {
 			});
 		}
 		const data = await interaction.guild.settings?.warns.get(member);
+
 		if (!data?.doc || !data.person.warns.length) {
 			return interaction.reply({
 				content: `${member} has no warnings`,
 				ephemeral: true
 			});
 		}
-		const warns = data!.doc;
-		const warns_size = warns.warnlist.filter((e) => e?.id === member.id)[0].warns.length;
-		const embed_color = Color.Moderation;
+		const warns_size = data!.person.warns.length;
 		const embed_title = `${member.user.tag}'s Warnings`;
 		const embed_description = `${member} has ${warns_size} warning(s)`;
 		const embed_fields = await Promise.all(
-			warns.warnlist
-				.filter((e) => e.id === member.id)[0]
-				.warns.map(async (e) => {
-					const mod = await this.container.client.users.fetch(e.mod);
-					const expiration = new Timestamp(e.expiration.getTime());
-					const time = new Timestamp(e.date.getTime());
-					return {
-						name: `Warn ID: ${e.id}`,
-						value:
-							`> Reason: ${e.reason}\n> Given on ${time.getShortDateTime()} (${time.getRelativeTime()})` +
-							`\n> Severity: \`${e.severity}\`` +
-							`\n> Expires ${expiration.getRelativeTime()} (${expiration.getShortDateTime()})` +
-							`\n> Moderator: ${mod} (\`${mod.id}\`)`,
-						inline: false
-					};
-				})
+			data.person.warns.map(async (e) => {
+				const mod = await this.container.client.users.fetch(e.mod);
+				const expiration = new Timestamp(e.expiration.getTime());
+				const time = new Timestamp(e.date.getTime());
+				return {
+					name: `Warn ID: ${e.id}`,
+					value:
+						`> Reason: ${e.reason}\n> Given on ${time.getShortDateTime()} (${time.getRelativeTime()})` +
+						`\n> Severity: \`${e.severity}\`` +
+						`\n> Expires ${expiration.getRelativeTime()} (${expiration.getShortDateTime()})` +
+						`\n> Moderator: ${mod} (\`${mod.id}\`)`,
+					inline: false
+				};
+			})
 		);
+
 		const embed_footer = `Active warnings of ${member.displayName}`;
 		const embed_timestamp = new Date();
-		const embed_thumbnail = {
-			url: member.user.displayAvatarURL({
-				dynamic: true
-			})
-		};
+		const embed_thumbnail = member.user.displayAvatarURL({ dynamic: true });
+
 		const template = new Embed()
-			._color(embed_color)
+			._color(Color.Moderation)
 			._title(embed_title)
 			._description(embed_description)
 			._footer({ text: embed_footer })
 			._timestamp(embed_timestamp)
-			._thumbnail(embed_thumbnail.url);
+			._thumbnail(embed_thumbnail);
 
 		const paginatedMessage = new RadonPaginatedMessageEmbedFields() //
 			.setTemplate(template)
@@ -488,6 +491,38 @@ export class UserCommand extends RadonCommand {
 			.make();
 
 		return paginatedMessage.run(interaction).catch(() => null);
+	}
+
+	private async list_all(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const warnData = await this.container.prisma.guildWarns.findUnique({ where: { id: interaction.guildId } });
+
+		if (!warnData || !warnData.warnlist || !warnData.warnlist.length) return interaction.reply(`No warnings found!`);
+
+		const paginatedEmbed = new JustButtons();
+
+		for (const warn of warnData.warnlist) {
+			const target = await this.container.client.users.fetch(warn.id);
+			const embed = new Embed()
+				._color('RANDOM')
+				._title(`Server Infractions`)
+				._author({ name: target.tag })
+				._description(this.genDescription(warn))
+				._footer({ text: `Requested by ${interaction.user.username}` })
+				._timestamp()
+				._thumbnail(target.displayAvatarURL({ dynamic: true }));
+			paginatedEmbed.addPageEmbed(embed);
+		}
+
+		return paginatedEmbed.run(interaction);
+	}
+
+	private genDescription(warns: MemberWarnData) {
+		return warns.warns
+			.map((warn) => {
+				const givenDate = new Timestamp(warn.date.getTime()).getShortDate();
+				return `\` - \` Date: ${givenDate} \`|\` Reason: ${warn.reason}`;
+			})
+			.join('\n');
 	}
 
 	@PermissionLevel('Administrator')
@@ -629,5 +664,5 @@ const action = {
 };
 
 type warnSeverityNum = 1 | 2 | 3 | 4 | 5;
-type subCommand = 'add' | 'remove' | 'list';
+type subCommand = 'add' | 'remove' | 'list' | 'list_all';
 type actionCommand = 'create' | 'remove' | 'list';

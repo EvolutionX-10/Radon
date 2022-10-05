@@ -1,15 +1,14 @@
-import { container } from '@sapphire/framework';
+import type { PrismaClient } from '@prisma/client';
 import type { Guild } from 'discord.js';
-const { prisma } = container;
 
 export class RolesConfig {
-	public constructor(private readonly guild: Guild) {
+	public constructor(private readonly guild: Guild, private readonly prisma: PrismaClient) {
 		this.guild = guild;
 	}
 
 	public get admins() {
 		return (async () => {
-			const data = await prisma.guildSettings.findUnique({
+			const data = await this.prisma.guildSettings.findUnique({
 				where: {
 					id: this.guild.id
 				}
@@ -20,7 +19,7 @@ export class RolesConfig {
 
 	public get mods() {
 		return (async () => {
-			const data = await prisma.guildSettings.findUnique({
+			const data = await this.prisma.guildSettings.findUnique({
 				where: {
 					id: this.guild.id
 				}

@@ -1,3 +1,4 @@
+import type { PrismaClient } from '@prisma/client';
 import type { Guild } from 'discord.js';
 import { Blacklist } from './Blacklist.js';
 import { Modlogs } from './Modlogs.js';
@@ -9,10 +10,10 @@ export class GuildSettings {
 	public modlogs: Modlogs;
 	public roles: RolesConfig;
 	public warns: Warn;
-	public constructor(private readonly guild: Guild) {
-		this.blacklists = new Blacklist();
-		this.modlogs = new Modlogs(this.guild);
-		this.roles = new RolesConfig(this.guild);
-		this.warns = new Warn(this.guild);
+	public constructor(private readonly guild: Guild, private readonly prisma: PrismaClient) {
+		this.blacklists = new Blacklist(this.prisma);
+		this.modlogs = new Modlogs(this.guild, this.prisma);
+		this.roles = new RolesConfig(this.guild, this.prisma);
+		this.warns = new Warn(this.guild, this.prisma);
 	}
 }
