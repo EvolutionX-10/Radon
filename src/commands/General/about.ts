@@ -264,19 +264,20 @@ export class UserCommand extends RadonCommand {
 					name: `Channels [${allChannels.size}]`,
 					value: channels,
 					inline: true
-				},
-				{
-					name: `Roles [${roles.length}]`,
-					value: roles
-						.slice(0, 3)
-						.join(', ')
-						.concat(roles.length > 3 ? ` and **${roles.length - 3}** more...` : '')
-				},
-				{
-					name: 'Misc',
-					value: misc
 				}
 			);
+
+		if (roles.length !== 0) {
+			embed.addFields({
+				name: `Roles [${roles.length}]`,
+				value: roles
+					.slice(0, 3)
+					.join(', ')
+					.concat(roles.length > 3 ? ` and **${roles.length - 3}** more...` : '')
+			});
+		}
+
+		embed.addFields({ name: 'Misc', value: misc });
 
 		return interaction.reply({ embeds: [embed] });
 	}
