@@ -18,6 +18,8 @@ export class UserCommand extends RadonCommand {
 				return this.role(interaction);
 			case 'user':
 				return this.user(interaction);
+			case 'server':
+				return this.server(interaction);
 		}
 	}
 
@@ -54,6 +56,11 @@ export class UserCommand extends RadonCommand {
 									.setDescription('The user to show info about')
 									.setRequired(true)
 							)
+					)
+					.addSubcommand((builder) =>
+						builder //
+							.setName('server')
+							.setDescription('Show info about server')
 					),
 			{ idHints: ['970217477126643752', '1019931911902208063'] }
 		);
@@ -75,6 +82,8 @@ export class UserCommand extends RadonCommand {
 			._author({ name: this.container.client.user!.tag })
 			._color(Color.General)
 			._description(story)
+			._timestamp()
+			._footer({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
 			._thumbnail(this.container.client.user!.displayAvatarURL());
 
 		return interaction.reply({
@@ -181,6 +190,100 @@ export class UserCommand extends RadonCommand {
 
 		return interaction.editReply({ embeds: [embed] });
 	}
+
+	private async server(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const { guild } = interaction;
+		if (!guild.available) return;
+
+		const owner = await guild.fetchOwner();
+		const icon = guild.iconURL({ dynamic: true, size: 2048 }) ?? '';
+		const banner = guild.bannerURL({ size: 4096 }) ?? '';
+		const create = new Timestamp(guild.createdTimestamp);
+		const members = await guild.members.fetch();
+		const humans = members.filter((m) => !m.user.bot);
+
+		const member =
+			`\` - \` ${Emojis.Member} **${humans.size}** Member(s)\n` + //
+			`\` - \` ${Emojis.Bot} **${guild.memberCount - humans.size}** Bot(s)\n` + //
+			`\` - \` ${Emojis.Owner} ${owner.user} [\`${owner.id}\`]`;
+
+		const allChannels = guild.channels.cache;
+		const category = allChannels.filter((c) => c.type === 'GUILD_CATEGORY').size;
+		const voice = allChannels.filter((c) => c.isVoice()).size;
+		const text = allChannels.filter((c) => c.isText() && !c.isThread() && !c.isVoice()).size;
+		const threads = allChannels.filter((c) => c.isThread()).size;
+
+		let channels =
+			`\` - \` ${Emojis.TextChannel} **${text}** Text\n` + //
+			`\` - \` ${Emojis.VoiceChannel} **${voice}** Voice\n` + //
+			`\` - \` ${Emojis.CategoryChannel} **${category}** Category\n` + //
+			`\` - \` ${Emojis.ThreadChannel} **${threads}** Thread\n`;
+
+		channels = channels
+			.split('\n')
+			.filter((t) => !t.includes('**0**'))
+			.join('\n');
+
+		const roles = guild.roles.cache
+			.filter((r) => !r.tags?.botId) //
+			.sort((a, b) => b.position - a.position)
+			.map((r) => r.toString());
+		roles.pop();
+
+		let misc =
+			`\` - \` ID: **\`${guild.id}\`**\n` +
+			`\` - \` Created at ${create.getShortDate()}\n` + //
+			`\` - \` Partnered ${bool(guild.partnered)}\n` +
+			`\` - \` Verified ${bool(guild.verified)}\n` +
+			`\` - \` AFK Channel: ${guild.afkChannel ?? '**0**'}\n` +
+			`\` - \` Emojis: **${guild.emojis.cache.size}**\n` +
+			`\` - \` Stickers: **${guild.stickers.cache.size}**\n` +
+			`\` - \` Boosts: **${guild.premiumSubscriptionCount ?? Emojis.Cross}**\n` +
+			`\` - \` Vanity: \`discord.gg/${guild.vanityURLCode ?? Emojis.Cross}\``;
+
+		misc = misc
+			.split('\n')
+			.filter((s) => !s.includes(Emojis.Cross) && !s.includes('**0**'))
+			.join('\n');
+
+		const embed = new Embed()
+			._color(Color.General)
+			._title(`[${guild.nameAcronym}] ${guild.name}`)
+			._thumbnail(icon)
+			._timestamp()
+			._image(banner)
+			._description(guild.description ?? '')
+			._footer({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
+			._fields(
+				{
+					name: `Members [${guild.memberCount}]`,
+					value: member,
+					inline: true
+				},
+				{
+					name: `Channels [${allChannels.size}]`,
+					value: channels,
+					inline: true
+				},
+				{
+					name: `Roles [${roles.length}]`,
+					value: roles
+						.slice(0, 3)
+						.join(', ')
+						.concat(roles.length > 3 ? ` and **${roles.length - 3}** more...` : '')
+				},
+				{
+					name: 'Misc',
+					value: misc
+				}
+			);
+
+		return interaction.reply({ embeds: [embed] });
+	}
 }
 
-type SubCmd = 'me' | 'role' | 'user';
+type SubCmd = 'me' | 'role' | 'user' | 'server';
+
+function bool(state: boolean) {
+	return state ? Emojis.Confirm : Emojis.Cross;
+}
