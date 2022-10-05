@@ -1,8 +1,8 @@
-import { Listener } from '@sapphire/framework';
-import type { Message } from 'discord.js';
 import { Owners, Prefixes } from '#constants';
 import { RadonEvents } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
+import { Listener } from '@sapphire/framework';
+import type { Message } from 'discord.js';
 
 @ApplyOptions<Listener.Options>({
 	event: RadonEvents.ClientReady,

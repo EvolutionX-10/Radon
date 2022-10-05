@@ -1,8 +1,8 @@
 import { Color, Emojis, UserFlags, voteRow } from '#constants';
-import { Button, Embed, RadonCommand, Row, Timestamp } from '#lib/structures';
-import { ApplyOptions } from '@sapphire/decorators';
 import { story } from '#lib/messages';
+import { Button, Embed, RadonCommand, Row, Timestamp } from '#lib/structures';
 import { isOwner } from '#lib/utility';
+import { ApplyOptions } from '@sapphire/decorators';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'About things!'

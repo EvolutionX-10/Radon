@@ -4,9 +4,10 @@ import { Button, Confirmation, RadonCommand, Row, Select } from '#lib/structures
 import { PermissionLevels } from '#lib/types';
 import { sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
-import { Stopwatch } from '@sapphire/stopwatch';
 import { DurationFormatter } from '@sapphire/duration';
+import { Stopwatch } from '@sapphire/stopwatch';
 import { all } from 'colornames';
+import { PermissionFlagsBits } from 'discord-api-types/v9';
 import {
 	BufferResolvable,
 	Collection,
@@ -17,7 +18,6 @@ import {
 	Permissions,
 	Role
 } from 'discord.js';
-import { PermissionFlagsBits } from 'discord-api-types/v9';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Manage Roles',

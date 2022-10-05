@@ -1,8 +1,8 @@
-import { Listener } from '@sapphire/framework';
-import type { Message } from 'discord.js';
-import { get } from '@sapphire/plugin-editable-commands';
 import { RadonEvents } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
+import { Listener } from '@sapphire/framework';
+import { get } from '@sapphire/plugin-editable-commands';
+import type { Message } from 'discord.js';
 
 @ApplyOptions<Listener.Options>({
 	event: RadonEvents.MessageDelete
