@@ -59,7 +59,7 @@ export class UserCommand extends RadonCommand {
 		);
 	}
 
-	private async me(interaction: RadonCommand.ChatInputCommandInteraction) {
+	private me(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const invite = this.container.client.generateInvite({
 			scopes: ['applications.commands', 'bot'],
 			permissions: 543276137727n
@@ -70,21 +70,17 @@ export class UserCommand extends RadonCommand {
 				new Button()._label(`Join Support Server!`)._style('LINK')._emoji('🆘')._url(`https://discord.gg/YBFaDggpvt`)
 			);
 
-		await interaction.reply({
-			embeds: [this.storyEmbed()],
-			components: [voteRow, inviteRow]
-		});
-	}
-
-	private storyEmbed() {
-		return new Embed()
+		const embed = new Embed()
 			._title('About me!')
-			._author({
-				name: this.container.client.user!.tag
-			})
+			._author({ name: this.container.client.user!.tag })
 			._color(Color.General)
 			._description(story)
 			._thumbnail(this.container.client.user!.displayAvatarURL());
+
+		return interaction.reply({
+			embeds: [embed],
+			components: [voteRow, inviteRow]
+		});
 	}
 
 	private role(interaction: RadonCommand.ChatInputCommandInteraction) {
