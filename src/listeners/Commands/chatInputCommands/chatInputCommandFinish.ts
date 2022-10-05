@@ -1,8 +1,7 @@
-import { Color } from '#constants';
+import { Color, voteRow } from '#constants';
 import { Embed } from '#lib/structures';
 import { RadonEvents } from '#lib/types';
 import { isOwner } from '#lib/utility';
-import { voteRow } from '#root/commands/General/about';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener } from '@sapphire/framework';
 import type { CommandInteraction } from 'discord.js';
