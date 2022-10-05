@@ -1,3 +1,4 @@
+import { Button, Row } from '#lib/structures';
 import type { UserFlagsString } from 'discord.js';
 
 process.env.NODE_ENV ??= 'development';
@@ -10,7 +11,13 @@ export const enum Emojis {
 	Backward = '<:arrow_left_r:959362559595655179>',
 	Forward = '<:arrow_right_r:959361662064930827>',
 	Stop = '<:radon_stop:959386465807265794>',
-	Owner = '<:owner:1026798797839409173>'
+	Owner = '<:owner:1026798797839409173>',
+	TextChannel = '<:text:1027126127690514462>',
+	CategoryChannel = '<:category:1027126168949895198>',
+	VoiceChannel = '<:vc:1027126195067826196>',
+	ThreadChannel = '<:thread:1027126259328749598>',
+	Member = '<:member:1027127446006419506>',
+	Bot = '<:bot:1027129061430013973>'
 }
 
 export const enum Color {
@@ -67,3 +74,26 @@ export const UserFlags: Record<UserFlagsString, string> = {
 	PARTNERED_SERVER_OWNER: '<:BadgePartner:1024918407335919646>',
 	TEAM_USER: ''
 };
+
+const vote_topgg = new Button() //
+	._label('Vote on Top.gg')
+	._style('LINK')
+	._emoji('<:topgg:918280202398875758>')
+	._url('https://top.gg/bot/944833303226236989/vote');
+const vote_void = new Button() //
+	._label('Vote on Void Bots')
+	._style('LINK')
+	._emoji('<:voidbots:742925293907607624>')
+	._url('https://voidbots.net/bot/944833303226236989/vote');
+const vote_labs = new Button() //
+	._label('Vote on Discord Labs')
+	._style('LINK')
+	._emoji('<:discordlabsicon:621472531735642130>')
+	._url('https://bots.discordlabs.org/bot/944833303226236989?vote');
+const vote_dbl = new Button() //
+	._label('Vote on Discord Bot List')
+	._style('LINK')
+	._emoji('<:dbl:757235965629825084>')
+	._url('https://discordbotlist.com/bots/radon-1595/upvote');
+
+export const voteRow = new Row()._components([vote_topgg, vote_void, vote_labs, vote_dbl]);
