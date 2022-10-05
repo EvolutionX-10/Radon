@@ -7,7 +7,16 @@ export class Embed extends MessageEmbed {
 	 * @returns Embed
 	 */
 	public _fields(...fields: EmbedFieldData[] | EmbedFieldData[][]) {
-		return this.setFields(...fields);
+		return this.addFields(...fields);
+	}
+
+	/**
+	 * Field
+	 * @param field The fields to add to the embed
+	 * @returns Embed
+	 */
+	public _field(field: EmbedFieldData) {
+		return this.addFields(field);
 	}
 
 	/**

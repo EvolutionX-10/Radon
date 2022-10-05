@@ -96,44 +96,37 @@ export class UserCommand extends RadonCommand {
 		const role = interaction.options.getRole('role', true);
 		const date = new Timestamp(role.createdTimestamp);
 
-		const basic =
-			`\` - \` Rank: ${interaction.guild.roles.cache.size - role.position}\n` +
+		let basic =
+			`\` - \` Rank **${role.guild.roles.cache.size - role.position}**\n` +
 			`\` - \` Created At ${date.getShortDate()} [${date.getRelativeTime()}]\n` +
-			`\` - \` Hex: *\`${role.hexColor}\`*\n` +
-			`\` - \` Hoisted: ${role.hoist ? Emojis.Confirm : Emojis.Cross}\n` +
+			`\` - \` Hex *\`${role.hexColor}\`*\n` +
+			`\` - \` Hoisted ${bool(role.hoist)}\n` +
 			`\` - \` Restricted to Bot: ${role.tags?.botId ? `${Emojis.Confirm} [<@${role.tags?.botId}>]` : Emojis.Cross}\n` +
-			`\` - \` Mentionable: ${role.mentionable ? Emojis.Confirm : Emojis.Cross}\n` +
-			`\` - \` Managed externally: ${role.managed ? Emojis.Confirm : Emojis.Cross}`;
+			`\` - \` Mentionable ${bool(role.mentionable)}\n` +
+			`\` - \` Managed externally ${bool(role.managed)}`;
+
+		basic = basic
+			.split('\n')
+			.filter((s) => !s.includes(Emojis.Cross))
+			.join('\n');
 
 		const perms = this.container.utils.format(role.permissions.toArray());
 
-		const adv = `\` - \` ID: *\`${role.id}\`*\n\` - \` Members: ${role.members.size}\n\` - \` Key Permission: ${
-			perms.length ? perms[0] : 'None!'
-		}\n`;
+		const adv =
+			`\` - \` ID: **\`${role.id}\`**\n` +
+			`\` - \` Members: **${role.members.size}**\n` +
+			`\` - \` Key Permission: ${perms.length ? perms[0] : 'None!'}\n`;
+
 		const hex = role.hexColor.slice(1);
-		const embed = this.container.utils
-			.embed()
-			._author({
-				name: 'Role Information'
-			})
-			._color(hex === '000000' ? '#2f3136' : role.color)
+
+		const embed = new Embed()
+			._author({ name: 'Role Information' })
+			._color(hex === '000000' ? Color.Invisible : role.color)
 			._description(role.toString())
 			._timestamp()
 			._thumbnail(role.iconURL({ size: 4096 }) ?? `https://singlecolorimage.com/get/${hex === '000000' ? '2f3136' : hex}/400x400`)
-			._footer({
-				text: `Requested by ${interaction.user.username}`,
-				iconURL: interaction.user.displayAvatarURL({ dynamic: true })
-			})
-			._fields(
-				{
-					name: 'Basic Info',
-					value: basic
-				},
-				{
-					name: 'Advanced Info',
-					value: adv
-				}
-			);
+			._footer({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
+			._fields({ name: 'Basic Info', value: basic }, { name: 'Advanced Info', value: adv });
 
 		return interaction.reply({ embeds: [embed] });
 	}
@@ -155,10 +148,7 @@ export class UserCommand extends RadonCommand {
 		const embed = new Embed() //
 			._title(user.tag)
 			._color(user.hexAccentColor ?? Color.General)
-			._footer({
-				text: `Requested by ${interaction.user.username}`,
-				iconURL: interaction.user.displayAvatarURL({ dynamic: true })
-			})
+			._footer({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
 			._fields({
 				name: 'Created At',
 				value: `${createdAt.getLongDate()} [${createdAt.getRelativeTime()}]`,
@@ -169,7 +159,7 @@ export class UserCommand extends RadonCommand {
 			._thumbnail(pfp);
 
 		if (guildJoinDate)
-			embed.addFields({ name: 'Joined At', value: `${guildJoinDate.getLongDate()} [${guildJoinDate.getRelativeTime()}]`, inline: true });
+			embed._field({ name: 'Joined At', value: `${guildJoinDate.getLongDate()} [${guildJoinDate.getRelativeTime()}]`, inline: true });
 
 		const flags = await user.fetchFlags(true);
 		let flagValue = flags
@@ -183,10 +173,10 @@ export class UserCommand extends RadonCommand {
 			flagValue.length > 230 ? embed._description(flagValue) : embed._title(user.tag.concat(` ${flagValue}`));
 		}
 
-		embed.addFields({ name: 'ID', value: `\`${user.id}\``, inline: false });
+		embed._field({ name: 'ID', value: `\`${user.id}\``, inline: false });
 
-		if (member?.nickname) embed.addFields({ name: 'Nickname', value: member.nickname, inline: true });
-		if (member) embed.addFields({ name: 'Key Permission', value: perm!, inline: true });
+		if (member?.nickname) embed._field({ name: 'Nickname', value: member.nickname, inline: true });
+		if (member) embed._field({ name: 'Key Permission', value: perm!, inline: true });
 
 		return interaction.editReply({ embeds: [embed] });
 	}
@@ -235,7 +225,7 @@ export class UserCommand extends RadonCommand {
 			`\` - \` Created at ${create.getShortDate()}\n` + //
 			`\` - \` Partnered ${bool(guild.partnered)}\n` +
 			`\` - \` Verified ${bool(guild.verified)}\n` +
-			`\` - \` AFK Channel: ${guild.afkChannel ?? '**0**'}\n` +
+			`\` - \` AFK Channel ${guild.afkChannel ?? '**0**'}\n` +
 			`\` - \` Emojis: **${guild.emojis.cache.size}**\n` +
 			`\` - \` Stickers: **${guild.stickers.cache.size}**\n` +
 			`\` - \` Boosts: **${guild.premiumSubscriptionCount ?? Emojis.Cross}**\n` +
@@ -268,7 +258,7 @@ export class UserCommand extends RadonCommand {
 			);
 
 		if (roles.length !== 0) {
-			embed.addFields({
+			embed._field({
 				name: `Roles [${roles.length}]`,
 				value: roles
 					.slice(0, 3)
@@ -277,7 +267,7 @@ export class UserCommand extends RadonCommand {
 			});
 		}
 
-		embed.addFields({ name: 'Misc', value: misc });
+		embed._field({ name: 'Misc', value: misc });
 
 		return interaction.reply({ embeds: [embed] });
 	}
