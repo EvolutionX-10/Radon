@@ -124,11 +124,11 @@ export class UserCommand extends RadonCommand {
 			});
 		}
 		const { displayName } = member;
-		let nickname = clean(displayName).replace(/[^a-z 0-9]+/gi, '');
-		if (!nickname.length) nickname = 'Moderated Nickname';
+		const nickname = clean(displayName).replace(/[^a-z 0-9]+/gi, '');
+
 		if (nickname === displayName) {
 			return interaction.reply({
-				content: `No changes were made to ${displayName}`,
+				content: `No changes were made to ${displayName}!`,
 				ephemeral: true
 			});
 		}
