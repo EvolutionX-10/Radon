@@ -39,4 +39,8 @@ export interface RadonEnv {
 
 	VOID_BOT_TOKEN?: string;
 	TOP_BOT_TOKEN?: string;
+
+	REDIS_PORT?: string;
+	REDIS_PASSWORD?: string;
+	REDIS_HOST?: string;
 }
