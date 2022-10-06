@@ -351,8 +351,7 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private welcome() {
-		return this.container.utils
-			.embed()
+		return new Embed()
 			._color(Color.Admin)
 			._thumbnail(this.container.client.user?.displayAvatarURL() ?? '')
 			._timestamp()

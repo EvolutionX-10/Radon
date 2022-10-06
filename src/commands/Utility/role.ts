@@ -425,8 +425,7 @@ export class UserCommand extends RadonCommand {
 					};
 				});
 
-			const menu = this.container.utils
-				.select()
+			const menu = new Select()
 				._customId(`@role/perms/menu/${index}`)
 				._label('Select some permissions!')
 				._min(0)

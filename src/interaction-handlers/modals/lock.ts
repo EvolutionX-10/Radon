@@ -1,5 +1,5 @@
 import { Color } from '#constants';
-import type { Embed } from '#lib/structures';
+import { Embed } from '#lib/structures';
 import { ApplyOptions } from '@sapphire/decorators';
 import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework';
 import { PermissionFlagsBits } from 'discord-api-types/v9';
@@ -67,8 +67,7 @@ export class ModalHandler extends InteractionHandler {
 			return interaction.editReply(content);
 		}
 
-		const embed = this.container.utils
-			.embed()
+		const embed = new Embed()
 			._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
 			._title('Channel Locked')
 			._color(Color.Utility)
@@ -95,8 +94,7 @@ export class ModalHandler extends InteractionHandler {
 
 		if (result.reason?.length) {
 			embeds.push(
-				this.container.utils
-					.embed()
+				new Embed()
 					._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
 					._title('Channel Locked')
 					._color(Color.Utility)
@@ -160,8 +158,7 @@ export class ModalHandler extends InteractionHandler {
 
 		// TODO: check if thread (all) locks out itself during missing permissions
 		if (result.reason?.length) {
-			const embed = this.container.utils
-				.embed()
+			const embed = new Embed()
 				._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
 				._title('Channel Locked')
 				._color(Color.Utility)
@@ -199,8 +196,7 @@ export class ModalHandler extends InteractionHandler {
 
 		if (result.reason?.length) {
 			embeds.push(
-				this.container.utils
-					.embed()
+				new Embed()
 					._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
 					._title('Channel Locked')
 					._color(Color.Utility)
@@ -245,8 +241,7 @@ export class ModalHandler extends InteractionHandler {
 
 		if (result.reason?.length) {
 			embeds.push(
-				this.container.utils
-					.embed()
+				new Embed()
 					._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
 					._title('Channel Locked')
 					._color(Color.Utility)
@@ -310,8 +305,7 @@ export class ModalHandler extends InteractionHandler {
 
 		if (result.reason?.length) {
 			embeds.push(
-				this.container.utils
-					.embed()
+				new Embed()
 					._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
 					._title('Channel Locked')
 					._color(Color.Utility)
