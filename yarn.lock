@@ -434,7 +434,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/utilities@npm:3.9.2, @sapphire/utilities@npm:^3.9.2":
+"@sapphire/utilities@npm:3.11.0":
+  version: 3.11.0
+  resolution: "@sapphire/utilities@npm:3.11.0"
+  checksum: 3c8521038b8879524e8114f39eefc8b3b06cf825995f709684238b5cb14bd7df06d232a26a88f79160df290a66f9aa3133f5ce4ff8e2398033db9f301ad31e0d
+  languageName: node
+  linkType: hard
+
+"@sapphire/utilities@npm:^3.9.2":
   version: 3.9.2
   resolution: "@sapphire/utilities@npm:3.9.2"
   checksum: eeef33b03b802e931ada752b8c335cc8bde4017f8029b577b0247e3f3d2b57bf5f1936b2c8c29aef5e2c6975d9b162363e4c5c434c4fead0bba74253d067b4d9
@@ -3599,7 +3606,7 @@ __metadata:
     "@sapphire/time-utilities": 1.7.6
     "@sapphire/ts-config": 3.3.4
     "@sapphire/type": 2.2.4
-    "@sapphire/utilities": 3.9.2
+    "@sapphire/utilities": 3.11.0
     "@swc/core": 1.2.244
     "@types/colornames": 1.1.2
     "@types/gradient-string": 1.1.2
