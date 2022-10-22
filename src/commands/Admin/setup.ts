@@ -3,9 +3,8 @@ import { Button, Embed, RadonCommand, Row } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { mins, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
-import { container } from '@sapphire/framework';
 import { PermissionFlagsBits } from 'discord-api-types/v9';
-import { ButtonInteraction, Message, OverwriteResolvable, Permissions } from 'discord.js';
+import { ButtonInteraction, Message, OverwriteResolvable, Permissions, TextChannel } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	cooldownDelay: sec(60),
@@ -15,13 +14,6 @@ import { ButtonInteraction, Message, OverwriteResolvable, Permissions } from 'di
 })
 export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
-		if (interaction.channel?.type === 'GUILD_TEXT' && interaction.channel.permissionsFor(interaction.guild.roles.everyone).has('VIEW_CHANNEL')) {
-			return interaction.reply({
-				content: 'Woah wait! It seems this channel is viewable by everyone! Please make sure you run setup in a private channel.',
-				ephemeral: true
-			});
-		}
-
 		let stage = 0;
 		let msg = (await interaction.reply({
 			embeds: [this.welcome()],
@@ -50,7 +42,7 @@ export class UserCommand extends RadonCommand {
 		// --------------------------------------
 		const modRoles: string[] = [];
 		const adminRoles: string[] = [];
-		let modLogChannel = '';
+		let modLogChannel: TextChannel | undefined;
 		// --------------------------------------
 
 		collector.on('collect', async (i) => {
@@ -113,13 +105,33 @@ export class UserCommand extends RadonCommand {
 
 				case 'retry_modlog':
 					collector.resetTimer();
-					modLogChannel = '';
+					modLogChannel = undefined;
 					msg = await this.step3(i, msg, stage);
 					break;
 
 				case 'confirm_modlog':
 					stage = 4;
-					collector.stop('Complete');
+					// eslint-disable-next-line no-case-declarations
+					const edit = await modLogChannel!
+						.edit({
+							permissionOverwrites: permissions(
+								!modLogChannel!.permissionsFor(interaction.guild.roles.everyone).has(Permissions.FLAGS.VIEW_CHANNEL)
+							)
+						})
+						.catch(async () => {
+							await i.channel!.send(
+								`I am unable to edit permissions of ${modLogChannel}. Please grant me admin permission or click on "Make a new modlog"`
+							);
+							return null;
+						});
+					if (edit) {
+						collector.stop('Complete');
+					} else {
+						stage = 3;
+						collector.resetTimer();
+						modLogChannel = undefined;
+						msg = await this.step3(i, msg, stage);
+					}
 					break;
 
 				case 'make_modlog':
@@ -131,28 +143,25 @@ export class UserCommand extends RadonCommand {
 						return;
 					}
 					collector.resetTimer();
-					modLogChannel = '';
+					modLogChannel = undefined;
 					stage = 4;
 					msg = await this.step4(i, msg, stage);
 					break;
 
 				case 'public_modlog':
 				case 'private_modlog':
-					modLogChannel =
-						(
-							await makeModlog(i.customId === 'private_modlog').catch(async (r) => {
-								collector.stop();
-								console.log(r);
-								await i.followUp({
-									content:
-										`I couldn't create the modlog channel due to insufficient permissions!\nPlease try again after granting ` +
-										`\`Manage Channels\` [Creation of Channel], \`Manage Roles\` [To configure channel permissions], \`Embed Links and Send Messages\` [To send modlogs] permissions to me!\n` +
-										`**Note:** I need a role higher than @everyone with the mentioned permissions!` +
-										`If you are still having issues run </about me:970217477126643752> and join our support server!`,
-									ephemeral: true
-								});
-							})
-						)?.id ?? '';
+					modLogChannel = await makeModlog(i.customId === 'private_modlog').catch(async (_) => {
+						collector.stop();
+						await i.followUp({
+							content:
+								`I couldn't create the modlog channel due to insufficient permissions!\nPlease try again after granting ` +
+								`\`Manage Channels\` [Creation of Channel], \`Manage Roles\` [To configure channel permissions], \`Embed Links and Send Messages\` [To send modlogs] permissions to me!\n` +
+								`**Note:** I need a role higher than @everyone with the mentioned permissions!` +
+								`If you are still having issues run </about me:970217477126643752> and join our support server!`,
+							ephemeral: true
+						});
+						return undefined;
+					});
 					collector.stop('Complete');
 					stage = 5;
 					break;
@@ -169,13 +178,13 @@ export class UserCommand extends RadonCommand {
 						configured: true,
 						modRoles,
 						adminRoles,
-						modLogChannel
+						modLogChannel: modLogChannel?.id ?? ''
 					},
 					update: {
 						configured: true,
 						modRoles,
 						adminRoles,
-						modLogChannel
+						modLogChannel: modLogChannel?.id ?? ''
 					},
 					where: {
 						id: interaction.guildId
@@ -198,7 +207,7 @@ export class UserCommand extends RadonCommand {
 						},
 						{
 							name: 'Moderation Logs Channel',
-							value: modLogChannel.length ? `<#${modLogChannel}>` : 'None'
+							value: modLogChannel ? `<#${modLogChannel.id}>` : 'None'
 						}
 					])
 					._timestamp()
@@ -273,8 +282,10 @@ export class UserCommand extends RadonCommand {
 				const channel = m.mentions.channels.first();
 				if (!channel || !channel.isText() || channel.type !== 'GUILD_TEXT') return;
 				await m.delete().catch(() => null);
-				modLogChannel = channel.id;
 				msg.embeds[0].fields[1].value = `<#${channel.id}>`;
+
+				modLogChannel = channel;
+
 				await msg.edit({
 					embeds: msg.embeds,
 					components: msg.components
@@ -285,6 +296,14 @@ export class UserCommand extends RadonCommand {
 		});
 
 		async function makeModlog(is_private: boolean) {
+			const moglog = await interaction.guild?.channels.create('modlog', {
+				topic: `Moderation log for ${interaction.guild?.name}`,
+				permissionOverwrites: permissions(is_private)
+			});
+			return moglog;
+		}
+
+		function permissions(is_private: boolean) {
 			let permissionOverwrites: OverwriteResolvable[] = [];
 			if (is_private) {
 				permissionOverwrites = [
@@ -294,8 +313,8 @@ export class UserCommand extends RadonCommand {
 						type: 'role'
 					},
 					{
-						id: container.client.user!.id,
-						allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'EMBED_LINKS'],
+						id: interaction.client.user.id,
+						allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'EMBED_LINKS', 'MANAGE_CHANNELS', 'MANAGE_ROLES'],
 						type: 'member'
 					}
 				];
@@ -303,7 +322,7 @@ export class UserCommand extends RadonCommand {
 					return {
 						id,
 						allow: ['VIEW_CHANNEL'],
-						deny: mod ? ['SEND_MESSAGES', 'MANAGE_CHANNELS'] : [],
+						deny: mod ? ['SEND_MESSAGES', 'MANAGE_CHANNELS', 'MANAGE_ROLES'] : [],
 						type: 'role'
 					};
 				};
@@ -320,21 +339,17 @@ export class UserCommand extends RadonCommand {
 					{
 						id: interaction.guild.id,
 						allow: ['VIEW_CHANNEL'],
-						deny: ['MANAGE_CHANNELS', 'SEND_MESSAGES'],
+						deny: ['MANAGE_CHANNELS', 'SEND_MESSAGES', 'MANAGE_ROLES'],
 						type: 'role'
 					},
 					{
-						id: container.client.user!.id,
-						allow: ['SEND_MESSAGES', 'EMBED_LINKS'],
+						id: interaction.client.user.id,
+						allow: ['SEND_MESSAGES', 'EMBED_LINKS', 'MANAGE_CHANNELS', 'MANAGE_ROLES'],
 						type: 'member'
 					}
 				];
 			}
-			const moglog = await interaction.guild?.channels.create('modlog', {
-				topic: `Moderation log for ${interaction.guild?.name}`,
-				permissionOverwrites
-			});
-			return moglog;
+			return permissionOverwrites;
 		}
 	}
 
