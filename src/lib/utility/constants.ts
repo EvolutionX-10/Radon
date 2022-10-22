@@ -98,3 +98,6 @@ const vote_dbl = new Button() //
 	._url('https://discordbotlist.com/bots/radon-1595/upvote');
 
 export const voteRow = new Row()._components([vote_topgg, vote_void, vote_labs, vote_dbl]);
+
+export const RecommendedPermissions = 543276137727n;
+export const RecommendedPermissionsWithoutAdmin = 543276137719n;
