@@ -26,7 +26,7 @@ export class UserCommand extends RadonCommand {
 	private async default(message: RadonCommand.Message, args: RadonCommand.Args) {
 		if (!message.guild) return;
 
-		let filtered: string;
+		let filtered: Filter;
 		let cmds: string;
 
 		switch (true) {
@@ -50,7 +50,8 @@ export class UserCommand extends RadonCommand {
 
 		if (global) {
 			for (const cmd of global.values()) {
-				content += `${cmd.name} *(${cmd.id})*\n`;
+				if (filtered === 'CHAT_INPUT') content += `</${cmd.name}:${cmd.id}> *(${cmd.id})*\n`;
+				else content += `${cmd.name} *(${cmd.id})*\n`;
 			}
 		}
 
@@ -58,7 +59,8 @@ export class UserCommand extends RadonCommand {
 
 		if (guild) {
 			for (const cmd of guild.values()) {
-				content += `${cmd.name} *(${cmd.id})*\n`;
+				if (filtered === 'CHAT_INPUT') content += `</${cmd.name}:${cmd.id}> *(${cmd.id})*\n`;
+				else content += `${cmd.name} *(${cmd.id})*\n`;
 			}
 		}
 
@@ -88,3 +90,5 @@ export class UserCommand extends RadonCommand {
 		}).run(message);
 	}
 }
+
+type Filter = 'CHAT_INPUT' | 'MESSAGE' | 'USER';
