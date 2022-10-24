@@ -1,6 +1,6 @@
 import { RadonCommand, RadonPaginatedMessage } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
-import { mins } from '#lib/utility';
+import { mention, mins } from '#lib/utility';
 import { Emojis, RecommendedPermissions, RecommendedPermissionsWithoutAdmin } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import type { Guild } from 'discord.js';
@@ -88,14 +88,12 @@ export class UserCommand extends RadonCommand {
 		const mods = await interaction.guild.settings?.roles.mods;
 		const admins = await interaction.guild.settings?.roles.admins;
 
-		let result = `> Server Setup `;
-
-		const issues: string[] = [];
+		const notes: string[] = [];
 
 		if (modlog) {
 			const channel = interaction.guild.channels.cache.get(modlog);
-			if (!channel) issues.push(this.note(`No Modlogs channel found with ID \`${modlog}\``));
-		} else issues.push(this.note(`No Modlogs channel setup found`));
+			if (!channel) notes.push(this.note(`No Modlogs channel found with ID \`${modlog}\``));
+		} else notes.push(this.note(`No Modlogs channel setup found`));
 
 		const roles = [mods, admins];
 		for (let k = 0; k < 2; k++) {
@@ -105,14 +103,15 @@ export class UserCommand extends RadonCommand {
 				const roles = impRole.map((r) => interaction.guild.roles.cache.get(r));
 				for (let i = 0; i < roles.length; i++) {
 					const role = roles[i];
-					if (!role) issues.push(this.note(`No ${key} Role found with ID \`${impRole[i]}\``));
+					if (!role) notes.push(this.note(`No ${key} Role found with ID \`${impRole[i]}\``));
 				}
-			} else issues.push(this.note(`No ${key} Roles setup found`));
+			} else notes.push(this.note(`No ${key} Roles setup found`));
 		}
 
-		if (issues.length) result = result.concat(`${Emojis.Forward} Issues found!\n${issues.join('\n')}\n`);
-		else result = result.concat(`${Emojis.Forward} Perfect!\n`);
-		return result;
+		if (!notes.length) return `> Server Setup ${Emojis.Forward} Perfect!`;
+		notes.unshift(`> Server Setup ${Emojis.Forward} Issues found!`);
+
+		return notes.join('\n').concat(`\n\n> *TIP: Use ${await mention('setup', interaction.client)} to fix the issues*`);
 	}
 
 	private async perChannelPermissions(interaction: RadonCommand.ChatInputCommandInteraction) {
