@@ -15,9 +15,9 @@ import { PermissionFlagsBits } from 'discord-api-types/v9';
 export class UserCommand extends RadonCommand {
 	readonly #SelectMessages = [
 		['Server Setup', 'The /setup'],
-		['Server Permissions', 'The permissions of server'], //
+		['Server Permissions', 'My permissions in the server'], //
 		['Per Channel Permissions', 'The per channel perms especially for locking mechanism'],
-		['Roles', 'The Role range for server'],
+		['Roles', 'The amount of roles in server'],
 		['Role Hierarchy', 'The order of roles in server']
 	];
 
@@ -117,25 +117,22 @@ export class UserCommand extends RadonCommand {
 	private async perChannelPermissions(interaction: RadonCommand.ChatInputCommandInteraction) {
 		await interaction.editReply(`Checking per channel overwrites...`);
 
-		let result = `> Per Channel Permissions `;
-
 		const channels = interaction.guild.channels.cache.filter((c) => c.type !== 'GUILD_CATEGORY');
 		const me = interaction.guild.me ?? (await interaction.guild.members.fetch(interaction.client.user.id));
-		const modifiedChannels: string[] = [];
+		const notes: string[] = [];
 
 		for (const channel of channels.values()) {
 			const perm = channel.permissionsFor(me);
 			const missing = this.container.utils.format(perm.missing(RecommendedPermissionsWithoutAdmin)).map((c) => `\`${c}\``);
 			if (missing.length) {
-				modifiedChannels.push(`<#${channel.id}> [${missing.length > 3 ? `${missing.length} Permissions` : `${missing.join(', ')}`}] `);
+				notes.push(this.note(`<#${channel.id}> [${missing.length > 3 ? `${missing.length} Permissions` : `${missing.join(', ')}`}] `));
 			}
 		}
 
-		if (modifiedChannels.length)
-			result = result.concat(`${Emojis.Forward} Permission Overwrites found!\n${modifiedChannels.map((c) => this.note(c)).join('\n')}`);
-		else result = result.concat(`${Emojis.Forward} Perfect!`);
+		if (!notes.length) return `> Per Channel Permissions ${Emojis.Forward} Perfect!`;
+		notes.unshift(`> Per Channel Permissions ${Emojis.Forward} Permission Overwrites found!`);
 
-		return result;
+		return notes.join('\n');
 	}
 
 	private async roleCheck(interaction: RadonCommand.ChatInputCommandInteraction) {
