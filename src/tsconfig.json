@@ -6,9 +6,9 @@
 		"rootDir": ".",
 		"baseUrl": ".",
 		"paths": {
-			"#lib/*": ["lib/*"],
 			"#constants": ["lib/utility/constants.ts"],
 			"#config": ["lib/utility/config.ts"],
+			"#lib/*": ["lib/*"],
 			"#root/*": ["*"]
 		},
 		"noEmit": true,

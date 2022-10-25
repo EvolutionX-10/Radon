@@ -6,10 +6,10 @@
 	"type": "module",
 	"private": true,
 	"imports": {
-		"#lib/RadonClient": "./dist/lib/RadonClient.js",
-		"#lib/*": "./dist/lib/*/index.js",
 		"#constants": "./dist/lib/utility/constants.js",
 		"#config": "./dist/lib/utility/config.js",
+		"#lib/RadonClient": "./dist/lib/RadonClient.js",
+		"#lib/*": "./dist/lib/*/index.js",
 		"#root/*": "./dist/*.js"
 	},
 	"scripts": {

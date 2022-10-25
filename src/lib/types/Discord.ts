@@ -1,3 +1,4 @@
+import type { RadonClient } from '#lib/RadonClient';
 import type { GuildTextBasedChannelTypes } from '@sapphire/discord.js-utilities';
 import type {
 	ButtonInteraction,
@@ -33,6 +34,7 @@ export interface GuildInteraction extends CommandInteraction {
 	readonly member: GuildMember;
 	readonly channel: TextChannel;
 	options: GuildCommandInteractionOptionResolver;
+	client: RadonClient<true>;
 }
 
 export interface GuildContextMenuInteraction extends ContextMenuInteraction {

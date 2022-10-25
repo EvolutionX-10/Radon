@@ -1,4 +1,4 @@
-import { Color, Emojis, UserFlags, voteRow } from '#constants';
+import { Color, Emojis, RecommendedPermissions, UserFlags, voteRow } from '#constants';
 import { story } from '#lib/messages';
 import { Button, Embed, RadonCommand, Row, Timestamp } from '#lib/structures';
 import { isOwner } from '#lib/utility';
@@ -69,7 +69,7 @@ export class UserCommand extends RadonCommand {
 	private me(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const invite = this.container.client.generateInvite({
 			scopes: ['applications.commands', 'bot'],
-			permissions: 543276137727n
+			permissions: RecommendedPermissions
 		});
 		const inviteRow = new Row() //
 			._components(
