@@ -52,3 +52,10 @@ model guildWarns {
   warnlist  MemberWarnData[]
   actions   WarnAction[]
 }
+
+model nicknames {
+  id        String    @id @map("_id")
+  createdAt DateTime? @db.Date
+  updatedAt DateTime? @db.Date
+  freezed   String[]
+}
