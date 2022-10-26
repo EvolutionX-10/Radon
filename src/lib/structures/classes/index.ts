@@ -12,3 +12,4 @@ export * from './Select.js';
 export * from './Confirmation.js';
 export * from './Row.js';
 export * from './ModerationAction.js';
+export * from './Nickname.js';
