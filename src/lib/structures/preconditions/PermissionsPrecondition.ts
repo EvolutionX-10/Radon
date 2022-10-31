@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-namespace */
 import type { RadonCommand } from '#lib/structures';
 import {
 	AsyncPreconditionResult,

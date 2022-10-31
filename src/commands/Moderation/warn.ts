@@ -453,8 +453,6 @@ export class UserCommand extends RadonCommand {
 			});
 		}
 		const warns_size = data!.person.warns.length;
-		const embed_title = `${member.user.tag}'s Warnings`;
-		const embed_description = `${member} has ${warns_size} warning(s)`;
 		const embed_fields = await Promise.all(
 			data.person.warns.map(async (e) => {
 				const mod = await this.container.client.users.fetch(e.mod);
@@ -472,17 +470,13 @@ export class UserCommand extends RadonCommand {
 			})
 		);
 
-		const embed_footer = `Active warnings of ${member.displayName}`;
-		const embed_timestamp = new Date();
-		const embed_thumbnail = member.user.displayAvatarURL({ dynamic: true });
-
 		const template = new Embed()
 			._color(Color.Moderation)
-			._title(embed_title)
-			._description(embed_description)
-			._footer({ text: embed_footer })
-			._timestamp(embed_timestamp)
-			._thumbnail(embed_thumbnail);
+			._title(`${member.user.tag}'s Warnings`)
+			._description(`${member} has ${warns_size} warning(s)`)
+			._footer({ text: `Active warnings of ${member.displayName}` })
+			._timestamp()
+			._thumbnail(member.displayAvatarURL({ dynamic: true }));
 
 		const paginatedMessage = new RadonPaginatedMessageEmbedFields() //
 			.setTemplate(template)
@@ -604,9 +598,6 @@ export class UserCommand extends RadonCommand {
 				ephemeral: true
 			});
 
-		const embed_color = Color.Moderation;
-		const embed_title = 'Warn Actions';
-		const embed_description = 'Actions that will be applied to users when they cross the threshold of a certain severity in warnings';
 		const embed_fields = actions.map((e) => {
 			return {
 				name: `Severity: ${e.severity}`,
@@ -614,20 +605,14 @@ export class UserCommand extends RadonCommand {
 				inline: false
 			};
 		});
-		const embed_footer = interaction.guild.name;
-		const embed_timestamp = new Date();
-		const embed_thumbnail = {
-			url: interaction.guild.iconURL({
-				dynamic: true
-			})
-		};
+
 		const template = new Embed()
-			._color(embed_color)
-			._title(embed_title)
-			._description(embed_description)
-			._footer({ text: embed_footer })
-			._timestamp(embed_timestamp)
-			._thumbnail(embed_thumbnail.url ?? '');
+			._color(Color.Moderation)
+			._title('Warn Actions')
+			._description('Actions that will be applied to users when they cross the threshold of a certain severity in warnings')
+			._footer({ text: interaction.guild.name })
+			._timestamp()
+			._thumbnail(interaction.guild.iconURL({ dynamic: true }));
 
 		const paginatedMessage = new RadonPaginatedMessageEmbedFields() //
 			.setTemplate(template)

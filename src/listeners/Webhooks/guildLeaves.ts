@@ -12,9 +12,7 @@ export class UserListener extends Listener {
 	public override async run(guild: Guild) {
 		await this.container.client.guilds.fetch();
 		const isBlacklisted = await this.container.prisma.blacklist.findUnique({
-			where: {
-				id: guild.id
-			}
+			where: { id: guild.id }
 		});
 		if (isBlacklisted) return;
 		const channel = (await this.container.client.channels.fetch('950646213504552960').catch(() => null)) as TextChannel;
@@ -30,6 +28,7 @@ export class UserListener extends Listener {
 			`Owner: ${owner} \`(${owner.id})\`\n` +
 			`Total Members: ${guild.memberCount}\n` +
 			`Partnered: \`${guild.partnered}\` │ Verified: \`${guild.verified}\`\n`;
+
 		await webhook.send({
 			username: 'Radon Leaves',
 			avatarURL: this.container.client.user?.displayAvatarURL() ?? '',

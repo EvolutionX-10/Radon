@@ -69,8 +69,8 @@ export class Embed extends MessageEmbed {
 	 * @param url The url of the thumbnail
 	 * @returns Embed
 	 */
-	public _thumbnail(url: string) {
-		return this.setThumbnail(url);
+	public _thumbnail(url?: string | null) {
+		return this.setThumbnail(url ?? '');
 	}
 
 	/**

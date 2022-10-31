@@ -208,11 +208,7 @@ export class UserCommand extends RadonCommand {
 
 		modal.setTitle('Unlock').setComponents(row).setCustomId('@unlock/text');
 
-		interaction.user.data = {
-			content: `Unlocked channel <#${channel.id}> for ${role}`,
-			channel,
-			role
-		};
+		interaction.user.data = { content: `Unlocked channel <#${channel.id}> for ${role}`, channel, role };
 
 		return interaction.showModal(modal);
 	}
@@ -274,12 +270,7 @@ export class UserCommand extends RadonCommand {
 
 		modal.setTitle('Unlock').setComponents(row).setCustomId('@unlock/category');
 
-		interaction.user.data = {
-			content,
-			category,
-			role,
-			threads
-		};
+		interaction.user.data = { content, category, role, threads };
 
 		return interaction.showModal(modal);
 	}
@@ -304,10 +295,7 @@ export class UserCommand extends RadonCommand {
 
 		modal.setTitle('Unlock').setComponents(row).setCustomId('@unlock/thread');
 
-		interaction.user.data = {
-			content: `Unlocked <#${thread.id}>!`,
-			thread
-		};
+		interaction.user.data = { content: `Unlocked <#${thread.id}>!`, thread };
 
 		return interaction.showModal(modal);
 	}
@@ -333,10 +321,7 @@ export class UserCommand extends RadonCommand {
 
 		modal.setTitle('Unlock').setComponents(row).setCustomId('@unlock/all/text');
 
-		interaction.user.data = {
-			content,
-			role
-		};
+		interaction.user.data = { content, role };
 
 		return interaction.showModal(modal);
 	}
@@ -397,10 +382,7 @@ export class UserCommand extends RadonCommand {
 
 		modal.setTitle('Unlock').setComponents(row).setCustomId('@unlock/all/thread');
 
-		interaction.user.data = {
-			content,
-			role
-		};
+		interaction.user.data = { content, role };
 
 		return interaction.showModal(modal);
 	}
@@ -428,11 +410,7 @@ export class UserCommand extends RadonCommand {
 
 		modal.setTitle('Lock').setComponents(row).setCustomId('@unlock/server');
 
-		interaction.user.data = {
-			content,
-			role,
-			deep
-		};
+		interaction.user.data = { content, role, deep };
 
 		return interaction.showModal(modal);
 	}

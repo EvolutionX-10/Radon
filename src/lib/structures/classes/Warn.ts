@@ -64,18 +64,14 @@ export class Warn {
 					set: { id: member.id, warns: [warn] }
 				}
 			},
-			update: {
-				warnlist: existingWarnList
-			},
+			update: { warnlist: existingWarnList },
 			where: { id: this.guild.id }
 		});
 	}
 
 	public async remove(warnId: string, member: GuildMember) {
 		const data = await this.prisma.guildWarns.findUnique({
-			where: {
-				id: this.guild.id
-			}
+			where: { id: this.guild.id }
 		});
 
 		if (data) {
@@ -98,19 +94,12 @@ export class Warn {
 	}
 
 	public async get(member: GuildMember) {
-		const doc = await this.prisma.guildWarns.findUnique({
-			where: {
-				id: this.guild.id
-			}
-		});
+		const doc = await this.prisma.guildWarns.findUnique({ where: { id: this.guild.id } });
 
 		if (doc) {
 			const person = doc.warnlist.find((e) => e.id === member.id);
 			if (person) {
-				return {
-					person,
-					doc
-				};
+				return { person, doc };
 			}
 		}
 		return null;
@@ -118,20 +107,14 @@ export class Warn {
 
 	public update(warnlist: MemberWarnData[]) {
 		return this.prisma.guildWarns.update({
-			where: {
-				id: this.guild.id
-			},
-			data: {
-				warnlist
-			}
+			where: { id: this.guild.id },
+			data: { warnlist }
 		});
 	}
 
 	public async getSeverity(member: GuildMember) {
 		const doc = await this.prisma.guildWarns.findUnique({
-			where: {
-				id: this.guild.id
-			}
+			where: { id: this.guild.id }
 		});
 
 		if (doc) {
@@ -146,9 +129,7 @@ export class Warn {
 
 	public async addAction({ action, severity, expiration }: { action: warnAction; severity: number; expiration?: number }) {
 		const data = await this.prisma.guildWarns.findUnique({
-			where: {
-				id: this.guild.id
-			}
+			where: { id: this.guild.id }
 		});
 
 		const existingActions = data?.actions;
@@ -165,31 +146,19 @@ export class Warn {
 					? [...existingActions, { action, severity, expiration }]
 					: { action, expiration, severity }
 			},
-			where: {
-				id: this.guild.id
-			}
+			where: { id: this.guild.id }
 		});
 	}
 
 	public async removeAction(severity: number) {
-		const data = await this.prisma.guildWarns.findUnique({
-			where: {
-				id: this.guild.id
-			}
-		});
+		const data = await this.prisma.guildWarns.findUnique({ where: { id: this.guild.id } });
 
 		if (data) {
 			const actions = data.actions.filter((e) => e.severity !== severity);
 			const action = data.actions.find((e) => e.severity === severity);
 			await this.prisma.guildWarns.update({
-				where: {
-					id: this.guild.id
-				},
-				data: {
-					actions: {
-						set: actions
-					}
-				}
+				where: { id: this.guild.id },
+				data: { actions: { set: actions } }
 			});
 			return action;
 		}
@@ -198,9 +167,7 @@ export class Warn {
 
 	public async getActions() {
 		const data = await this.prisma.guildWarns.findUnique({
-			where: {
-				id: this.guild.id
-			}
+			where: { id: this.guild.id }
 		});
 
 		return data ? data.actions.sort((a, b) => a.severity - b.severity) : null;

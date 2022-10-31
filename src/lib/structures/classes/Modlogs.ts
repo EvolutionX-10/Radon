@@ -7,21 +7,14 @@ export class Modlogs {
 	}
 
 	public async modLogs_exist() {
-		const data = await this.prisma.guildSettings.findUnique({
-			where: {
-				id: this.guild.id
-			}
-		});
+		const data = await this.prisma.guildSettings.findUnique({ where: { id: this.guild.id } });
 
 		return data?.modLogChannel;
 	}
 
 	public async sendModLog(embed: MessageEmbed) {
-		const data = await this.prisma.guildSettings.findUnique({
-			where: {
-				id: this.guild.id
-			}
-		});
+		const data = await this.prisma.guildSettings.findUnique({ where: { id: this.guild.id } });
+
 		if (data && data.modLogChannel) {
 			const modLogChannel = await this.guild.channels.fetch(data.modLogChannel);
 			if (modLogChannel && modLogChannel.type === 'GUILD_TEXT' && modLogChannel.permissionsFor(this.guild.me!).has('SEND_MESSAGES')) {

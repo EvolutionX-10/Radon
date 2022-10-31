@@ -12,9 +12,7 @@ import type { Guild, TextChannel } from 'discord.js';
 export class UserListener extends Listener {
 	public override async run(guild: Guild) {
 		const isBlacklisted = await this.container.prisma.blacklist.findUnique({
-			where: {
-				id: guild.id
-			}
+			where: { id: guild.id }
 		});
 		if (isBlacklisted) {
 			await guild.leave();

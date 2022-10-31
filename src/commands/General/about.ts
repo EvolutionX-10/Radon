@@ -1,5 +1,4 @@
 import { Color, Emojis, RecommendedPermissions, UserFlags, voteRow } from '#constants';
-import { story } from '#lib/messages';
 import { Button, Embed, RadonCommand, Row, Timestamp } from '#lib/structures';
 import { isOwner } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
@@ -81,7 +80,7 @@ export class UserCommand extends RadonCommand {
 			._title('About me!')
 			._author({ name: this.container.client.user!.tag })
 			._color(Color.General)
-			._description(story)
+			._description("Hey there! I'm Radon, a *moderation* bot dedicated to make your server a better place.")
 			._timestamp()
 			._footer({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
 			._thumbnail(this.container.client.user!.displayAvatarURL());

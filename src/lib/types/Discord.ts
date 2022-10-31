@@ -52,4 +52,5 @@ export interface GuildCommandInteractionOptionResolver extends CommandInteractio
 
 export interface RadonButtonInteraction extends ButtonInteraction {
 	readonly message: Message;
+	client: RadonClient<true>;
 }

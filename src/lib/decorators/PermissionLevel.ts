@@ -6,15 +6,11 @@ import type { GuildMember } from 'discord.js';
 
 export const PermissionLevel = (level: PermissionLevel): MethodDecorator => {
 	return createFunctionPrecondition(async (interaction: RadonCommand.ChatInputCommandInteraction) => {
-		const adminRoles = (await interaction.guild!.settings?.roles.admins) ?? [];
-		const modRoles = (await interaction.guild!.settings?.roles.mods) ?? [];
-		const admin =
-			isAdmin(interaction.member as GuildMember) || (interaction.member as GuildMember).roles.cache.some((r) => adminRoles.includes(r.id));
-		const mod =
-			admin ||
-			isModerator(interaction.member as GuildMember) ||
-			(interaction.member as GuildMember).roles.cache.some((r) => modRoles.includes(r.id));
-		const serverowner = isGuildOwner(interaction.member as GuildMember);
+		const adminRoles = (await interaction.guild.settings?.roles.admins) ?? [];
+		const modRoles = (await interaction.guild.settings?.roles.mods) ?? [];
+		const admin = isAdmin(interaction.member as GuildMember) || interaction.member.roles.cache.some((r) => adminRoles.includes(r.id));
+		const mod = admin || isModerator(interaction.member) || interaction.member.roles.cache.some((r) => modRoles.includes(r.id));
+		const serverowner = isGuildOwner(interaction.member);
 		if (isOwner(interaction.user)) return true;
 
 		let error: string;

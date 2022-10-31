@@ -11,8 +11,8 @@ export class ButtonHandler extends InteractionHandler {
 		if (!Owners.includes(interaction.user.id)) return this.none();
 		if (isNullish(result.ownerMode)) return;
 
-		this.container.client.user?.setPresence({
-			status: result.ownerMode ? 'dnd' : 'invisible',
+		interaction.client.user.setPresence({
+			status: result.ownerMode ? 'online' : 'dnd',
 			activities: [
 				{
 					name: result.ownerMode ? 'for Rule Breakers' : 'Evo',
@@ -20,9 +20,9 @@ export class ButtonHandler extends InteractionHandler {
 				}
 			]
 		});
-		const { msg } = result;
-		return msg?.edit({
-			embeds: [msg.embeds[0].setDescription(result.description)]
+
+		return result.msg.edit({
+			embeds: [result.msg.embeds[0].setDescription(result.description)]
 		});
 	}
 
@@ -30,7 +30,7 @@ export class ButtonHandler extends InteractionHandler {
 		if (interaction.customId !== 'radon-maintenance') return this.none();
 		await interaction.deferUpdate({ fetchReply: true });
 
-		const ownerMode = this.container.client.user?.presence.status === 'invisible';
+		const ownerMode = interaction.client.user.presence.status === 'dnd';
 
 		const description = ownerMode ? '```\nStatus: Disabled\n```' : '```\nStatus: Enabled\n```';
 		const msg = interaction.message;

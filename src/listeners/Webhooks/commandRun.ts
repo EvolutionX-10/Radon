@@ -22,7 +22,7 @@ export class UserListener extends Listener {
 		return webhook.send({
 			username: interaction.user.username,
 			content,
-			avatarURL: interaction.user.displayAvatarURL() ?? this.container.client.user?.displayAvatarURL() ?? ''
+			avatarURL: interaction.user.displayAvatarURL() ?? interaction.client.user!.displayAvatarURL()
 		});
 	}
 }

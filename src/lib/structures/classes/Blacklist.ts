@@ -5,37 +5,21 @@ export class Blacklist {
 
 	public async add(id: string, reason: string) {
 		const doc = await this.prisma.blacklist.upsert({
-			create: {
-				id,
-				reason
-			},
-			update: {
-				reason
-			},
-			where: {
-				id
-			}
+			create: { id, reason },
+			update: { reason },
+			where: { id }
 		});
 
-		if (!doc) return null;
 		return doc;
 	}
 
 	public async isBlacklisted(id: string) {
-		const exists = await this.prisma.blacklist.findUnique({
-			where: {
-				id
-			}
-		});
+		const exists = await this.prisma.blacklist.findUnique({ where: { id } });
 		return Boolean(exists);
 	}
 
 	public async remove(id: string) {
-		const doc = await this.prisma.blacklist.delete({
-			where: {
-				id
-			}
-		});
+		const doc = await this.prisma.blacklist.delete({ where: { id } });
 		return doc.reason;
 	}
 }

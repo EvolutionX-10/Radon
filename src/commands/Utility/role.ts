@@ -2,7 +2,7 @@ import { Emojis } from '#constants';
 import { PermissionLevel } from '#lib/decorators';
 import { Button, Confirmation, RadonCommand, Row, Select } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
-import { sec } from '#lib/utility';
+import { mins, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { DurationFormatter } from '@sapphire/duration';
 import { Stopwatch } from '@sapphire/stopwatch';
@@ -438,9 +438,7 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private collector(message: RadonCommand.Message, role: Role, interaction: RadonCommand.ChatInputCommandInteraction) {
-		const collector = message.createMessageComponentCollector({
-			time: this.container.utils.mins(1)
-		});
+		const collector = message.createMessageComponentCollector({ time: mins(1) });
 
 		let perms: string[] = [];
 		let perms1: string[] = [];

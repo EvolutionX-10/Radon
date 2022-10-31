@@ -150,7 +150,7 @@ export class ModalHandler extends InteractionHandler {
 	private async thread(interaction: ModalSubmitInteraction, result: InteractionHandler.ParseResult<this>) {
 		const { thread, content } = interaction.user.data as ThreadData;
 
-		if (result.reason?.length) {
+		if (result.reason.length) {
 			const embed = new Embed()
 				._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
 				._title('Channel Unlocked')

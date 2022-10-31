@@ -1,6 +1,5 @@
 import { Color } from '#constants';
 import { Embed, RadonCommand, Timestamp } from '#lib/structures';
-import { PermissionLevels } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
 import { version as sapphireVersion } from '@sapphire/framework';
 import { roundNumber } from '@sapphire/utilities';
@@ -8,8 +7,7 @@ import { version } from 'discord.js';
 import { uptime } from 'node:os';
 
 @ApplyOptions<RadonCommand.Options>({
-	description: 'Provides some stats about me',
-	permissionLevel: PermissionLevels.Everyone
+	description: 'Provides some stats about me'
 })
 export class UserCommand extends RadonCommand {
 	public override messageRun(message: RadonCommand.Message) {

@@ -41,6 +41,7 @@ export class UserCommand extends RadonCommand {
 		if (duration === 0) {
 			content = `${Emojis.Confirm} Removed slowmode from ${interaction.channel}`;
 		}
+
 		const reason =
 			(interaction.options.getString('reason', false) ? `${interaction.options.getString('reason', false)} (${interaction.user.tag})` : null) ??
 			`Done by ${interaction.user.tag}`;

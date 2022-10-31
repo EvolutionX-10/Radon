@@ -17,9 +17,7 @@ export class ModalHandler extends InteractionHandler {
 
 		message.embeds[0].description = message.embeds[0].description?.replace(regex, `$1${result.reason}`);
 
-		await message.edit({
-			embeds: message.embeds
-		});
+		await message.edit({ embeds: message.embeds });
 
 		if (message.embeds[0].description.includes('**Action**: Warn\n')) {
 			const id = this.getID(message);
@@ -30,9 +28,7 @@ export class ModalHandler extends InteractionHandler {
 			}
 		}
 
-		return interaction.reply({
-			content: `Successfully updated the reason!`
-		});
+		return interaction.reply({ content: `Successfully updated the reason!` });
 	}
 
 	public override parse(interaction: ModalSubmitInteraction) {

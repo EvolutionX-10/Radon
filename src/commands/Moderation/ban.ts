@@ -97,10 +97,7 @@ export class UserCommand extends RadonCommand {
 				.catch(() => (content += `\n\n> ${Emojis.Cross} Couldn't DM user!`));
 		}
 
-		await interaction.guild.bans.create(user, {
-			days,
-			reason
-		});
+		await interaction.guild.bans.create(user, { days, reason });
 
 		const data: BaseModActionData = {
 			moderator: interaction.member,

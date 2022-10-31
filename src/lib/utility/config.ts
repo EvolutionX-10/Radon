@@ -99,7 +99,7 @@ export const config: Config = {
 		}
 	},
 	presence: {
-		status: 'dnd',
+		status: 'online',
 		activities: [
 			{
 				name: 'for Rule Breakers',

@@ -26,7 +26,6 @@ export const enum Color {
 	Games = 0xdfc9de,
 	General = 0x0033ff,
 	Invisible = 0x2f3136,
-	Music = 0x7289da,
 	Utility = 0x00ff00,
 	Moderation = 0x00ffff,
 	Owner = 0xffff00,
