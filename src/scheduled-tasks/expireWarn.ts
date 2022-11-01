@@ -2,7 +2,7 @@ import { ApplyOptions } from '@sapphire/decorators';
 import { ScheduledTask } from '@sapphire/plugin-scheduled-tasks';
 
 @ApplyOptions<ScheduledTask.Options>({
-	cron: '* * * * *',
+	pattern: '* * * * *',
 	bullJobsOptions: { removeOnComplete: true }
 })
 export class ExpireWarnTask extends ScheduledTask {
