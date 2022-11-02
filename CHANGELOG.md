@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+# [2.0.0](https://github.com/EvolutionX-10/Radon/compare/v1.15.0...v2.0.0) - (2022-11-02)
+
+## 🚀 Features
+
+- v2 Release (#236) ([7f1ff79](https://github.com/EvolutionX-10/Radon/commit/7f1ff79d1598bca9938117956019660d5a3cc36f))
+
 # [1.15.0](https://github.com/EvolutionX-10/Radon/compare/v1.14.0...v1.15.0) - (2022-08-07)
 
 ## 🏠 Refactor
