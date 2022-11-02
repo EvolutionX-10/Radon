@@ -1,6 +1,6 @@
 import { Timestamp } from '#lib/structures';
 import { RadonEvents } from '#lib/types';
-import { color } from '#lib/utility';
+import { Color } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener } from '@sapphire/framework';
 import type { Guild, TextChannel } from 'discord.js';
@@ -12,9 +12,7 @@ export class UserListener extends Listener {
 	public override async run(guild: Guild) {
 		await this.container.client.guilds.fetch();
 		const isBlacklisted = await this.container.prisma.blacklist.findUnique({
-			where: {
-				id: guild.id
-			}
+			where: { id: guild.id }
 		});
 		if (isBlacklisted) return;
 		const channel = (await this.container.client.channels.fetch('950646213504552960').catch(() => null)) as TextChannel;
@@ -30,6 +28,7 @@ export class UserListener extends Listener {
 			`Owner: ${owner} \`(${owner.id})\`\n` +
 			`Total Members: ${guild.memberCount}\n` +
 			`Partnered: \`${guild.partnered}\` │ Verified: \`${guild.verified}\`\n`;
+
 		await webhook.send({
 			username: 'Radon Leaves',
 			avatarURL: this.container.client.user?.displayAvatarURL() ?? '',
@@ -43,7 +42,7 @@ export class UserListener extends Listener {
 					footer: {
 						text: `${this.container.client.guilds.cache.size} guilds now!`
 					},
-					color: color.System,
+					color: Color.System,
 					timestamp: Date.now()
 				}
 			],

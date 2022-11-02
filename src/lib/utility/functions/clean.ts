@@ -1,4 +1,4 @@
-import { regExpEsc, isNullishOrEmpty } from '@sapphire/utilities';
+import { isNullishOrEmpty, regExpEsc } from '@sapphire/utilities';
 
 let sensitivePattern: string | RegExp;
 const zws = String.fromCharCode(8203);

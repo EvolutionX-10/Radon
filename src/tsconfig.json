@@ -6,10 +6,10 @@
 		"rootDir": ".",
 		"baseUrl": ".",
 		"paths": {
+			"#constants": ["lib/utility/constants.ts"],
+			"#config": ["lib/utility/config.ts"],
 			"#lib/*": ["lib/*"],
-			"#models": ["models/index.ts"],
-			"#vars": ["./vars.ts"],
-			"#config": ["./config.ts"]
+			"#root/*": ["*"]
 		},
 		"noEmit": true,
 		"skipLibCheck": true

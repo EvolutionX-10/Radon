@@ -7,18 +7,24 @@ datasource db {
   url      = env("MONGO")
 }
 
-type GuildWarnsWarnlist {
-  id    String                    @map("_id")
-  warns GuildWarnsWarnlistWarns[]
+type MemberWarnData {
+  id    String @map("_id")
+  warns Warn[]
 }
 
-type GuildWarnsWarnlistWarns {
+type Warn {
   id         String   @map("_id")
   date       DateTime @db.Date
   expiration DateTime @db.Date
   mod        String
   reason     String
   severity   Int
+}
+
+type WarnAction {
+  action     String
+  severity   Int
+  expiration Int?
 }
 
 model blacklist {
@@ -40,8 +46,16 @@ model guildSettings {
 }
 
 model guildWarns {
-  id        String               @id @map("_id")
-  createdAt DateTime?            @db.Date
-  updatedAt DateTime?            @db.Date
-  warnlist  GuildWarnsWarnlist[]
+  id        String           @id @map("_id")
+  createdAt DateTime?        @db.Date
+  updatedAt DateTime?        @db.Date
+  warnlist  MemberWarnData[]
+  actions   WarnAction[]
+}
+
+model nicknames {
+  id        String    @id @map("_id")
+  createdAt DateTime? @db.Date
+  updatedAt DateTime? @db.Date
+  freezed   String[]
 }

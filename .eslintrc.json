@@ -6,11 +6,15 @@
 	"extends": ["@sapphire"],
 	"parser": "@typescript-eslint/parser",
 	"parserOptions": {
-		"ecmaVersion": "latest"
+		"ecmaVersion": "latest",
+		"sourceType": "module"
 	},
 	"plugins": ["@typescript-eslint"],
 	"rules": {
 		"@typescript-eslint/no-non-null-assertion": "off",
-		"no-mixed-spaces-and-tabs": "off"
+		"no-mixed-spaces-and-tabs": "off",
+		"complexity": ["error", { "max": 30 }],
+		"max-depth": "error",
+		"yoda": "error"
 	}
 }

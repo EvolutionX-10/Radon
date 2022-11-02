@@ -1,12 +1,9 @@
-import type { GuildWarnsWarnlistWarns } from '@prisma/client';
-import { container } from '@sapphire/framework';
+import type { warnAction } from '#lib/types';
+import type { MemberWarnData, PrismaClient } from '@prisma/client';
 import type { Guild, GuildMember } from 'discord.js';
-const { prisma } = container;
 
 export class Warn {
-	public constructor(private readonly guild: Guild) {
-		this.guild = guild;
-	}
+	public constructor(private readonly guild: Guild, private readonly prisma: PrismaClient) {}
 
 	public async add({
 		warnId,
@@ -23,7 +20,7 @@ export class Warn {
 		expiration: Date;
 		mod: GuildMember;
 	}) {
-		const data = await prisma.guildWarns.findUnique({
+		const data = await this.prisma.guildWarns.findUnique({
 			where: {
 				id: this.guild.id
 			}
@@ -38,107 +35,141 @@ export class Warn {
 			date: new Date()
 		};
 
-		if (data) {
-			const person = data.warnlist.filter((e) => e.id === member.id)?.[0];
-			if (person) {
-				if (person.warns.length >= 50) return undefined;
-				await prisma.guildWarns.update({
-					where: {
-						id: this.guild.id
-					},
-					data: {
-						warnlist: {
-							set: { id: member.id, warns: [...person.warns, warn] }
-						}
-					},
-					select: {
-						warnlist: {
-							select: {
-								id: true
-							}
-						}
-					}
+		const existingWarnList = data?.warnlist;
+		const existingWarns = existingWarnList?.find((w) => w.id === member.id)?.warns;
+
+		if (existingWarns && existingWarns.length >= 50) return undefined;
+
+		const warns = existingWarns //
+			? [...existingWarns, warn]
+			: [warn];
+
+		if (existingWarnList) {
+			existingWarnList.forEach((person) => {
+				// * Warns of that person is found, mutating the object!
+				if (person.id === member.id) person.warns = warns;
+			});
+			if (!existingWarnList.find((m) => m.id === member.id)) {
+				// * new person's warn data;
+				existingWarnList.push({
+					id: member.id,
+					warns
 				});
-				return data;
 			}
 		}
-		const doc = await prisma.guildWarns.upsert({
+		return this.prisma.guildWarns.upsert({
 			create: {
 				id: this.guild.id,
 				warnlist: {
 					set: { id: member.id, warns: [warn] }
 				}
 			},
-			update: {
-				warnlist: {
-					set: { id: member.id, warns: [warn] }
-				}
-			},
-			where: {
-				id: this.guild.id
-			}
+			update: { warnlist: existingWarnList },
+			where: { id: this.guild.id }
 		});
-		return doc;
 	}
 
-	public async remove({ warnId, member }: { warnId: string; member: GuildMember }) {
-		const data = await prisma.guildWarns.findUnique({
-			where: {
-				id: this.guild.id
-			}
+	public async remove(warnId: string, member: GuildMember) {
+		const data = await this.prisma.guildWarns.findUnique({
+			where: { id: this.guild.id }
 		});
 
 		if (data) {
-			const person = data.warnlist.find((e) => e.id === member.id);
+			const existingWarnList = data.warnlist;
+			const person = existingWarnList.find((e) => e.id === member.id);
 			const warn = person?.warns.find((e) => e.id === warnId);
 			if (person && warn) {
-				const warns = person.warns.filter((e) => e.id !== warnId);
-				await prisma.guildWarns.update({
+				person.warns = person.warns.filter((e) => e.id !== warnId);
+				return this.prisma.guildWarns.update({
 					where: {
 						id: this.guild.id
 					},
 					data: {
-						warnlist: {
-							set: { id: member.id, warns }
-						}
+						warnlist: existingWarnList
 					}
 				});
-				return data;
 			}
-			return null;
 		}
 		return null;
 	}
 
-	public async get({ member }: { member: GuildMember }) {
-		const doc = await prisma.guildWarns.findUnique({
-			where: {
-				id: this.guild.id
+	public async get(member: GuildMember) {
+		const doc = await this.prisma.guildWarns.findUnique({ where: { id: this.guild.id } });
+
+		if (doc) {
+			const person = doc.warnlist.find((e) => e.id === member.id);
+			if (person) {
+				return { person, doc };
 			}
+		}
+		return null;
+	}
+
+	public update(warnlist: MemberWarnData[]) {
+		return this.prisma.guildWarns.update({
+			where: { id: this.guild.id },
+			data: { warnlist }
+		});
+	}
+
+	public async getSeverity(member: GuildMember) {
+		const doc = await this.prisma.guildWarns.findUnique({
+			where: { id: this.guild.id }
 		});
 
 		if (doc) {
-			const person = doc?.warnlist.filter((e) => e.id === member.id)?.[0];
+			const person = doc.warnlist.find((e) => e.id === member.id);
 			if (person) {
-				return {
-					person,
-					doc
-				};
+				const severity = person.warns.reduce((a, b) => a + b.severity, 0);
+				return severity;
 			}
+		}
+		return 0;
+	}
+
+	public async addAction({ action, severity, expiration }: { action: warnAction; severity: number; expiration?: number }) {
+		const data = await this.prisma.guildWarns.findUnique({
+			where: { id: this.guild.id }
+		});
+
+		const existingActions = data?.actions;
+
+		if (existingActions && existingActions.length >= 10) return undefined;
+
+		return this.prisma.guildWarns.upsert({
+			create: {
+				id: this.guild.id,
+				actions: { set: { action, severity, expiration } }
+			},
+			update: {
+				actions: existingActions //
+					? [...existingActions, { action, severity, expiration }]
+					: { action, expiration, severity }
+			},
+			where: { id: this.guild.id }
+		});
+	}
+
+	public async removeAction(severity: number) {
+		const data = await this.prisma.guildWarns.findUnique({ where: { id: this.guild.id } });
+
+		if (data) {
+			const actions = data.actions.filter((e) => e.severity !== severity);
+			const action = data.actions.find((e) => e.severity === severity);
+			await this.prisma.guildWarns.update({
+				where: { id: this.guild.id },
+				data: { actions: { set: actions } }
+			});
+			return action;
 		}
 		return null;
 	}
 
-	public update({ member, warns }: { member: GuildMember; warns: GuildWarnsWarnlistWarns[] }) {
-		return prisma.guildWarns.update({
-			where: {
-				id: this.guild.id
-			},
-			data: {
-				warnlist: {
-					set: { id: member.id, warns }
-				}
-			}
+	public async getActions() {
+		const data = await this.prisma.guildWarns.findUnique({
+			where: { id: this.guild.id }
 		});
+
+		return data ? data.actions.sort((a, b) => a.severity - b.severity) : null;
 	}
 }

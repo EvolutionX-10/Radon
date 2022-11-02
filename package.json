@@ -6,15 +6,11 @@
 	"type": "module",
 	"private": true,
 	"imports": {
+		"#constants": "./dist/lib/utility/constants.js",
+		"#config": "./dist/lib/utility/config.js",
 		"#lib/RadonClient": "./dist/lib/RadonClient.js",
-		"#lib/types": "./dist/lib/types/index.js",
-		"#lib/structures": "./dist/lib/structures/index.js",
-		"#lib/setup": "./dist/lib/setup/index.js",
-		"#lib/utility": "./dist/lib/utility/index.js",
 		"#lib/*": "./dist/lib/*/index.js",
-		"#models": "./dist/models/index.js",
-		"#vars": "./dist/vars.js",
-		"#config": "./dist/config.js"
+		"#root/*": "./dist/*.js"
 	},
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
@@ -33,7 +29,8 @@
 		"format": "prettier --write './src/**/*.ts' './README.md'",
 		"pretty": "prettier --check './src/**/*.ts' './README.md'",
 		"typecheck": "tsc -b src",
-		"lint": "eslint --fix --ext ts"
+		"lint": "eslint --fix --ext ts",
+		"deps": "yarn upgrade-interactive"
 	},
 	"engines": {
 		"node": "18.2.0"
@@ -55,54 +52,51 @@
 	},
 	"homepage": "https://github.com/EvolutionX-10/Radon#readme",
 	"devDependencies": {
-		"@favware/cliff-jumper": "1.8.7",
+		"@favware/cliff-jumper": "1.8.8",
 		"@sapphire/eslint-config": "4.3.8",
 		"@sapphire/prettier-config": "1.4.4",
 		"@sapphire/ts-config": "3.3.4",
-		"@swc/core": "1.2.244",
+		"@swc/core": "1.3.11",
 		"@types/colornames": "1.1.2",
 		"@types/gradient-string": "1.1.2",
-		"@types/node": "18.7.8",
+		"@types/node": "18.11.8",
 		"@types/string-similarity": "4.0.0",
-		"@typescript-eslint/eslint-plugin": "5.35.1",
-		"@typescript-eslint/parser": "5.35.1",
-		"eslint": "8.22.0",
+		"@typescript-eslint/eslint-plugin": "5.41.0",
+		"@typescript-eslint/parser": "5.41.0",
+		"eslint": "8.26.0",
 		"eslint-config-prettier": "8.5.0",
 		"eslint-plugin-prettier": "4.2.1",
 		"husky": "8.0.1",
 		"prettier": "2.7.1",
 		"pretty-quick": "3.1.3",
-		"prisma": "4.2.1",
-		"tsup": "6.2.2",
-		"typescript": "4.8.2"
+		"prisma": "4.5.0",
+		"tsup": "6.3.0",
+		"typescript": "4.8.4"
 	},
 	"dependencies": {
 		"@devtomio/plugin-botlist": "1.2.0",
-		"@prisma/client": "4.2.1",
+		"@prisma/client": "4.5.0",
 		"@sapphire/decorators": "5.0.0",
-		"@sapphire/discord-utilities": "2.11.6",
-		"@sapphire/discord.js-utilities": "5.0.0",
-		"@sapphire/framework": "3.0.0",
-		"@sapphire/plugin-editable-commands": "2.0.0",
-		"@sapphire/plugin-logger": "3.0.0",
-		"@sapphire/stopwatch": "1.4.1",
-		"@sapphire/time-utilities": "1.7.6",
+		"@sapphire/discord-utilities": "2.11.7",
+		"@sapphire/discord.js-utilities": "5.1.1",
+		"@sapphire/duration": "1.0.0",
+		"@sapphire/framework": "3.1.3",
+		"@sapphire/plugin-editable-commands": "2.0.1",
+		"@sapphire/plugin-logger": "3.0.1",
+		"@sapphire/plugin-scheduled-tasks": "6.0.0",
+		"@sapphire/stopwatch": "1.5.0",
 		"@sapphire/type": "2.2.4",
-		"@sapphire/utilities": "3.9.2",
-		"axios": "0.27.2",
+		"@sapphire/utilities": "3.11.0",
+		"bullmq": "3.0.0",
 		"colorette": "2.0.19",
 		"colornames": "1.1.1",
 		"confusables": "1.1.1",
 		"discord-api-types": "0.33.5",
-		"discord.js": "13.10.3",
+		"discord.js": "13.12.0",
 		"dotenv-cra": "3.0.2",
-		"gradient-string": "2.0.1"
+		"gradient-string": "2.0.2",
+		"undici": "5.12.0"
 	},
-	"config": {
-		"commitizen": {
-			"path": "./node_modules/cz-conventional-changelog"
-		}
-	},
-	"packageManager": "yarn@3.2.3",
+	"packageManager": "yarn@3.2.4",
 	"prettier": "@sapphire/prettier-config"
 }

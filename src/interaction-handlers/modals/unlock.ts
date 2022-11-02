@@ -1,5 +1,5 @@
-import type { Embed } from '#lib/structures';
-import { color } from '#lib/utility';
+import { Color } from '#constants';
+import { Embed } from '#lib/structures';
 import { ApplyOptions } from '@sapphire/decorators';
 import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework';
 import { PermissionFlagsBits } from 'discord-api-types/v9';
@@ -66,11 +66,10 @@ export class ModalHandler extends InteractionHandler {
 			return interaction.editReply(content);
 		}
 
-		const embed = this.container.utils
-			.embed()
+		const embed = new Embed()
 			._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
 			._title('Channel Unlocked')
-			._color(color.Utility)
+			._color(Color.Utility)
 			._description(result.reason)
 			._timestamp();
 
@@ -94,11 +93,10 @@ export class ModalHandler extends InteractionHandler {
 
 		if (result.reason?.length) {
 			embeds.push(
-				this.container.utils
-					.embed()
+				new Embed()
 					._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
 					._title('Channel Unlocked')
-					._color(color.Utility)
+					._color(Color.Utility)
 					._description(result.reason)
 					._timestamp()
 			);
@@ -114,7 +112,7 @@ export class ModalHandler extends InteractionHandler {
 			USE_PRIVATE_THREADS: threads ? true : undefined,
 			SEND_MESSAGES_IN_THREADS: threads ? true : undefined
 		};
-		for await (const channel of category.children.values()) {
+		for (const channel of category.children.values()) {
 			if (!this.isLocked(channel, role)) continue;
 			await this.container.utils.wait(500);
 			await channel.permissionOverwrites
@@ -152,12 +150,11 @@ export class ModalHandler extends InteractionHandler {
 	private async thread(interaction: ModalSubmitInteraction, result: InteractionHandler.ParseResult<this>) {
 		const { thread, content } = interaction.user.data as ThreadData;
 
-		if (result.reason?.length) {
-			const embed = this.container.utils
-				.embed()
+		if (result.reason.length) {
+			const embed = new Embed()
 				._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
 				._title('Channel Unlocked')
-				._color(color.Utility)
+				._color(Color.Utility)
 				._description(result.reason)
 				._timestamp();
 
@@ -192,17 +189,16 @@ export class ModalHandler extends InteractionHandler {
 
 		if (result.reason?.length) {
 			embeds.push(
-				this.container.utils
-					.embed()
+				new Embed()
 					._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
 					._title('Channel Unlocked')
-					._color(color.Utility)
+					._color(Color.Utility)
 					._description(result.reason)
 					._timestamp()
 			);
 		}
 		const channels = interaction.guild!.channels.cache.filter((c) => c.type === 'GUILD_TEXT');
-		for await (const channel of channels.values()) {
+		for (const channel of channels.values()) {
 			if (!this.isLocked(channel, role) || channel.type !== 'GUILD_TEXT') continue;
 			await this.container.utils.wait(1_000);
 
@@ -238,30 +234,35 @@ export class ModalHandler extends InteractionHandler {
 
 		if (result.reason?.length) {
 			embeds.push(
-				this.container.utils
-					.embed()
+				new Embed()
 					._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
 					._title('Channel Unlocked')
-					._color(color.Utility)
+					._color(Color.Utility)
 					._description(result.reason)
 					._timestamp()
 			);
 		}
 		const channels = interaction.guild!.channels.cache.filter((c) => c.type === 'GUILD_TEXT');
-		for await (const channel of channels.values()) {
+		for (const channel of channels.values()) {
 			if (channel.type !== 'GUILD_TEXT') continue;
 			await this.container.utils.wait(1_000);
 
-			channel.permissionOverwrites
+			const overwritten = await channel.permissionOverwrites
 				.edit(role, options, {
 					reason: `Requested by ${interaction.user.tag} (${interaction.user.id})`
 				})
-				.then((c) =>
-					c.isText() && embeds.length && c.type !== 'GUILD_VOICE'
-						? c.threads.fetchActive().then((fetched) => fetched.threads.forEach((thread) => thread.send({ embeds }).catch(() => null)))
-						: null
-				)
-				.catch(() => (content += `\n> Missing permissions to unlock threads in <#${channel.id}>!`));
+				.catch(() => {
+					content += `\n> Missing permissions to unlock threads in <#${channel.id}>!`;
+					return null;
+				});
+
+			if (overwritten && overwritten.isText() && overwritten.type !== 'GUILD_VOICE' && embeds.length) {
+				const active = await overwritten.threads.fetchActive().catch(() => null);
+				if (!active) return;
+				for (const thread of active.threads.values()) {
+					await thread.send({ embeds }).catch(() => null);
+				}
+			}
 		}
 
 		content.endsWith(':') ? (content += ' None 🎉') : null;
@@ -297,11 +298,10 @@ export class ModalHandler extends InteractionHandler {
 
 		if (result.reason?.length) {
 			embeds.push(
-				this.container.utils
-					.embed()
+				new Embed()
 					._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
 					._title('Channel Unlocked')
-					._color(color.Utility)
+					._color(Color.Utility)
 					._description(result.reason)
 					._timestamp()
 			);
@@ -309,7 +309,7 @@ export class ModalHandler extends InteractionHandler {
 		if (!deep) {
 			const channels = interaction.guild!.channels.cache;
 			let i = 0;
-			for await (const channel of channels.values()) {
+			for (const channel of channels.values()) {
 				if (!this.isLocked(channel, role) || channel.type !== 'GUILD_TEXT') continue;
 				await this.container.utils.wait(1_000);
 				embeds.length ? channel.send({ embeds }).catch(() => i++) : null;
@@ -336,7 +336,7 @@ export class ModalHandler extends InteractionHandler {
 		}
 
 		const channels = interaction.guild!.channels.cache;
-		for await (const channel of channels.values()) {
+		for (const channel of channels.values()) {
 			if (!this.isLocked(channel, role) || channel instanceof ThreadChannel) continue;
 			await this.container.utils.wait(1_000);
 

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-namespace */
 import type { GuildSettings } from '#lib/structures';
 import type { GuildContextMenuInteraction, GuildInteraction, GuildMessage } from '#lib/types';
 import { PermissionLevels } from '#lib/types';

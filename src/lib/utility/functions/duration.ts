@@ -1,4 +1,4 @@
-import { Time } from '@sapphire/time-utilities';
+import { Time } from '@sapphire/duration';
 
 /**
  * Seconds to milliseconds

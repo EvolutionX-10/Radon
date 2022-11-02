@@ -1,12 +1,14 @@
+import { Emojis } from '#constants';
 import { RadonCommand } from '#lib/structures';
 import { BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
 import { sec } from '#lib/utility';
-import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
+import { PermissionFlagsBits } from 'discord-api-types/v9';
+
 @ApplyOptions<RadonCommand.Options>({
+	description: `Remove a ban from a user`,
 	cooldownDelay: sec(10),
 	cooldownLimit: 3,
-	description: `Remove a ban from a user`,
 	permissionLevel: PermissionLevels.Moderator,
 	requiredClientPermissions: ['BAN_MEMBERS']
 })
@@ -18,11 +20,11 @@ export class UserCommand extends RadonCommand {
 
 		if (!ban)
 			return interaction.reply({
-				content: `${vars.emojis.cross} ${user.tag} is not banned!`,
+				content: `${Emojis.Cross} ${user} is not banned!`,
 				ephemeral: true
 			});
 
-		const content = `${vars.emojis.confirm} ${user.tag} has been unbanned ${reason ? `for the following reason: ${reason}` : ''}`;
+		const content = `${Emojis.Confirm} ${user} has been unbanned ${reason ? `for the following reason: ${reason}` : ''}`;
 		await interaction.guild.bans.remove(user, reason);
 
 		const data: BaseModActionData = {
@@ -36,10 +38,7 @@ export class UserCommand extends RadonCommand {
 			this.container.client.emit(RadonEvents.ModAction, data);
 		}
 
-		return interaction.reply({
-			content,
-			ephemeral: true
-		});
+		return interaction.reply({ content });
 	}
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {
@@ -48,6 +47,8 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
+					.setDMPermission(false)
+					.setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
 					.addUserOption((option) =>
 						option //
 							.setName('user')
@@ -60,10 +61,7 @@ export class UserCommand extends RadonCommand {
 							.setDescription('The reason for the ban uplift')
 							.setRequired(false)
 					),
-			{
-				guildIds: vars.guildIds,
-				idHints: ['947830619386302525', '951679387084922930']
-			}
+			{ idHints: ['947830619386302525', '1019932001790349312'] }
 		);
 	}
 }

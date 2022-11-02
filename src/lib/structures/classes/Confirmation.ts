@@ -1,5 +1,5 @@
+import { Emojis } from '#constants';
 import type { GuildInteraction } from '#lib/types';
-import { vars } from '#vars';
 import { ButtonInteraction, Collection, ColorResolvable, EmojiIdentifierResolvable, Message, User } from 'discord.js';
 import { Button } from './Button.js';
 import { Embed } from './Embed.js';
@@ -51,7 +51,7 @@ export class Confirmation {
 			._color(this.options?.color || 0x00ae86)
 			._description(`Are you sure you want to proceed?`);
 		const embed = this.options?.embed || default_embed;
-		const emojis = this.options?.emojis || [vars.emojis.confirm, vars.emojis.cross];
+		const emojis = this.options?.emojis || [Emojis.Confirm, Emojis.Cross];
 		const buttonLabels = this.options?.buttonLabels || ['Yes', 'No'];
 		const row = new Row();
 		const yes_button = new Button()._customId('yes')._label(buttonLabels[0])._emoji(emojis[0])._style('SUCCESS');
@@ -83,7 +83,7 @@ export class Confirmation {
 		});
 
 		collector.on('collect', async (i) => {
-			row.components.forEach((b) => b.setDisabled());
+			row.components.map((b) => b.setDisabled());
 			if (id !== i.user.id) {
 				await i.reply({
 					content: this.options.wrongUserResponse ?? 'Not for you!',
@@ -104,7 +104,7 @@ export class Confirmation {
 				return this.options.onEnd({ collection: c, msg });
 			}
 			if (c.filter((b) => b.user.id === id)?.size === 0) {
-				row.components.forEach((b) => b.setDisabled());
+				row.components.map((b) => b.setDisabled());
 				await msg.edit({
 					content: this.options.content ? 'No response received.' : null,
 					embeds: this.options.content ? [] : [embed.setDescription('No response received.')],

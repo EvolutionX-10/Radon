@@ -1,27 +1,38 @@
 process.env.NODE_ENV ??= 'development';
 
+import { Owners } from '#constants';
+import { envParseBoolean, envParseInteger, envParseString } from '#lib/env';
+import type { BotList } from '@devtomio/plugin-botlist';
+import { Time } from '@sapphire/duration';
+import { BucketScope, ClientLoggerOptions, CooldownOptions, LogLevel } from '@sapphire/framework';
+import type { ScheduledTasksOptions } from '@sapphire/plugin-scheduled-tasks';
+import { ScheduledTaskRedisStrategy } from '@sapphire/plugin-scheduled-tasks/register-redis';
+import type { RedisOptions } from 'bullmq';
 import {
 	BitFieldResolvable,
 	ClientOptions,
+	Intents,
 	IntentsString,
 	MessageMentionOptions,
 	PartialTypes,
-	Intents,
-	SweeperOptions,
-	PresenceData
+	PresenceData,
+	SweeperOptions
 } from 'discord.js';
-import { BucketScope, ClientLoggerOptions, CooldownOptions, LogLevel } from '@sapphire/framework';
-import { Time } from '@sapphire/time-utilities';
-import { vars } from '#vars';
-import type { BotList } from '@devtomio/plugin-botlist';
 import { config as dotenv } from 'dotenv-cra';
-import { envParseBoolean } from '#lib/env';
 
 dotenv({
 	debug: process.env.DOTENV_DEBUG_ENABLED ? envParseBoolean('DOTENV_DEBUG_ENABLED') : undefined
 });
 
-export const config: config = {
+export function parseRedisOption(): Pick<RedisOptions, 'port' | 'password' | 'host' | 'db'> {
+	return {
+		port: envParseInteger('REDIS_PORT'),
+		password: envParseString('REDIS_PASSWORD'),
+		host: envParseString('REDIS_HOST')
+	};
+}
+
+export const config: Config = {
 	intents: [
 		Intents.FLAGS.GUILDS,
 		Intents.FLAGS.GUILD_MESSAGES,
@@ -31,7 +42,7 @@ export const config: config = {
 	],
 	cooldown_options: {
 		delay: Time.Second * 10,
-		filteredUsers: vars.owners,
+		filteredUsers: Owners,
 		scope: BucketScope.User
 	},
 	mentions: {
@@ -40,12 +51,12 @@ export const config: config = {
 	},
 	partials: ['GUILD_MEMBER', 'MESSAGE', 'USER', 'CHANNEL'],
 	logger: {
-		level: process.env.NODE_ENV === 'development' ? LogLevel.Debug : LogLevel.Info
+		level: LogLevel.Info
 	},
 	botlist: {
 		keys: {
-			topGG: process.env.TOP_BOT_TOKEN,
-			voidBots: process.env.VOID_BOT_TOKEN
+			topGG: envParseString('TOP_BOT_TOKEN'),
+			voidBots: envParseString('VOID_BOT_TOKEN')
 		},
 		clientId: '944833303226236989',
 		autoPost: {
@@ -88,26 +99,22 @@ export const config: config = {
 		}
 	},
 	presence: {
-		status: 'dnd',
+		status: 'online',
 		activities: [
 			{
 				name: 'for Rule Breakers',
 				type: 'WATCHING'
 			}
 		]
+	},
+	tasks: {
+		strategy: new ScheduledTaskRedisStrategy({
+			bull: { connection: parseRedisOption() }
+		})
 	}
 };
-interface config {
-	intents: BitFieldResolvable<IntentsString, number>;
-	cooldown_options: CooldownOptions;
-	mentions: MessageMentionOptions;
-	partials: PartialTypes[];
-	logger: ClientLoggerOptions;
-	sweepers: SweeperOptions;
-	botlist: BotList.Options;
-	presence: PresenceData;
-}
-export const client_config: ClientOptions = {
+
+export const ClientConfig: ClientOptions = {
 	intents: config.intents,
 	allowedMentions: config.mentions,
 	caseInsensitiveCommands: true,
@@ -122,5 +129,18 @@ export const client_config: ClientOptions = {
 	preventFailedToFetchLogForGuilds: true,
 	botList: config.botlist,
 	sweepers: config.sweepers,
-	presence: config.presence
+	presence: config.presence,
+	tasks: config.tasks
 };
+
+interface Config {
+	intents: BitFieldResolvable<IntentsString, number>;
+	cooldown_options: CooldownOptions;
+	mentions: MessageMentionOptions;
+	partials: PartialTypes[];
+	logger: ClientLoggerOptions;
+	sweepers: SweeperOptions;
+	botlist: BotList.Options;
+	presence: PresenceData;
+	tasks: ScheduledTasksOptions;
+}

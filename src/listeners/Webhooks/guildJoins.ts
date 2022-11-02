@@ -1,6 +1,7 @@
 import { GuildSettings, Timestamp } from '#lib/structures';
 import { RadonEvents } from '#lib/types';
-import { color, format } from '#lib/utility';
+import { format } from '#lib/utility';
+import { Color } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener } from '@sapphire/framework';
 import type { Guild, TextChannel } from 'discord.js';
@@ -11,9 +12,7 @@ import type { Guild, TextChannel } from 'discord.js';
 export class UserListener extends Listener {
 	public override async run(guild: Guild) {
 		const isBlacklisted = await this.container.prisma.blacklist.findUnique({
-			where: {
-				id: guild.id
-			}
+			where: { id: guild.id }
 		});
 		if (isBlacklisted) {
 			await guild.leave();
@@ -23,7 +22,7 @@ export class UserListener extends Listener {
 		const bots = guild.members.cache.filter((m) => m.user.bot).size;
 		const humans = guild.members.cache.filter((m) => !m.user.bot).size;
 
-		guild.settings = new GuildSettings(guild);
+		guild.settings = new GuildSettings(guild, this.container.prisma);
 		await this.container.client.guilds.fetch();
 		const channel = (await this.container.client.channels.fetch('950646167715328000').catch(() => null)) as TextChannel;
 		if (!channel) return;
@@ -61,7 +60,7 @@ export class UserListener extends Listener {
 					footer: {
 						text: `${this.container.client.guilds.cache.size} guilds now!`
 					},
-					color: color.System,
+					color: Color.System,
 					timestamp: Date.now()
 				}
 			]

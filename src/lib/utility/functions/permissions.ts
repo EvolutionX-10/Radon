@@ -1,5 +1,5 @@
+import { Owners } from '#constants';
 import type { GuildMember, User } from 'discord.js';
-import { vars } from '#vars';
 
 export function isAdmin(member: GuildMember): boolean {
 	return member.permissions.has('ADMINISTRATOR') || member.permissions.has('MANAGE_GUILD');
@@ -14,5 +14,5 @@ export function isGuildOwner(member: GuildMember): boolean {
 }
 
 export function isOwner(user: User): boolean {
-	return vars.owners.includes(user.id);
+	return Owners.includes(user.id);
 }

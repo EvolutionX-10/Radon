@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { RadonCommand } from '#lib/structures';
+import { Color } from '#constants';
+import { Button, Embed, RadonCommand, Row } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
-import { color, mins, sec } from '#lib/utility';
-import { vars } from '#vars';
+import { mins, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
-import { container } from '@sapphire/framework';
-import { ButtonInteraction, Message, OverwriteResolvable, Permissions } from 'discord.js';
+import { PermissionFlagsBits } from 'discord-api-types/v9';
+import { ButtonInteraction, Message, OverwriteResolvable, Permissions, TextChannel } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	cooldownDelay: sec(60),
@@ -15,24 +14,22 @@ import { ButtonInteraction, Message, OverwriteResolvable, Permissions } from 'di
 })
 export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const row = this.container.utils.row();
-
-		if (interaction.channel?.type === 'GUILD_TEXT' && interaction.channel.permissionsFor(interaction.guild.roles.everyone).has('VIEW_CHANNEL')) {
-			await interaction.reply({
-				content: 'Woah wait! It seems this channel is viewable by everyone! Please make sure you run setup in a private channel.',
-				ephemeral: true
-			});
-			return;
-		}
-
 		let stage = 0;
 		let msg = (await interaction.reply({
 			embeds: [this.welcome()],
 			fetchReply: true,
 			components: [
-				row._components([
-					this.container.utils.button()._customId('not-ready')._label('I am not ready for this maze')._style('SECONDARY'),
-					this.container.utils.button()._customId('start')._label("Let's get started!")._style('PRIMARY')
+				new Row()._components([
+					new Button() //
+						._customId('not-ready')
+						._label('I am not ready for this maze')
+						._style('SECONDARY')
+						._emoji('<:pepeOhno:891375539019976744>'),
+					new Button() //
+						._customId('start')
+						._label("Let's get started!")
+						._style('SECONDARY')
+						._emoji('<a:poggershype:879074649781174272>')
 				])
 			]
 		})) as Message;
@@ -45,15 +42,13 @@ export class UserCommand extends RadonCommand {
 		// --------------------------------------
 		const modRoles: string[] = [];
 		const adminRoles: string[] = [];
-		let modLogChannel = '';
+		let modLogChannel: TextChannel | undefined;
 		// --------------------------------------
 
 		collector.on('collect', async (i) => {
-			await i.deferUpdate({ fetchReply: true });
-
 			if (i.user.id !== interaction.user.id) {
 				await i.followUp({
-					content: `This isn't for you mate`,
+					content: `This maze isn't for you mate!`,
 					ephemeral: true
 				});
 				return;
@@ -61,7 +56,7 @@ export class UserCommand extends RadonCommand {
 
 			switch (i.customId) {
 				case 'not-ready':
-					await msg.edit({
+					await i.update({
 						content: `No issues! You can do it whenever you are ready!`,
 						embeds: [],
 						components: []
@@ -110,46 +105,63 @@ export class UserCommand extends RadonCommand {
 
 				case 'retry_modlog':
 					collector.resetTimer();
-					modLogChannel = '';
+					modLogChannel = undefined;
 					msg = await this.step3(i, msg, stage);
 					break;
 
 				case 'confirm_modlog':
 					stage = 4;
-					collector.stop('Complete');
+					// eslint-disable-next-line no-case-declarations
+					const edit = await modLogChannel!
+						.edit({
+							permissionOverwrites: permissions(
+								!modLogChannel!.permissionsFor(interaction.guild.roles.everyone).has(Permissions.FLAGS.VIEW_CHANNEL)
+							)
+						})
+						.catch(async () => {
+							await i.channel!.send(
+								`I am unable to edit permissions of ${modLogChannel}. Please grant me admin permission or click on "Make a new modlog"`
+							);
+							return null;
+						});
+					if (edit) {
+						collector.stop('Complete');
+					} else {
+						stage = 3;
+						collector.resetTimer();
+						modLogChannel = undefined;
+						msg = await this.step3(i, msg, stage);
+					}
 					break;
 
 				case 'make_modlog':
 					if (!interaction.guild.me?.permissions.has(Permissions.FLAGS.MANAGE_CHANNELS)) {
 						await i.followUp({
-							content: `I don't have the permissions to create channels!\nPlease give me the Manage Channels permission!`,
+							content: `I don't have the permissions to create channels!\nPlease give me the \`Manage Channels\` permission!`,
 							ephemeral: true
 						});
 						return;
 					}
 					collector.resetTimer();
-					modLogChannel = '';
+					modLogChannel = undefined;
 					stage = 4;
 					msg = await this.step4(i, msg, stage);
 					break;
 
 				case 'public_modlog':
 				case 'private_modlog':
-					modLogChannel =
-						(
-							await makeModlog(i.customId === 'private_modlog').catch(async (r) => {
-								collector.stop();
-								console.log(r);
-								await i.followUp({
-									content:
-										`I couldn't create the modlog channel due to insufficient permissions!\nPlease try again after granting ` +
-										`\`Manage Channels\` [Creation of Channel], \`Manage Roles\` [To configure channel permissions], \`Embed Links and Send Messages\` [To send modlogs] permissions to me!\n` +
-										`Note: I need a role higher than @everyone with the mentioned permissions!` +
-										`If you are still having issues run \`/invite\` and join our support server!`,
-									ephemeral: true
-								});
-							})
-						)?.id ?? '';
+					modLogChannel = await makeModlog(i.customId === 'private_modlog').catch(async (_) => {
+						collector.stop();
+						await i.followUp({
+							content:
+								`I couldn't create the modlog channel due to insufficient permissions!\nPlease try again after granting ` +
+								`\`Manage Channels\` [Creation of Channel], \`Manage Roles\` [To configure channel permissions], \`Embed Links and Send Messages\` [To send modlogs] permissions to me!\n` +
+								`**Note:** I need a role higher than @everyone with the mentioned permissions!` +
+								`If you are still having issues run </about me:970217477126643752> and join our support server!`,
+							ephemeral: true
+						});
+						return undefined;
+					});
 					collector.stop('Complete');
 					stage = 5;
 					break;
@@ -166,21 +178,20 @@ export class UserCommand extends RadonCommand {
 						configured: true,
 						modRoles,
 						adminRoles,
-						modLogChannel
+						modLogChannel: modLogChannel?.id ?? ''
 					},
 					update: {
 						configured: true,
 						modRoles,
 						adminRoles,
-						modLogChannel
+						modLogChannel: modLogChannel?.id ?? ''
 					},
 					where: {
 						id: interaction.guildId
 					}
 				});
-				const final = this.container.utils
-					.embed()
-					._color(color.Admin)
+				const final = new Embed()
+					._color(Color.Admin)
 					._title('Overview')
 					._description('Here is a quick overview of your setup!')
 					._fields([
@@ -195,13 +206,13 @@ export class UserCommand extends RadonCommand {
 							inline: true
 						},
 						{
-							name: 'Moderation Log Channel',
-							value: modLogChannel.length ? `<#${modLogChannel}>` : 'None'
+							name: 'Moderation Logs Channel',
+							value: modLogChannel ? `<#${modLogChannel.id}>` : 'None'
 						}
 					])
 					._timestamp()
 					._author({
-						name: interaction.user.username,
+						name: interaction.user.tag,
 						iconURL: interaction.user.displayAvatarURL({ dynamic: true })
 					})
 					._footer({
@@ -217,7 +228,7 @@ export class UserCommand extends RadonCommand {
 			}
 
 			await msg.edit({
-				content: `Setup failed!`,
+				content: `Setup failed due to inactivity!`,
 				embeds: [],
 				components: []
 			});
@@ -271,8 +282,10 @@ export class UserCommand extends RadonCommand {
 				const channel = m.mentions.channels.first();
 				if (!channel || !channel.isText() || channel.type !== 'GUILD_TEXT') return;
 				await m.delete().catch(() => null);
-				modLogChannel = channel.id;
 				msg.embeds[0].fields[1].value = `<#${channel.id}>`;
+
+				modLogChannel = channel;
+
 				await msg.edit({
 					embeds: msg.embeds,
 					components: msg.components
@@ -283,56 +296,60 @@ export class UserCommand extends RadonCommand {
 		});
 
 		async function makeModlog(is_private: boolean) {
-			// TODO change the string and use enums according to v14
+			const moglog = await interaction.guild?.channels.create('modlog', {
+				topic: `Moderation log for ${interaction.guild?.name}`,
+				permissionOverwrites: permissions(is_private)
+			});
+			return moglog;
+		}
+
+		function permissions(is_private: boolean) {
 			let permissionOverwrites: OverwriteResolvable[] = [];
 			if (is_private) {
 				permissionOverwrites = [
 					{
-						id: interaction.guild!.id,
+						id: interaction.guild.id,
 						deny: ['VIEW_CHANNEL'],
 						type: 'role'
 					},
 					{
-						id: container.client.user!.id,
-						allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'EMBED_LINKS'],
+						id: interaction.client.user.id,
+						allow: ['VIEW_CHANNEL', 'SEND_MESSAGES', 'EMBED_LINKS', 'MANAGE_CHANNELS', 'MANAGE_ROLES'],
 						type: 'member'
 					}
 				];
-				modRoles.forEach((mod) => {
-					permissionOverwrites.push({
+				const permissions = (id: string, mod: boolean): OverwriteResolvable => {
+					return {
+						id,
 						allow: ['VIEW_CHANNEL'],
-						deny: ['SEND_MESSAGES', 'MANAGE_CHANNELS'],
-						id: mod,
+						deny: mod ? ['SEND_MESSAGES', 'MANAGE_CHANNELS', 'MANAGE_ROLES'] : [],
 						type: 'role'
-					});
-				});
-				adminRoles.forEach((admin) => {
-					permissionOverwrites.push({
-						allow: ['VIEW_CHANNEL'],
-						id: admin,
-						type: 'role'
-					});
-				});
+					};
+				};
+
+				for (const mod of modRoles) {
+					permissionOverwrites.push(permissions(mod, true));
+				}
+
+				for (const admin of adminRoles) {
+					permissionOverwrites.push(permissions(admin, false));
+				}
 			} else {
 				permissionOverwrites = [
 					{
-						id: interaction.guild!.id,
+						id: interaction.guild.id,
 						allow: ['VIEW_CHANNEL'],
-						deny: ['MANAGE_CHANNELS', 'SEND_MESSAGES'],
+						deny: ['MANAGE_CHANNELS', 'SEND_MESSAGES', 'MANAGE_ROLES'],
 						type: 'role'
 					},
 					{
-						id: container.client.user!.id,
-						allow: ['SEND_MESSAGES', 'EMBED_LINKS'],
+						id: interaction.client.user.id,
+						allow: ['SEND_MESSAGES', 'EMBED_LINKS', 'MANAGE_CHANNELS', 'MANAGE_ROLES'],
 						type: 'member'
 					}
 				];
 			}
-			const moglog = await interaction.guild?.channels.create('modlog', {
-				topic: `Moderation log for ${interaction.guild?.name}`,
-				permissionOverwrites
-			});
-			return moglog;
+			return permissionOverwrites;
 		}
 	}
 
@@ -341,18 +358,16 @@ export class UserCommand extends RadonCommand {
 			(builder) =>
 				builder //
 					.setName(this.name)
-					.setDescription(this.description),
-			{
-				guildIds: vars.guildIds,
-				idHints: ['951113445930065980', '951679292348174419']
-			}
+					.setDescription(this.description)
+					.setDMPermission(false)
+					.setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+			{ idHints: ['951113445930065980', '1019931909528223765'] }
 		);
 	}
 
 	private welcome() {
-		return this.container.utils
-			.embed()
-			._color(color.Admin)
+		return new Embed()
+			._color(Color.Admin)
 			._thumbnail(this.container.client.user?.displayAvatarURL() ?? '')
 			._timestamp()
 			._title('Welcome to Radon!')
@@ -362,8 +377,7 @@ export class UserCommand extends RadonCommand {
 	/**
 	 * enter mod roles
 	 */
-	private async step1(_btnInt: ButtonInteraction, prevMessage: Message, _stage: number) {
-		const row = this.container.utils.row();
+	private async step1(i: ButtonInteraction, prevMessage: Message, _stage: number) {
 		prevMessage.embeds[0].setFields([
 			{
 				name: `What are the moderator roles? [Min: 1, Max: 3]`,
@@ -378,22 +392,22 @@ export class UserCommand extends RadonCommand {
 				value: 'None'
 			}
 		]);
-		return prevMessage.edit({
-			embeds: [prevMessage.embeds[0]],
+		return i.update({
+			embeds: prevMessage.embeds,
 			components: [
-				row._components([
-					this.container.utils.button()._customId('retry_mod')._label('Retry')._style('SECONDARY'),
-					this.container.utils.button()._customId('confirm_modRoles')._label('Confirm')._style('SUCCESS')
+				new Row()._components([
+					new Button()._customId('retry_mod')._label('Retry')._style('SECONDARY'),
+					new Button()._customId('confirm_modRoles')._label('Confirm')._style('SUCCESS')
 				])
-			]
-		});
+			],
+			fetchReply: true
+		}) as Promise<Message>;
 	}
 
 	/**
 	 * enter admin roles
 	 */
-	private async step2(_btnInt: ButtonInteraction, prevMessage: Message, _stage: number) {
-		const row = this.container.utils.row();
+	private async step2(i: ButtonInteraction, prevMessage: Message, _stage: number) {
 		prevMessage.embeds[0].setFields([
 			{
 				name: `What are the administration roles? [Max: 2]`,
@@ -409,22 +423,22 @@ export class UserCommand extends RadonCommand {
 				value: 'None'
 			}
 		]);
-		return prevMessage.edit({
-			embeds: [prevMessage.embeds[0]],
+		return i.update({
+			embeds: prevMessage.embeds,
 			components: [
-				row._components([
-					this.container.utils.button()._customId('retry_admin')._label('Retry')._style('SECONDARY'),
-					this.container.utils.button()._customId('confirm_adminRoles')._label('Confirm')._style('SUCCESS')
+				new Row()._components([
+					new Button()._customId('retry_admin')._label('Retry')._style('SECONDARY'),
+					new Button()._customId('confirm_adminRoles')._label('Confirm')._style('SUCCESS')
 				])
-			]
-		});
+			],
+			fetchReply: true
+		}) as Promise<Message>;
 	}
 
 	/**
 	 * enter modlog channel
 	 */
-	private async step3(_btnInt: ButtonInteraction, prevMessage: Message, _stage: number) {
-		const row = this.container.utils.row();
+	private async step3(i: ButtonInteraction, prevMessage: Message, _stage: number) {
 		prevMessage.embeds[0].setFields([
 			{
 				name: `Where should moderation logs be sent?`,
@@ -439,23 +453,23 @@ export class UserCommand extends RadonCommand {
 				value: 'None'
 			}
 		]);
-		return prevMessage.edit({
+		return i.update({
 			embeds: [prevMessage.embeds[0]],
 			components: [
-				row._components([
-					this.container.utils.button()._customId('retry_modlog')._label('Retry')._style('SECONDARY'),
-					this.container.utils.button()._customId('make_modlog')._label('Make a new modlog')._style('PRIMARY'),
-					this.container.utils.button()._customId('confirm_modlog')._label('Confirm')._style('SUCCESS')
+				new Row()._components([
+					new Button()._customId('retry_modlog')._label('Retry')._style('SECONDARY'),
+					new Button()._customId('make_modlog')._label('Make a new modlog')._style('PRIMARY'),
+					new Button()._customId('confirm_modlog')._label('Confirm')._style('SUCCESS')
 				])
-			]
-		});
+			],
+			fetchReply: true
+		}) as Promise<Message>;
 	}
 
 	/**
 	 * is modlog private or public?
 	 */
-	private async step4(_btnInt: ButtonInteraction, prevMessage: Message, _stage: number) {
-		const row = this.container.utils.row();
+	private async step4(i: ButtonInteraction, prevMessage: Message, _stage: number) {
 		prevMessage.embeds[0].setFields([
 			{
 				name: `What should be the visibility of the modlog?`,
@@ -469,14 +483,15 @@ export class UserCommand extends RadonCommand {
 					`Once created successfully, feel free to tune permissions of the modlog channel`
 			}
 		]);
-		return prevMessage.edit({
+		return i.update({
 			embeds: [prevMessage.embeds[0]],
 			components: [
-				row._components([
-					this.container.utils.button()._customId('private_modlog')._label('Private')._style('PRIMARY'),
-					this.container.utils.button()._customId('public_modlog')._label('Public')._style('PRIMARY')
+				new Row()._components([
+					new Button()._customId('private_modlog')._label('Private')._style('PRIMARY'),
+					new Button()._customId('public_modlog')._label('Public')._style('PRIMARY')
 				])
-			]
-		});
+			],
+			fetchReply: true
+		}) as Promise<Message>;
 	}
 }

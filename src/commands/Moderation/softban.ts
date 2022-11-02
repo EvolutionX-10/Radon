@@ -1,13 +1,14 @@
+import { Emojis } from '#constants';
 import { RadonCommand } from '#lib/structures';
 import { BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
 import { runAllChecks, sec } from '#lib/utility';
-import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import type { APIApplicationCommandOptionChoice } from 'discord-api-types/v9';
+import { APIApplicationCommandOptionChoice, PermissionFlagsBits } from 'discord-api-types/v9';
+
 @ApplyOptions<RadonCommand.Options>({
+	description: `Quickly bans and unbans, acts as a quick purge`,
 	cooldownDelay: sec(15),
 	cooldownLimit: 2,
-	description: `Quickly bans and unbans, acts as a quick purge`,
 	permissionLevel: PermissionLevels.Moderator,
 	requiredClientPermissions: ['BAN_MEMBERS']
 })
@@ -24,25 +25,32 @@ export class UserCommand extends RadonCommand {
 
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		await interaction.deferReply({ ephemeral: true, fetchReply: true });
-		const member = interaction.options.getMember('member');
+		const member = interaction.options.getMember('target');
+		const dm = interaction.options.getBoolean('dm') ?? false;
+
 		if (!member)
 			return interaction.editReply({
-				content: `${vars.emojis.cross} You must specify a valid member`
+				content: `${Emojis.Cross} You must specify a valid member that is in this server!`
 			});
 		const reason = interaction.options.getString('reason') ?? undefined;
 		const days = interaction.options.getInteger('days') ?? 1;
 
 		const { content: ctn, result } = runAllChecks(interaction.member, member, 'soft ban');
 		if (!result) return interaction.editReply(ctn);
-		const content = `${vars.emojis.confirm} ${member.user.tag} has been soft banned ${reason ? `for the following reason: ${reason}` : ''}`;
-		const { id } = member;
 
-		await member.ban({
-			days,
-			reason
-		});
+		let content = `${Emojis.Confirm} ${member} has been soft banned ${reason ? `for the following reason: ${reason}` : ''}`;
 
-		await interaction.guild.members.unban(id, reason);
+		await member.ban({ days, reason });
+
+		await interaction.guild.members.unban(member.id, reason);
+
+		if (dm) {
+			await member
+				.send({
+					content: `You have been soft banned from ${interaction.guild.name}\n${reason ? `Reason: ${reason}` : ''}`
+				})
+				.catch(() => (content += `\n\n> ${Emojis.Cross} Couldn't DM member!`));
+		}
 
 		const data: BaseModActionData = {
 			action: 'softban',
@@ -64,9 +72,11 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
+					.setDMPermission(false)
+					.setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
 					.addUserOption((option) =>
 						option //
-							.setName('member')
+							.setName('target')
 							.setDescription('The member to soft ban')
 							.setRequired(true)
 					)
@@ -82,11 +92,14 @@ export class UserCommand extends RadonCommand {
 							.setDescription('The days of messages to delete (not a temp ban)')
 							.setRequired(false)
 							.setChoices(...this.#DaysChoices)
+					)
+					.addBooleanOption((option) =>
+						option //
+							.setName('dm')
+							.setDescription('Send a DM to the timed out user (default: false)')
+							.setRequired(false)
 					),
-			{
-				guildIds: vars.guildIds,
-				idHints: ['948096163398160415', '951679382991282186']
-			}
+			{ idHints: ['948096163398160415', '1019931997696708739'] }
 		);
 	}
 }

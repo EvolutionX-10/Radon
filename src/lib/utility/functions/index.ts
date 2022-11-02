@@ -12,3 +12,4 @@ export * from './lines.js';
 export * from './formatter.js';
 export * from './summableArray.js';
 export * from './wait.js';
+export * from './mention.js';

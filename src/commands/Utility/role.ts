@@ -1,13 +1,23 @@
-import { Confirmation, RadonCommand, Select, Timestamp } from '#lib/structures';
-import { PermissionLevels } from '#lib/types';
+import { Emojis } from '#constants';
 import { PermissionLevel } from '#lib/decorators';
-import { vars } from '#vars';
+import { Button, Confirmation, RadonCommand, Row, Select } from '#lib/structures';
+import { PermissionLevels } from '#lib/types';
+import { mins, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
-import type { BufferResolvable, Collection, ColorResolvable, GuildMember, MessageSelectOptionData, PermissionResolvable, Role } from 'discord.js';
-import { all } from 'colornames';
+import { DurationFormatter } from '@sapphire/duration';
 import { Stopwatch } from '@sapphire/stopwatch';
-import { sec } from '#lib/utility';
-import { DurationFormatter } from '@sapphire/time-utilities';
+import { all } from 'colornames';
+import { PermissionFlagsBits } from 'discord-api-types/v9';
+import {
+	BufferResolvable,
+	Collection,
+	ColorResolvable,
+	GuildMember,
+	MessageSelectOptionData,
+	PermissionResolvable,
+	Permissions,
+	Role
+} from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Manage Roles',
@@ -29,8 +39,6 @@ export class UserCommand extends RadonCommand {
 				return this.add(interaction);
 			case 'remove':
 				return this.remove(interaction);
-			case 'info':
-				return this.info(interaction);
 			case 'create':
 				return this.create(interaction);
 			case 'delete':
@@ -57,10 +65,12 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
+					.setDMPermission(false)
+					.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
 					.addSubcommand((builder) =>
 						builder //
 							.setName('add')
-							.setDescription('Add a role to a user')
+							.setDescription('Add a role to a member')
 							.addRoleOption((option) =>
 								option //
 									.setName('role')
@@ -101,17 +111,6 @@ export class UserCommand extends RadonCommand {
 									.setName('reason')
 									.setDescription('Reason for action')
 									.setRequired(false)
-							)
-					)
-					.addSubcommand((builder) =>
-						builder //
-							.setName('info')
-							.setDescription('Get info about a role')
-							.addRoleOption((option) =>
-								option //
-									.setName('role')
-									.setDescription('The role to get info about')
-									.setRequired(true)
 							)
 					)
 					.addSubcommand((builder) =>
@@ -180,7 +179,7 @@ export class UserCommand extends RadonCommand {
 							.addSubcommand((builder) =>
 								builder //
 									.setName('add')
-									.setDescription('Add roles to multiple users')
+									.setDescription('Add roles to multiple members')
 									.addRoleOption((option) =>
 										option //
 											.setName('role')
@@ -190,7 +189,7 @@ export class UserCommand extends RadonCommand {
 									.addRoleOption((option) =>
 										option //
 											.setName('base_role')
-											.setDescription('Base role user should have for role to be added (defaults to @everyone)')
+											.setDescription('Base role member should have for role to be added (defaults to @everyone)')
 											.setRequired(false)
 									)
 									.addStringOption((option) =>
@@ -203,7 +202,7 @@ export class UserCommand extends RadonCommand {
 							.addSubcommand((builder) =>
 								builder //
 									.setName('remove')
-									.setDescription('Remove roles from multiple users')
+									.setDescription('Remove roles from multiple members')
 									.addRoleOption((option) =>
 										option //
 											.setName('role')
@@ -213,7 +212,7 @@ export class UserCommand extends RadonCommand {
 									.addRoleOption((option) =>
 										option //
 											.setName('base_role')
-											.setDescription('Base role user should have for role to be removed (defaults to @everyone)')
+											.setDescription('Base role member should have for role to be removed (defaults to @everyone)')
 											.setRequired(false)
 									)
 									.addStringOption((option) =>
@@ -224,10 +223,7 @@ export class UserCommand extends RadonCommand {
 									)
 							)
 					),
-			{
-				guildIds: vars.guildIds,
-				idHints: ['991634355069915176', '989778331396374580']
-			}
+			{ idHints: ['991634355069915176', '1019932095428182167'] }
 		);
 	}
 
@@ -243,18 +239,25 @@ export class UserCommand extends RadonCommand {
 
 		if (!target)
 			return interaction.reply({
-				content: 'Invalid Target!',
+				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
 				ephemeral: true
 			});
 
 		if (role.position > interaction.guild.me!.roles.highest!.position)
 			return interaction.reply({
-				content: `I can't add ${role} because its position is higher than my highest role!`
+				content: `${Emojis.Cross} I can't add ${role} because its position is higher than my highest role!`
 			});
 
 		if (target.roles.cache.has(role.id)) return interaction.reply(`${target} already has ${role}`);
 
-		await target.roles.add(role, reason).catch((e) => console.log(e.message));
+		const added = await target.roles.add(role, reason).catch(() => null);
+
+		if (!added) {
+			return interaction.reply({
+				content: `${Emojis.Cross} Failed to add ${role} to ${target}`,
+				ephemeral: true
+			});
+		}
 
 		return interaction.reply({
 			content: `Added ${role} to ${target} successfully!`,
@@ -272,13 +275,13 @@ export class UserCommand extends RadonCommand {
 
 		if (!target)
 			return interaction.reply({
-				content: 'Invalid Target!',
+				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
 				ephemeral: true
 			});
 
 		if (role.position > interaction.guild.me!.roles.highest.position)
 			return interaction.reply({
-				content: `I can't remove ${role} because its position is higher than my highest role!`
+				content: `${Emojis.Cross} I can't remove ${role} because its position is higher than my highest role!`
 			});
 
 		if (!target.roles.cache.has(role.id)) return interaction.reply(`${target} doesn't have ${role}`);
@@ -287,7 +290,7 @@ export class UserCommand extends RadonCommand {
 
 		if (!removed) {
 			return interaction.reply({
-				content: `Failed to remove ${role} from ${target}`,
+				content: `${Emojis.Cross} Failed to remove ${role} from ${target}`,
 				ephemeral: true
 			});
 		}
@@ -296,51 +299,6 @@ export class UserCommand extends RadonCommand {
 			content: `Removed ${role} to ${target} successfully!`,
 			allowedMentions: { parse: [] }
 		});
-	}
-
-	private info(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const role = interaction.options.getRole('role', true);
-		const date = new Timestamp(role.createdTimestamp);
-
-		const basic =
-			`- Created At ${date.getShortDateTime()} [${date.getRelativeTime()}]\n` +
-			`- Hex: *\`${role.hexColor}\`*\n` +
-			`- Hoisted: ${role.hoist ? 'Yes' : 'No'}\n` +
-			`- Restricted to Bot: ${role.tags?.botId ? `Yes [<@${role.tags?.botId}>]` : 'No'}\n` +
-			`- Position: ${role.position}\n` +
-			`- Mentionable: ${role.mentionable ? 'Yes' : 'No'}\n` +
-			`- Managed externally: ${role.managed ? 'Yes' : 'No'}`;
-
-		let perms = this.container.utils.format(role.permissions.toArray());
-		if (perms.includes('Administrator')) perms = ['Administrator'];
-
-		const adv = `- Key Permissions: ${perms.length ? perms.join(' | ') : 'None!'}\n- ID: *\`${role.id}\`*\n- Members: ${role.members.size}`;
-
-		const embed = this.container.utils
-			.embed()
-			._author({
-				name: 'Role Information'
-			})
-			._color(role.color)
-			._description(role.toString())
-			._timestamp()
-			._thumbnail(role.iconURL() ?? '')
-			._footer({
-				text: `Requested by ${interaction.user.username}`,
-				iconURL: interaction.user.displayAvatarURL({ dynamic: true })
-			})
-			._fields(
-				{
-					name: 'Basic Info',
-					value: basic
-				},
-				{
-					name: 'Advanced Info',
-					value: adv
-				}
-			);
-
-		return interaction.reply({ embeds: [embed] });
 	}
 
 	private async create(interaction: RadonCommand.ChatInputCommandInteraction) {
@@ -376,7 +334,7 @@ export class UserCommand extends RadonCommand {
 		content = content.replace(name, role.toString());
 
 		let perms = (await interaction.guild.me?.fetch())?.permissions.toArray() ?? [];
-		if (perms.includes('ADMINISTRATOR')) perms = (await interaction.guild.fetchOwner()).permissions.toArray();
+		if (perms.includes('ADMINISTRATOR')) perms = new Permissions(Permissions.ALL).toArray();
 		perms = perms.filter((perm) => interaction.member.permissions.toArray().includes(perm));
 
 		if (!perms.length) return interaction.editReply(content);
@@ -384,104 +342,18 @@ export class UserCommand extends RadonCommand {
 		const menus = this.gimmeMenu(perms);
 		const rows = Array(menus.length)
 			.fill(null)
-			.map((_, i) => this.container.utils.row()._components(menus[i]));
+			.map((_, i) => new Row()._components(menus[i]));
 
-		const save = this.container.utils.button()._customId('save')._label('Save Selection')._style('SUCCESS');
+		const save = new Button()._customId('save')._label('Save Selection')._style('SUCCESS');
 
-		const row = this.container.utils.row()._components(save);
+		const row = new Row()._components(save);
 
 		await interaction.editReply({
 			content,
-			components: rows.concat(row)
+			components: [...rows, row]
 		});
 
 		return this.collector(message, role, interaction);
-	}
-
-	private gimmeMenu(array: string[]) {
-		const newarray = this.container.utils.summableArray(array.length, 25);
-		const menus: Select[] = [];
-
-		newarray.forEach((amount, index) => {
-			const perms = array.splice(0, amount).sort();
-			const formatted = this.container.utils.format(perms);
-
-			const options: MessageSelectOptionData[] = Array(amount)
-				.fill(null)
-				.map((_, i) => {
-					return {
-						label: formatted[i],
-						value: perms[i]
-					};
-				});
-
-			const menu = this.container.utils
-				.select()
-				._customId(`@role/perms/menu/${index}`)
-				._label('Select some permissions!')
-				._min(0)
-				._max(amount)
-				._options(...options);
-
-			menus.push(menu);
-		});
-		return menus;
-	}
-
-	private collector(message: RadonCommand.Message, role: Role, interaction: RadonCommand.ChatInputCommandInteraction) {
-		const collector = message.createMessageComponentCollector({
-			time: this.container.utils.mins(1)
-		});
-
-		let perms: string[] = [];
-		let perms1: string[] = [];
-		let perms2: string[] = [];
-
-		collector.on('collect', async (i) => {
-			if (i.user.id !== interaction.user.id) {
-				return i.reply({
-					content: 'Not for you!',
-					ephemeral: true
-				});
-			}
-
-			if (i.isSelectMenu()) {
-				switch (i.customId as SelectMenuCustomIds) {
-					case '@role/perms/menu/0':
-						perms1 = i.values;
-						break;
-					case '@role/perms/menu/1':
-						perms2 = i.values;
-						break;
-				}
-				perms = [...new Set(perms1.concat(perms2))];
-			}
-
-			await i.deferUpdate();
-			collector.resetTimer();
-
-			if (i.customId === 'save') {
-				message.components.forEach((r) => r.components.forEach((c) => c.setDisabled()));
-				await message.edit({
-					content: message.content.concat('\nSaved with selected Permissions!'),
-					components: message.components
-				});
-				collector.stop();
-			}
-		});
-
-		collector.on('end', async (c) => {
-			if (c.size === 0 || !perms.length) {
-				message.components.forEach((r) => r.components.forEach((c) => c.setDisabled()));
-				await message.edit({
-					content: message.content.concat('\nRole was created with no permissions!'),
-					components: message.components
-				});
-				return;
-			}
-
-			await role.setPermissions(perms as PermissionResolvable);
-		});
 	}
 
 	private async delete(interaction: RadonCommand.ChatInputCommandInteraction) {
@@ -492,10 +364,10 @@ export class UserCommand extends RadonCommand {
 			return interaction.editReply("This role is managed by an integration, you can't delete it!");
 		}
 		if (role.position > interaction.guild.me!.roles?.highest?.position) {
-			return interaction.editReply(`I can't delete ${role} because its position is higher than my highest role!`);
+			return interaction.editReply(`${Emojis.Cross} I can't delete ${role} because its position is higher than my highest role!`);
 		}
 		await role.delete(reason);
-		return interaction.reply(`Role *${role.name}* deleted!`);
+		return interaction.reply(`Role __*${role.name}*__ deleted!`);
 	}
 
 	@PermissionLevel('Administrator')
@@ -509,19 +381,19 @@ export class UserCommand extends RadonCommand {
 
 		if (role.position > interaction.guild.me!.roles.highest!.position)
 			return interaction.reply({
-				content: `I can't add ${role} because its position is higher than my highest role!`
+				content: `${Emojis.Cross} I can't add ${role} because its position is higher than my highest role!`
 			});
 
-		if (role.id === base.id) return interaction.reply(`You can't bulk ${option} same role as base role!`);
+		if (role.id === base.id) return interaction.reply(`${Emojis.Cross} You can't bulk ${option} same role as base role!`);
 
-		if (interaction.guild.bulkRoleInProgress) return interaction.reply(`A bulk role process is already in progress!`);
+		if (interaction.guild.bulkRoleInProgress) return interaction.reply(`${Emojis.Cross} A bulk role process is already in progress!`);
 
 		await interaction.guild.members.fetch();
 
 		let { members } = base;
 		members = members.filter((m) => (option === 'add' ? !m.roles.cache.has(role.id) : m.roles.cache.has(role.id)));
 
-		if (!members.size) return interaction.reply(`No members found for the action to proceed! Terminating...`);
+		if (!members.size) return interaction.reply(`${Emojis.Cross} No members found for the action to proceed! Terminating...`);
 
 		const confirm = new Confirmation({
 			content: `Are you sure you want to ${option} ${role} ${option === 'add' ? 'to' : 'from'} every member ${
@@ -535,6 +407,88 @@ export class UserCommand extends RadonCommand {
 			}
 		});
 		return confirm.run(interaction);
+	}
+
+	private gimmeMenu(array: string[]) {
+		const newarray = this.container.utils.summableArray(array.length, 25);
+		const menus: Select[] = [];
+
+		for (const [index, amount] of newarray.entries()) {
+			const perms = array.slice(0, amount).sort();
+
+			const options: MessageSelectOptionData[] = Array(amount)
+				.fill(null)
+				.map((_, i) => {
+					return {
+						label: this.container.utils.format(perms[i]),
+						value: perms[i]
+					};
+				});
+
+			const menu = new Select()
+				._customId(`@role/perms/menu/${index}`)
+				._label('Select some permissions!')
+				._min(0)
+				._max(amount)
+				._options(...options);
+
+			menus.push(menu);
+		}
+		return menus;
+	}
+
+	private collector(message: RadonCommand.Message, role: Role, interaction: RadonCommand.ChatInputCommandInteraction) {
+		const collector = message.createMessageComponentCollector({ time: mins(1) });
+
+		let perms: string[] = [];
+		let perms1: string[] = [];
+		let perms2: string[] = [];
+
+		collector.on('collect', async (i) => {
+			if (i.user.id !== interaction.user.id) {
+				return i.reply({
+					content: "This maze ain't for you!",
+					ephemeral: true
+				});
+			}
+
+			if (i.isSelectMenu()) {
+				await i.deferUpdate();
+				switch (i.customId as SelectMenuCustomIds) {
+					case '@role/perms/menu/0':
+						perms1 = i.values;
+						break;
+					case '@role/perms/menu/1':
+						perms2 = i.values;
+						break;
+				}
+				perms = [...new Set(perms1.concat(perms2))];
+			}
+			collector.resetTimer();
+
+			if (i.customId === 'save') {
+				message.components.map((r) => r.components.map((c) => c.setDisabled()));
+				await i.update({
+					content: message.content.concat(`\n\n> Saved with ${perms.length ? 'selected' : 'no'} permissions!`),
+					components: message.components
+				});
+				collector.stop('Saved');
+			}
+		});
+
+		collector.on('end', async (c, r) => {
+			if (r !== 'Saved') perms = [];
+			if ((c.size === 0 || !perms.length) && r !== 'Saved') {
+				message.components.map((r) => r.components.map((c) => c.setDisabled()));
+				await message.edit({
+					content: message.content.concat('\n\n> Role was created with no permissions!'),
+					components: message.components
+				});
+				return;
+			}
+
+			await role.setPermissions(perms as PermissionResolvable);
+		});
 	}
 
 	private async bulkAction(
@@ -568,7 +522,7 @@ export class UserCommand extends RadonCommand {
 	}
 }
 
-type Subcommands = 'add' | 'remove' | 'info' | 'create' | 'delete';
+type Subcommands = 'add' | 'remove' | 'create' | 'delete';
 type SelectMenuCustomIds = '@role/perms/menu/0' | '@role/perms/menu/1';
 type bulkActions = Extract<Subcommands, 'add' | 'remove'>;
 

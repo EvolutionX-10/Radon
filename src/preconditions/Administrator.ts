@@ -1,6 +1,6 @@
 import { PermissionsPrecondition } from '#lib/structures';
-import { isAdmin } from '#lib/utility';
 import type { GuildMessage } from '#lib/types';
+import { isAdmin } from '#lib/utility';
 
 export class UserPermissionsPrecondition extends PermissionsPrecondition {
 	public override async handle(message: GuildMessage): PermissionsPrecondition.AsyncResult {

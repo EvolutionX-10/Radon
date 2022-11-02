@@ -8,7 +8,7 @@ import { send } from '@sapphire/plugin-editable-commands';
 	permissionLevel: PermissionLevels.BotOwner,
 	hidden: true,
 	guarded: true,
-	flags: true
+	flags: ['user', 'm', 'msg', 'message']
 })
 export class UserCommand extends RadonCommand {
 	public override async messageRun(message: RadonCommand.Message, args: RadonCommand.Args) {
@@ -26,7 +26,7 @@ export class UserCommand extends RadonCommand {
 	private async default(message: RadonCommand.Message, args: RadonCommand.Args) {
 		if (!message.guild) return;
 
-		let filtered: string;
+		let filtered: Filter;
 		let cmds: string;
 
 		switch (true) {
@@ -48,13 +48,21 @@ export class UserCommand extends RadonCommand {
 
 		let content = `**Global** ${cmds}\n\n`;
 
-		global?.forEach((cmd) => {
-			content += `${cmd.name} *(${cmd.id})*\n`;
-		});
+		if (global) {
+			for (const cmd of global.values()) {
+				if (filtered === 'CHAT_INPUT') content += `</${cmd.name}:${cmd.id}> *(${cmd.id})*\n`;
+				else content += `${cmd.name} *(${cmd.id})*\n`;
+			}
+		}
+
 		content += `\n**Guild** ${cmds} \`[${message.guild.name}]\`\n\n`;
-		guild?.forEach((cmd) => {
-			content += `${cmd.name} *(${cmd.id})*\n`;
-		});
+
+		if (guild) {
+			for (const cmd of guild.values()) {
+				if (filtered === 'CHAT_INPUT') content += `</${cmd.name}:${cmd.id}> *(${cmd.id})*\n`;
+				else content += `${cmd.name} *(${cmd.id})*\n`;
+			}
+		}
 
 		// TODO Paginate it
 		return send(message, content);
@@ -73,7 +81,7 @@ export class UserCommand extends RadonCommand {
 		await new Confirmation({
 			onConfirm: async ({ i }) => {
 				await cmd.delete();
-				return i.editReply(`Deleted ${cmd.name}`);
+				return i.editReply(`Deleted ${cmd.name} *(${cmd.id})*`);
 			},
 			onCancel: ({ i }) => {
 				return i.editReply(`Cancelled deletion of ${cmd.name} *(${cmd.id})*`);
@@ -82,3 +90,5 @@ export class UserCommand extends RadonCommand {
 		}).run(message);
 	}
 }
+
+type Filter = 'CHAT_INPUT' | 'MESSAGE' | 'USER';

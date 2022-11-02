@@ -1,8 +1,10 @@
+import { Emojis } from '#constants';
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { sec } from '#lib/utility';
-import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
+import { PermissionFlagsBits } from 'discord-api-types/v9';
+
 @ApplyOptions<RadonCommand.Options>({
 	cooldownDelay: sec(15),
 	description: `Deletes messages from current channel`,
@@ -13,22 +15,20 @@ export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		await interaction.deferReply({ ephemeral: true });
 		const count = interaction.options.getInteger('count', true);
-		const { channel } = interaction;
 		const pinned = interaction.options.getBoolean('skip_pinned', false) ?? true;
 		const contains = interaction.options.getString('contains', false);
 		const user = interaction.options.getUser('user', false);
+
+		const { channel } = interaction;
 		let dels = 0;
 		const content = `No messages were deleted! Try filtering correctly\nNote that the messages are older than 2 weeks will NOT be deleted!`;
+
 		if (count > 100) {
 			const arr = this.container.utils.summableArray(count, 100);
-			const p = new Promise((resolve: (value: unknown) => void) => {
+			const p = new Promise<string>((resolve) => {
 				arr.forEach((num, i, ar) => {
 					setTimeout(async () => {
-						const messages = (
-							await channel.messages.fetch({
-								limit: num
-							})
-						)
+						const messages = (await channel.messages.fetch({ limit: num }))
 							.filter((m) => (pinned ? !m.pinned : true))
 							.filter((m) => (contains ? m.content.includes(contains) : true))
 							.filter((m) => (user ? m.author.id === user.id : true));
@@ -39,32 +39,22 @@ export class UserCommand extends RadonCommand {
 				});
 			});
 
-			void p.then(async () => {
-				if (dels === 0) {
-					await interaction.editReply(content);
-				} else
-					await interaction.editReply({
-						content: `${vars.emojis.confirm} Deleted ${dels} messages`
-					});
+			return p.then(() => {
+				if (dels === 0) return interaction.editReply(content);
+				return interaction.editReply({ content: `${Emojis.Confirm} Deleted ${dels} messages` });
 			});
-		} else {
-			const messages = (
-				await channel.messages.fetch({
-					limit: count
-				})
-			)
-				.filter((m) => (pinned ? !m.pinned : true))
-				.filter((m) => (contains ? m.content.includes(contains) : true))
-				.filter((m) => (user ? m.author.id === user.id : true));
-			const { size } = await channel.bulkDelete(messages, true);
-			dels = size;
-			if (dels === 0) {
-				await interaction.editReply(content);
-			} else
-				await interaction.editReply({
-					content: `${vars.emojis.confirm} Deleted ${dels} messages`
-				});
 		}
+
+		const messages = (await channel.messages.fetch({ limit: count }))
+			.filter((m) => (pinned ? !m.pinned : true))
+			.filter((m) => (contains ? m.content.includes(contains) : true))
+			.filter((m) => (user ? m.author.id === user.id : true));
+
+		dels = (await channel.bulkDelete(messages, true)).size;
+
+		if (dels === 0) return interaction.editReply(content);
+
+		return interaction.editReply({ content: `${Emojis.Confirm} Deleted ${dels} messages` });
 	}
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {
@@ -73,6 +63,8 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
+					.setDMPermission(false)
+					.setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
 					.addIntegerOption((option) =>
 						option //
 							.setName('count')
@@ -99,10 +91,7 @@ export class UserCommand extends RadonCommand {
 							.setDescription('User to delete messages from')
 							.setRequired(false)
 					),
-			{
-				guildIds: vars.guildIds,
-				idHints: ['947723986521956433', '951679388976545852']
-			}
+			{ idHints: ['947723986521956433', '1019932085890326589'] }
 		);
 	}
 }

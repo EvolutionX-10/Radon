@@ -2,10 +2,9 @@ import { PermissionLevel } from '#lib/decorators';
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { sec } from '#lib/utility';
-import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
 import { BucketScope } from '@sapphire/framework';
-import { ChannelType } from 'discord-api-types/v9';
+import { ChannelType, PermissionFlagsBits } from 'discord-api-types/v9';
 import { CategoryChannel, GuildChannel, MessageActionRow, Modal, ModalActionRowComponent, Role, TextInputComponent, ThreadChannel } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
@@ -50,6 +49,8 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
+					.setDMPermission(false)
+					.setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels | PermissionFlagsBits.ManageRoles)
 					.addSubcommand((builder) =>
 						builder //
 							.setName('text')
@@ -177,23 +178,22 @@ export class UserCommand extends RadonCommand {
 									.setRequired(false)
 							)
 					),
-			{
-				guildIds: vars.guildIds,
-				idHints: ['978320030452297769', '975667690498834482']
-			}
+			{ idHints: ['978320030452297769', '1019932088364978186'] }
 		);
 	}
 
 	private lockText(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const channel = interaction.options.getChannel('channel', true);
-		if (!channel) return interaction.reply('Invalid channel!');
+
 		if (!channel.permissionsFor(this.container.client.user!)!.has('MANAGE_ROLES'))
 			return interaction.reply('I do not have permission to lock channels!');
 
 		const role = interaction.options.getRole('role') ?? interaction.guild.roles.everyone;
+
 		if (!this.checkRole(role)) {
 			return interaction.reply('This role is integrated to a bot or higher than my highest role! Action cancelled.');
 		}
+
 		if (this.isLocked(channel, role)) return interaction.reply(`<#${channel.id}> is already locked for ${role}!`);
 
 		const modal = new Modal();
@@ -208,18 +208,14 @@ export class UserCommand extends RadonCommand {
 
 		modal.setTitle('Lock').setComponents(row).setCustomId('@lock/text');
 
-		interaction.user.data = {
-			content: `Locked channel <#${channel.id}> for ${role}`,
-			channel,
-			role
-		};
+		interaction.user.data = { content: `Locked channel <#${channel.id}> for ${role}`, channel, role };
 
 		return interaction.showModal(modal);
 	}
 
 	private lockVoice(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const channel = interaction.options.getChannel('channel', true);
-		if (!channel) return interaction.reply('Invalid channel!');
+
 		if (!channel.permissionsFor(this.container.client.user!)!.has('MANAGE_ROLES'))
 			return interaction.reply('I do not have permission to lock channels!');
 
@@ -241,7 +237,7 @@ export class UserCommand extends RadonCommand {
 					reason: 'Creating permissions to avoid self lock out'
 				}
 			)
-			.catch(() => (content += `\nFailed to create self permissions, please report this to my developers!`));
+			.catch(() => (content += `\n\n> Failed to create self permissions, please report this in support server!`));
 		channel.permissionOverwrites
 			.edit(
 				role,
@@ -260,7 +256,7 @@ export class UserCommand extends RadonCommand {
 
 	private lockCategory(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const category = interaction.options.getChannel('channel', true) as CategoryChannel;
-		if (!category) return interaction.reply('Invalid category!');
+
 		if (!category.permissionsFor(this.container.client.user!)!.has('MANAGE_ROLES'))
 			return interaction.reply('I do not have permission to lock channels!');
 
@@ -284,12 +280,7 @@ export class UserCommand extends RadonCommand {
 
 		modal.setTitle('Lock').setComponents(row).setCustomId('@lock/category');
 
-		interaction.user.data = {
-			content,
-			category,
-			role,
-			threads
-		};
+		interaction.user.data = { content, category, role, threads };
 
 		return interaction.showModal(modal);
 	}
@@ -314,10 +305,7 @@ export class UserCommand extends RadonCommand {
 
 		modal.setTitle('Lock').setComponents(row).setCustomId('@lock/thread');
 
-		interaction.user.data = {
-			content: `Locked thread <#${thread.id}>!`,
-			thread
-		};
+		interaction.user.data = { content: `Locked thread <#${thread.id}>!`, thread };
 
 		return interaction.showModal(modal);
 	}
@@ -344,10 +332,7 @@ export class UserCommand extends RadonCommand {
 
 		modal.setTitle('Lock').setComponents(row).setCustomId('@lock/all/text');
 
-		interaction.user.data = {
-			content,
-			role
-		};
+		interaction.user.data = { content, role };
 
 		return interaction.showModal(modal);
 	}
@@ -363,7 +348,7 @@ export class UserCommand extends RadonCommand {
 		let content = `Successfully locked all voice channels for ${role}!\n\nIssues Found:`;
 		const channels = interaction.guild!.channels.cache.filter((c) => c.type === 'GUILD_VOICE');
 
-		for await (const channel of channels.values()) {
+		for (const channel of channels.values()) {
 			if (this.isLocked(channel, role) || channel.type !== 'GUILD_VOICE') continue;
 			await this.container.utils.wait(500);
 			channel.permissionOverwrites
@@ -420,10 +405,7 @@ export class UserCommand extends RadonCommand {
 
 		modal.setTitle('Lock').setComponents(row).setCustomId('@lock/all/thread');
 
-		interaction.user.data = {
-			content,
-			role
-		};
+		interaction.user.data = { content, role };
 
 		return interaction.showModal(modal);
 	}
@@ -451,11 +433,7 @@ export class UserCommand extends RadonCommand {
 
 		modal.setTitle('Lock').setComponents(row).setCustomId('@lock/server');
 
-		interaction.user.data = {
-			content,
-			role,
-			deep
-		};
+		interaction.user.data = { content, role, deep };
 
 		return interaction.showModal(modal);
 	}

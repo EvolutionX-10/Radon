@@ -1,5 +1,5 @@
 import { RadonEvents } from '#lib/types';
-import { vars } from '#vars';
+import { Owners } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener } from '@sapphire/framework';
 import type { CommandInteraction } from 'discord.js';
@@ -10,7 +10,7 @@ import type { CommandInteraction } from 'discord.js';
 export class UserListener extends Listener {
 	public override async run(interaction: CommandInteraction) {
 		if (!interaction.guild) return;
-		if (vars.owners.includes(interaction.user.id)) return;
+		if (Owners.includes(interaction.user.id)) return;
 
 		const channel = await this.container.client.channels.fetch('988318368555749406').catch(() => null);
 		if (!channel || channel.type !== 'GUILD_TEXT') return;
@@ -22,7 +22,7 @@ export class UserListener extends Listener {
 		return webhook.send({
 			username: interaction.user.username,
 			content,
-			avatarURL: interaction.user.displayAvatarURL() ?? this.container.client.user?.displayAvatarURL() ?? ''
+			avatarURL: interaction.user.displayAvatarURL() ?? interaction.client.user!.displayAvatarURL()
 		});
 	}
 }

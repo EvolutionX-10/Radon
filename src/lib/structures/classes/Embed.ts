@@ -7,7 +7,16 @@ export class Embed extends MessageEmbed {
 	 * @returns Embed
 	 */
 	public _fields(...fields: EmbedFieldData[] | EmbedFieldData[][]) {
-		return this.setFields(...fields);
+		return this.addFields(...fields);
+	}
+
+	/**
+	 * Field
+	 * @param field The fields to add to the embed
+	 * @returns Embed
+	 */
+	public _field(field: EmbedFieldData) {
+		return this.addFields(field);
 	}
 
 	/**
@@ -60,8 +69,8 @@ export class Embed extends MessageEmbed {
 	 * @param url The url of the thumbnail
 	 * @returns Embed
 	 */
-	public _thumbnail(url: string) {
-		return this.setThumbnail(url);
+	public _thumbnail(url?: string | null) {
+		return this.setThumbnail(url ?? '');
 	}
 
 	/**

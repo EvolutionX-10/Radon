@@ -1,10 +1,11 @@
+import { Emojis } from '#constants';
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { runAllChecks } from '#lib/utility';
-import { vars } from '#vars';
 import { ApplyOptions } from '@sapphire/decorators';
-import { ApplicationCommandType } from 'discord-api-types/v9';
 import { clean } from 'confusables';
+import { ApplicationCommandType, PermissionFlagsBits } from 'discord-api-types/v9';
+
 @ApplyOptions<RadonCommand.Options>({
 	description: `Manage nicknames`,
 	requiredClientPermissions: ['MANAGE_NICKNAMES'],
@@ -20,6 +21,10 @@ export class UserCommand extends RadonCommand {
 				return this.clear(interaction);
 			case 'decancer':
 				return this.decancer(interaction);
+			case 'freeze':
+				return this.freeze(interaction);
+			case 'unfreeze':
+				return this.unfreeze(interaction);
 		}
 	}
 
@@ -33,13 +38,15 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
+					.setDMPermission(false)
+					.setDefaultMemberPermissions(PermissionFlagsBits.ManageNicknames)
 					.addSubcommand((builder) =>
 						builder //
 							.setName('decancer')
 							.setDescription('Decancer the username of the member')
 							.addUserOption((option) =>
 								option //
-									.setName('member')
+									.setName('target')
 									.setDescription("The member who's nickname to decancer")
 									.setRequired(true)
 							)
@@ -50,7 +57,7 @@ export class UserCommand extends RadonCommand {
 							.setDescription('Set a nickname for the member')
 							.addUserOption((option) =>
 								option //
-									.setName('member')
+									.setName('target')
 									.setDescription("The member who's nickname to set")
 									.setRequired(true)
 							)
@@ -74,7 +81,7 @@ export class UserCommand extends RadonCommand {
 							.setDescription('Clear the nickname of the member')
 							.addUserOption((option) =>
 								option //
-									.setName('member')
+									.setName('target')
 									.setDescription("The member who's nickname to clear")
 									.setRequired(true)
 							)
@@ -84,36 +91,67 @@ export class UserCommand extends RadonCommand {
 									.setDescription('The reason for the nickname clear')
 									.setRequired(false)
 							)
+					)
+					.addSubcommand((builder) =>
+						builder //
+							.setName('freeze')
+							.setDescription('Freeze a nickname')
+							.addUserOption((option) =>
+								option //
+									.setName('target')
+									.setDescription("The member who's nickname to freeze")
+									.setRequired(true)
+							)
+							.addStringOption((option) =>
+								option //
+									.setName('nickname')
+									.setDescription('The nickname to set (defaults to current nickname/username)')
+									.setMaxLength(32)
+									.setRequired(false)
+							)
+							.addStringOption((option) =>
+								option //
+									.setName('reason')
+									.setDescription('The reason for the nickname freeze')
+									.setRequired(false)
+							)
+					)
+					.addSubcommand((builder) =>
+						builder //
+							.setName('unfreeze')
+							.setDescription('Unfreeze a nickname')
+							.addUserOption((option) =>
+								option //
+									.setName('target')
+									.setDescription(`The member who's nickname to unfreeze`)
+									.setRequired(true)
+							)
 					),
-			{
-				guildIds: vars.guildIds,
-				idHints: ['954251737290661939', '954226414759055400']
-			}
+			{ idHints: ['954251737290661939', '1019932090562789397'] }
 		);
 		registry.registerContextMenuCommand(
 			(builder) =>
 				builder //
-					.setName('Decancer')
-					.setType(ApplicationCommandType.User),
-			{
-				guildIds: vars.guildIds,
-				idHints: ['954251739077431346', '954249587047170048']
-			}
+					.setName('Nick Decancer')
+					.setType(ApplicationCommandType.User)
+					.setDMPermission(false)
+					.setDefaultMemberPermissions(PermissionFlagsBits.ManageNicknames),
+			{ idHints: ['954251739077431346', '1019932092592820294'] }
 		);
 	}
 
 	private async decancer(interaction: RadonCommand.ChatInputCommandInteraction | RadonCommand.ContextMenuCommandInteraction) {
-		const member = interaction.options.getMember('member') ?? interaction.options.getMember('user');
+		const member = interaction.options.getMember('target') ?? interaction.options.getMember('user');
 		if (!member) {
 			return interaction.reply({
-				content: 'No member found',
+				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
 				ephemeral: true
 			});
 		}
 		const reason = `Done by ${interaction.user.tag}`;
 		if (member.id === interaction.guild.ownerId) {
 			return interaction.reply({
-				content: 'I cannot decancer the owner of the server',
+				content: `${Emojis.Cross} I cannot decancer the owner of the server`,
 				ephemeral: true
 			});
 		}
@@ -125,11 +163,11 @@ export class UserCommand extends RadonCommand {
 			});
 		}
 		const { displayName } = member;
-		let nickname = clean(displayName).replace(/[^a-z 0-9]+/gi, '');
-		if (!nickname.length) nickname = 'Moderated Nickname';
+		const nickname = clean(displayName).replace(/[^a-z 0-9]+/gi, '');
+
 		if (nickname === displayName) {
 			return interaction.reply({
-				content: `No changes were made to ${displayName}`,
+				content: `No changes were made to ${displayName}!`,
 				ephemeral: true
 			});
 		}
@@ -138,10 +176,10 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private async set(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const member = interaction.options.getMember('member');
+		const member = interaction.options.getMember('target');
 		if (!member) {
 			return interaction.reply({
-				content: 'No member found',
+				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
 				ephemeral: true
 			});
 		}
@@ -149,12 +187,14 @@ export class UserCommand extends RadonCommand {
 		const reason =
 			(interaction.options.getString('reason', false) ? `${interaction.options.getString('reason', false)} (${interaction.user.tag})` : null) ??
 			`Done by ${interaction.user.tag}`;
+
 		if (member.id === interaction.guild.ownerId) {
 			return interaction.reply({
-				content: 'I cannot set the nickname of the guild owner',
+				content: 'I cannot set the nickname of the server owner',
 				ephemeral: true
 			});
 		}
+
 		const { result, content } = runAllChecks(interaction.member, member, 'nickname set');
 		if (!result) {
 			return interaction.reply({
@@ -162,6 +202,7 @@ export class UserCommand extends RadonCommand {
 				ephemeral: true
 			});
 		}
+
 		if (member.displayName === nickname) {
 			return interaction.reply({
 				content: `${member}'s display name is already set to ${nickname}`,
@@ -170,15 +211,15 @@ export class UserCommand extends RadonCommand {
 		}
 		await member.setNickname(nickname, reason);
 		return interaction.reply({
-			content: `Nickname \`${nickname}\` set for ${member.user.tag}`
+			content: `Nickname \`${nickname}\` set for ${member}`
 		});
 	}
 
 	private async clear(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const member = interaction.options.getMember('member');
+		const member = interaction.options.getMember('target');
 		if (!member) {
 			return interaction.reply({
-				content: 'No member found',
+				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
 				ephemeral: true
 			});
 		}
@@ -187,7 +228,7 @@ export class UserCommand extends RadonCommand {
 			`Done by ${interaction.user.tag}`;
 		if (member.id === interaction.guild.ownerId) {
 			return interaction.reply({
-				content: 'I cannot clear the nickname of the guild owner',
+				content: 'I cannot clear the nickname of the server owner',
 				ephemeral: true
 			});
 		}
@@ -206,9 +247,75 @@ export class UserCommand extends RadonCommand {
 		}
 		await member.setNickname(null, reason);
 		return interaction.reply({
-			content: `Nickname cleared for ${member.user.tag}`
+			content: `Nickname cleared for ${member}`
+		});
+	}
+
+	private async freeze(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const member = interaction.options.getMember('target');
+		if (!member) {
+			return interaction.reply({
+				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
+				ephemeral: true
+			});
+		}
+		const nick = interaction.options.getString('nickname') ?? member.displayName;
+		const reason =
+			(interaction.options.getString('reason', false) ? `${interaction.options.getString('reason', false)} (${interaction.user.tag})` : null) ??
+			`Done by ${interaction.user.tag}`;
+
+		if (member.id === interaction.guild.ownerId) {
+			return interaction.reply({
+				content: 'I cannot set the nickname of the server owner',
+				ephemeral: true
+			});
+		}
+
+		const { result, content } = runAllChecks(interaction.member, member, 'freeze');
+		if (!result) {
+			return interaction.reply({
+				content,
+				ephemeral: true
+			});
+		}
+
+		if (nick !== member.displayName) await member.setNickname(nick, reason);
+
+		const db = await interaction.guild.settings?.nicknames.get();
+		if (db && db.freezed.includes(member.id))
+			return interaction.reply({
+				content: `${member}'s nickname is already freezed!`
+			});
+
+		await interaction.guild.settings?.nicknames.push(member.id);
+
+		return interaction.reply({
+			content: `Successfully freezed nickname of ${member}!`
+		});
+	}
+
+	private async unfreeze(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const member = interaction.options.getMember('target');
+
+		if (!member) {
+			return interaction.reply({
+				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
+				ephemeral: true
+			});
+		}
+
+		const nicks = await interaction.guild.settings?.nicknames.get();
+		if (!nicks || (nicks && !nicks.freezed.includes(member.id)))
+			return interaction.reply({
+				content: `${member}'s nickname is NOT freezed!`
+			});
+
+		await interaction.guild.settings?.nicknames.pull(member.id);
+
+		return interaction.reply({
+			content: `Sucessfully unfreezed ${member}'s nickname!`
 		});
 	}
 }
 
-type SubCommand = 'set' | 'clear' | 'decancer';
+type SubCommand = 'set' | 'clear' | 'decancer' | 'freeze' | 'unfreeze';
