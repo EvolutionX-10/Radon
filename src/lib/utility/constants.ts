@@ -93,7 +93,7 @@ const vote_labs = new Button() //
 const vote_dbl = new Button() //
 	._label('Vote on Discord Bot List')
 	._style('LINK')
-	._emoji('<:dbl:757235965629825084>')
+	._emoji('<:dbl:1037357030152863824>')
 	._url('https://discordbotlist.com/bots/radon-1595/upvote');
 
 export const voteRow = new Row()._components([vote_topgg, vote_void, vote_labs, vote_dbl]);
