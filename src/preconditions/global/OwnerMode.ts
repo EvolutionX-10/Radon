@@ -20,16 +20,14 @@ export class UserPrecondition extends Precondition {
 	}
 
 	private async inOwnerMode(id: string) {
-		let mode = false;
-		if (this.container.client.user?.presence.status === 'invisible') mode = true;
+		const mode = this.container.client.user?.presence.status === 'dnd';
 
 		if (!mode) return this.ok();
 
 		return Owners.includes(id)
 			? this.ok()
 			: this.error({
-					message: `I am in bot owner mode`,
-					context: { silent: true }
+					message: `A maintenance is going on, please be paitent. If this persists for long, join my support server to know more about it!`
 			  });
 	}
 }
