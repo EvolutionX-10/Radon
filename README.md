@@ -2,7 +2,6 @@
 
 # Radon
 
-[![CodeFactor]](https://www.codefactor.io/repository/github/evolutionx-10/radon/overview/main)
 [![License]][apache]
 [![GitHub stars]][stars]
 [![GitHub issues]][issues]
