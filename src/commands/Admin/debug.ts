@@ -41,7 +41,7 @@ export class UserCommand extends RadonCommand {
 					.setDescription(this.description)
 					.setDMPermission(false)
 					.setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
-			{ idHints: ['', '1027861261842657301'] }
+			{ idHints: ['1037359307232137297', '1027861261842657301'] }
 		);
 	}
 
