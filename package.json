@@ -95,7 +95,7 @@
 		"discord.js": "13.12.0",
 		"dotenv-cra": "3.0.2",
 		"gradient-string": "2.0.2",
-		"undici": "5.12.0"
+		"undici": "5.13.0"
 	},
 	"packageManager": "yarn@3.3.0",
 	"prettier": "@sapphire/prettier-config"

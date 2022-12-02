@@ -3924,7 +3924,7 @@ __metadata:
     prisma: 4.6.1
     tsup: 6.5.0
     typescript: 4.9.3
-    undici: 5.12.0
+    undici: 5.13.0
   languageName: unknown
   linkType: soft
 
@@ -4646,12 +4646,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici@npm:5.12.0":
-  version: 5.12.0
-  resolution: "undici@npm:5.12.0"
+"undici@npm:5.13.0":
+  version: 5.13.0
+  resolution: "undici@npm:5.13.0"
   dependencies:
     busboy: ^1.6.0
-  checksum: fbc227704943c05aa3dc1630695e10309c17d0a535678594d136db107c50593248e9ace70e1ab77496a6c837bf14aa2ab3c501a7a6c45fb6277dbf0846e15ffe
+  checksum: 15b8f7df4bd8c9bf9d777456d16b51eb621f25d3ee60f575a8693192a647b3a8b33671e984386636e8df42085488f86a52d0d47db1b8c22edcc591134892a424
   languageName: node
   linkType: hard
 
