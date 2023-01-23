@@ -1804,13 +1804,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv-cra@npm:3.0.2":
-  version: 3.0.2
-  resolution: "dotenv-cra@npm:3.0.2"
+"dotenv-cra@npm:3.0.3":
+  version: 3.0.3
+  resolution: "dotenv-cra@npm:3.0.3"
   dependencies:
     dotenv: ^10.0.0
     dotenv-expand: ^5.1.0
-  checksum: dc33ca4c8751a16390f646513bbdfdf64e0cc6ebf3439e1d3e9fb418005f13d53106792e545824d9c08084a9c4e1bec425d30628f9791dab1f9a97f1e3684a64
+  checksum: 2e4b60113757273685453a30f405601258f8d73066babad772f22d238bf9dd5f93d92e7e6e22c76bf1d4f74a2e4f694be78bb2e324bd7d9b36e0476d61abc930
   languageName: node
   linkType: hard
 
@@ -4026,7 +4026,7 @@ __metadata:
     confusables: 1.1.1
     discord-api-types: 0.33.5
     discord.js: 13.12.0
-    dotenv-cra: 3.0.2
+    dotenv-cra: 3.0.3
     eslint: 8.32.0
     eslint-config-prettier: 8.5.0
     eslint-plugin-prettier: 4.2.1
