@@ -1,6 +1,6 @@
-import { EmojiIdentifierResolvable, MessageButton, MessageButtonStyleResolvable } from 'discord.js';
+import { ButtonBuilder, ButtonStyle, ComponentEmojiResolvable } from 'discord.js';
 
-export class Button extends MessageButton {
+export class Button extends ButtonBuilder {
 	/**
 	 * Custom ID
 	 * @param id The id of the button
@@ -24,7 +24,7 @@ export class Button extends MessageButton {
 	 * @param type The type of button
 	 * @returns Button
 	 */
-	public _style(type: MessageButtonStyleResolvable) {
+	public _style(type: ButtonStyle) {
 		return this.setStyle(type);
 	}
 
@@ -52,7 +52,7 @@ export class Button extends MessageButton {
 	 * @param emoji The emoji of the button
 	 * @returns Button
 	 */
-	public _emoji(emoji: EmojiIdentifierResolvable) {
+	public _emoji(emoji: ComponentEmojiResolvable) {
 		return this.setEmoji(emoji);
 	}
 }

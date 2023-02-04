@@ -1,5 +1,4 @@
-import type { PermissionString } from 'discord.js';
-
+import type { Permissions } from 'discord.js';
 /**
  * It takes an array of strings, splits each string by underscores, capitalizes the first letter of
  * each word, and joins them back together
@@ -22,7 +21,7 @@ export function format(perm: string): string;
 export function format(perm: string[] | string, key = true) {
 	if (Array.isArray(perm)) {
 		return perm
-			.sort((a, b) => order[b as PermissionString] - order[a as PermissionString])
+			.sort((a, b) => order[b] - order[a])
 			.map((e) =>
 				e
 					.split(`_`)
@@ -42,7 +41,7 @@ export function format(perm: string[] | string, key = true) {
 		.join(` `);
 }
 
-const order: Record<PermissionString, number> = {
+const order: Record<Permissions, number> = {
 	VIEW_CHANNEL: 0,
 	SEND_MESSAGES: 1,
 	EMBED_LINKS: 2,

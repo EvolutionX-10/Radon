@@ -1,3 +1,4 @@
+import { Embed } from '#lib/structures';
 import { ApplyOptions } from '@sapphire/decorators';
 import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework';
 import type { GuildMember, Message, ModalSubmitInteraction } from 'discord.js';
@@ -15,9 +16,9 @@ export class ModalHandler extends InteractionHandler {
 
 		if (!message.embeds[0].description) return;
 
-		message.embeds[0].description = message.embeds[0].description?.replace(regex, `$1${result.reason}`);
-
-		await message.edit({ embeds: message.embeds });
+		await message.edit({
+			embeds: [new Embed(message.embeds[0].data)._description(message.embeds[0].description?.replace(regex, `$1${result.reason}`))]
+		});
 
 		if (message.embeds[0].description.includes('**Action**: Warn\n')) {
 			const id = this.getID(message);
@@ -31,7 +32,7 @@ export class ModalHandler extends InteractionHandler {
 		return interaction.reply({ content: `Successfully updated the reason!` });
 	}
 
-	public override parse(interaction: ModalSubmitInteraction) {
+	public override parse(interaction: ModalSubmitInteraction<'cached'>) {
 		const { customId } = interaction;
 
 		if (!customId.startsWith('@reason')) return this.none();
@@ -39,9 +40,9 @@ export class ModalHandler extends InteractionHandler {
 		const reason = interaction.fields.getTextInputValue('reason');
 
 		const [, channelId, messageId] = customId.split('/');
-		const channel = interaction.guild!.channels.cache.get(channelId);
+		const channel = interaction.guild.channels.cache.get(channelId);
 
-		if (!channel || !channel.isText()) return this.none();
+		if (!channel || !channel.isTextBased()) return this.none();
 
 		return this.some({ reason, channel, messageId });
 	}

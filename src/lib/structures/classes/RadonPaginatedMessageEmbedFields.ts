@@ -1,7 +1,7 @@
 import { Emojis } from '#constants';
 import { PaginatedMessage, PaginatedMessageEmbedFields, PaginatedMessageOptions } from '@sapphire/discord.js-utilities';
 import type { APISelectMenuComponent } from 'discord-api-types/v9';
-import { Constants, MessageComponentInteraction } from 'discord.js';
+import { ButtonStyle, ComponentType, MessageComponentInteraction } from 'discord.js';
 
 export class RadonPaginatedMessageEmbedFields extends PaginatedMessageEmbedFields {
 	public constructor(options: PaginatedMessageOptions = {}) {
@@ -9,7 +9,7 @@ export class RadonPaginatedMessageEmbedFields extends PaginatedMessageEmbedField
 		this.setActions([
 			{
 				customId: '@sapphire/paginated-messages.goToPage',
-				type: Constants.MessageComponentTypes.SELECT_MENU,
+				type: ComponentType.StringSelect,
 				run: ({ handler, interaction }) => {
 					if (!interaction.isSelectMenu()) return;
 					handler.index = parseInt(interaction.values[0], 10);
@@ -18,9 +18,9 @@ export class RadonPaginatedMessageEmbedFields extends PaginatedMessageEmbedField
 			},
 			{
 				customId: '@sapphire/paginated-messages.firstPage',
-				style: 'SECONDARY',
+				style: ButtonStyle.Secondary,
 				emoji: Emojis.Backward,
-				type: Constants.MessageComponentTypes.BUTTON,
+				type: ComponentType.Button,
 				run: ({ handler, interaction }) => {
 					handler.index = 0;
 					this.updateComponents(handler, interaction);
@@ -28,9 +28,9 @@ export class RadonPaginatedMessageEmbedFields extends PaginatedMessageEmbedField
 			},
 			{
 				customId: '@sapphire/paginated-messages.previousPage',
-				style: 'SECONDARY',
+				style: ButtonStyle.Secondary,
 				emoji: Emojis.Left,
-				type: Constants.MessageComponentTypes.BUTTON,
+				type: ComponentType.Button,
 				run: ({ handler, interaction }) => {
 					if (handler.index === 0) {
 						handler.index = handler.pages.length - 1;
@@ -42,16 +42,16 @@ export class RadonPaginatedMessageEmbedFields extends PaginatedMessageEmbedField
 			},
 			{
 				customId: '@sapphire/paginated-messages.stop',
-				style: 'SECONDARY',
+				style: ButtonStyle.Secondary,
 				emoji: Emojis.Stop,
-				type: Constants.MessageComponentTypes.BUTTON,
+				type: ComponentType.Button,
 				run: ({ collector }) => collector.stop()
 			},
 			{
 				customId: '@sapphire/paginated-messages.nextPage',
-				style: 'SECONDARY',
+				style: ButtonStyle.Secondary,
 				emoji: Emojis.Right,
-				type: Constants.MessageComponentTypes.BUTTON,
+				type: ComponentType.Button,
 				run: ({ handler, interaction }) => {
 					if (handler.index === handler.pages.length - 1) {
 						handler.index = 0;
@@ -63,9 +63,9 @@ export class RadonPaginatedMessageEmbedFields extends PaginatedMessageEmbedField
 			},
 			{
 				customId: '@sapphire/paginated-messages.goToLastPage',
-				style: 'SECONDARY',
+				style: ButtonStyle.Secondary,
 				emoji: Emojis.Forward,
-				type: Constants.MessageComponentTypes.BUTTON,
+				type: ComponentType.Button,
 				run: ({ handler, interaction }) => {
 					handler.index = handler.pages.length - 1;
 					this.updateComponents(handler, interaction);
@@ -81,7 +81,7 @@ export class RadonPaginatedMessageEmbedFields extends PaginatedMessageEmbedField
 			if (option.value === `${handler.index}`) option.default = true;
 			else option.default = false;
 		}
-		// @ts-expect-error
+		// @ts-expect-error lol
 		page.components = interaction.message.components;
 	}
 }

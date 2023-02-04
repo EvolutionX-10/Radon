@@ -8,16 +8,7 @@ import { BucketScope, ClientLoggerOptions, CooldownOptions, LogLevel } from '@sa
 import type { ScheduledTasksOptions } from '@sapphire/plugin-scheduled-tasks';
 import { ScheduledTaskRedisStrategy } from '@sapphire/plugin-scheduled-tasks/register-redis';
 import type { RedisOptions } from 'bullmq';
-import {
-	BitFieldResolvable,
-	ClientOptions,
-	Intents,
-	IntentsString,
-	MessageMentionOptions,
-	PartialTypes,
-	PresenceData,
-	SweeperOptions
-} from 'discord.js';
+import { ActivityType, ClientOptions, GatewayIntentBits, MessageMentionOptions, Partials, PresenceData, SweeperOptions } from 'discord.js';
 import { config as dotenv } from 'dotenv-cra';
 
 dotenv({
@@ -34,11 +25,12 @@ export function parseRedisOption(): Pick<RedisOptions, 'port' | 'password' | 'ho
 
 export const config: Config = {
 	intents: [
-		Intents.FLAGS.GUILDS,
-		Intents.FLAGS.GUILD_MESSAGES,
-		Intents.FLAGS.GUILD_BANS,
-		Intents.FLAGS.DIRECT_MESSAGES,
-		Intents.FLAGS.GUILD_MEMBERS
+		GatewayIntentBits.Guilds,
+		GatewayIntentBits.GuildMessages,
+		GatewayIntentBits.MessageContent,
+		GatewayIntentBits.GuildModeration,
+		GatewayIntentBits.DirectMessages,
+		GatewayIntentBits.GuildMembers
 	],
 	cooldown_options: {
 		delay: Time.Second * 10,
@@ -49,7 +41,7 @@ export const config: Config = {
 		parse: ['users'],
 		repliedUser: false
 	},
-	partials: ['GUILD_MEMBER', 'MESSAGE', 'USER', 'CHANNEL'],
+	partials: [Partials.GuildMember, Partials.Message, Partials.User, Partials.Channel],
 	logger: {
 		level: LogLevel.Info
 	},
@@ -103,7 +95,7 @@ export const config: Config = {
 		activities: [
 			{
 				name: 'for Rule Breakers',
-				type: 'WATCHING'
+				type: ActivityType.Watching
 			}
 		]
 	},
@@ -134,10 +126,10 @@ export const ClientConfig: ClientOptions = {
 };
 
 interface Config {
-	intents: BitFieldResolvable<IntentsString, number>;
+	intents: GatewayIntentBits[];
 	cooldown_options: CooldownOptions;
 	mentions: MessageMentionOptions;
-	partials: PartialTypes[];
+	partials: Partials[];
 	logger: ClientLoggerOptions;
 	sweepers: SweeperOptions;
 	botlist: BotList.Options;

@@ -1,5 +1,5 @@
 import type { GuildSettings } from '#lib/structures';
-import type { GuildContextMenuInteraction, GuildInteraction, GuildMessage } from '#lib/types';
+import type { GuildMessage } from '#lib/types';
 import { PermissionLevels } from '#lib/types';
 import {
 	ApplicationCommandRegistry,
@@ -12,7 +12,15 @@ import {
 	PreconditionContainerArray,
 	UserError
 } from '@sapphire/framework';
-import { AutocompleteInteraction, Permissions } from 'discord.js';
+import {
+	AutocompleteInteraction,
+	PermissionsBitField,
+	PermissionFlagsBits,
+	ChatInputCommandInteraction as ChatInputInteraction,
+	ContextMenuCommandInteraction as CTXMenuCommandInteraction,
+	UserContextMenuCommandInteraction as UserCTXMenuCommandInteraction,
+	MessageContextMenuCommandInteraction as MessageCTXCommandInteraction
+} from 'discord.js';
 export abstract class RadonCommand extends Command {
 	/**
 	 * Whether the command can be disabled.
@@ -32,10 +40,10 @@ export abstract class RadonCommand extends Command {
 	public readonly community?: boolean;
 
 	public constructor(context: Command.Context, options: RadonCommand.Options) {
-		const perms = new Permissions(options.requiredClientPermissions).add(
-			Permissions.FLAGS.SEND_MESSAGES,
-			Permissions.FLAGS.EMBED_LINKS,
-			Permissions.FLAGS.VIEW_CHANNEL
+		const perms = new PermissionsBitField(options.requiredClientPermissions).add(
+			PermissionFlagsBits.SendMessages,
+			PermissionFlagsBits.EmbedLinks,
+			PermissionFlagsBits.ViewChannel
 		);
 		super(context, {
 			generateDashLessAliases: true,
@@ -113,8 +121,10 @@ export namespace RadonCommand {
 		community?: boolean;
 	};
 	export type MessageContext = MessageCommandContext;
-	export type ChatInputCommandInteraction = GuildInteraction;
-	export type ContextMenuCommandInteraction = GuildContextMenuInteraction;
+	export type ChatInputCommandInteraction = ChatInputInteraction<'cached'>;
+	export type ContextMenuCommandInteraction = CTXMenuCommandInteraction<'cached'>;
+	export type UserContextMenuCommandInteraction = UserCTXMenuCommandInteraction<'cached'>;
+	export type MessageContextMenuCommandInteraction = MessageCTXCommandInteraction<'cached'>;
 	export type AutoComplete = AutocompleteInteraction;
 	export type Context = ChatInputCommandContext | ContextMenuCommandContext | Command.Context;
 	export type Args = SapphireArgs;

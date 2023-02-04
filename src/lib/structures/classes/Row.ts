@@ -1,12 +1,12 @@
-import { MessageActionRow, MessageActionRowComponentResolvable } from 'discord.js';
+import { ActionRowBuilder, AnyComponentBuilder, RestOrArray } from 'discord.js';
 
-export class Row extends MessageActionRow {
+export class Row<T extends AnyComponentBuilder> extends ActionRowBuilder<T> {
 	/**
 	 * Components
 	 * @param components The components to add to the row
 	 * @returns Row
 	 */
-	public _components(...components: MessageActionRowComponentResolvable[] | MessageActionRowComponentResolvable[][]) {
+	public _components(...components: RestOrArray<T>) {
 		return this.setComponents(...components);
 	}
 }

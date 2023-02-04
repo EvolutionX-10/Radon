@@ -9,7 +9,7 @@ import { PermissionFlagsBits } from 'discord-api-types/v9';
 @ApplyOptions<RadonCommand.Options>({
 	description: `Temporarily mute a member`,
 	permissionLevel: PermissionLevels.Moderator,
-	requiredClientPermissions: ['MODERATE_MEMBERS']
+	requiredClientPermissions: ['ModerateMembers']
 })
 export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {

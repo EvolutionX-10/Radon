@@ -58,7 +58,7 @@ export class UserCommand extends RadonCommand {
 		}
 	}
 
-	public override contextMenuRun(interaction: RadonCommand.ContextMenuCommandInteraction) {
+	public override contextMenuRun(interaction: RadonCommand.UserContextMenuCommandInteraction) {
 		return this.list(interaction);
 	}
 
@@ -274,6 +274,7 @@ export class UserCommand extends RadonCommand {
 	private async add(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const member = interaction.options.getMember('target');
 		const reason = interaction.options.getString('reason', true);
+		if (!interaction.channel) return;
 		if (!member) {
 			return interaction.reply({
 				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
@@ -344,14 +345,6 @@ export class UserCommand extends RadonCommand {
 				});
 		}
 		await interaction.reply({ content, ephemeral: true });
-		await interaction.channel.send({
-			embeds: [
-				{
-					description: `${member} has been warned`,
-					color: Color.Moderation
-				}
-			]
-		});
 
 		const data: WarnActionData = {
 			warnId,
@@ -372,14 +365,14 @@ export class UserCommand extends RadonCommand {
 		}
 
 		if (deleteMsg) {
-			if (!interaction.guild.me?.permissions.has('MANAGE_MESSAGES')) {
+			if (!interaction.guild.members.me?.permissions.has('ManageMessages')) {
 				return interaction.followUp({
 					content: "I don't have the `Manage Messages` permission, so I couldn't delete messages.",
 					ephemeral: true
 				});
 			}
 			const textChannels = interaction.guild.channels.cache.filter(
-				(c) => c.isText() && c.permissionsFor(interaction.guild.me!).has('MANAGE_MESSAGES')
+				(c) => c.isTextBased() && c.permissionsFor(interaction.guild.members.me!).has('ManageMessages')
 			) as Collection<string, GuildTextBasedChannel>;
 
 			for (const channel of textChannels.values()) {
@@ -393,6 +386,15 @@ export class UserCommand extends RadonCommand {
 				}
 			}
 		}
+
+		return interaction.channel.send({
+			embeds: [
+				{
+					description: `${member} has been warned`,
+					color: Color.Moderation
+				}
+			]
+		});
 	}
 
 	private async remove(interaction: RadonCommand.ChatInputCommandInteraction) {
@@ -421,7 +423,6 @@ export class UserCommand extends RadonCommand {
 		const totalwarns = warn.warnlist.find((warn) => warn?.id === member.id)?.warns.length ?? 0;
 
 		const content = `${member} had their warning removed\n*They now have ${totalwarns} warning(s)*`;
-		await interaction.reply({ content, ephemeral: false });
 
 		const data: BaseWarnActionData = {
 			warnId,
@@ -434,9 +435,11 @@ export class UserCommand extends RadonCommand {
 		if (await interaction.guild.settings?.modlogs.modLogs_exist()) {
 			this.container.client.emit(RadonEvents.ModAction, data);
 		}
+
+		return interaction.reply({ content, ephemeral: false });
 	}
 
-	private async list(interaction: RadonCommand.ChatInputCommandInteraction | RadonCommand.ContextMenuCommandInteraction) {
+	private async list(interaction: RadonCommand.ChatInputCommandInteraction | RadonCommand.UserContextMenuCommandInteraction) {
 		const member = interaction.options.getMember('target') ?? interaction.options.getMember('user');
 		if (!member) {
 			return interaction.reply({
@@ -476,7 +479,7 @@ export class UserCommand extends RadonCommand {
 			._description(`${member} has ${warns_size} warning(s)`)
 			._footer({ text: `Active warnings of ${member.displayName}` })
 			._timestamp()
-			._thumbnail(member.displayAvatarURL({ dynamic: true }));
+			._thumbnail(member.displayAvatarURL({ forceStatic: false }));
 
 		const paginatedMessage = new RadonPaginatedMessageEmbedFields() //
 			.setTemplate(template)
@@ -497,13 +500,13 @@ export class UserCommand extends RadonCommand {
 		for (const warn of warnData.warnlist) {
 			const target = await this.container.client.users.fetch(warn.id);
 			const embed = new Embed()
-				._color('RANDOM')
+				._color('Random')
 				._title(`Server Infractions`)
 				._author({ name: target.tag })
 				._description(this.genDescription(warn))
 				._footer({ text: `Requested by ${interaction.user.username}` })
 				._timestamp()
-				._thumbnail(target.displayAvatarURL({ dynamic: true }));
+				._thumbnail(target.displayAvatarURL({ forceStatic: false }));
 			paginatedEmbed.addPageEmbed(embed);
 		}
 
@@ -612,7 +615,7 @@ export class UserCommand extends RadonCommand {
 			._description('Actions that will be applied to users when they cross the threshold of a certain severity in warnings')
 			._footer({ text: interaction.guild.name })
 			._timestamp()
-			._thumbnail(interaction.guild.iconURL({ dynamic: true }));
+			._thumbnail(interaction.guild.iconURL({ forceStatic: false }));
 
 		const paginatedMessage = new RadonPaginatedMessageEmbedFields() //
 			.setTemplate(template)

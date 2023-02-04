@@ -1535,7 +1535,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"discord-api-types@npm:0.37.30, discord-api-types@npm:^0.37.20, discord-api-types@npm:^0.37.23, discord-api-types@npm:^0.37.25":
+"discord-api-types@npm:^0.37.20, discord-api-types@npm:^0.37.23, discord-api-types@npm:^0.37.25":
   version: 0.37.30
   resolution: "discord-api-types@npm:0.37.30"
   checksum: 0e257dd0df6a56d44e8f7b71cfae99b5b5d6c9841a08b477eb6bd69f6dd3bbdb3cefb2b82c899d726db2b2f11b90e2ea99ec94441cb074d07651a8e169be3244
@@ -3711,7 +3711,6 @@ __metadata:
     colorette: 2.0.19
     colornames: 1.1.1
     confusables: 1.1.1
-    discord-api-types: 0.37.30
     discord.js: 14.7.1
     dotenv-cra: 3.0.3
     eslint: 8.32.0

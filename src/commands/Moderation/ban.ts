@@ -11,7 +11,7 @@ import type { User } from 'discord.js';
 	cooldownDelay: sec(10),
 	cooldownLimit: 3,
 	permissionLevel: PermissionLevels.Moderator,
-	requiredClientPermissions: ['BAN_MEMBERS']
+	requiredClientPermissions: ['BanMembers']
 })
 export class UserCommand extends RadonCommand {
 	readonly #DaysChoices: APIApplicationCommandOptionChoice<Days>[] = [
@@ -97,7 +97,7 @@ export class UserCommand extends RadonCommand {
 				.catch(() => (content += `\n\n> ${Emojis.Cross} Couldn't DM user!`));
 		}
 
-		await interaction.guild.bans.create(user, { days, reason });
+		await interaction.guild.bans.create(user, { deleteMessageSeconds: 24 * 60 * 60 * days, reason });
 
 		const data: BaseModActionData = {
 			moderator: interaction.member,

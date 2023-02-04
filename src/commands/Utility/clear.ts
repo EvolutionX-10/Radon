@@ -9,7 +9,7 @@ import { PermissionFlagsBits } from 'discord-api-types/v9';
 	cooldownDelay: sec(15),
 	description: `Deletes messages from current channel`,
 	permissionLevel: PermissionLevels.Moderator,
-	requiredClientPermissions: ['MANAGE_MESSAGES']
+	requiredClientPermissions: ['ManageMessages']
 })
 export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
@@ -20,6 +20,8 @@ export class UserCommand extends RadonCommand {
 		const user = interaction.options.getUser('user', false);
 
 		const { channel } = interaction;
+		if (!channel) return;
+
 		let dels = 0;
 		const content = `No messages were deleted! Try filtering correctly\nNote that the messages are older than 2 weeks will NOT be deleted!`;
 

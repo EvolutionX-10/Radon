@@ -423,7 +423,7 @@ export class UserCommand extends RadonCommand {
 
 	private checkRole(role: Role) {
 		if (role.tags?.botId) return false;
-		return role.position <= role.guild.me!.roles.highest.position;
+		return role.position <= role.guild.members.me!.roles.highest.position;
 	}
 }
 

@@ -1,7 +1,7 @@
 import { RadonEvents } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener } from '@sapphire/framework';
-import type { GuildMember } from 'discord.js';
+import { GuildMember, AuditLogEvent } from 'discord.js';
 
 @ApplyOptions<Listener.Options>({
 	event: RadonEvents.GuildMemberUpdate
@@ -20,7 +20,7 @@ export class UserListener extends Listener {
 
 		const logs = await oldMember.guild
 			.fetchAuditLogs({
-				type: 'MEMBER_UPDATE',
+				type: AuditLogEvent.MemberUpdate,
 				limit: 1
 			})
 			.catch(() => null);

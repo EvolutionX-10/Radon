@@ -1,8 +1,8 @@
 // create a class Select that extends MessageSelectMenu
 
-import { MessageSelectMenu, MessageSelectOptionData } from 'discord.js';
+import { SelectMenuComponentOptionData, BaseSelectMenuBuilder, APISelectMenuComponent } from 'discord.js';
 
-export class Select extends MessageSelectMenu {
+export class Select<T extends APISelectMenuComponent> extends BaseSelectMenuBuilder<T> {
 	/**
 	 * Custom ID
 	 * @param id The id of the select
@@ -54,7 +54,7 @@ export class Select extends MessageSelectMenu {
 	 * @param options The options to add to the select
 	 * @returns Select
 	 */
-	public _options(...options: MessageSelectOptionData[]) {
-		return this.setOptions(options);
+	public _options(...options: SelectMenuComponentOptionData[]) {
+		return this;
 	}
 }

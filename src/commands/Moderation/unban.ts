@@ -10,7 +10,7 @@ import { PermissionFlagsBits } from 'discord-api-types/v9';
 	cooldownDelay: sec(10),
 	cooldownLimit: 3,
 	permissionLevel: PermissionLevels.Moderator,
-	requiredClientPermissions: ['BAN_MEMBERS']
+	requiredClientPermissions: ['BanMembers']
 })
 export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {

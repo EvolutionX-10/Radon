@@ -228,7 +228,7 @@ export class UserCommand extends RadonCommand {
 		if (channel.isThread()) return;
 		channel.permissionOverwrites
 			.edit(
-				channel.guild.me!,
+				channel.guild.members.me!,
 				{
 					CONNECT: true,
 					SPEAK: true
@@ -353,7 +353,7 @@ export class UserCommand extends RadonCommand {
 			await this.container.utils.wait(500);
 			channel.permissionOverwrites
 				.edit(
-					channel.guild.me!,
+					channel.guild.members.me!,
 					{
 						CONNECT: true,
 						SPEAK: true
@@ -446,7 +446,7 @@ export class UserCommand extends RadonCommand {
 
 	private checkRole(role: Role) {
 		if (role.tags?.botId) return false;
-		return role.position <= role.guild.me!.roles.highest.position;
+		return role.position <= role.guild.members.me!.roles.highest.position;
 	}
 }
 

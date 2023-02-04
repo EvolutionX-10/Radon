@@ -1,13 +1,13 @@
-import type { GuildContextMenuInteraction, GuildInteraction, GuildMessage } from '#lib/types';
+import type { GuildContextMenuInteraction, GuildMessage } from '#lib/types';
 import { Precondition, AsyncPreconditionResult } from '@sapphire/framework';
-import type { Guild } from 'discord.js';
+import type { ChatInputCommandInteraction, Guild } from 'discord.js';
 
 export class UserPrecondition extends Precondition {
 	public override async messageRun(message: GuildMessage) {
 		return this.isCommunity(message.guild);
 	}
 
-	public override async chatInputRun(interaction: GuildInteraction) {
+	public override async chatInputRun(interaction: ChatInputCommandInteraction<'cached'>) {
 		return this.isCommunity(interaction.guild);
 	}
 

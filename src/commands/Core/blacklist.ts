@@ -62,7 +62,7 @@ export class UserCommand extends RadonCommand {
 						url: guild?.iconURL() ?? ''
 					},
 					description,
-					timestamp: Date.now()
+					timestamp: new Date().toISOString()
 				}
 			],
 			username: 'Radon Blacklists',
@@ -90,7 +90,7 @@ export class UserCommand extends RadonCommand {
 				{
 					color: Color.System,
 					description,
-					timestamp: Date.now()
+					timestamp: new Date().toISOString()
 				}
 			],
 			username: 'Radon Unblacklists',

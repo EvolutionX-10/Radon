@@ -27,7 +27,7 @@ export class UserListener extends Listener {
 			._author({
 				name: data.moderator.user.tag,
 				iconURL: data.moderator.user.displayAvatarURL({
-					dynamic: true
+					forceStatic: false
 				})
 			})
 			._description(des)

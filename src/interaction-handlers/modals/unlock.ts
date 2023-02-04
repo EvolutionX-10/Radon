@@ -54,7 +54,7 @@ export class ModalHandler extends InteractionHandler {
 		};
 
 		await channel.permissionOverwrites
-			.edit(channel.guild.me!, roptions, {
+			.edit(channel.guild.members.me!, roptions, {
 				reason: `Creating self permissions to avoid lock out`
 			})
 			.catch(() => (content += `Something went wrong while creating self permissions! Please report this to my developers`));
@@ -67,7 +67,7 @@ export class ModalHandler extends InteractionHandler {
 		}
 
 		const embed = new Embed()
-			._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
+			._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ forceStatic: false }) ?? undefined })
 			._title('Channel Unlocked')
 			._color(Color.Utility)
 			._description(result.reason)
@@ -94,7 +94,7 @@ export class ModalHandler extends InteractionHandler {
 		if (result.reason?.length) {
 			embeds.push(
 				new Embed()
-					._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
+					._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ forceStatic: false }) ?? undefined })
 					._title('Channel Unlocked')
 					._color(Color.Utility)
 					._description(result.reason)
@@ -116,7 +116,7 @@ export class ModalHandler extends InteractionHandler {
 			if (!this.isLocked(channel, role)) continue;
 			await this.container.utils.wait(500);
 			await channel.permissionOverwrites
-				.edit(channel.guild.me!, roptions, {
+				.edit(channel.guild.members.me!, roptions, {
 					reason: `Creating self permissions to avoid lock out`
 				})
 				.catch(() => null);
@@ -152,7 +152,7 @@ export class ModalHandler extends InteractionHandler {
 
 		if (result.reason.length) {
 			const embed = new Embed()
-				._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
+				._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ forceStatic: false }) ?? undefined })
 				._title('Channel Unlocked')
 				._color(Color.Utility)
 				._description(result.reason)
@@ -190,7 +190,7 @@ export class ModalHandler extends InteractionHandler {
 		if (result.reason?.length) {
 			embeds.push(
 				new Embed()
-					._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
+					._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ forceStatic: false }) ?? undefined })
 					._title('Channel Unlocked')
 					._color(Color.Utility)
 					._description(result.reason)
@@ -203,7 +203,7 @@ export class ModalHandler extends InteractionHandler {
 			await this.container.utils.wait(1_000);
 
 			channel.permissionOverwrites
-				.edit(channel.guild.me!, roptions, {
+				.edit(channel.guild.members.me!, roptions, {
 					reason: `Creating self permissions to avoid lock out`
 				})
 				.catch(() => null);
@@ -235,7 +235,7 @@ export class ModalHandler extends InteractionHandler {
 		if (result.reason?.length) {
 			embeds.push(
 				new Embed()
-					._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
+					._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ forceStatic: false }) ?? undefined })
 					._title('Channel Unlocked')
 					._color(Color.Utility)
 					._description(result.reason)
@@ -299,7 +299,7 @@ export class ModalHandler extends InteractionHandler {
 		if (result.reason?.length) {
 			embeds.push(
 				new Embed()
-					._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
+					._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ forceStatic: false }) ?? undefined })
 					._title('Channel Unlocked')
 					._color(Color.Utility)
 					._description(result.reason)
@@ -341,7 +341,7 @@ export class ModalHandler extends InteractionHandler {
 			await this.container.utils.wait(1_000);
 
 			channel.permissionOverwrites
-				.edit(channel.guild.me!, roptions, {
+				.edit(channel.guild.members.me!, roptions, {
 					reason: 'Creating self permissions to avoid lock out'
 				})
 				.catch(() => null);

@@ -10,7 +10,7 @@ import { APIApplicationCommandOptionChoice, PermissionFlagsBits } from 'discord-
 	cooldownDelay: sec(15),
 	cooldownLimit: 2,
 	permissionLevel: PermissionLevels.Moderator,
-	requiredClientPermissions: ['BAN_MEMBERS']
+	requiredClientPermissions: ['BanMembers']
 })
 export class UserCommand extends RadonCommand {
 	readonly #DaysChoices: APIApplicationCommandOptionChoice<Days>[] = [
@@ -40,7 +40,7 @@ export class UserCommand extends RadonCommand {
 
 		let content = `${Emojis.Confirm} ${member} has been soft banned ${reason ? `for the following reason: ${reason}` : ''}`;
 
-		await member.ban({ days, reason });
+		await member.ban({ deleteMessageSeconds: 24 * 60 * 60 * days, reason });
 
 		await interaction.guild.members.unban(member.id, reason);
 

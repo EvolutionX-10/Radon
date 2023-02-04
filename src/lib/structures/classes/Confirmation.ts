@@ -1,6 +1,17 @@
 import { Emojis } from '#constants';
-import type { GuildInteraction } from '#lib/types';
-import { ButtonInteraction, Collection, ColorResolvable, EmojiIdentifierResolvable, Message, User } from 'discord.js';
+import {
+	APIButtonComponentWithCustomId,
+	ButtonBuilder,
+	ButtonInteraction,
+	ButtonStyle,
+	ChatInputCommandInteraction,
+	Collection,
+	ColorResolvable,
+	ComponentEmojiResolvable,
+	ComponentType,
+	Message,
+	User
+} from 'discord.js';
 import { Button } from './Button.js';
 import { Embed } from './Embed.js';
 import { Row } from './Row.js';
@@ -40,36 +51,38 @@ export class Confirmation {
 		return this;
 	}
 
-	public async run(message: Message | GuildInteraction, user?: User) {
+	public async run(message: Message | ChatInputCommandInteraction<'cached'>, user?: User) {
 		const id = user ? user.id : message instanceof Message ? message.author.id : message.user.id;
 		const default_embed = new Embed()
 			._author({
 				name: message instanceof Message ? message.author.tag : message.user.tag,
 				iconURL:
-					message instanceof Message ? message.author.displayAvatarURL({ dynamic: true }) : message.user.displayAvatarURL({ dynamic: true })
+					message instanceof Message
+						? message.author.displayAvatarURL({ forceStatic: false })
+						: message.user.displayAvatarURL({ forceStatic: false })
 			})
 			._color(this.options?.color || 0x00ae86)
 			._description(`Are you sure you want to proceed?`);
 		const embed = this.options?.embed || default_embed;
 		const emojis = this.options?.emojis || [Emojis.Confirm, Emojis.Cross];
 		const buttonLabels = this.options?.buttonLabels || ['Yes', 'No'];
-		const row = new Row();
-		const yes_button = new Button()._customId('yes')._label(buttonLabels[0])._emoji(emojis[0])._style('SUCCESS');
+		const row = new Row<ButtonBuilder>();
+		const yes_button = new Button()._customId('yes')._label(buttonLabels[0])._emoji(emojis[0])._style(ButtonStyle.Success);
 
-		const no_button = new Button()._customId('no')._label(buttonLabels[1])._emoji(emojis[1])._style('DANGER');
+		const no_button = new Button()._customId('no')._label(buttonLabels[1])._emoji(emojis[1])._style(ButtonStyle.Danger);
 		this.buttons = this.buttons.length ? this.buttons : [yes_button, no_button];
 
 		row._components(this.buttons);
 		let msg: Message<boolean>;
 		if (message instanceof Message) {
 			msg = await message.channel.send({
-				content: this.options.content || null,
+				content: this.options.content,
 				embeds: this.options?.content ? [] : [embed],
 				components: [row]
 			});
 		} else {
 			msg = (await message.reply({
-				content: this.options.content || null,
+				content: this.options.content,
 				embeds: this.options?.content ? [] : [embed],
 				components: [row],
 				fetchReply: true,
@@ -79,7 +92,7 @@ export class Confirmation {
 
 		const collector = msg.createMessageComponentCollector({
 			time: this.options.time || 60_000,
-			componentType: 'BUTTON'
+			componentType: ComponentType.Button
 		});
 
 		collector.on('collect', async (i) => {
@@ -92,9 +105,9 @@ export class Confirmation {
 				return;
 			}
 			await i.update({ components: [row] });
-			if (i.customId === this.buttons[0].customId) {
+			if (i.customId === (this.buttons[0].data as APIButtonComponentWithCustomId).custom_id) {
 				await this.options.onConfirm({ i, msg });
-			} else if (i.customId === this.buttons[1].customId) {
+			} else if (i.customId === (this.buttons[1].data as APIButtonComponentWithCustomId).custom_id) {
 				await this.options.onCancel({ i, msg });
 			}
 		});
@@ -168,6 +181,6 @@ interface endPayload {
 interface ButtonPrompt {
 	customId: string;
 	label?: string;
-	emoji?: EmojiIdentifierResolvable;
-	style: 'SUCCESS' | 'DANGER' | 'PRIMARY' | 'SECONDARY';
+	emoji?: ComponentEmojiResolvable;
+	style: Exclude<ButtonStyle, ButtonStyle.Link>;
 }

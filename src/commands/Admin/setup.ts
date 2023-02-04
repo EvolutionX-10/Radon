@@ -213,7 +213,7 @@ export class UserCommand extends RadonCommand {
 					._timestamp()
 					._author({
 						name: interaction.user.tag,
-						iconURL: interaction.user.displayAvatarURL({ dynamic: true })
+						iconURL: interaction.user.displayAvatarURL({ forceStatic: false })
 					})
 					._footer({
 						text: `${data ? 'Saved Successfully' : 'Created Successfully'}`

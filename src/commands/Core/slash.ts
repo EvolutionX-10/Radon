@@ -2,6 +2,7 @@ import { Confirmation, RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
 import { send } from '@sapphire/plugin-editable-commands';
+import { ApplicationCommandType } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	aliases: ['slashies'],
@@ -26,20 +27,20 @@ export class UserCommand extends RadonCommand {
 	private async default(message: RadonCommand.Message, args: RadonCommand.Args) {
 		if (!message.guild) return;
 
-		let filtered: Filter;
+		let filtered: ApplicationCommandType;
 		let cmds: string;
 
 		switch (true) {
 			case args.getFlags('user'):
-				filtered = 'USER';
+				filtered = ApplicationCommandType.User;
 				cmds = 'User Context Menu Commands';
 				break;
 			case args.getFlags('msg', 'message', 'm'):
-				filtered = 'MESSAGE';
+				filtered = ApplicationCommandType.Message;
 				cmds = 'Message Context Menu Commands';
 				break;
 			default:
-				filtered = 'CHAT_INPUT';
+				filtered = ApplicationCommandType.ChatInput;
 				cmds = 'Slashies';
 		}
 
@@ -50,7 +51,7 @@ export class UserCommand extends RadonCommand {
 
 		if (global) {
 			for (const cmd of global.values()) {
-				if (filtered === 'CHAT_INPUT') content += `</${cmd.name}:${cmd.id}> *(${cmd.id})*\n`;
+				if (filtered === ApplicationCommandType.ChatInput) content += `</${cmd.name}:${cmd.id}> *(${cmd.id})*\n`;
 				else content += `${cmd.name} *(${cmd.id})*\n`;
 			}
 		}
@@ -59,7 +60,7 @@ export class UserCommand extends RadonCommand {
 
 		if (guild) {
 			for (const cmd of guild.values()) {
-				if (filtered === 'CHAT_INPUT') content += `</${cmd.name}:${cmd.id}> *(${cmd.id})*\n`;
+				if (filtered === ApplicationCommandType.ChatInput) content += `</${cmd.name}:${cmd.id}> *(${cmd.id})*\n`;
 				else content += `${cmd.name} *(${cmd.id})*\n`;
 			}
 		}
@@ -90,5 +91,3 @@ export class UserCommand extends RadonCommand {
 		}).run(message);
 	}
 }
-
-type Filter = 'CHAT_INPUT' | 'MESSAGE' | 'USER';
