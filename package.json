@@ -74,7 +74,7 @@
 		"typescript": "4.9.5"
 	},
 	"dependencies": {
-		"@devtomio/plugin-botlist": "1.2.0",
+		"@devtomio/plugin-botlist": "1.3.0",
 		"@prisma/client": "4.8.1",
 		"@sapphire/decorators": "5.0.0",
 		"@sapphire/discord-utilities": "2.12.0",
