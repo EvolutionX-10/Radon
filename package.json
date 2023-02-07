@@ -97,6 +97,6 @@
 		"gradient-string": "2.0.2",
 		"undici": "5.16.0"
 	},
-	"packageManager": "yarn@3.3.1",
+	"packageManager": "yarn@3.4.1",
 	"prettier": "@sapphire/prettier-config"
 }
