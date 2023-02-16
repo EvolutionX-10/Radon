@@ -34,7 +34,7 @@ jobs:
     needs: [Building]
     steps:
       - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
-      - uses: akhileshns/heroku-deploy@79ef2ae4ff9b897010907016b268fd0f88561820 # tag=v3.12.12
+      - uses: akhileshns/heroku-deploy@5ef17ff17a3fb8e9ad822ae6a61648a3ef9e0c3d # v3.12.13
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: "radon-dev"
@@ -46,7 +46,7 @@ jobs:
     needs: [Building]
     steps:
       - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
-      - uses: akhileshns/heroku-deploy@79ef2ae4ff9b897010907016b268fd0f88561820 # tag=v3.12.12
+      - uses: akhileshns/heroku-deploy@5ef17ff17a3fb8e9ad822ae6a61648a3ef9e0c3d # v3.12.13
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY2}}
           heroku_app_name: "radon-dev2"
