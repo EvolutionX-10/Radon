@@ -5,14 +5,14 @@ import { sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { BucketScope } from '@sapphire/framework';
 import { ChannelType, PermissionFlagsBits } from 'discord-api-types/v9';
-import { CategoryChannel, GuildChannel, MessageActionRow, Modal, ModalActionRowComponent, Role, TextInputComponent, ThreadChannel } from 'discord.js';
+import { ActionRowBuilder, CategoryChannel, GuildChannel, ModalBuilder, Role, TextInputBuilder, TextInputStyle, ThreadChannel } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Lock!',
 	permissionLevel: PermissionLevels.Moderator,
 	cooldownDelay: sec(30),
 	cooldownScope: BucketScope.Guild,
-	requiredClientPermissions: ['MANAGE_ROLES'],
+	requiredClientPermissions: ['ManageRoles'],
 	cooldownLimit: 3
 })
 export class UserCommand extends RadonCommand {
@@ -185,7 +185,7 @@ export class UserCommand extends RadonCommand {
 	private lockText(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const channel = interaction.options.getChannel('channel', true);
 
-		if (!channel.permissionsFor(this.container.client.user!)!.has('MANAGE_ROLES'))
+		if (!channel.permissionsFor(this.container.client.user!)!.has('ManageRoles'))
 			return interaction.reply('I do not have permission to lock channels!');
 
 		const role = interaction.options.getRole('role') ?? interaction.guild.roles.everyone;
@@ -196,15 +196,15 @@ export class UserCommand extends RadonCommand {
 
 		if (this.isLocked(channel, role)) return interaction.reply(`<#${channel.id}> is already locked for ${role}!`);
 
-		const modal = new Modal();
-		const ReasonInput = new TextInputComponent()
+		const modal = new ModalBuilder();
+		const ReasonInput = new TextInputBuilder()
 			.setCustomId('reason')
 			.setLabel('Reason for lock')
 			.setPlaceholder(`This will be sent in #${channel.name} (OPTIONAL)`)
 			.setRequired(false)
-			.setStyle('PARAGRAPH');
+			.setStyle(TextInputStyle.Paragraph);
 
-		const row = new MessageActionRow<ModalActionRowComponent>().setComponents(ReasonInput);
+		const row = new ActionRowBuilder<TextInputBuilder>().setComponents(ReasonInput);
 
 		modal.setTitle('Lock').setComponents(row).setCustomId('@lock/text');
 
@@ -216,7 +216,7 @@ export class UserCommand extends RadonCommand {
 	private lockVoice(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const channel = interaction.options.getChannel('channel', true);
 
-		if (!channel.permissionsFor(this.container.client.user!)!.has('MANAGE_ROLES'))
+		if (!channel.permissionsFor(this.container.client.user!)!.has('ManageRoles'))
 			return interaction.reply('I do not have permission to lock channels!');
 
 		const role = interaction.options.getRole('role') ?? interaction.guild.roles.everyone!;
@@ -230,8 +230,8 @@ export class UserCommand extends RadonCommand {
 			.edit(
 				channel.guild.members.me!,
 				{
-					CONNECT: true,
-					SPEAK: true
+					Connect: true,
+					Speak: true
 				},
 				{
 					reason: 'Creating permissions to avoid self lock out'
@@ -242,8 +242,8 @@ export class UserCommand extends RadonCommand {
 			.edit(
 				role,
 				{
-					CONNECT: false,
-					SPEAK: false
+					Connect: false,
+					Speak: false
 				},
 				{
 					reason: `Requested by ${interaction.user.tag} (${interaction.user.id})`
@@ -257,7 +257,7 @@ export class UserCommand extends RadonCommand {
 	private lockCategory(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const category = interaction.options.getChannel('channel', true) as CategoryChannel;
 
-		if (!category.permissionsFor(this.container.client.user!)!.has('MANAGE_ROLES'))
+		if (!category.permissionsFor(this.container.client.user!)!.has('ManageRoles'))
 			return interaction.reply('I do not have permission to lock channels!');
 
 		const role = interaction.options.getRole('role') ?? interaction.guild.roles.everyone;
@@ -268,15 +268,15 @@ export class UserCommand extends RadonCommand {
 
 		const content = `Successfully locked __${category.name}__ for ${role}!\n\nIssues Found:`;
 
-		const modal = new Modal();
-		const ReasonInput = new TextInputComponent()
+		const modal = new ModalBuilder();
+		const ReasonInput = new TextInputBuilder()
 			.setCustomId('reason')
 			.setLabel('Reason for lock')
 			.setPlaceholder(`This will be sent in ${category.name} (OPTIONAL)`)
 			.setRequired(false)
-			.setStyle('PARAGRAPH');
+			.setStyle(TextInputStyle.Paragraph);
 
-		const row = new MessageActionRow<ModalActionRowComponent>().setComponents(ReasonInput);
+		const row = new ActionRowBuilder<TextInputBuilder>().setComponents(ReasonInput);
 
 		modal.setTitle('Lock').setComponents(row).setCustomId('@lock/category');
 
@@ -293,15 +293,15 @@ export class UserCommand extends RadonCommand {
 
 		if (this.isLocked(thread)) return interaction.reply(`<#${thread.id}> is already locked!`);
 
-		const modal = new Modal();
-		const ReasonInput = new TextInputComponent()
+		const modal = new ModalBuilder();
+		const ReasonInput = new TextInputBuilder()
 			.setCustomId('reason')
 			.setLabel('Reason for lock')
 			.setPlaceholder(`This will be sent in #${thread.name} (OPTIONAL)`)
 			.setRequired(false)
-			.setStyle('PARAGRAPH');
+			.setStyle(TextInputStyle.Paragraph);
 
-		const row = new MessageActionRow<ModalActionRowComponent>().setComponents(ReasonInput);
+		const row = new ActionRowBuilder<TextInputBuilder>().setComponents(ReasonInput);
 
 		modal.setTitle('Lock').setComponents(row).setCustomId('@lock/thread');
 
@@ -320,15 +320,15 @@ export class UserCommand extends RadonCommand {
 
 		const content = `Successfully locked all text channels for ${role}!\n\nIssues Found:`;
 
-		const modal = new Modal();
-		const ReasonInput = new TextInputComponent()
+		const modal = new ModalBuilder();
+		const ReasonInput = new TextInputBuilder()
 			.setCustomId('reason')
 			.setLabel('Reason for lock')
 			.setPlaceholder(`This will be sent in all text channels (OPTIONAL)`)
 			.setRequired(false)
-			.setStyle('PARAGRAPH');
+			.setStyle(TextInputStyle.Paragraph);
 
-		const row = new MessageActionRow<ModalActionRowComponent>().setComponents(ReasonInput);
+		const row = new ActionRowBuilder<TextInputBuilder>().setComponents(ReasonInput);
 
 		modal.setTitle('Lock').setComponents(row).setCustomId('@lock/all/text');
 
@@ -346,17 +346,17 @@ export class UserCommand extends RadonCommand {
 		}
 		await interaction.deferReply();
 		let content = `Successfully locked all voice channels for ${role}!\n\nIssues Found:`;
-		const channels = interaction.guild!.channels.cache.filter((c) => c.type === 'GUILD_VOICE');
+		const channels = interaction.guild!.channels.cache.filter((c) => c.isVoiceBased());
 
 		for (const channel of channels.values()) {
-			if (this.isLocked(channel, role) || channel.type !== 'GUILD_VOICE') continue;
+			if (this.isLocked(channel, role) || !channel.isVoiceBased()) continue;
 			await this.container.utils.wait(500);
 			channel.permissionOverwrites
 				.edit(
 					channel.guild.members.me!,
 					{
-						CONNECT: true,
-						SPEAK: true
+						Connect: true,
+						Speak: true
 					},
 					{
 						reason: 'Creating permissions to avoid self lock out'
@@ -368,8 +368,8 @@ export class UserCommand extends RadonCommand {
 				.edit(
 					role,
 					{
-						CONNECT: false,
-						SPEAK: false
+						Connect: false,
+						Speak: false
 					},
 					{
 						reason: `Requested by ${interaction.user.tag} (${interaction.user.id})`
@@ -393,15 +393,15 @@ export class UserCommand extends RadonCommand {
 
 		const content = `Successfully locked all threads for ${role}!\n\nIssues Found:`;
 
-		const modal = new Modal();
-		const ReasonInput = new TextInputComponent()
+		const modal = new ModalBuilder();
+		const ReasonInput = new TextInputBuilder()
 			.setCustomId('reason')
 			.setLabel('Reason for lock')
 			.setPlaceholder(`This will be sent in all threads (OPTIONAL)`)
 			.setRequired(false)
-			.setStyle('PARAGRAPH');
+			.setStyle(TextInputStyle.Paragraph);
 
-		const row = new MessageActionRow<ModalActionRowComponent>().setComponents(ReasonInput);
+		const row = new ActionRowBuilder<TextInputBuilder>().setComponents(ReasonInput);
 
 		modal.setTitle('Lock').setComponents(row).setCustomId('@lock/all/thread');
 
@@ -421,15 +421,15 @@ export class UserCommand extends RadonCommand {
 
 		const content = `Successfully locked server for ${role}!\n\nIssues Found:`;
 
-		const modal = new Modal();
-		const ReasonInput = new TextInputComponent()
+		const modal = new ModalBuilder();
+		const ReasonInput = new TextInputBuilder()
 			.setCustomId('reason')
 			.setLabel('Reason for lock')
 			.setPlaceholder(`This will be sent in all channels (OPTIONAL)`)
 			.setRequired(false)
-			.setStyle('PARAGRAPH');
+			.setStyle(TextInputStyle.Paragraph);
 
-		const row = new MessageActionRow<ModalActionRowComponent>().setComponents(ReasonInput);
+		const row = new ActionRowBuilder<TextInputBuilder>().setComponents(ReasonInput);
 
 		modal.setTitle('Lock').setComponents(row).setCustomId('@lock/server');
 
@@ -440,8 +440,8 @@ export class UserCommand extends RadonCommand {
 
 	private isLocked(channel: GuildChannel | ThreadChannel, role?: Role) {
 		if (channel.isThread() && !channel.locked) return false;
-		if (!channel.isVoice() && channel.permissionsFor(role!)?.has('SEND_MESSAGES')) return false;
-		return !(channel.isVoice() && channel.permissionsFor(role!)?.has('CONNECT'));
+		if (!channel.isVoiceBased() && channel.permissionsFor(role!)?.has('SendMessages')) return false;
+		return !(channel.isVoiceBased() && channel.permissionsFor(role!)?.has('Connect'));
 	}
 
 	private checkRole(role: Role) {
