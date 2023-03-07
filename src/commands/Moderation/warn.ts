@@ -615,7 +615,7 @@ export class UserCommand extends RadonCommand {
 			._description('Actions that will be applied to users when they cross the threshold of a certain severity in warnings')
 			._footer({ text: interaction.guild.name })
 			._timestamp()
-			._thumbnail(interaction.guild.iconURL({ forceStatic: false }));
+			._thumbnail(interaction.guild.iconURL());
 
 		const paginatedMessage = new RadonPaginatedMessageEmbedFields() //
 			.setTemplate(template)

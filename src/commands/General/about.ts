@@ -136,7 +136,7 @@ export class UserCommand extends RadonCommand {
 		const user = await interaction.options.getUser('user', true).fetch(true);
 		const member = interaction.options.getMember('user');
 		const pfp = member?.displayAvatarURL({ forceStatic: false, size: 4096 }) ?? user.displayAvatarURL({ forceStatic: false, size: 4096 });
-		const banner = user.bannerURL({ forceStatic: false, size: 4096 }) ?? '';
+		const banner = user.bannerURL({ forceStatic: false, size: 4096 }) ?? null;
 		const createdAt = new Timestamp(user.createdTimestamp);
 		const guildJoinDate = member?.joinedTimestamp ? new Timestamp(member.joinedTimestamp) : null;
 		const perm = member

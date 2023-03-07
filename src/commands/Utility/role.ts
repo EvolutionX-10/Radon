@@ -344,10 +344,9 @@ export class UserCommand extends RadonCommand {
 		if (!perms.length) return interaction.editReply(content);
 
 		const menus = this.gimmeMenu(perms);
-		const rows = Array(menus.length)
-			.fill(null)
-			.map((_, i) => new Row<StringSelectMenuBuilder>()._components(...menus[i]));
-
+		console.log('1');
+		const rows = new Array(menus.length).fill(null).map((_, i) => new Row<StringSelectMenuBuilder>()._components());
+		console.log('2');
 		const save = new Button()._customId('save')._label('Save Selection')._style(ButtonStyle.Success);
 
 		const row = new Row<ButtonBuilder>()._components(save);
@@ -472,10 +471,11 @@ export class UserCommand extends RadonCommand {
 			collector.resetTimer();
 
 			if (i.customId === 'save') {
-				message.components.map((r) => r.components.map((c) => c.setDisabled()));
+				const row = new Row<Button>(...message.components);
+				row.components.map((c) => c.setDisabled());
 				await i.update({
 					content: message.content.concat(`\n\n> Saved with ${perms.length ? 'selected' : 'no'} permissions!`),
-					components: message.components
+					components: [row]
 				});
 				collector.stop('Saved');
 			}
@@ -484,10 +484,11 @@ export class UserCommand extends RadonCommand {
 		collector.on('end', async (c, r) => {
 			if (r !== 'Saved') perms = [];
 			if ((c.size === 0 || !perms.length) && r !== 'Saved') {
-				message.components.map((r) => r.components.map((c) => c.setDisabled()));
+				const row = new Row<Button>(...message.components);
+				row.components.map((c) => c.setDisabled());
 				await message.edit({
 					content: message.content.concat('\n\n> Role was created with no permissions!'),
-					components: message.components
+					components: [row]
 				});
 				return;
 			}

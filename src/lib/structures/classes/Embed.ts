@@ -69,8 +69,8 @@ export class Embed extends EmbedBuilder {
 	 * @param url The url of the thumbnail
 	 * @returns Embed
 	 */
-	public _thumbnail(url?: string | null) {
-		return this.setThumbnail(url ?? '');
+	public _thumbnail(url: string | null) {
+		return this.setThumbnail(url);
 	}
 
 	/**
@@ -96,7 +96,7 @@ export class Embed extends EmbedBuilder {
 	 * @param url The url of the image
 	 * @returns Embed
 	 */
-	public _image(url: string) {
+	public _image(url: string | null) {
 		return this.setImage(url);
 	}
 }
