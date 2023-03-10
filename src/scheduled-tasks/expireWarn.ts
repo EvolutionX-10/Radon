@@ -2,12 +2,10 @@ import { ApplyOptions } from '@sapphire/decorators';
 import { ScheduledTask } from '@sapphire/plugin-scheduled-tasks';
 
 @ApplyOptions<ScheduledTask.Options>({
-	pattern: '* * * * *',
-	bullJobsOptions: { removeOnComplete: true }
+	pattern: '*/5 * * * *'
 })
 export class ExpireWarnTask extends ScheduledTask {
 	public override async run() {
-		console.log('hi');
 		const { guildWarns } = this.container.prisma;
 		const now = new Date();
 		const data = await guildWarns.findMany({

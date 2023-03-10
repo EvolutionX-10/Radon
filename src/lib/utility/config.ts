@@ -15,7 +15,7 @@ dotenv({
 	debug: process.env.DOTENV_DEBUG_ENABLED ? envParseBoolean('DOTENV_DEBUG_ENABLED') : undefined
 });
 
-export function parseRedisOption(): Pick<RedisOptions, 'port' | 'password' | 'host' | 'db'> {
+export function parseRedisOption(): Pick<RedisOptions, 'port' | 'password' | 'host'> {
 	return {
 		port: envParseInteger('REDIS_PORT'),
 		password: envParseString('REDIS_PASSWORD'),
