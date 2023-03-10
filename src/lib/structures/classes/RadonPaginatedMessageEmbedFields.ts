@@ -1,7 +1,6 @@
 import { Emojis } from '#constants';
 import { PaginatedMessage, PaginatedMessageEmbedFields, PaginatedMessageOptions } from '@sapphire/discord.js-utilities';
-import type { APISelectMenuComponent } from 'discord-api-types/v9';
-import { ButtonStyle, ComponentType, MessageComponentInteraction } from 'discord.js';
+import { APIStringSelectComponent, ButtonStyle, ComponentType, MessageComponentInteraction } from 'discord.js';
 
 export class RadonPaginatedMessageEmbedFields extends PaginatedMessageEmbedFields {
 	public constructor(options: PaginatedMessageOptions = {}) {
@@ -11,7 +10,7 @@ export class RadonPaginatedMessageEmbedFields extends PaginatedMessageEmbedField
 				customId: '@sapphire/paginated-messages.goToPage',
 				type: ComponentType.StringSelect,
 				run: ({ handler, interaction }) => {
-					if (!interaction.isSelectMenu()) return;
+					if (!interaction.isStringSelectMenu()) return;
 					handler.index = parseInt(interaction.values[0], 10);
 					this.updateComponents(handler, interaction);
 				}
@@ -76,7 +75,7 @@ export class RadonPaginatedMessageEmbedFields extends PaginatedMessageEmbedField
 
 	private updateComponents(handler: PaginatedMessage, interaction: MessageComponentInteraction) {
 		const page = handler.messages[handler.index]!;
-		const options = (interaction.message.components![1].components[0] as APISelectMenuComponent).options;
+		const { options } = interaction.message.components![1].components[0] as unknown as APIStringSelectComponent;
 		for (const option of options) {
 			if (option.value === `${handler.index}`) option.default = true;
 			else option.default = false;

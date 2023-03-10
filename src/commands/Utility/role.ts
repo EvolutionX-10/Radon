@@ -1,7 +1,7 @@
 import { Emojis } from '#constants';
 import { PermissionLevel } from '#lib/decorators';
-import { Button, Confirmation, RadonCommand, Row, Select } from '#lib/structures';
-import { PermissionLevels } from '#lib/types';
+import { Button, Confirmation, RadonCommand, Row } from '#lib/structures';
+import { GuildMessage, PermissionLevels } from '#lib/types';
 import { mins, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { DurationFormatter } from '@sapphire/duration';
@@ -19,7 +19,6 @@ import {
 	ButtonStyle,
 	ButtonBuilder,
 	StringSelectMenuBuilder,
-	APIStringSelectComponent,
 	SelectMenuComponentOptionData
 } from 'discord.js';
 
@@ -344,9 +343,10 @@ export class UserCommand extends RadonCommand {
 		if (!perms.length) return interaction.editReply(content);
 
 		const menus = this.gimmeMenu(perms);
-		console.log('1');
-		const rows = new Array(menus.length).fill(null).map((_, i) => new Row<StringSelectMenuBuilder>()._components());
-		console.log('2');
+		const rows = Array(menus.length)
+			.fill(null)
+			.map((_, i) => new Row<StringSelectMenuBuilder>()._components(menus[i]));
+
 		const save = new Button()._customId('save')._label('Save Selection')._style(ButtonStyle.Success);
 
 		const row = new Row<ButtonBuilder>()._components(save);
@@ -414,10 +414,10 @@ export class UserCommand extends RadonCommand {
 
 	private gimmeMenu(array: string[]) {
 		const newarray = this.container.utils.summableArray(array.length, 25);
-		const menus: Select<APIStringSelectComponent>[] = [];
+		const menus: StringSelectMenuBuilder[] = [];
 
 		for (const [index, amount] of newarray.entries()) {
-			const perms = array.slice(0, amount).sort();
+			const perms = array.sort().splice(0, amount);
 
 			const options: SelectMenuComponentOptionData[] = Array(amount)
 				.fill(null)
@@ -428,12 +428,12 @@ export class UserCommand extends RadonCommand {
 					};
 				});
 
-			const menu = new Select<APIStringSelectComponent>({})
-				._customId(`@role/perms/menu/${index}`)
-				._label('Select some permissions!')
-				._min(0)
-				._max(amount)
-				._options(...options);
+			const menu = new StringSelectMenuBuilder()
+				.setCustomId(`@role/perms/menu/${index}`)
+				.setPlaceholder('Select some permissions!')
+				.setMinValues(0)
+				.setMaxValues(amount)
+				.setOptions(...options);
 
 			menus.push(menu);
 		}
@@ -471,11 +471,11 @@ export class UserCommand extends RadonCommand {
 			collector.resetTimer();
 
 			if (i.customId === 'save') {
-				const row = new Row<Button>(...message.components);
-				row.components.map((c) => c.setDisabled());
+				message = (await message.fetch()) as GuildMessage;
+
 				await i.update({
 					content: message.content.concat(`\n\n> Saved with ${perms.length ? 'selected' : 'no'} permissions!`),
-					components: [row]
+					components: []
 				});
 				collector.stop('Saved');
 			}

@@ -8,7 +8,6 @@ export * from './RadonPaginatedMessageEmbedFields.js';
 export * from './Utils.js';
 export * from './Embed.js';
 export * from './Button.js';
-export * from './Select.js';
 export * from './Confirmation.js';
 export * from './Row.js';
 export * from './ModerationAction.js';
