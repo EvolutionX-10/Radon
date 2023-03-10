@@ -1,7 +1,7 @@
 import { Owners } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Precondition } from '@sapphire/framework';
-import type { CommandInteraction, ContextMenuInteraction, Message } from 'discord.js';
+import type { CommandInteraction, ContextMenuCommandInteraction, Message } from 'discord.js';
 
 @ApplyOptions<Precondition.Options>({
 	position: 1
@@ -15,7 +15,7 @@ export class UserPrecondition extends Precondition {
 		return this.inOwnerMode(interaction.user.id);
 	}
 
-	public override async contextMenuRun(interaction: ContextMenuInteraction) {
+	public override async contextMenuRun(interaction: ContextMenuCommandInteraction) {
 		return this.inOwnerMode(interaction.user.id);
 	}
 

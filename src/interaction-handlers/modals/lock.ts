@@ -3,7 +3,7 @@ import { Embed } from '#lib/structures';
 import { ApplyOptions } from '@sapphire/decorators';
 import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework';
 import { PermissionFlagsBits } from 'discord-api-types/v9';
-import { CategoryChannel, GuildChannel, ModalSubmitInteraction, Role, TextChannel, ThreadChannel } from 'discord.js';
+import { CategoryChannel, ChannelType, GuildChannel, ModalSubmitInteraction, Role, TextChannel, ThreadChannel } from 'discord.js';
 
 @ApplyOptions<InteractionHandler.Options>({
 	interactionHandlerType: InteractionHandlerTypes.ModalSubmit
@@ -40,26 +40,21 @@ export class ModalHandler extends InteractionHandler {
 
 	private async text(interaction: ModalSubmitInteraction, result: InteractionHandler.ParseResult<this>) {
 		let { channel, content, role } = interaction.user.data as TextData;
-		const options = {
-			SEND_MESSAGES: false,
-			ADD_REACTIONS: false,
-			CREATE_PUBLIC_THREADS: false,
-			CREATE_PRIVATE_THREADS: false
-		};
-
-		const roptions = {
-			SEND_MESSAGES: true,
-			ADD_REACTIONS: true,
-			CREATE_PUBLIC_THREADS: true,
-			CREATE_PRIVATE_THREADS: true
+		const options: Record<string, boolean> = {
+			SendMessages: true,
+			AddReactions: true,
+			CreatePublicThreads: true,
+			CreatePrivateThreads: true
 		};
 
 		await channel.permissionOverwrites
-			.edit(channel.guild.me!, roptions, {
+			.edit(channel.guild.members.me!, options, {
 				reason: `Creating self permissions to avoid lock out`
 			})
 			.catch(() => (content += `\n> Something went wrong while creating self permissions! Please report this to my developers`));
 
+		// * Set all permissions to false
+		Object.keys(options).forEach((key) => (options[key] = false));
 		if (!result.reason?.length) {
 			await channel.permissionOverwrites.edit(role, options, {
 				reason: `Requested by ${interaction.user.tag} (${interaction.user.id})`
@@ -68,7 +63,7 @@ export class ModalHandler extends InteractionHandler {
 		}
 
 		const embed = new Embed()
-			._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
+			._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ forceStatic: false }) ?? undefined })
 			._title('Channel Locked')
 			._color(Color.Utility)
 			._description(result.reason)
@@ -95,7 +90,7 @@ export class ModalHandler extends InteractionHandler {
 		if (result.reason?.length) {
 			embeds.push(
 				new Embed()
-					._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
+					._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ forceStatic: false }) ?? undefined })
 					._title('Channel Locked')
 					._color(Color.Utility)
 					._description(result.reason)
@@ -103,48 +98,37 @@ export class ModalHandler extends InteractionHandler {
 			);
 		}
 
-		for (const channel of category.children.values()) {
+		for (const channel of category.children.cache.values()) {
 			if (this.isLocked(channel, role)) continue;
 			await this.container.utils.wait(1_000);
 
-			const roptions = {
-				SEND_MESSAGES: true,
-				ADD_REACTIONS: true,
-				CONNECT: true,
-				SPEAK: true,
-				CREATE_PUBLIC_THREADS: threads ? true : undefined,
-				CREATE_PRIVATE_THREADS: threads ? true : undefined,
-				USE_PUBLIC_THREADS: threads ? true : undefined,
-				USE_PRIVATE_THREADS: threads ? true : undefined,
-				SEND_MESSAGES_IN_THREADS: threads ? true : undefined
+			const options: Record<string, boolean | undefined> = {
+				SendMessages: true,
+				AddReactions: true,
+				Connect: true,
+				Speak: true,
+				CreatePublicThreads: threads ? true : undefined,
+				CreatePrivateThreads: threads ? true : undefined,
+				UsePublicThreads: threads ? true : undefined,
+				UsePrivateThreads: threads ? true : undefined,
+				SendMessagesInThreads: threads ? true : undefined
 			};
 
 			channel.permissionOverwrites
-				.edit(channel.guild.me!, roptions, {
+				.edit(channel.guild.members.me!, options, {
 					reason: `Creating self permissions to avoid lock out`
 				})
 				.catch(() => null);
 			await this.container.utils.wait(100);
 
+			// * Set all permissions to false
+			Object.keys(options).forEach((key) => (options[key] = options[key] === true ? false : undefined));
+
 			channel.permissionOverwrites
-				.edit(
-					role,
-					{
-						SEND_MESSAGES: false,
-						ADD_REACTIONS: false,
-						CONNECT: false,
-						SPEAK: false,
-						CREATE_PUBLIC_THREADS: threads ? false : undefined,
-						CREATE_PRIVATE_THREADS: threads ? false : undefined,
-						USE_PUBLIC_THREADS: threads ? false : undefined,
-						USE_PRIVATE_THREADS: threads ? false : undefined,
-						SEND_MESSAGES_IN_THREADS: threads ? false : undefined
-					},
-					{
-						reason: `Requested by ${interaction.user.tag} (${interaction.user.id})`
-					}
-				)
-				.then((c) => (c.isText() && embeds.length ? c.send({ embeds }) : null))
+				.edit(role, options, {
+					reason: `Requested by ${interaction.user.tag} (${interaction.user.id})`
+				})
+				.then((c) => (c.isTextBased() && embeds.length ? c.send({ embeds }) : null))
 				.catch(() => (content += `\n> Missing permissions to lock <#${channel.id}>!`));
 		}
 
@@ -159,7 +143,7 @@ export class ModalHandler extends InteractionHandler {
 		// TODO: check if thread (all) locks out itself during missing permissions
 		if (result.reason?.length) {
 			const embed = new Embed()
-				._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
+				._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ forceStatic: false }) ?? undefined })
 				._title('Channel Locked')
 				._color(Color.Utility)
 				._description(result.reason)
@@ -179,17 +163,11 @@ export class ModalHandler extends InteractionHandler {
 
 	private async allText(interaction: ModalSubmitInteraction, result: InteractionHandler.ParseResult<this>) {
 		let { content, role } = interaction.user.data as TextAllData;
-		const options = {
-			SEND_MESSAGES: false,
-			ADD_REACTIONS: false,
-			CREATE_PUBLIC_THREADS: false,
-			CREATE_PRIVATE_THREADS: false
-		};
-		const roptions = {
-			SEND_MESSAGES: true,
-			ADD_REACTIONS: true,
-			CREATE_PUBLIC_THREADS: true,
-			CREATE_PRIVATE_THREADS: true
+		const options: Record<string, boolean> = {
+			SendMessages: true,
+			AddReactions: true,
+			CreatePublicThreads: true,
+			CreatePrivateThreads: true
 		};
 
 		const embeds: Embed[] = [];
@@ -197,29 +175,32 @@ export class ModalHandler extends InteractionHandler {
 		if (result.reason?.length) {
 			embeds.push(
 				new Embed()
-					._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
+					._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ forceStatic: false }) ?? undefined })
 					._title('Channel Locked')
 					._color(Color.Utility)
 					._description(result.reason)
 					._timestamp()
 			);
 		}
-		const channels = interaction.guild!.channels.cache.filter((c) => c.type === 'GUILD_TEXT');
+		const channels = interaction.guild!.channels.cache.filter((c) => c.type === ChannelType.GuildText);
 		for (const channel of channels.values()) {
-			if (this.isLocked(channel, role) || channel.type !== 'GUILD_TEXT') continue;
+			if (this.isLocked(channel, role) || channel.type !== ChannelType.GuildText) continue;
 			await this.container.utils.wait(1_000);
 
 			channel.permissionOverwrites
-				.edit(channel.guild.me!, roptions, {
+				.edit(channel.guild.members.me!, options, {
 					reason: `Creating self permissions to avoid lock out`
 				})
 				.catch(() => null);
 			await this.container.utils.wait(100);
+
+			// * Set all permissions to false
+			Object.keys(options).forEach((key) => (options[key] = false));
 			channel.permissionOverwrites
 				.edit(role, options, {
 					reason: `Requested by ${interaction.user.tag} (${interaction.user.id})`
 				})
-				.then((c) => (c.isText() && embeds.length ? c.send({ embeds }) : null))
+				.then((c) => (c.isTextBased() && embeds.length ? c.send({ embeds }) : null))
 				.catch(() => (content += `\n> Missing permissions to lock <#${channel.id}>!`));
 		}
 
@@ -231,27 +212,27 @@ export class ModalHandler extends InteractionHandler {
 	private async allThread(interaction: ModalSubmitInteraction, result: InteractionHandler.ParseResult<this>) {
 		let { content, role } = interaction.user.data as TextAllData;
 		const options = {
-			CREATE_PUBLIC_THREADS: false,
-			CREATE_PRIVATE_THREADS: false,
-			USE_PUBLIC_THREADS: false,
-			USE_PRIVATE_THREADS: false,
-			SEND_MESSAGES_IN_THREADS: false
+			CreatePublicThreads: false,
+			CreatePrivateThreads: false,
+			UsePublicThreads: false,
+			UsePrivateThreads: false,
+			SendMessagesInThreads: false
 		};
 		const embeds: Embed[] = [];
 
 		if (result.reason?.length) {
 			embeds.push(
 				new Embed()
-					._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
+					._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ forceStatic: false }) ?? undefined })
 					._title('Channel Locked')
 					._color(Color.Utility)
 					._description(result.reason)
 					._timestamp()
 			);
 		}
-		const channels = interaction.guild!.channels.cache.filter((c) => c.type === 'GUILD_TEXT');
+		const channels = interaction.guild!.channels.cache.filter((c) => c.type === ChannelType.GuildText);
 		for (const channel of channels.values()) {
-			if (channel.type !== 'GUILD_TEXT') continue;
+			if (channel.type !== ChannelType.GuildText) continue;
 			await this.container.utils.wait(1_000);
 
 			const overwritten = await channel.permissionOverwrites
@@ -263,7 +244,7 @@ export class ModalHandler extends InteractionHandler {
 					return null;
 				});
 
-			if (overwritten && overwritten.isText() && overwritten.type !== 'GUILD_VOICE' && embeds.length) {
+			if (overwritten && overwritten.isTextBased() && overwritten.type !== ChannelType.GuildVoice && embeds.length) {
 				const active = await overwritten.threads.fetchActive().catch(() => null);
 				if (!active) return;
 				for (const thread of active.threads.values()) {
@@ -279,34 +260,25 @@ export class ModalHandler extends InteractionHandler {
 
 	private async server(interaction: ModalSubmitInteraction, result: InteractionHandler.ParseResult<this>) {
 		let { content, role, deep } = interaction.user.data as ServerData;
-		const options = {
-			SEND_MESSAGES: false,
-			ADD_REACTIONS: false,
-			CREATE_PUBLIC_THREADS: false,
-			CREATE_PRIVATE_THREADS: false,
-			USE_PUBLIC_THREADS: false,
-			USE_PRIVATE_THREADS: false,
-			SEND_MESSAGES_IN_THREADS: false,
-			CONNECT: false,
-			SPEAK: false
+
+		const options: Record<string, boolean> = {
+			SendMessages: true,
+			AddReactions: true,
+			CreatePublicThreads: true,
+			CreatePrivateThreads: true,
+			UsePublicThreads: true,
+			UsePrivateThreads: true,
+			SendMessagesInThreads: true,
+			Connect: true,
+			Speak: true
 		};
-		const roptions = {
-			SEND_MESSAGES: true,
-			ADD_REACTIONS: true,
-			CREATE_PUBLIC_THREADS: true,
-			CREATE_PRIVATE_THREADS: true,
-			USE_PUBLIC_THREADS: true,
-			USE_PRIVATE_THREADS: true,
-			SEND_MESSAGES_IN_THREADS: true,
-			CONNECT: true,
-			SPEAK: true
-		};
+
 		const embeds: Embed[] = [];
 
 		if (result.reason?.length) {
 			embeds.push(
 				new Embed()
-					._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ dynamic: true }) ?? undefined })
+					._author({ name: interaction.user.tag, iconURL: interaction.user.avatarURL({ forceStatic: false }) ?? undefined })
 					._title('Channel Locked')
 					._color(Color.Utility)
 					._description(result.reason)
@@ -318,7 +290,7 @@ export class ModalHandler extends InteractionHandler {
 			const channels = interaction.guild!.channels.cache;
 			let i = 0;
 			for (const channel of channels.values()) {
-				if (this.isLocked(channel, role) || channel.type !== 'GUILD_TEXT') continue;
+				if (this.isLocked(channel, role) || channel.type !== ChannelType.GuildText) continue;
 				await this.container.utils.wait(1_000);
 				embeds.length ? channel.send({ embeds }).catch(() => i++) : null;
 			}
@@ -345,16 +317,18 @@ export class ModalHandler extends InteractionHandler {
 			await this.container.utils.wait(1_000);
 
 			channel.permissionOverwrites
-				.edit(channel.guild.me!, roptions, {
+				.edit(channel.guild.members.me!, options, {
 					reason: `Creating permissions to avoid self lock out`
 				})
 				.catch(() => null);
 			await this.container.utils.wait(100);
+
+			Object.keys(options).forEach((key) => (options[key] = false));
 			channel.permissionOverwrites
 				.edit(role, options, {
 					reason: `Requested by ${interaction.user.tag} (${interaction.user.id})`
 				})
-				.then((c) => (c.isText() && embeds.length ? c.send({ embeds }) : null))
+				.then((c) => (c.isTextBased() && embeds.length ? c.send({ embeds }) : null))
 				.catch(() => (content += `\n> Missing permissions to lock <#${channel.id}>!`));
 		}
 
@@ -365,8 +339,8 @@ export class ModalHandler extends InteractionHandler {
 
 	private isLocked(channel: GuildChannel | ThreadChannel, role?: Role) {
 		if (channel.isThread() && channel.locked) return true;
-		if (channel.isText() && channel.permissionsFor(role!).has('SEND_MESSAGES')) return false;
-		return !(channel.isVoice() && channel.permissionsFor(role!).has('CONNECT'));
+		if (channel.isTextBased() && channel.permissionsFor(role!).has('SendMessages')) return false;
+		return !(channel.isVoiceBased() && channel.permissionsFor(role!).has('Connect'));
 	}
 }
 

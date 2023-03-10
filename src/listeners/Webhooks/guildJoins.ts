@@ -30,7 +30,7 @@ export class UserListener extends Listener {
 		if (!webhook || !webhook.token) return;
 		const createDate = new Timestamp(guild.createdTimestamp);
 		const owner = await this.container.client.users.fetch(guild.ownerId);
-		const me = guild.me ?? (await guild.members.fetch(this.container.client.user!.id));
+		const me = guild.members.me ?? (await guild.members.fetch(this.container.client.user!.id));
 
 		let perms = format(me.permissions.toArray());
 		if (perms.includes('Administrator')) perms = ['Administrator'];
@@ -54,14 +54,14 @@ export class UserListener extends Listener {
 				{
 					title: `Stats`,
 					thumbnail: {
-						url: guild.iconURL({ format: 'png', dynamic: true }) || ''
+						url: guild.iconURL({ forceStatic: false }) || ''
 					},
 					description,
 					footer: {
 						text: `${this.container.client.guilds.cache.size} guilds now!`
 					},
 					color: Color.System,
-					timestamp: Date.now()
+					timestamp: new Date().toISOString()
 				}
 			]
 		});

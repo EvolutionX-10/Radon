@@ -1,7 +1,7 @@
-import { RadonCommand } from '#lib/structures';
+import { RadonCommand, Row } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
-import { MessageActionRow, Modal, TextChannel, TextInputComponent } from 'discord.js';
+import { ModalBuilder, TextChannel, TextInputBuilder, TextInputStyle } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: `Change the reason for the action`,
@@ -40,17 +40,17 @@ export class UserCommand extends RadonCommand {
 			});
 		}
 
-		const modal = new Modal().setCustomId(`@reason/${channelID}/${id}`).setTitle('Edit Reason');
+		const modal = new ModalBuilder().setCustomId(`@reason/${channelID}/${id}`).setTitle('Edit Reason');
 
-		const reasonInput = new TextInputComponent()
+		const reasonInput = new TextInputBuilder()
 			.setLabel('Reason')
 			.setCustomId('reason')
 			.setMaxLength(512)
 			.setPlaceholder('Enter the new reason')
-			.setStyle('PARAGRAPH')
+			.setStyle(TextInputStyle.Paragraph)
 			.setRequired();
 
-		const row = new MessageActionRow<TextInputComponent>().setComponents(reasonInput);
+		const row = new Row<TextInputBuilder>()._components(reasonInput);
 
 		modal.setComponents(row);
 

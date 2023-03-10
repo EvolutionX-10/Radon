@@ -11,7 +11,7 @@ import {
 	PreconditionOptions,
 	PreconditionResult
 } from '@sapphire/framework';
-import type { CommandInteraction, ContextMenuInteraction, Message } from 'discord.js';
+import type { CommandInteraction, ContextMenuCommandInteraction, Message } from 'discord.js';
 
 export abstract class PermissionsPrecondition extends Precondition {
 	private readonly guildOnly: boolean;
@@ -47,7 +47,7 @@ export abstract class PermissionsPrecondition extends Precondition {
 	}
 
 	public override async contextMenuRun(
-		interaction: ContextMenuInteraction,
+		interaction: ContextMenuCommandInteraction,
 		command: ContextMenuCommand,
 		context: PermissionsPrecondition.Context
 	): PermissionsPrecondition.AsyncResult {
@@ -58,7 +58,7 @@ export abstract class PermissionsPrecondition extends Precondition {
 	}
 
 	public abstract handle(
-		message: Message | CommandInteraction | ContextMenuInteraction,
+		message: Message | CommandInteraction | ContextMenuCommandInteraction,
 		command: RadonCommand | ChatInputCommand | ContextMenuCommand | Command,
 		context: PermissionsPrecondition.Context
 	): PermissionsPrecondition.Result;

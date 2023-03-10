@@ -1,7 +1,7 @@
 import { Emojis } from '#constants';
 import { PermissionLevel } from '#lib/decorators';
-import { Button, Confirmation, RadonCommand, Row, Select } from '#lib/structures';
-import { PermissionLevels } from '#lib/types';
+import { Button, Confirmation, RadonCommand, Row } from '#lib/structures';
+import { GuildMessage, PermissionLevels } from '#lib/types';
 import { mins, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { DurationFormatter } from '@sapphire/duration';
@@ -13,16 +13,19 @@ import {
 	Collection,
 	ColorResolvable,
 	GuildMember,
-	MessageSelectOptionData,
+	PermissionsBitField,
 	PermissionResolvable,
-	Permissions,
-	Role
+	Role,
+	ButtonStyle,
+	ButtonBuilder,
+	StringSelectMenuBuilder,
+	SelectMenuComponentOptionData
 } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Manage Roles',
 	permissionLevel: PermissionLevels.Moderator,
-	requiredClientPermissions: ['MANAGE_ROLES'],
+	requiredClientPermissions: ['ManageRoles'],
 	cooldownDelay: sec(30),
 	cooldownLimit: 2
 })
@@ -243,7 +246,7 @@ export class UserCommand extends RadonCommand {
 				ephemeral: true
 			});
 
-		if (role.position > interaction.guild.me!.roles.highest!.position)
+		if (role.position > interaction.guild.members.me!.roles.highest!.position)
 			return interaction.reply({
 				content: `${Emojis.Cross} I can't add ${role} because its position is higher than my highest role!`
 			});
@@ -279,7 +282,7 @@ export class UserCommand extends RadonCommand {
 				ephemeral: true
 			});
 
-		if (role.position > interaction.guild.me!.roles.highest.position)
+		if (role.position > interaction.guild.members.me!.roles.highest.position)
 			return interaction.reply({
 				content: `${Emojis.Cross} I can't remove ${role} because its position is higher than my highest role!`
 			});
@@ -315,7 +318,7 @@ export class UserCommand extends RadonCommand {
 
 		const regex = /^#(?:[0-9a-fA-F]{3}){1,2}$/gim;
 		if (color && !color.match(regex)) {
-			color = 'RANDOM';
+			color = 'Random';
 			content += `\n> Warning: Looks like you entered invalid color, a random color was taken!`;
 		}
 
@@ -333,8 +336,8 @@ export class UserCommand extends RadonCommand {
 
 		content = content.replace(name, role.toString());
 
-		let perms = (await interaction.guild.me?.fetch())?.permissions.toArray() ?? [];
-		if (perms.includes('ADMINISTRATOR')) perms = new Permissions(Permissions.ALL).toArray();
+		let perms = (await interaction.guild.members.me?.fetch())?.permissions.toArray() ?? [];
+		if (perms.includes('Administrator')) perms = new PermissionsBitField(PermissionsBitField.All).toArray();
 		perms = perms.filter((perm) => interaction.member.permissions.toArray().includes(perm));
 
 		if (!perms.length) return interaction.editReply(content);
@@ -342,11 +345,11 @@ export class UserCommand extends RadonCommand {
 		const menus = this.gimmeMenu(perms);
 		const rows = Array(menus.length)
 			.fill(null)
-			.map((_, i) => new Row()._components(menus[i]));
+			.map((_, i) => new Row<StringSelectMenuBuilder>()._components(menus[i]));
 
-		const save = new Button()._customId('save')._label('Save Selection')._style('SUCCESS');
+		const save = new Button()._customId('save')._label('Save Selection')._style(ButtonStyle.Success);
 
-		const row = new Row()._components(save);
+		const row = new Row<ButtonBuilder>()._components(save);
 
 		await interaction.editReply({
 			content,
@@ -363,7 +366,7 @@ export class UserCommand extends RadonCommand {
 		if (role.managed) {
 			return interaction.editReply("This role is managed by an integration, you can't delete it!");
 		}
-		if (role.position > interaction.guild.me!.roles?.highest?.position) {
+		if (role.position > interaction.guild.members.me!.roles?.highest?.position) {
 			return interaction.editReply(`${Emojis.Cross} I can't delete ${role} because its position is higher than my highest role!`);
 		}
 		await role.delete(reason);
@@ -379,7 +382,7 @@ export class UserCommand extends RadonCommand {
 		if (role.id === interaction.guildId) return interaction.reply(`You can't add @everyone role`);
 		if (role.tags) return interaction.reply(`I cannot add roles which are linked to bots/server`);
 
-		if (role.position > interaction.guild.me!.roles.highest!.position)
+		if (role.position > interaction.guild.members.me!.roles.highest!.position)
 			return interaction.reply({
 				content: `${Emojis.Cross} I can't add ${role} because its position is higher than my highest role!`
 			});
@@ -411,12 +414,12 @@ export class UserCommand extends RadonCommand {
 
 	private gimmeMenu(array: string[]) {
 		const newarray = this.container.utils.summableArray(array.length, 25);
-		const menus: Select[] = [];
+		const menus: StringSelectMenuBuilder[] = [];
 
 		for (const [index, amount] of newarray.entries()) {
-			const perms = array.slice(0, amount).sort();
+			const perms = array.sort().splice(0, amount);
 
-			const options: MessageSelectOptionData[] = Array(amount)
+			const options: SelectMenuComponentOptionData[] = Array(amount)
 				.fill(null)
 				.map((_, i) => {
 					return {
@@ -425,12 +428,12 @@ export class UserCommand extends RadonCommand {
 					};
 				});
 
-			const menu = new Select()
-				._customId(`@role/perms/menu/${index}`)
-				._label('Select some permissions!')
-				._min(0)
-				._max(amount)
-				._options(...options);
+			const menu = new StringSelectMenuBuilder()
+				.setCustomId(`@role/perms/menu/${index}`)
+				.setPlaceholder('Select some permissions!')
+				.setMinValues(0)
+				.setMaxValues(amount)
+				.setOptions(...options);
 
 			menus.push(menu);
 		}
@@ -446,13 +449,14 @@ export class UserCommand extends RadonCommand {
 
 		collector.on('collect', async (i) => {
 			if (i.user.id !== interaction.user.id) {
-				return i.reply({
+				await i.reply({
 					content: "This maze ain't for you!",
 					ephemeral: true
 				});
+				return;
 			}
 
-			if (i.isSelectMenu()) {
+			if (i.isStringSelectMenu()) {
 				await i.deferUpdate();
 				switch (i.customId as SelectMenuCustomIds) {
 					case '@role/perms/menu/0':
@@ -467,10 +471,11 @@ export class UserCommand extends RadonCommand {
 			collector.resetTimer();
 
 			if (i.customId === 'save') {
-				message.components.map((r) => r.components.map((c) => c.setDisabled()));
+				message = (await message.fetch()) as GuildMessage;
+
 				await i.update({
 					content: message.content.concat(`\n\n> Saved with ${perms.length ? 'selected' : 'no'} permissions!`),
-					components: message.components
+					components: []
 				});
 				collector.stop('Saved');
 			}
@@ -479,10 +484,11 @@ export class UserCommand extends RadonCommand {
 		collector.on('end', async (c, r) => {
 			if (r !== 'Saved') perms = [];
 			if ((c.size === 0 || !perms.length) && r !== 'Saved') {
-				message.components.map((r) => r.components.map((c) => c.setDisabled()));
+				const row = new Row<Button>(...message.components);
+				row.components.map((c) => c.setDisabled());
 				await message.edit({
 					content: message.content.concat('\n\n> Role was created with no permissions!'),
-					components: message.components
+					components: [row]
 				});
 				return;
 			}

@@ -8,7 +8,7 @@ import { PermissionFlagsBits } from 'discord-api-types/v9';
 @ApplyOptions<RadonCommand.Options>({
 	description: 'View and Manage slowmode of current channel',
 	permissionLevel: PermissionLevels.Moderator,
-	requiredClientPermissions: ['MANAGE_CHANNELS']
+	requiredClientPermissions: ['ManageChannels']
 })
 export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
@@ -17,8 +17,8 @@ export class UserCommand extends RadonCommand {
 			await interaction.deferReply({ ephemeral: true });
 			return interaction.editReply({
 				content: `Currently Slowmode is ${
-					interaction.channel.rateLimitPerUser
-						? `${new DurationFormatter().format(interaction.channel.rateLimitPerUser * 1000)}`
+					interaction.channel!.rateLimitPerUser
+						? `${new DurationFormatter().format(interaction.channel!.rateLimitPerUser * 1000)}`
 						: 'disabled'
 				}`
 			});
@@ -34,10 +34,11 @@ export class UserCommand extends RadonCommand {
 		const MAX_SLOWMODE_DURATION = new Duration('6hr').offset;
 		if (duration > MAX_SLOWMODE_DURATION) {
 			return interaction.reply({
-				content: `${Emojis.Cross} You cannot set slowmode for more than 6hrs!`
+				content: `${Emojis.Cross} You cannot set slowmode for more than 6 hours!`
 			});
 		}
 		let content = `${Emojis.Confirm} Set the slowmode for ${new DurationFormatter().format(duration)} in ${interaction.channel}`;
+
 		if (duration === 0) {
 			content = `${Emojis.Confirm} Removed slowmode from ${interaction.channel}`;
 		}
@@ -46,8 +47,8 @@ export class UserCommand extends RadonCommand {
 			(interaction.options.getString('reason', false) ? `${interaction.options.getString('reason', false)} (${interaction.user.tag})` : null) ??
 			`Done by ${interaction.user.tag}`;
 
-		await interaction.channel.setRateLimitPerUser(Math.floor(duration / 1000), reason);
-		await interaction.reply({ content });
+		await interaction.channel!.setRateLimitPerUser(Math.floor(duration / 1000), reason);
+		return interaction.reply({ content });
 	}
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {

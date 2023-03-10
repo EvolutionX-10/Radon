@@ -2,7 +2,7 @@ import { Owners } from '#constants';
 import type { GuildMember, User } from 'discord.js';
 
 export function isAdmin(member: GuildMember): boolean {
-	return member.permissions.has('ADMINISTRATOR') || member.permissions.has('MANAGE_GUILD');
+	return member.permissions.has('Administrator') || member.permissions.has('ManageGuild');
 }
 
 export function isModerator(member: GuildMember): boolean {

@@ -1,12 +1,12 @@
-import { ColorResolvable, EmbedAuthorData, EmbedFieldData, EmbedFooterData, MessageEmbed } from 'discord.js';
+import { ColorResolvable, EmbedAuthorData, EmbedFooterData, EmbedBuilder, APIEmbedField, RestOrArray } from 'discord.js';
 
-export class Embed extends MessageEmbed {
+export class Embed extends EmbedBuilder {
 	/**
 	 * Fields
 	 * @param fields The fields to add to the embed
 	 * @returns Embed
 	 */
-	public _fields(...fields: EmbedFieldData[] | EmbedFieldData[][]) {
+	public _fields(...fields: RestOrArray<APIEmbedField>) {
 		return this.addFields(...fields);
 	}
 
@@ -15,8 +15,8 @@ export class Embed extends MessageEmbed {
 	 * @param field The fields to add to the embed
 	 * @returns Embed
 	 */
-	public _field(field: EmbedFieldData) {
-		return this.addFields(field);
+	public _field(field: APIEmbedField) {
+		return this.addFields([field]);
 	}
 
 	/**
@@ -69,8 +69,8 @@ export class Embed extends MessageEmbed {
 	 * @param url The url of the thumbnail
 	 * @returns Embed
 	 */
-	public _thumbnail(url?: string | null) {
-		return this.setThumbnail(url ?? '');
+	public _thumbnail(url: string | null) {
+		return this.setThumbnail(url);
 	}
 
 	/**
@@ -96,7 +96,7 @@ export class Embed extends MessageEmbed {
 	 * @param url The url of the image
 	 * @returns Embed
 	 */
-	public _image(url: string) {
+	public _image(url: string | null) {
 		return this.setImage(url);
 	}
 }

@@ -1,10 +1,10 @@
 import type { PrismaClient } from '@prisma/client';
-import type { Guild } from 'discord.js';
 import { Blacklist } from './Blacklist.js';
 import { Modlogs } from './Modlogs.js';
 import { Nickname } from './Nickname.js';
 import { RolesConfig } from './RolesConf.js';
 import { Warn } from './Warn.js';
+import type { Guild } from 'discord.js';
 
 export class GuildSettings {
 	public blacklists: Blacklist;

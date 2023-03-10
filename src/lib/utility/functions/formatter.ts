@@ -1,5 +1,4 @@
-import type { PermissionString } from 'discord.js';
-
+import type { PermissionsString } from 'discord.js';
 /**
  * It takes an array of strings, splits each string by underscores, capitalizes the first letter of
  * each word, and joins them back together
@@ -9,7 +8,7 @@ import type { PermissionString } from 'discord.js';
  * @example
  * format(['SEND_MESSAGES']) -> ['Send Messages']
  */
-export function format(perm: string[], key?: boolean): string[];
+export function format(perm: PermissionsString[], key?: boolean): string[];
 /**
  * It takes a string of screaming snake case and returns pascal case
  * @param {string} perm The permission string
@@ -19,71 +18,73 @@ export function format(perm: string[], key?: boolean): string[];
  */
 export function format(perm: string): string;
 
-export function format(perm: string[] | string, key = true) {
+export function format(perm: PermissionsString[] | string, key = true) {
 	if (Array.isArray(perm)) {
 		return perm
-			.sort((a, b) => order[b as PermissionString] - order[a as PermissionString])
+			.sort((a, b) => order[b] - order[a])
 			.map((e) =>
 				e
-					.split(`_`)
-					.map((i) => (i.length > 1 ? i[0] + i.match(/\B(\w+)/)?.[1]?.toLowerCase() : i.toUpperCase()))
-					.join(` `)
+					.split(``)
+					.map((i) => (i.match(/[A-Z]/) ? ` ${i}` : i))
+					.join(``)
+					.trim()
 			)
 			.map((s) => {
-				s = s.replace('Tts', 'TTS');
-				s = s.replace('Vad', 'VAD');
+				s = s.replace(/T T S/g, 'TTS');
+				s = s.replace(/V A D/g, 'VAD');
 				return s;
 			})
 			.filter((f) => (key ? f.match(/mem|mana|min|men/gim) : true));
 	}
 	return perm
-		.split(`_`)
-		.map((i) => i[0] + i.match(/\B(\w+)/)?.[1]?.toLowerCase())
-		.join(` `);
+		.split(``)
+		.map((i) => (i.match(/[A-Z]/) ? ` ${i}` : i))
+		.join(``)
+		.trim()
+		.replace(/T T S/g, 'TTS')
+		.replace(/V A D/g, 'VAD');
 }
 
-const order: Record<PermissionString, number> = {
-	VIEW_CHANNEL: 0,
-	SEND_MESSAGES: 1,
-	EMBED_LINKS: 2,
-	READ_MESSAGE_HISTORY: 3,
-	CONNECT: 4,
-	SPEAK: 5,
-	START_EMBEDDED_ACTIVITIES: 5,
-	STREAM: 5,
-	ATTACH_FILES: 6,
-	ADD_REACTIONS: 7,
-	CREATE_INSTANT_INVITE: 8,
-	USE_EXTERNAL_EMOJIS: 9,
-	USE_EXTERNAL_STICKERS: 9,
-	PRIORITY_SPEAKER: 10,
-	SEND_MESSAGES_IN_THREADS: 10,
-	SEND_TTS_MESSAGES: 10,
-	USE_VAD: 11,
-	CHANGE_NICKNAME: 12,
-	USE_APPLICATION_COMMANDS: 13,
-	REQUEST_TO_SPEAK: 14,
-	USE_PUBLIC_THREADS: 15,
-	USE_PRIVATE_THREADS: 16,
-	CREATE_PUBLIC_THREADS: 17,
-	CREATE_PRIVATE_THREADS: 18,
-	VIEW_GUILD_INSIGHTS: 19,
-	DEAFEN_MEMBERS: 20,
-	MANAGE_THREADS: 20,
-	MOVE_MEMBERS: 20,
-	MUTE_MEMBERS: 20,
-	MANAGE_EMOJIS_AND_STICKERS: 21,
-	MANAGE_EVENTS: 21,
-	MANAGE_MESSAGES: 22,
-	MANAGE_WEBHOOKS: 23,
-	MANAGE_NICKNAMES: 24,
-	MANAGE_ROLES: 25,
-	MODERATE_MEMBERS: 26,
-	VIEW_AUDIT_LOG: 27,
-	KICK_MEMBERS: 28,
-	BAN_MEMBERS: 29,
-	MANAGE_CHANNELS: 30,
-	MANAGE_GUILD: 31,
-	MENTION_EVERYONE: 32,
-	ADMINISTRATOR: 40
+const order: Record<PermissionsString, number> = {
+	ViewChannel: 0,
+	SendMessages: 1,
+	EmbedLinks: 2,
+	ReadMessageHistory: 3,
+	Connect: 4,
+	Speak: 5,
+	UseEmbeddedActivities: 5,
+	Stream: 5,
+	AttachFiles: 6,
+	AddReactions: 7,
+	CreateInstantInvite: 8,
+	UseExternalEmojis: 9,
+	UseExternalStickers: 9,
+	PrioritySpeaker: 10,
+	SendMessagesInThreads: 10,
+	SendTTSMessages: 10,
+	UseVAD: 11,
+	ChangeNickname: 12,
+	UseApplicationCommands: 13,
+	RequestToSpeak: 14,
+	CreatePublicThreads: 15,
+	CreatePrivateThreads: 16,
+	ViewGuildInsights: 19,
+	DeafenMembers: 20,
+	ManageThreads: 20,
+	MoveMembers: 20,
+	MuteMembers: 20,
+	ManageEmojisAndStickers: 21,
+	ManageEvents: 21,
+	ManageMessages: 22,
+	ManageWebhooks: 23,
+	ManageNicknames: 24,
+	ManageRoles: 25,
+	ModerateMembers: 26,
+	ViewAuditLog: 27,
+	KickMembers: 28,
+	BanMembers: 29,
+	ManageChannels: 30,
+	ManageGuild: 31,
+	MentionEveryone: 32,
+	Administrator: 40
 };

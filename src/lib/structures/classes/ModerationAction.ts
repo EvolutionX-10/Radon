@@ -35,7 +35,7 @@ export class ModerationAction {
 		const { target, reason } = data;
 		if (target instanceof User) return;
 		await target.ban({
-			days: (extra || 0) as number,
+			deleteMessageSeconds: ((extra as number) || 0) * 24 * 60 * 60,
 			reason
 		});
 		if (soft) await this.guild.members.unban(target.id, reason);

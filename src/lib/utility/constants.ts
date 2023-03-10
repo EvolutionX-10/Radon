@@ -1,5 +1,5 @@
 import { Button, Row } from '#lib/structures';
-import type { UserFlagsString } from 'discord.js';
+import { ButtonBuilder, ButtonStyle, UserFlagsString } from 'discord.js';
 
 process.env.NODE_ENV ??= 'development';
 
@@ -58,45 +58,43 @@ export const RadonGuildId = ['944833697251721246'];
 
 export const TestServerGuildIds = ['953175228899553312', '991194621763919971'];
 
-export const UserFlags: Record<UserFlagsString, string> = {
-	VERIFIED_BOT: '<:vbot:1026794095735226418>',
-	BOT_HTTP_INTERACTIONS: '',
-	BUGHUNTER_LEVEL_1: '<:BadgeBugHunter:1024918366042996797>',
-	BUGHUNTER_LEVEL_2: '<:BadgeBugHunterLvl2:1024918372607082496>',
-	DISCORD_CERTIFIED_MODERATOR: '<:BadgeCertifiedMod:1024918378621706250>',
-	DISCORD_EMPLOYEE: '<:BadgeStaff:1024918411832213525>',
-	EARLY_SUPPORTER: '<:BadgeEarlySupporter:1024918384682475570>',
-	EARLY_VERIFIED_BOT_DEVELOPER: '<:BadgeEarlyVerifiedBotDeveloper:1024918390273482793>',
-	HOUSE_BALANCE: '<:BadgeBalance:1024918349144145931>',
-	HOUSE_BRAVERY: '<:BadgeBravery:1024918354726752267>',
-	HOUSE_BRILLIANCE: '<:BadgeBrilliance:1024918361026613299>',
-	HYPESQUAD_EVENTS: '<:BadgeHypeSquadEvents:1024918396040650764>',
-	PARTNERED_SERVER_OWNER: '<:BadgePartner:1024918407335919646>',
-	TEAM_USER: ''
+export const UserFlags: Partial<Record<UserFlagsString, string>> = {
+	VerifiedBot: '<:vbot:1026794095735226418>',
+	BugHunterLevel1: '<:BadgeBugHunter:1024918366042996797>',
+	BugHunterLevel2: '<:BadgeBugHunterLvl2:1024918372607082496>',
+	CertifiedModerator: '<:BadgeCertifiedMod:1024918378621706250>',
+	Staff: '<:BadgeStaff:1024918411832213525>',
+	PremiumEarlySupporter: '<:BadgeEarlySupporter:1024918384682475570>',
+	VerifiedDeveloper: '<:BadgeEarlyVerifiedBotDeveloper:1024918390273482793>',
+	HypeSquadOnlineHouse1: '<:BadgeBalance:1024918349144145931>',
+	HypeSquadOnlineHouse2: '<:BadgeBravery:1024918354726752267>',
+	HypeSquadOnlineHouse3: '<:BadgeBrilliance:1024918361026613299>',
+	Hypesquad: '<:BadgeHypeSquadEvents:1024918396040650764>',
+	Partner: '<:BadgePartner:1024918407335919646>'
 };
 
 const vote_topgg = new Button() //
 	._label('Vote on Top.gg')
-	._style('LINK')
+	._style(ButtonStyle.Link)
 	._emoji('<:topgg:918280202398875758>')
 	._url('https://top.gg/bot/944833303226236989/vote');
 const vote_void = new Button() //
 	._label('Vote on Void Bots')
-	._style('LINK')
+	._style(ButtonStyle.Link)
 	._emoji('<:voidbots:742925293907607624>')
 	._url('https://voidbots.net/bot/944833303226236989/vote');
 const vote_labs = new Button() //
 	._label('Vote on Discord Labs')
-	._style('LINK')
+	._style(ButtonStyle.Link)
 	._emoji('<:discordlabsicon:621472531735642130>')
 	._url('https://bots.discordlabs.org/bot/944833303226236989?vote');
 const vote_dbl = new Button() //
 	._label('Vote on Discord Bot List')
-	._style('LINK')
+	._style(ButtonStyle.Link)
 	._emoji('<:dbl:1037357030152863824>')
 	._url('https://discordbotlist.com/bots/radon-1595/upvote');
 
-export const voteRow = new Row()._components([vote_topgg, vote_void, vote_labs, vote_dbl]);
+export const voteRow = new Row<ButtonBuilder>()._components([vote_topgg, vote_void, vote_labs, vote_dbl]);
 
 export const RecommendedPermissions = 543276137727n;
 export const RecommendedPermissionsWithoutAdmin = 543276137719n;

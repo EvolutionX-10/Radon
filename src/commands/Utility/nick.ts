@@ -8,7 +8,7 @@ import { ApplicationCommandType, PermissionFlagsBits } from 'discord-api-types/v
 
 @ApplyOptions<RadonCommand.Options>({
 	description: `Manage nicknames`,
-	requiredClientPermissions: ['MANAGE_NICKNAMES'],
+	requiredClientPermissions: ['ManageNicknames'],
 	permissionLevel: PermissionLevels.Moderator
 })
 export class UserCommand extends RadonCommand {

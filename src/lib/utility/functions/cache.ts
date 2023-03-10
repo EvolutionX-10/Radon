@@ -1,5 +1,5 @@
 import type { RadonClient } from '#lib/RadonClient';
-import type { GuildChannel, TextBasedChannel } from 'discord.js';
+import { GuildChannel, TextBasedChannel, ChannelType } from 'discord.js';
 
 export function getCache(client: RadonClient) {
 	const guildCacheSize = client.guilds.cache.size;
@@ -7,20 +7,20 @@ export function getCache(client: RadonClient) {
 	const roleCacheSize = client.guilds.cache.reduce((c, g) => c + g.roles.cache.size, 0);
 	const emoteCacheSize = client.emojis.cache.size;
 	const messagesCacheSize = client.guilds.cache.reduce(
-		(c, g) => c + g.channels.cache.filter((w) => w.isText()).reduce((e, f) => e + (f as TextBasedChannel).messages?.cache.size, 0),
+		(c, g) => c + g.channels.cache.filter((w) => w.isTextBased()).reduce((e, f) => e + (f as TextBasedChannel).messages?.cache.size, 0),
 		0
 	);
-	const voiceChannelCacheSize = client.channels.cache.filter((c) => c.type === 'GUILD_VOICE').size;
-	const textChannelCacheSize = client.channels.cache.filter((c) => c.type === 'GUILD_TEXT').size;
-	const categoryChannelCacheSize = client.channels.cache.filter((c) => c.type === 'GUILD_CATEGORY').size;
-	const dmChannelCacheSize = client.channels.cache.filter((c) => c.type === 'DM').size;
-	const threadChannelCacheSize = client.channels.cache.filter((c) => c.type === 'GUILD_PUBLIC_THREAD').size;
+	const voiceChannelCacheSize = client.channels.cache.filter((c) => c.type === ChannelType.GuildVoice).size;
+	const textChannelCacheSize = client.channels.cache.filter((c) => c.type === ChannelType.GuildText).size;
+	const categoryChannelCacheSize = client.channels.cache.filter((c) => c.type === ChannelType.GuildCategory).size;
+	const dmChannelCacheSize = client.channels.cache.filter((c) => c.type === ChannelType.DM).size;
+	const threadChannelCacheSize = client.channels.cache.filter((c) => c.type === ChannelType.PublicThread).size;
 	const totalChannelCacheSize = client.channels.cache.size;
 	const memberCacheSize = client.guilds.cache.reduce((c, g) => c + g.members.cache.size, 0);
 	const bansCacheSize = client.guilds.cache.reduce((c, g) => c + g.bans.cache.size, 0);
 	const presenceCacheSize = client.guilds.cache.reduce((c, g) => c + g.members.cache.filter((m) => Boolean(m.presence?.status)).size, 0);
 	const reactionCacheSize = client.channels.cache
-		.filter((c) => c.isText())
+		.filter((c) => c.isTextBased())
 		.reduce((c, g) => c + (g as TextBasedChannel).messages.cache.reduce((c, m) => c + m.reactions.cache.size, 0), 0);
 	const voiceCacheSize = client.guilds.cache.reduce((c, g) => c + g.voiceStates.cache.size, 0);
 	const inviteCacheSize = client.guilds.cache.reduce((c, g) => c + g.invites.cache.size, 0);

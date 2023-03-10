@@ -10,7 +10,7 @@ import { PermissionFlagsBits } from 'discord-api-types/v9';
 	cooldownDelay: sec(10),
 	cooldownLimit: 3,
 	permissionLevel: PermissionLevels.Moderator,
-	requiredClientPermissions: ['KICK_MEMBERS']
+	requiredClientPermissions: ['KickMembers']
 })
 export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
@@ -39,13 +39,12 @@ export class UserCommand extends RadonCommand {
 		}
 
 		const kicked = await member.kick(reason).catch(() => null);
-		if (!kicked)
+		if (!kicked) {
 			return interaction.reply({
 				content: `Kick failed due to missing permissions, please contact support server if this persists!`,
 				ephemeral: true
 			});
-
-		await interaction.reply(content);
+		}
 
 		const data: BaseModActionData = {
 			moderator: interaction.member,
@@ -57,6 +56,8 @@ export class UserCommand extends RadonCommand {
 		if ((await interaction.guild.settings?.modlogs.modLogs_exist()) && kicked) {
 			this.container.client.emit(RadonEvents.ModAction, data);
 		}
+
+		return interaction.reply(content);
 	}
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {

@@ -1,8 +1,10 @@
 import { Owners } from '#constants';
+import { Embed } from '#lib/structures';
 import type { RadonButtonInteraction } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
 import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework';
 import { isNullish } from '@sapphire/utilities';
+import { ActivityType } from 'discord.js';
 @ApplyOptions<InteractionHandler.Options>({
 	interactionHandlerType: InteractionHandlerTypes.Button
 })
@@ -16,13 +18,13 @@ export class ButtonHandler extends InteractionHandler {
 			activities: [
 				{
 					name: result.ownerMode ? 'for Rule Breakers' : 'Evo',
-					type: result.ownerMode ? 'WATCHING' : 'LISTENING'
+					type: result.ownerMode ? ActivityType.Watching : ActivityType.Listening
 				}
 			]
 		});
 
 		return result.msg.edit({
-			embeds: [result.msg.embeds[0].setDescription(result.description)]
+			embeds: [new Embed(result.msg.embeds[0].data)._description(result.description)]
 		});
 	}
 

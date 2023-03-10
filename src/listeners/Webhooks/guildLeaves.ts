@@ -36,14 +36,14 @@ export class UserListener extends Listener {
 				{
 					title: `Stats`,
 					thumbnail: {
-						url: guild.iconURL({ format: 'png', dynamic: true }) || ''
+						url: guild.iconURL({ forceStatic: false }) || ''
 					},
 					description,
 					footer: {
 						text: `${this.container.client.guilds.cache.size} guilds now!`
 					},
 					color: Color.System,
-					timestamp: Date.now()
+					timestamp: new Date().toISOString()
 				}
 			],
 			allowedMentions: {

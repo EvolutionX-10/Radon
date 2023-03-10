@@ -2,6 +2,7 @@ import { Color, Emojis, RecommendedPermissions, UserFlags, voteRow } from '#cons
 import { Button, Embed, RadonCommand, Row, Timestamp } from '#lib/structures';
 import { isOwner } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
+import { ButtonBuilder, ButtonStyle, ChannelType, OAuth2Scopes } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'About things!'
@@ -67,13 +68,13 @@ export class UserCommand extends RadonCommand {
 
 	private me(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const invite = this.container.client.generateInvite({
-			scopes: ['applications.commands', 'bot'],
+			scopes: [OAuth2Scopes.ApplicationsCommands, OAuth2Scopes.Bot],
 			permissions: RecommendedPermissions
 		});
-		const inviteRow = new Row() //
+		const inviteRow = new Row<ButtonBuilder>() //
 			._components(
-				new Button()._label(`Add me to your server!`)._emoji('<:radon:959378366874664972>')._style('LINK')._url(invite),
-				new Button()._label(`Join Support Server!`)._style('LINK')._emoji('🆘')._url(`https://discord.gg/YBFaDggpvt`)
+				new Button()._label(`Add me to your server!`)._style(ButtonStyle.Link)._emoji('<:radon:959378366874664972>')._url(invite),
+				new Button()._label(`Join Support Server!`)._style(ButtonStyle.Link)._emoji('🆘')._url(`https://discord.gg/YBFaDggpvt`)
 			);
 
 		const embed = new Embed()
@@ -82,7 +83,7 @@ export class UserCommand extends RadonCommand {
 			._color(Color.General)
 			._description("Hey there! I'm Radon, a *moderation* bot dedicated to make your server a better place.")
 			._timestamp()
-			._footer({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
+			._footer({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ forceStatic: false }) })
 			._thumbnail(this.container.client.user!.displayAvatarURL());
 
 		return interaction.reply({
@@ -124,7 +125,7 @@ export class UserCommand extends RadonCommand {
 			._description(role.toString())
 			._timestamp()
 			._thumbnail(role.iconURL({ size: 4096 }) ?? `https://singlecolorimage.com/get/${hex === '000000' ? '2f3136' : hex}/400x400`)
-			._footer({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
+			._footer({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ forceStatic: false }) })
 			._fields({ name: 'Basic Info', value: basic }, { name: 'Advanced Info', value: adv });
 
 		return interaction.reply({ embeds: [embed] });
@@ -134,8 +135,8 @@ export class UserCommand extends RadonCommand {
 		await interaction.deferReply();
 		const user = await interaction.options.getUser('user', true).fetch(true);
 		const member = interaction.options.getMember('user');
-		const pfp = member?.displayAvatarURL({ dynamic: true, size: 4096 }) ?? user.displayAvatarURL({ dynamic: true, size: 4096 });
-		const banner = user.bannerURL({ dynamic: true, size: 4096 }) ?? '';
+		const pfp = member?.displayAvatarURL({ forceStatic: false, size: 4096 }) ?? user.displayAvatarURL({ forceStatic: false, size: 4096 });
+		const banner = user.bannerURL({ forceStatic: false, size: 4096 }) ?? null;
 		const createdAt = new Timestamp(user.createdTimestamp);
 		const guildJoinDate = member?.joinedTimestamp ? new Timestamp(member.joinedTimestamp) : null;
 		const perm = member
@@ -147,7 +148,7 @@ export class UserCommand extends RadonCommand {
 		const embed = new Embed() //
 			._title(user.tag)
 			._color(user.hexAccentColor ?? Color.General)
-			._footer({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
+			._footer({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ forceStatic: false }) })
 			._fields({
 				name: 'Created At',
 				value: `${createdAt.getLongDate()} [${createdAt.getRelativeTime()}]`,
@@ -185,7 +186,7 @@ export class UserCommand extends RadonCommand {
 		if (!guild.available) return;
 
 		const owner = await guild.fetchOwner();
-		const icon = guild.iconURL({ dynamic: true, size: 2048 }) ?? '';
+		const icon = guild.iconURL({ forceStatic: false, size: 2048 }) ?? '';
 		const banner = guild.bannerURL({ size: 4096 }) ?? '';
 		const create = new Timestamp(guild.createdTimestamp);
 		const members = await guild.members.fetch();
@@ -197,9 +198,9 @@ export class UserCommand extends RadonCommand {
 			`\` - \` ${Emojis.Owner} ${owner.user} [\`${owner.id}\`]`;
 
 		const allChannels = guild.channels.cache;
-		const category = allChannels.filter((c) => c.type === 'GUILD_CATEGORY').size;
-		const voice = allChannels.filter((c) => c.isVoice()).size;
-		const text = allChannels.filter((c) => c.isText() && !c.isThread() && !c.isVoice()).size;
+		const category = allChannels.filter((c) => c.type === ChannelType.GuildCategory).size;
+		const voice = allChannels.filter((c) => c.isVoiceBased()).size;
+		const text = allChannels.filter((c) => c.isTextBased() && !c.isThread() && !c.isVoiceBased()).size;
 		const threads = allChannels.filter((c) => c.isThread()).size;
 
 		let channels =
@@ -242,7 +243,7 @@ export class UserCommand extends RadonCommand {
 			._timestamp()
 			._image(banner)
 			._description(guild.description ?? '')
-			._footer({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ dynamic: true }) })
+			._footer({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ forceStatic: false }) })
 			._fields(
 				{
 					name: `Members [${guild.memberCount}]`,

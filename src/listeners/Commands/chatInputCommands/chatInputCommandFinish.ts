@@ -36,7 +36,7 @@ export class UserListener extends Listener {
 			._timestamp()
 			._footer({
 				text: 'Thank you <3',
-				iconURL: interaction.user.displayAvatarURL({ dynamic: true })
+				iconURL: interaction.user.displayAvatarURL({ forceStatic: false })
 			})
 			._thumbnail(this.container.client.user?.displayAvatarURL() ?? '');
 

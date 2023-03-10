@@ -3,7 +3,7 @@ import { PermissionLevels } from '#lib/types';
 import { mention, mins } from '#lib/utility';
 import { Emojis, RecommendedPermissions, RecommendedPermissionsWithoutAdmin } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
-import type { Guild } from 'discord.js';
+import { ChannelType, Guild } from 'discord.js';
 import { PermissionFlagsBits } from 'discord-api-types/v9';
 
 @ApplyOptions<RadonCommand.Options>({
@@ -72,7 +72,7 @@ export class UserCommand extends RadonCommand {
 
 		const notes: string[] = [];
 
-		const me = interaction.guild.me ?? (await interaction.guild.members.fetch(interaction.client.user.id));
+		const me = interaction.guild.members.me ?? (await interaction.guild.members.fetch(interaction.client.user.id));
 		notes.push(...this.container.utils.format(me.permissions.missing(RecommendedPermissions)).map((p) => this.note(p)));
 
 		if (!notes.length) return `> Server Permissions ${Emojis.Forward} Perfect!`;
@@ -117,8 +117,8 @@ export class UserCommand extends RadonCommand {
 	private async perChannelPermissions(interaction: RadonCommand.ChatInputCommandInteraction) {
 		await interaction.editReply(`Checking per channel overwrites...`);
 
-		const channels = interaction.guild.channels.cache.filter((c) => c.type !== 'GUILD_CATEGORY');
-		const me = interaction.guild.me ?? (await interaction.guild.members.fetch(interaction.client.user.id));
+		const channels = interaction.guild.channels.cache.filter((c) => c.type !== ChannelType.GuildCategory);
+		const me = interaction.guild.members.me ?? (await interaction.guild.members.fetch(interaction.client.user.id));
 		const notes: string[] = [];
 
 		for (const channel of channels.values()) {
@@ -177,7 +177,7 @@ export class UserCommand extends RadonCommand {
 		const notes: string[] = [];
 
 		const totalRoles = guild.roles.cache.size;
-		const me = guild.me ?? (await guild.members.fetch(client.user.id));
+		const me = guild.members.me ?? (await guild.members.fetch(client.user.id));
 		const topRole = me.roles.highest;
 
 		if (topRole.position / totalRoles <= 0.7) notes.push(this.note(`My highest role [${topRole}] is quite low in the hierarchy!`));
