@@ -311,7 +311,8 @@ export class UserCommand extends RadonCommand {
 		const hoist = interaction.options.getBoolean('hoisted') ?? false;
 		const mentionable = interaction.options.getBoolean('mentionable') ?? false;
 		let color: string | ColorResolvable | undefined = interaction.options.getString('color') ?? undefined;
-		const icon = (interaction.options.getAttachment('icon')?.attachment as BufferResolvable) ?? undefined;
+		// TODO: check if icon works
+		const icon = (interaction.options.getAttachment('icon')?.url as BufferResolvable) ?? undefined;
 		const reason = interaction.options.getString('reason') ?? undefined;
 
 		let content = `${name} role is created successfully!`;

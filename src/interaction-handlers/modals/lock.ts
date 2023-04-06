@@ -244,7 +244,7 @@ export class ModalHandler extends InteractionHandler {
 					return null;
 				});
 
-			if (overwritten && overwritten.isTextBased() && overwritten.type !== ChannelType.GuildVoice && embeds.length) {
+			if (overwritten && overwritten.isTextBased() && !overwritten.isVoiceBased() && embeds.length) {
 				const active = await overwritten.threads.fetchActive().catch(() => null);
 				if (!active) return;
 				for (const thread of active.threads.values()) {
