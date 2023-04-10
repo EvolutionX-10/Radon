@@ -505,12 +505,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/decorators@npm:6.0.0":
-  version: 6.0.0
-  resolution: "@sapphire/decorators@npm:6.0.0"
+"@sapphire/decorators@npm:6.0.1":
+  version: 6.0.1
+  resolution: "@sapphire/decorators@npm:6.0.1"
   dependencies:
-    tslib: ^2.4.1
-  checksum: 390ada53c66965596c70c90e3e7cb630e4d66dc8dbf8becd2a2517ca87bdb62907542f9943edee942e619ea9447591205b3ac45da0b98fe24ea3edcce1842e09
+    tslib: ^2.5.0
+  checksum: 348891a24f572eba80e805c30fb517987bf8cdf13318e2f1b0584f61e6fe10027593c0123fe5eff37a815d3a9fefab26c926b73c29a6b672faf9f074ef6b4044
   languageName: node
   linkType: hard
 
@@ -3789,7 +3789,7 @@ __metadata:
     "@devtomio/plugin-botlist": 1.3.0
     "@favware/cliff-jumper": 2.0.0
     "@prisma/client": 4.12.0
-    "@sapphire/decorators": 6.0.0
+    "@sapphire/decorators": 6.0.1
     "@sapphire/discord-utilities": 3.0.1
     "@sapphire/discord.js-utilities": 6.0.4
     "@sapphire/duration": 1.1.0
