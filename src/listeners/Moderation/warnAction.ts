@@ -1,5 +1,5 @@
 import { ModerationAction, Timestamp } from '#lib/structures';
-import { RadonEvents, warnAction } from '#lib/types';
+import { RadonEvents, type warnAction } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener } from '@sapphire/framework';
 import type { GuildMember } from 'discord.js';

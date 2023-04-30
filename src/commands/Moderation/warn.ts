@@ -2,13 +2,13 @@ import { Color, Emojis, WarnSeverity } from '#constants';
 import { PermissionLevel } from '#lib/decorators';
 import { Embed, JustButtons, RadonCommand, RadonPaginatedMessageEmbedFields, Timestamp } from '#lib/structures';
 import type { warnAction } from '#lib/types';
-import { BaseWarnActionData, PermissionLevels, RadonEvents, WarnActionData } from '#lib/types';
+import { type BaseWarnActionData, PermissionLevels, RadonEvents, type WarnActionData } from '#lib/types';
 import { mins, runAllChecks, sec, uid } from '#lib/utility';
 import type { MemberWarnData } from '@prisma/client';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Duration, DurationFormatter } from '@sapphire/duration';
 import { cutText } from '@sapphire/utilities';
-import { APIApplicationCommandOptionChoice, ApplicationCommandType } from 'discord-api-types/v9';
+import { type APIApplicationCommandOptionChoice, ApplicationCommandType } from 'discord-api-types/v9';
 import type { Collection, GuildMember, GuildTextBasedChannel } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({

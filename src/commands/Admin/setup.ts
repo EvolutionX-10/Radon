@@ -4,7 +4,16 @@ import { PermissionLevels } from '#lib/types';
 import { mins, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { PermissionFlagsBits } from 'discord-api-types/v9';
-import { ButtonInteraction, ButtonStyle, ChannelType, ComponentType, Message, OverwriteResolvable, OverwriteType, TextChannel } from 'discord.js';
+import {
+	ButtonInteraction,
+	ButtonStyle,
+	ChannelType,
+	ComponentType,
+	Message,
+	type OverwriteResolvable,
+	OverwriteType,
+	TextChannel
+} from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	cooldownDelay: sec(60),

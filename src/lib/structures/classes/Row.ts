@@ -1,4 +1,4 @@
-import { ActionRowBuilder, AnyComponentBuilder, RestOrArray } from 'discord.js';
+import { ActionRowBuilder, type AnyComponentBuilder, type RestOrArray } from 'discord.js';
 
 export class Row<T extends AnyComponentBuilder> extends ActionRowBuilder<T> {
 	/**

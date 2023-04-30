@@ -1,7 +1,7 @@
 import { Emojis } from '#constants';
 import { PermissionLevel } from '#lib/decorators';
 import { Button, Confirmation, RadonCommand, Row } from '#lib/structures';
-import { GuildMessage, PermissionLevels } from '#lib/types';
+import { type GuildMessage, PermissionLevels } from '#lib/types';
 import { mins, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { DurationFormatter } from '@sapphire/duration';
@@ -9,17 +9,17 @@ import { Stopwatch } from '@sapphire/stopwatch';
 import { all } from 'colornames';
 import { PermissionFlagsBits } from 'discord-api-types/v9';
 import {
-	BufferResolvable,
+	type BufferResolvable,
 	Collection,
-	ColorResolvable,
+	type ColorResolvable,
 	GuildMember,
 	PermissionsBitField,
-	PermissionResolvable,
+	type PermissionResolvable,
 	Role,
 	ButtonStyle,
 	ButtonBuilder,
 	StringSelectMenuBuilder,
-	SelectMenuComponentOptionData
+	type SelectMenuComponentOptionData
 } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({

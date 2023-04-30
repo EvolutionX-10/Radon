@@ -1,5 +1,5 @@
 import type { RadonClient } from '#lib/RadonClient';
-import { GuildChannel, TextBasedChannel, ChannelType } from 'discord.js';
+import { GuildChannel, type TextBasedChannel, ChannelType } from 'discord.js';
 
 export function getCache(client: RadonClient) {
 	const guildCacheSize = client.guilds.cache.size;

@@ -1,4 +1,4 @@
-import { ColorResolvable, EmbedAuthorData, EmbedFooterData, EmbedBuilder, APIEmbedField, RestOrArray } from 'discord.js';
+import { type ColorResolvable, type EmbedAuthorData, type EmbedFooterData, EmbedBuilder, type APIEmbedField, type RestOrArray } from 'discord.js';
 
 export class Embed extends EmbedBuilder {
 	/**

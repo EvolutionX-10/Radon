@@ -1,6 +1,6 @@
 import { Emojis } from '#constants';
-import { PaginatedMessage, PaginatedMessageOptions } from '@sapphire/discord.js-utilities';
-import { APIStringSelectComponent, ButtonStyle, ComponentType, MessageComponentInteraction } from 'discord.js';
+import { PaginatedMessage, type PaginatedMessageOptions } from '@sapphire/discord.js-utilities';
+import { type APIStringSelectComponent, ButtonStyle, ComponentType, MessageComponentInteraction } from 'discord.js';
 /**
  * Extends Paginated message with custom order
  */

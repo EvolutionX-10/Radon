@@ -1,13 +1,13 @@
 import { Emojis } from '#constants';
 import {
-	APIButtonComponentWithCustomId,
+	type APIButtonComponentWithCustomId,
 	ButtonBuilder,
 	ButtonInteraction,
 	ButtonStyle,
 	ChatInputCommandInteraction,
 	Collection,
-	ColorResolvable,
-	ComponentEmojiResolvable,
+	type ColorResolvable,
+	type ComponentEmojiResolvable,
 	ComponentType,
 	Message,
 	User

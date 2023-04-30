@@ -1,6 +1,6 @@
 import { Severity } from '#constants';
 import { Embed } from '#lib/structures';
-import { BaseModActionData, ModActionData, RadonEvents, WarnActionData } from '#lib/types';
+import { type BaseModActionData, type ModActionData, RadonEvents, type WarnActionData } from '#lib/types';
 import { generateModLogDescription } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener } from '@sapphire/framework';

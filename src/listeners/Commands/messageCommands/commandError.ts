@@ -1,6 +1,6 @@
 import { RadonEvents } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
-import { Listener, MessageCommandErrorPayload, UserError } from '@sapphire/framework';
+import { Listener, type MessageCommandErrorPayload, UserError } from '@sapphire/framework';
 import { send } from '@sapphire/plugin-editable-commands';
 
 @ApplyOptions<Listener.Options>({

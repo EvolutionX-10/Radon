@@ -4,11 +4,11 @@ import { PermissionLevels } from '#lib/types';
 import {
 	ApplicationCommandRegistry,
 	Args as SapphireArgs,
-	ChatInputCommandContext,
+	type ChatInputCommandContext,
 	Command,
 	CommandOptionsRunTypeEnum,
-	ContextMenuCommandContext,
-	MessageCommandContext,
+	type ContextMenuCommandContext,
+	type MessageCommandContext,
 	PreconditionContainerArray,
 	UserError
 } from '@sapphire/framework';

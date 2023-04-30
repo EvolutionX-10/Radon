@@ -1,5 +1,5 @@
 import type { GuildContextMenuInteraction, GuildMessage } from '#lib/types';
-import { Precondition, AsyncPreconditionResult } from '@sapphire/framework';
+import { Precondition, type AsyncPreconditionResult } from '@sapphire/framework';
 import type { ChatInputCommandInteraction, Guild } from 'discord.js';
 
 export class UserPrecondition extends Precondition {

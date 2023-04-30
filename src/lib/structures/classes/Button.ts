@@ -1,4 +1,4 @@
-import { ButtonBuilder, ButtonStyle, ComponentEmojiResolvable } from 'discord.js';
+import { ButtonBuilder, ButtonStyle, type ComponentEmojiResolvable } from 'discord.js';
 
 export class Button extends ButtonBuilder {
 	/**

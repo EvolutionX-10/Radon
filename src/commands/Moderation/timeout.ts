@@ -1,6 +1,6 @@
 import { Emojis } from '#constants';
 import { RadonCommand, Timestamp } from '#lib/structures';
-import { PermissionLevels, RadonEvents, TimeoutActionData } from '#lib/types';
+import { PermissionLevels, RadonEvents, type TimeoutActionData } from '#lib/types';
 import { runAllChecks } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Duration, DurationFormatter } from '@sapphire/duration';

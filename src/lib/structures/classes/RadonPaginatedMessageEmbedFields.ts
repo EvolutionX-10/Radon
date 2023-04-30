@@ -1,6 +1,6 @@
 import { Emojis } from '#constants';
-import { PaginatedMessage, PaginatedMessageEmbedFields, PaginatedMessageOptions } from '@sapphire/discord.js-utilities';
-import { APIStringSelectComponent, ButtonStyle, ComponentType, MessageComponentInteraction } from 'discord.js';
+import { PaginatedMessage, PaginatedMessageEmbedFields, type PaginatedMessageOptions } from '@sapphire/discord.js-utilities';
+import { type APIStringSelectComponent, ButtonStyle, ComponentType, MessageComponentInteraction } from 'discord.js';
 
 export class RadonPaginatedMessageEmbedFields extends PaginatedMessageEmbedFields {
 	public constructor(options: PaginatedMessageOptions = {}) {

@@ -1,6 +1,6 @@
 import { Emojis } from '#constants';
 import { RadonCommand } from '#lib/structures';
-import { BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
+import { type BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
 import { runAllChecks, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { PermissionFlagsBits } from 'discord-api-types/v9';

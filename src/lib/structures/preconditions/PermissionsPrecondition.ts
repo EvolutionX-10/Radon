@@ -1,15 +1,15 @@
 import type { RadonCommand } from '#lib/structures';
 import {
-	AsyncPreconditionResult,
-	ChatInputCommand,
+	type AsyncPreconditionResult,
+	type ChatInputCommand,
 	Command,
-	ContextMenuCommand,
+	type ContextMenuCommand,
 	Identifiers,
-	PieceContext,
+	type PieceContext,
 	Precondition,
-	PreconditionContext,
-	PreconditionOptions,
-	PreconditionResult
+	type PreconditionContext,
+	type PreconditionOptions,
+	type PreconditionResult
 } from '@sapphire/framework';
 import type { CommandInteraction, ContextMenuCommandInteraction, Message } from 'discord.js';
 

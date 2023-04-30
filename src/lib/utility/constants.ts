@@ -1,5 +1,5 @@
 import { Button, Row } from '#lib/structures';
-import { ButtonBuilder, ButtonStyle, UserFlagsString } from 'discord.js';
+import { ButtonBuilder, ButtonStyle, type UserFlagsString } from 'discord.js';
 
 process.env.NODE_ENV ??= 'development';
 

@@ -47,7 +47,7 @@ export class UserCommand extends RadonCommand {
 				type: new Type(e)
 			};
 		});
-		const footer = codeBlock('ts', type);
+		const footer = codeBlock('ts', type.is);
 
 		if (typeof result !== 'string') return;
 		result = clean(result);

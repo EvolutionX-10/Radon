@@ -1,5 +1,5 @@
 import { Emojis } from '#constants';
-import { PaginatedMessage, PaginatedMessageOptions, PaginatedMessagePage } from '@sapphire/discord.js-utilities';
+import { PaginatedMessage, type PaginatedMessageOptions, type PaginatedMessagePage } from '@sapphire/discord.js-utilities';
 import { ButtonStyle, ComponentType } from 'discord.js';
 /**
  * Extends Paginated message with custom order and no select menus

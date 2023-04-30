@@ -12,8 +12,7 @@
 			"#root/*": ["*"]
 		},
 		"noEmit": true,
-		"skipLibCheck": true,
-		"ignoreDeprecations": "5.0"
+		"skipLibCheck": true
 	},
 	"include": ["."]
 }
