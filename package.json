@@ -81,7 +81,7 @@
 		"@sapphire/discord-utilities": "3.0.3",
 		"@sapphire/discord.js-utilities": "6.0.6",
 		"@sapphire/duration": "1.1.0",
-		"@sapphire/framework": "4.4.2",
+		"@sapphire/framework": "4.4.3",
 		"@sapphire/plugin-editable-commands": "3.0.2",
 		"@sapphire/plugin-logger": "3.0.3",
 		"@sapphire/plugin-scheduled-tasks": "6.0.1",
