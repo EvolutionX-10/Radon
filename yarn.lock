@@ -687,14 +687,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/plugin-logger@npm:3.0.3":
-  version: 3.0.3
-  resolution: "@sapphire/plugin-logger@npm:3.0.3"
+"@sapphire/plugin-logger@npm:3.0.4":
+  version: 3.0.4
+  resolution: "@sapphire/plugin-logger@npm:3.0.4"
   dependencies:
     "@sapphire/timestamp": ^1.0.1
-    colorette: ^2.0.19
+    colorette: ^2.0.20
     tslib: ^2.5.0
-  checksum: 5e956474366daea23ef3a1c3d751850f9b7bcff9e9c8819ee71804ad981cbc30f59bdaa1e2701a2b9024e38ad73c327a1b4050dc160ddecea0e3756698ed6ddc
+  checksum: 8863a121bea5a5bd816a7e52b144dedbfb10057e3532209fe50fb0fb210af58f04310f8ecae268e7945410846cf164bba12b9239a36c4db058f2c03d6b1c9128
   languageName: node
   linkType: hard
 
@@ -1736,7 +1736,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"colorette@npm:2.0.20":
+"colorette@npm:2.0.20, colorette@npm:^2.0.20":
   version: 2.0.20
   resolution: "colorette@npm:2.0.20"
   checksum: 0c016fea2b91b733eb9f4bcdb580018f52c0bc0979443dad930e5037a968237ac53d9beb98e218d2e9235834f8eebce7f8e080422d6194e957454255bde71d3d
@@ -4132,7 +4132,7 @@ __metadata:
     "@sapphire/eslint-config": 4.4.2
     "@sapphire/framework": 4.4.3
     "@sapphire/plugin-editable-commands": 3.0.2
-    "@sapphire/plugin-logger": 3.0.3
+    "@sapphire/plugin-logger": 3.0.4
     "@sapphire/plugin-scheduled-tasks": 6.0.1
     "@sapphire/prettier-config": 1.4.5
     "@sapphire/stopwatch": 1.5.0
