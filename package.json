@@ -87,7 +87,7 @@
 		"@sapphire/plugin-scheduled-tasks": "6.0.1",
 		"@sapphire/stopwatch": "1.5.0",
 		"@sapphire/type": "2.4.0",
-		"@sapphire/utilities": "3.11.1",
+		"@sapphire/utilities": "3.11.2",
 		"bullmq": "3.13.1",
 		"colorette": "2.0.20",
 		"colornames": "1.1.1",
