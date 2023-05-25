@@ -54,6 +54,7 @@ const order: Record<PermissionsString, number> = {
 	Speak: 5,
 	UseEmbeddedActivities: 5,
 	Stream: 5,
+	UseSoundboard: 5,
 	AttachFiles: 6,
 	AddReactions: 7,
 	CreateInstantInvite: 8,
@@ -61,8 +62,10 @@ const order: Record<PermissionsString, number> = {
 	UseExternalStickers: 9,
 	PrioritySpeaker: 10,
 	SendMessagesInThreads: 10,
+	SendVoiceMessages: 10,
 	SendTTSMessages: 10,
 	UseVAD: 11,
+	UseExternalSounds: 11,
 	ChangeNickname: 12,
 	UseApplicationCommands: 13,
 	RequestToSpeak: 14,
@@ -74,6 +77,7 @@ const order: Record<PermissionsString, number> = {
 	MoveMembers: 20,
 	MuteMembers: 20,
 	ManageEmojisAndStickers: 21,
+	ManageGuildExpressions: 21,
 	ManageEvents: 21,
 	ManageMessages: 22,
 	ManageWebhooks: 23,
@@ -86,5 +90,6 @@ const order: Record<PermissionsString, number> = {
 	ManageChannels: 30,
 	ManageGuild: 31,
 	MentionEveryone: 32,
+	ViewCreatorMonetizationAnalytics: 33,
 	Administrator: 40
 };
