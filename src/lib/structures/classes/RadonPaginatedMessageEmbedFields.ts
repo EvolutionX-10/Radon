@@ -9,6 +9,11 @@ export class RadonPaginatedMessageEmbedFields extends PaginatedMessageEmbedField
 			{
 				customId: '@sapphire/paginated-messages.goToPage',
 				type: ComponentType.StringSelect,
+				options: this.pages.map((_, i) => ({
+					label: `${i + 1}`,
+					value: `${i}`,
+					default: i === 0
+				})),
 				run: ({ handler, interaction }) => {
 					if (!interaction.isStringSelectMenu()) return;
 					handler.index = parseInt(interaction.values[0], 10);
