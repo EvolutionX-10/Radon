@@ -1,12 +1,12 @@
 name: Continuous Delivery
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'src/**'
-      - '.github/workflows/continuous-delivery.yml'
-      - 'package.json'
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - 'src/**'
+  #     - '.github/workflows/continuous-delivery.yml'
+  #     - 'package.json'
   workflow_dispatch:
 
 jobs:
