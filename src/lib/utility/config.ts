@@ -5,17 +5,17 @@ import { envParseBoolean, envParseInteger, envParseString } from '#lib/env';
 import type { BotList } from '@devtomio/plugin-botlist';
 import { Time } from '@sapphire/duration';
 import { BucketScope, type ClientLoggerOptions, type CooldownOptions, LogLevel } from '@sapphire/framework';
-import type { ScheduledTasksOptions } from '@sapphire/plugin-scheduled-tasks';
-import { ScheduledTaskRedisStrategy } from '@sapphire/plugin-scheduled-tasks/register-redis';
+import type { ScheduledTaskHandlerOptions } from '@sapphire/plugin-scheduled-tasks';
+import '@sapphire/plugin-scheduled-tasks/register';
 import type { RedisOptions } from 'bullmq';
 import {
-	ActivityType,
 	type ClientOptions,
 	GatewayIntentBits,
 	type MessageMentionOptions,
 	Partials,
 	type PresenceData,
-	type SweeperOptions
+	type SweeperOptions,
+	ActivityType
 } from 'discord.js';
 import { config as dotenv } from 'dotenv-cra';
 
@@ -108,9 +108,7 @@ export const config: Config = {
 		]
 	},
 	tasks: {
-		strategy: new ScheduledTaskRedisStrategy({
-			bull: { connection: parseRedisOption() }
-		})
+		bull: { connection: parseRedisOption() }
 	}
 };
 
@@ -142,5 +140,5 @@ interface Config {
 	sweepers: SweeperOptions;
 	botlist: BotList.Options;
 	presence: PresenceData;
-	tasks: ScheduledTasksOptions;
+	tasks: ScheduledTaskHandlerOptions;
 }
