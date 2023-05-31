@@ -33,7 +33,7 @@
 		"deps": "yarn upgrade-interactive"
 	},
 	"engines": {
-		"node": "18.15.0"
+		"node": "18.16.0"
 	},
 	"repository": {
 		"type": "git",
