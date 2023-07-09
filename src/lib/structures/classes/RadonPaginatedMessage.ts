@@ -87,7 +87,6 @@ export class RadonPaginatedMessage extends PaginatedMessage {
 			if (option.value === `${handler.index}`) option.default = true;
 			else option.default = false;
 		}
-		// @ts-expect-error TS doesn't know it exists because it is not typed
 		page.components = interaction.message.components;
 	}
 }

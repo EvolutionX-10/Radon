@@ -85,7 +85,6 @@ export class RadonPaginatedMessageEmbedFields extends PaginatedMessageEmbedField
 			if (option.value === `${handler.index}`) option.default = true;
 			else option.default = false;
 		}
-		// @ts-expect-error lol
 		page.components = interaction.message.components;
 	}
 }
