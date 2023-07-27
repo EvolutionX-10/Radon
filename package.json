@@ -60,7 +60,7 @@
 		"@swc/helpers": "0.5.1",
 		"@types/colornames": "1.1.2",
 		"@types/gradient-string": "1.1.2",
-		"@types/node": "20.4.4",
+		"@types/node": "20.4.5",
 		"@types/string-similarity": "4.0.0",
 		"@typescript-eslint/eslint-plugin": "5.62.0",
 		"@typescript-eslint/parser": "5.62.0",
