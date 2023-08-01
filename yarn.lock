@@ -1377,19 +1377,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bullmq@npm:4.2.1":
-  version: 4.2.1
-  resolution: "bullmq@npm:4.2.1"
+"bullmq@npm:4.6.3":
+  version: 4.6.3
+  resolution: "bullmq@npm:4.6.3"
   dependencies:
     cron-parser: ^4.6.0
     glob: ^8.0.3
     ioredis: ^5.3.2
     lodash: ^4.17.21
     msgpackr: ^1.6.2
-    semver: ^7.3.7
+    semver: ^7.5.4
     tslib: ^2.0.0
     uuid: ^9.0.0
-  checksum: 6595015de6558011529939c6157e1136561f57b4b706df597090a0dd533ce370e2d06bd6ae7dff067332dbf3ae63399e1e2023ac3033ce72c0039c8408130cb8
+  checksum: 8916dd1a10864aa24cb9f09965ca8bc756f843d3801133d0a53432fc4b23f2840929be5e97fb46e3fdd35dcedc95978eefb3bcdc1f3125e50cc4ff41cfc11c19
   languageName: node
   linkType: hard
 
@@ -3931,7 +3931,7 @@ __metadata:
     "@types/string-similarity": 4.0.0
     "@typescript-eslint/eslint-plugin": 5.62.0
     "@typescript-eslint/parser": 5.62.0
-    bullmq: 4.2.1
+    bullmq: 4.6.3
     colorette: 2.0.20
     colornames: 1.1.1
     confusables: 1.1.1
@@ -4158,6 +4158,17 @@ __metadata:
   bin:
     semver: bin/semver.js
   checksum: d16dbedad53c65b086f79524b9ef766bf38670b2395bdad5c957f824dcc566b624988013564f4812bcace3f9d405355c3635e2007396a39d1bffc71cfec4a2fc
+  languageName: node
+  linkType: hard
+
+"semver@npm:^7.5.4":
+  version: 7.5.4
+  resolution: "semver@npm:7.5.4"
+  dependencies:
+    lru-cache: ^6.0.0
+  bin:
+    semver: bin/semver.js
+  checksum: 12d8ad952fa353b0995bf180cdac205a4068b759a140e5d3c608317098b3575ac2f1e09182206bf2eb26120e1c0ed8fb92c48c592f6099680de56bb071423ca3
   languageName: node
   linkType: hard
 
