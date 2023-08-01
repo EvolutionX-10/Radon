@@ -83,7 +83,7 @@
 		"@sapphire/duration": "1.1.0",
 		"@sapphire/framework": "4.5.1",
 		"@sapphire/plugin-editable-commands": "3.0.2",
-		"@sapphire/plugin-logger": "3.0.4",
+		"@sapphire/plugin-logger": "3.0.5",
 		"@sapphire/plugin-scheduled-tasks": "7.1.0",
 		"@sapphire/stopwatch": "1.5.0",
 		"@sapphire/type": "2.4.0",

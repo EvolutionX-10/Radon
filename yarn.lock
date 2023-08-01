@@ -648,14 +648,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sapphire/plugin-logger@npm:3.0.4":
-  version: 3.0.4
-  resolution: "@sapphire/plugin-logger@npm:3.0.4"
+"@sapphire/plugin-logger@npm:3.0.5":
+  version: 3.0.5
+  resolution: "@sapphire/plugin-logger@npm:3.0.5"
   dependencies:
     "@sapphire/timestamp": ^1.0.1
     colorette: ^2.0.20
-    tslib: ^2.5.0
-  checksum: 8863a121bea5a5bd816a7e52b144dedbfb10057e3532209fe50fb0fb210af58f04310f8ecae268e7945410846cf164bba12b9239a36c4db058f2c03d6b1c9128
+    tslib: ^2.6.0
+  checksum: 65016239fe2c7ed5d9048fffa0bb2c32be9b7740c72d760080353450aed7cb0d17c7469dbdf2d12a0054f78e1a1a07b68e6b6424542980519983e76097d9348c
   languageName: node
   linkType: hard
 
@@ -3916,7 +3916,7 @@ __metadata:
     "@sapphire/eslint-config": 4.4.3
     "@sapphire/framework": 4.5.1
     "@sapphire/plugin-editable-commands": 3.0.2
-    "@sapphire/plugin-logger": 3.0.4
+    "@sapphire/plugin-logger": 3.0.5
     "@sapphire/plugin-scheduled-tasks": 7.1.0
     "@sapphire/prettier-config": 1.4.5
     "@sapphire/stopwatch": 1.5.0
