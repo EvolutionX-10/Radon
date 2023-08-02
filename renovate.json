@@ -1,6 +1,6 @@
 {
 	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
-	"extends": ["config:base", "helpers:pinGitHubActionDigests"],
+	"extends": ["config:base", "helpers:pinGitHubActionDigests", "group:allNonMajor"],
 	"labels": ["Type: Dependencies"],
 	"automerge": true,
 	"automergeType": "pr",
@@ -32,14 +32,6 @@
 		},
 		{
 			"matchPackagePatterns": ["discord-api-types"],
-			"enabled": false
-		},
-		{
-			"matchPackagePatterns": ["discord.js"],
-			"enabled": false
-		},
-		{
-			"matchPackageNames": ["@sapphire/.*"],
 			"enabled": false
 		}
 	]
