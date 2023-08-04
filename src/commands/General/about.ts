@@ -187,7 +187,7 @@ export class UserCommand extends RadonCommand {
 
 		const owner = await guild.fetchOwner();
 		const icon = guild.iconURL({ forceStatic: false, size: 2048 }) ?? '';
-		const banner = guild.bannerURL({ size: 4096 }) ?? '';
+		const banner = guild.bannerURL({ size: 4096 });
 		const create = new Timestamp(guild.createdTimestamp);
 		const members = await guild.members.fetch();
 		const humans = members.filter((m) => !m.user.bot);
