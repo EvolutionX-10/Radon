@@ -13,7 +13,7 @@ export class RadonClient<Ready extends boolean = boolean> extends SapphireClient
 		return super.login(token);
 	}
 
-	public override destroy(): void {
+	public override destroy(): Promise<void> {
 		return super.destroy();
 	}
 }

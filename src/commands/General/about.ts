@@ -133,8 +133,9 @@ export class UserCommand extends RadonCommand {
 
 	private async user(interaction: RadonCommand.ChatInputCommandInteraction) {
 		await interaction.deferReply();
+		await interaction.guild?.members.fetch();
 		const user = await interaction.options.getUser('user', true).fetch(true);
-		const member = interaction.options.getMember('user');
+		const member = await interaction.options.getMember('user')?.fetch(true);
 		const pfp = member?.displayAvatarURL({ forceStatic: false, size: 4096 }) ?? user.displayAvatarURL({ forceStatic: false, size: 4096 });
 		const banner = user.bannerURL({ forceStatic: false, size: 4096 }) ?? null;
 		const createdAt = new Timestamp(user.createdTimestamp);
@@ -142,11 +143,11 @@ export class UserCommand extends RadonCommand {
 		const perm = member
 			? member.id === member.guild.ownerId
 				? 'Server Owner'
-				: this.container.utils.format(member.permissions.toArray())[0]
+				: this.container.utils.format(member.permissions.toArray(), false)[0]
 			: null;
 
 		const embed = new Embed() //
-			._title(user.tag)
+			._title(user.globalName ?? user.username)
 			._color(user.hexAccentColor ?? Color.General)
 			._footer({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ forceStatic: false }) })
 			._fields({
@@ -170,13 +171,13 @@ export class UserCommand extends RadonCommand {
 
 		if (flagValue.length) {
 			if (isOwner(user)) flagValue = `${Emojis.Owner} ${flagValue}`;
-			flagValue.length > 230 ? embed._description(flagValue) : embed._title(user.tag.concat(` ${flagValue}`));
+			flagValue.length > 230 ? embed._description(flagValue) : embed._title((user.globalName ?? user.username).concat(` ${flagValue}`));
 		}
 
 		embed._field({ name: 'ID', value: `\`${user.id}\``, inline: false });
 
 		if (member?.nickname) embed._field({ name: 'Nickname', value: member.nickname, inline: true });
-		if (member) embed._field({ name: 'Key Permission', value: perm!, inline: true });
+		if (perm) embed._field({ name: 'Key Permission', value: perm, inline: true });
 
 		return interaction.editReply({ embeds: [embed] });
 	}
@@ -186,7 +187,7 @@ export class UserCommand extends RadonCommand {
 		if (!guild.available) return;
 
 		const owner = await guild.fetchOwner();
-		const icon = guild.iconURL({ forceStatic: false, size: 2048 }) ?? '';
+		const icon = guild.iconURL({ forceStatic: false, size: 2048 });
 		const banner = guild.bannerURL({ size: 4096 });
 		const create = new Timestamp(guild.createdTimestamp);
 		const members = await guild.members.fetch();
@@ -242,7 +243,7 @@ export class UserCommand extends RadonCommand {
 			._thumbnail(icon)
 			._timestamp()
 			._image(banner)
-			._description(guild.description ?? '')
+			._description(guild.description)
 			._footer({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ forceStatic: false }) })
 			._fields(
 				{

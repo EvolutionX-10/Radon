@@ -108,7 +108,7 @@ export const config: Config = {
 		]
 	},
 	tasks: {
-		bull: { connection: parseRedisOption() }
+		bull: { connection: { ...parseRedisOption(), maxRetriesPerRequest: null } }
 	}
 };
 

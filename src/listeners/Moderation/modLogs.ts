@@ -26,9 +26,7 @@ export class UserListener extends Listener {
 			._color(Severity[data.action])
 			._author({
 				name: data.moderator.user.tag,
-				iconURL: data.moderator.user.displayAvatarURL({
-					forceStatic: false
-				})
+				iconURL: data.moderator.user.displayAvatarURL({ forceStatic: false })
 			})
 			._description(des)
 			._timestamp();

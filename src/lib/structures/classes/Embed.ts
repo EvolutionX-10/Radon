@@ -16,7 +16,7 @@ export class Embed extends EmbedBuilder {
 	 * @returns Embed
 	 */
 	public _field(field: APIEmbedField) {
-		return this.addFields([field]);
+		return this.addFields(field);
 	}
 
 	/**
@@ -24,7 +24,7 @@ export class Embed extends EmbedBuilder {
 	 * @param color The color of the embed
 	 * @returns Embed
 	 */
-	public _color(color: ColorResolvable) {
+	public _color(color: ColorResolvable | null) {
 		return this.setColor(color);
 	}
 
@@ -33,7 +33,7 @@ export class Embed extends EmbedBuilder {
 	 * @param obj The author object
 	 * @returns Embed
 	 */
-	public _author(obj: EmbedAuthorData) {
+	public _author(obj: EmbedAuthorData | null) {
 		return this.setAuthor(obj);
 	}
 
@@ -42,7 +42,7 @@ export class Embed extends EmbedBuilder {
 	 * @param obj The footer object
 	 * @returns Embed
 	 */
-	public _footer(obj: EmbedFooterData) {
+	public _footer(obj: EmbedFooterData | null) {
 		return this.setFooter(obj);
 	}
 
@@ -51,7 +51,7 @@ export class Embed extends EmbedBuilder {
 	 * @param str The description of the embed
 	 * @returns Embed
 	 */
-	public _description(str: string) {
+	public _description(str: string | null) {
 		return this.setDescription(str);
 	}
 
@@ -60,7 +60,7 @@ export class Embed extends EmbedBuilder {
 	 * @param str The title of the embed
 	 * @returns Embed
 	 */
-	public _title(str: string) {
+	public _title(str: string | null) {
 		return this.setTitle(str);
 	}
 
@@ -78,7 +78,7 @@ export class Embed extends EmbedBuilder {
 	 * @param timestamp The timestamp of the embed
 	 * @returns Embed
 	 */
-	public _timestamp(timestamp?: Date | number) {
+	public _timestamp(timestamp?: Date | number | null | undefined) {
 		return this.setTimestamp(timestamp);
 	}
 
@@ -87,7 +87,7 @@ export class Embed extends EmbedBuilder {
 	 * @param url The url of the title
 	 * @returns Embed
 	 */
-	public _url(url: string) {
+	public _url(url: string | null) {
 		return this.setURL(url);
 	}
 
