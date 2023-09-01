@@ -26,7 +26,7 @@ At the moment I am not completely free but if you are interested in beta testing
 
 <div>
   
-<img align = "center" src = "https://i.dlpng.com/static/png/5323399-transparent-discord-icon-227131-free-icons-library-discord-icon-transparent-500_500_preview.png" height = "45" width = "45"/>[`EvolutionX`](https://discord.com/users/697795666373640213)
+<img align = "center" src = "https://images.weserv.nl/?url=cdn.discordapp.com/avatars/697795666373640213/feb4fe1b8f2d174b4d66d970c9fc88ef.webp?size=512&mask=circle" height = "45" width = "45"/>[`EvolutionX`](https://discord.com/users/697795666373640213)
 
 </div>
 
