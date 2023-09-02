@@ -5,14 +5,18 @@ import { mins, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { PermissionFlagsBits } from 'discord-api-types/v9';
 import {
-	ButtonInteraction,
+	MessageComponentInteraction,
 	ButtonStyle,
 	ChannelType,
-	ComponentType,
 	Message,
 	type OverwriteResolvable,
 	OverwriteType,
-	TextChannel
+	TextChannel,
+	RoleSelectMenuBuilder,
+	Role,
+	Collection,
+	type APIRole,
+	ChannelSelectMenuBuilder
 } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
@@ -43,14 +47,11 @@ export class UserCommand extends RadonCommand {
 			]
 		})) as Message;
 
-		const collector = msg.createMessageComponentCollector({
-			time: mins(3),
-			componentType: ComponentType.Button
-		});
+		const collector = msg.createMessageComponentCollector({ time: mins(3) });
 
 		// --------------------------------------
-		const modRoles: string[] = [];
-		const adminRoles: string[] = [];
+		let modRoles: Collection<string, Role | APIRole>;
+		let adminRoles: Collection<string, Role | APIRole>;
 		let modLogChannel: TextChannel | undefined;
 		// --------------------------------------
 
@@ -79,36 +80,26 @@ export class UserCommand extends RadonCommand {
 					await this.step1(i, msg, stage);
 					break;
 
-				case 'retry_mod':
+				case 'mod_roles':
+					stage = 2;
 					collector.resetTimer();
-					modRoles.length = 0;
-					msg = await this.step1(i, msg, stage);
+					if (!i.isRoleSelectMenu()) break;
+					modRoles = i.roles;
+					msg = await this.step2(i, msg, stage);
 					break;
 
-				case 'confirm_modRoles':
-					if (modRoles.length === 0) {
-						await i.followUp({
-							content: `You must select at least one moderator role\nIf your server does not have one, please create one!`,
+				case 'admin_roles':
+					stage = 3;
+					collector.resetTimer();
+					if (!i.isRoleSelectMenu()) break;
+					adminRoles = i.roles;
+					if (adminRoles.some((r) => modRoles.has(r.id))) {
+						await i.reply({
+							content: `Moderation roles and Administration roles cannot be the same!`,
 							ephemeral: true
 						});
-						collector.resetTimer();
-						await this.step2(i, msg, stage);
-						return;
+						break;
 					}
-					collector.resetTimer();
-					stage = 2;
-					msg = await this.step2(i, msg, stage);
-					break;
-
-				case 'retry_admin':
-					collector.resetTimer();
-					adminRoles.length = 0;
-					msg = await this.step2(i, msg, stage);
-					break;
-
-				case 'confirm_adminRoles':
-					collector.resetTimer();
-					stage = 3;
 					msg = await this.step3(i, msg, stage);
 					break;
 
@@ -118,6 +109,10 @@ export class UserCommand extends RadonCommand {
 					msg = await this.step3(i, msg, stage);
 					break;
 
+				// @ts-expect-error Falling through is intentional to avoid code duplication
+				case 'modlog_channel':
+					if (!i.isChannelSelectMenu()) break;
+					modLogChannel = i.channels.first() as TextChannel;
 				case 'confirm_modlog':
 					stage = 4;
 					// eslint-disable-next-line no-case-declarations
@@ -165,7 +160,7 @@ export class UserCommand extends RadonCommand {
 							content:
 								`I couldn't create the modlog channel due to insufficient permissions!\nPlease try again after granting ` +
 								`\`Manage Channels\` [Creation of Channel], \`Manage Roles\` [To configure channel permissions], \`Embed Links and Send Messages\` [To send modlogs] permissions to me!\n` +
-								`**Note:** I need a role higher than @everyone with the mentioned permissions!` +
+								`**Note:** I need a role other than @everyone with the mentioned permissions!` +
 								`If you are still having issues run </about me:970217477126643752> and join our support server!`,
 							ephemeral: true
 						});
@@ -185,14 +180,14 @@ export class UserCommand extends RadonCommand {
 					create: {
 						id: interaction.guildId,
 						configured: true,
-						modRoles,
-						adminRoles,
+						modRoles: modRoles.map((m) => m.id),
+						adminRoles: adminRoles.map((m) => m.id),
 						modLogChannel: modLogChannel?.id ?? ''
 					},
 					update: {
 						configured: true,
-						modRoles,
-						adminRoles,
+						modRoles: modRoles.map((m) => m.id),
+						adminRoles: adminRoles.map((m) => m.id),
 						modLogChannel: modLogChannel?.id ?? ''
 					},
 					where: {
@@ -206,22 +201,23 @@ export class UserCommand extends RadonCommand {
 					._fields([
 						{
 							name: 'Moderator Roles',
-							value: modRoles.map((m) => `<@&${m}>`).join(', '),
+							value: modRoles.map((r) => r).join(', '),
 							inline: true
 						},
 						{
 							name: 'Admin Roles',
-							value: adminRoles.length ? adminRoles.map((m) => `<@&${m}>`).join(', ') : 'None',
+							value: adminRoles.map((r) => r).join(', ') || 'None',
 							inline: true
 						},
 						{
 							name: 'Moderation Logs Channel',
-							value: modLogChannel ? `<#${modLogChannel.id}>` : 'None'
+							// eslint-disable-next-line @typescript-eslint/no-base-to-string
+							value: modLogChannel ? `${modLogChannel}` : 'None'
 						}
 					])
 					._timestamp()
 					._author({
-						name: interaction.user.tag,
+						name: interaction.user.globalName ?? interaction.user.username,
 						iconURL: interaction.user.displayAvatarURL({ forceStatic: false })
 					})
 					._footer({
@@ -241,67 +237,6 @@ export class UserCommand extends RadonCommand {
 				embeds: [],
 				components: []
 			});
-		});
-
-		const msg_collector = msg.channel.createMessageCollector({
-			filter: (m) => m.author.id === interaction.user.id,
-			time: mins(3)
-		});
-
-		msg_collector.on('collect', async (m) => {
-			if (stage === 1) {
-				const role = m.mentions.roles.first();
-				await m.delete().catch(() => null);
-				if (!role) return;
-				if (modRoles.length < 3) {
-					if (modRoles.includes(role.id)) return;
-					modRoles.push(role.id);
-					msg.embeds[0].fields[1].value === 'None'
-						? (msg.embeds[0].fields[1].value = `${role}`)
-						: (msg.embeds[0].fields[1].value += `, ${role}`);
-
-					await msg.edit({
-						embeds: msg.embeds,
-						components: msg.components
-					});
-				}
-				return msg_collector.resetTimer();
-			}
-
-			if (stage === 2) {
-				const role = m.mentions.roles.first();
-				await m.delete().catch(() => null);
-				if (!role) return;
-				if (adminRoles.length < 2) {
-					if (modRoles.includes(role.id)) return;
-					if (adminRoles.includes(role.id)) return;
-					adminRoles.push(role.id);
-					msg.embeds[0].fields[1].value === 'None'
-						? (msg.embeds[0].fields[1].value = `${role}`)
-						: (msg.embeds[0].fields[1].value += `, ${role}`);
-					await msg.edit({
-						embeds: msg.embeds,
-						components: msg.components
-					});
-				}
-				return msg_collector.resetTimer();
-			}
-
-			if (stage === 3) {
-				const channel = m.mentions.channels.first();
-				if (!channel || !channel.isTextBased() || channel.type !== ChannelType.GuildText) return;
-				await m.delete().catch(() => null);
-				msg.embeds[0].fields[1].value = `<#${channel.id}>`;
-
-				modLogChannel = channel;
-
-				await msg.edit({
-					embeds: msg.embeds,
-					components: msg.components
-				});
-				return msg_collector.resetTimer();
-			}
-			msg_collector.stop('done');
 		});
 
 		async function makeModlog(is_private: boolean) {
@@ -338,11 +273,11 @@ export class UserCommand extends RadonCommand {
 					};
 				};
 
-				for (const mod of modRoles) {
+				for (const mod of modRoles.keys()) {
 					permissionOverwrites.push(permissions(mod, true));
 				}
 
-				for (const admin of adminRoles) {
+				for (const admin of adminRoles.keys()) {
 					permissionOverwrites.push(permissions(admin, false));
 				}
 			} else {
@@ -386,87 +321,85 @@ export class UserCommand extends RadonCommand {
 	}
 
 	/**
-	 * enter mod roles
+	 * Moderator Roles Selection
 	 */
-	private async step1(i: ButtonInteraction, prevMessage: Message, _stage: number) {
+	private async step1(i: MessageComponentInteraction, prevMessage: Message, _stage: number) {
 		const embed = new Embed(prevMessage.embeds[0].data)._fields([
 			{
-				name: `What are the moderator roles? [Min: 1, Max: 3]`,
-				value:
-					`Please __mention__ the roles below in chat.\n` +
-					`Note that only the roles below will be considered as moderators\n` +
-					`If you want multiple roles, you can enter them below but **only one role per message**!\n` +
-					`When done, press the button to confirm, else press retry`
-			},
-			{
-				name: 'Roles Entered',
-				value: 'None'
+				name: `What are the Moderator roles? [Min: 1, Max: 3]`,
+				value: `Only the **selected** roles below will be considered as moderators`
 			}
 		]);
+
+		const rolesMenu = new RoleSelectMenuBuilder()
+			.setCustomId('mod_roles')
+			.setPlaceholder('Select moderator roles')
+			.setMinValues(1)
+			.setMaxValues(3);
+
 		return i.update({
 			embeds: [embed],
-			components: [
-				new Row<Button>()._components([
-					new Button()._customId('retry_mod')._label('Retry')._style(ButtonStyle.Secondary),
-					new Button()._customId('confirm_modRoles')._label('Confirm')._style(ButtonStyle.Success)
-				])
-			],
+			components: [new Row<RoleSelectMenuBuilder>()._components([rolesMenu])],
 			fetchReply: true
 		}) as Promise<Message>;
 	}
 
 	/**
-	 * enter admin roles
+	 * Admin Roles Selection
 	 */
-	private async step2(i: ButtonInteraction, prevMessage: Message, _stage: number) {
-		const embed = new Embed(prevMessage.embeds[0].data)._fields([
-			{
-				name: `What are the administration roles? [Max: 2]`,
-				value:
-					`Please __mention__ the roles below in chat.\n` +
-					`Note that only the roles below will be considered as admins\n` +
-					`If you want multiple roles, you can enter them below but **only one role per message**!\n` +
-					`When done, press the button to confirm, else press retry\n` +
-					`**Note**: Moderation roles and Administration roles cannot be the same`
-			},
-			{
-				name: 'Roles Entered',
-				value: 'None'
-			}
-		]);
+	private async step2(i: MessageComponentInteraction, prevMessage: Message, _stage: number) {
+		const embed = new Embed(prevMessage.embeds[0].data)._fields(
+			[
+				{
+					name: `What are the Admin roles? [Max: 2]`,
+					value:
+						`Only the **selected** roles below will be considered as admins\n` +
+						`**Note**: __Moderation roles and Admin roles cannot be the same__`
+				}
+			],
+			true
+		);
+
+		const rolesMenu = new RoleSelectMenuBuilder() //
+			.setCustomId('admin_roles')
+			.setPlaceholder('Select admin roles')
+			.setMinValues(0)
+			.setMaxValues(2);
+
 		return i.update({
 			embeds: [embed],
-			components: [
-				new Row<Button>()._components([
-					new Button()._customId('retry_admin')._label('Retry')._style(ButtonStyle.Secondary),
-					new Button()._customId('confirm_adminRoles')._label('Confirm')._style(ButtonStyle.Success)
-				])
-			],
+			components: [new Row<RoleSelectMenuBuilder>()._components([rolesMenu])],
 			fetchReply: true
 		}) as Promise<Message>;
 	}
 
 	/**
-	 * enter modlog channel
+	 * ModLog Channel Selection
 	 */
-	private async step3(i: ButtonInteraction, prevMessage: Message, _stage: number) {
-		const embed = new Embed(prevMessage.embeds[0].data)._fields([
-			{
-				name: `Where should moderation logs be sent?`,
-				value:
-					`Please __mention__ the channel below in chat.\n` +
-					`If you **don't have** any channel, you can tell me to create one!\n` +
-					`If you **don't want** to have a mod log channel press confirm!\n` +
-					`When done, press the button to confirm, else press retry`
-			},
-			{
-				name: 'Channel Entered',
-				value: 'None'
-			}
-		]);
+	private async step3(i: MessageComponentInteraction, prevMessage: Message, _stage: number) {
+		const embed = new Embed(prevMessage.embeds[0].data)._fields(
+			[
+				{
+					name: `Where should moderation logs be sent?`,
+					value:
+						`If you **don't have** any channel, you can tell me to create one!\n` +
+						`If you **don't want** to have a mod log channel press confirm!`
+				}
+			],
+			true
+		);
+
+		const channelMenu = new ChannelSelectMenuBuilder() //
+			.setCustomId('modlog_channel')
+			.setPlaceholder('Select modlogs channel')
+			.setMinValues(0)
+			.setMaxValues(1)
+			.setChannelTypes(ChannelType.GuildText);
+
 		return i.update({
 			embeds: [embed],
 			components: [
+				new Row<ChannelSelectMenuBuilder>()._components([channelMenu]),
 				new Row<Button>()._components([
 					new Button()._customId('retry_modlog')._label('Retry')._style(ButtonStyle.Secondary),
 					new Button()._customId('make_modlog')._label('Make a new modlog')._style(ButtonStyle.Primary),
@@ -478,22 +411,25 @@ export class UserCommand extends RadonCommand {
 	}
 
 	/**
-	 * is modlog private or public?
+	 * ModLog Channel Visibility
 	 */
-	private async step4(i: ButtonInteraction, prevMessage: Message, _stage: number) {
-		const embed = new Embed(prevMessage.embeds[0].data)._fields([
-			{
-				name: `What should be the visibility of the modlog?`,
-				value:
-					`If the modlog is private, only the moderators will be able to see it.\n` +
-					`If the modlog is public, everyone will be able to see it.\n` +
-					`Please press the appropriate button\n` +
-					`Note: I need \`Manage Channels\` and \`Manage Roles\` permissions to configure permissions` +
-					` of the modlog channel on @everyone role!\n` +
-					`It is compulsory that I should have a role higher than @everyone!\n` +
-					`Once created successfully, feel free to tune permissions of the modlog channel`
-			}
-		]);
+	private async step4(i: MessageComponentInteraction, prevMessage: Message, _stage: number) {
+		const embed = new Embed(prevMessage.embeds[0].data)._fields(
+			[
+				{
+					name: `What should be the visibility of the modlog?`,
+					value:
+						`If the modlog is __private__, only the moderators will be able to see it.\n` +
+						`If the modlog is __public__, everyone will be able to see it.\n` +
+						`Please press the appropriate button\n` +
+						`> Note: I need \`Manage Channels\` and \`Manage Roles\` permissions to configure permissions ` +
+						`of the modlog channel on @everyone role!\n` +
+						`> It is compulsory that I should have a role other than @everyone!\n` +
+						`> Once created successfully, feel free to tune permissions of the modlog channel`
+				}
+			],
+			true
+		);
 		return i.update({
 			embeds: [embed],
 			components: [
