@@ -160,7 +160,7 @@ export class UserCommand extends RadonCommand {
 							content:
 								`I couldn't create the modlog channel due to insufficient permissions!\nPlease try again after granting ` +
 								`\`Manage Channels\` [Creation of Channel], \`Manage Roles\` [To configure channel permissions], \`Embed Links and Send Messages\` [To send modlogs] permissions to me!\n` +
-								`**Note:** I need a role higher than @everyone with the mentioned permissions!` +
+								`**Note:** I need a role other than @everyone with the mentioned permissions!` +
 								`If you are still having issues run </about me:970217477126643752> and join our support server!`,
 							ephemeral: true
 						});
@@ -419,13 +419,13 @@ export class UserCommand extends RadonCommand {
 				{
 					name: `What should be the visibility of the modlog?`,
 					value:
-						`If the modlog is private, only the moderators will be able to see it.\n` +
-						`If the modlog is public, everyone will be able to see it.\n` +
+						`If the modlog is __private__, only the moderators will be able to see it.\n` +
+						`If the modlog is __public__, everyone will be able to see it.\n` +
 						`Please press the appropriate button\n` +
-						`Note: I need \`Manage Channels\` and \`Manage Roles\` permissions to configure permissions` +
-						` of the modlog channel on @everyone role!\n` +
-						`It is compulsory that I should have a role higher than @everyone!\n` +
-						`Once created successfully, feel free to tune permissions of the modlog channel`
+						`> Note: I need \`Manage Channels\` and \`Manage Roles\` permissions to configure permissions ` +
+						`of the modlog channel on @everyone role!\n` +
+						`> It is compulsory that I should have a role other than @everyone!\n` +
+						`> Once created successfully, feel free to tune permissions of the modlog channel`
 				}
 			],
 			true
