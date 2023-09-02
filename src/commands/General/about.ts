@@ -126,7 +126,10 @@ export class UserCommand extends RadonCommand {
 			._timestamp()
 			._thumbnail(role.iconURL({ size: 4096 }) ?? `https://singlecolorimage.com/get/${hex === '000000' ? '2f3136' : hex}/400x400`)
 			._footer({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ forceStatic: false }) })
-			._fields({ name: 'Basic Info', value: basic }, { name: 'Advanced Info', value: adv });
+			._fields([
+				{ name: 'Basic Info', value: basic },
+				{ name: 'Advanced Info', value: adv }
+			]);
 
 		return interaction.reply({ embeds: [embed] });
 	}
@@ -150,11 +153,13 @@ export class UserCommand extends RadonCommand {
 			._title(user.globalName ?? user.username)
 			._color(user.hexAccentColor ?? Color.General)
 			._footer({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ forceStatic: false }) })
-			._fields({
-				name: 'Created At',
-				value: `${createdAt.getLongDate()} [${createdAt.getRelativeTime()}]`,
-				inline: true
-			})
+			._fields([
+				{
+					name: 'Created At',
+					value: `${createdAt.getLongDate()} [${createdAt.getRelativeTime()}]`,
+					inline: true
+				}
+			])
 			._timestamp()
 			._image(banner)
 			._thumbnail(pfp);
@@ -245,7 +250,7 @@ export class UserCommand extends RadonCommand {
 			._image(banner)
 			._description(guild.description)
 			._footer({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ forceStatic: false }) })
-			._fields(
+			._fields([
 				{
 					name: `Members [${guild.memberCount}]`,
 					value: member,
@@ -256,7 +261,7 @@ export class UserCommand extends RadonCommand {
 					value: channels,
 					inline: true
 				}
-			);
+			]);
 
 		if (roles.length !== 0) {
 			embed._field({

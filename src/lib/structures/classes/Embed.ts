@@ -6,8 +6,8 @@ export class Embed extends EmbedBuilder {
 	 * @param fields The fields to add to the embed
 	 * @returns Embed
 	 */
-	public _fields(...fields: RestOrArray<APIEmbedField>) {
-		return this.addFields(...fields);
+	public _fields(fields: RestOrArray<APIEmbedField>, set = false) {
+		return set ? this.setFields(...fields) : this.addFields(...fields);
 	}
 
 	/**

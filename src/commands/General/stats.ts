@@ -35,7 +35,7 @@ export class UserCommand extends RadonCommand {
 			misc: `• **Lines of code**: ${misc.lines}\n• **Files**: ${misc.files}`
 		};
 
-		return new Embed()._color(Color.General)._fields(
+		return new Embed()._color(Color.General)._fields([
 			{
 				name: titles.stats,
 				value: fields.stats
@@ -52,7 +52,7 @@ export class UserCommand extends RadonCommand {
 				name: titles.misc,
 				value: fields.misc
 			}
-		);
+		]);
 	}
 
 	private get generalStatistics(): StatsGeneral {
