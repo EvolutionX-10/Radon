@@ -317,9 +317,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@favware/cliff-jumper@npm:2.1.3":
-  version: 2.1.3
-  resolution: "@favware/cliff-jumper@npm:2.1.3"
+"@favware/cliff-jumper@npm:2.2.0":
+  version: 2.2.0
+  resolution: "@favware/cliff-jumper@npm:2.2.0"
   dependencies:
     "@sapphire/result": ^2.6.4
     "@sapphire/utilities": 3.13.0
@@ -333,7 +333,7 @@ __metadata:
   bin:
     cj: ./dist/cli.js
     cliff-jumper: ./dist/cli.js
-  checksum: 84126cbac935e4c38ba74453e4f086995ad1a9b03b723c52d0e86f1489fb173ff999d28425aa18aac6359822a7bd66b23c236039b20bb312cf5d9c5a764762e1
+  checksum: 62e48df0d5cb880778303de500b22c3103c5dffd2350f2d843260adf3bcf5aa6d12d219b9029314a70e2568c9602fbcd9f9bbc618c47a22edd75eef44c4469d0
   languageName: node
   linkType: hard
 
@@ -736,90 +736,90 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@swc/core-darwin-arm64@npm:1.3.86":
-  version: 1.3.86
-  resolution: "@swc/core-darwin-arm64@npm:1.3.86"
+"@swc/core-darwin-arm64@npm:1.3.87":
+  version: 1.3.87
+  resolution: "@swc/core-darwin-arm64@npm:1.3.87"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@swc/core-darwin-x64@npm:1.3.86":
-  version: 1.3.86
-  resolution: "@swc/core-darwin-x64@npm:1.3.86"
+"@swc/core-darwin-x64@npm:1.3.87":
+  version: 1.3.87
+  resolution: "@swc/core-darwin-x64@npm:1.3.87"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm-gnueabihf@npm:1.3.86":
-  version: 1.3.86
-  resolution: "@swc/core-linux-arm-gnueabihf@npm:1.3.86"
+"@swc/core-linux-arm-gnueabihf@npm:1.3.87":
+  version: 1.3.87
+  resolution: "@swc/core-linux-arm-gnueabihf@npm:1.3.87"
   conditions: os=linux & cpu=arm
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm64-gnu@npm:1.3.86":
-  version: 1.3.86
-  resolution: "@swc/core-linux-arm64-gnu@npm:1.3.86"
+"@swc/core-linux-arm64-gnu@npm:1.3.87":
+  version: 1.3.87
+  resolution: "@swc/core-linux-arm64-gnu@npm:1.3.87"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@swc/core-linux-arm64-musl@npm:1.3.86":
-  version: 1.3.86
-  resolution: "@swc/core-linux-arm64-musl@npm:1.3.86"
+"@swc/core-linux-arm64-musl@npm:1.3.87":
+  version: 1.3.87
+  resolution: "@swc/core-linux-arm64-musl@npm:1.3.87"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@swc/core-linux-x64-gnu@npm:1.3.86":
-  version: 1.3.86
-  resolution: "@swc/core-linux-x64-gnu@npm:1.3.86"
+"@swc/core-linux-x64-gnu@npm:1.3.87":
+  version: 1.3.87
+  resolution: "@swc/core-linux-x64-gnu@npm:1.3.87"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@swc/core-linux-x64-musl@npm:1.3.86":
-  version: 1.3.86
-  resolution: "@swc/core-linux-x64-musl@npm:1.3.86"
+"@swc/core-linux-x64-musl@npm:1.3.87":
+  version: 1.3.87
+  resolution: "@swc/core-linux-x64-musl@npm:1.3.87"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@swc/core-win32-arm64-msvc@npm:1.3.86":
-  version: 1.3.86
-  resolution: "@swc/core-win32-arm64-msvc@npm:1.3.86"
+"@swc/core-win32-arm64-msvc@npm:1.3.87":
+  version: 1.3.87
+  resolution: "@swc/core-win32-arm64-msvc@npm:1.3.87"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@swc/core-win32-ia32-msvc@npm:1.3.86":
-  version: 1.3.86
-  resolution: "@swc/core-win32-ia32-msvc@npm:1.3.86"
+"@swc/core-win32-ia32-msvc@npm:1.3.87":
+  version: 1.3.87
+  resolution: "@swc/core-win32-ia32-msvc@npm:1.3.87"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
 
-"@swc/core-win32-x64-msvc@npm:1.3.86":
-  version: 1.3.86
-  resolution: "@swc/core-win32-x64-msvc@npm:1.3.86"
+"@swc/core-win32-x64-msvc@npm:1.3.87":
+  version: 1.3.87
+  resolution: "@swc/core-win32-x64-msvc@npm:1.3.87"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"@swc/core@npm:1.3.86":
-  version: 1.3.86
-  resolution: "@swc/core@npm:1.3.86"
+"@swc/core@npm:1.3.87":
+  version: 1.3.87
+  resolution: "@swc/core@npm:1.3.87"
   dependencies:
-    "@swc/core-darwin-arm64": 1.3.86
-    "@swc/core-darwin-x64": 1.3.86
-    "@swc/core-linux-arm-gnueabihf": 1.3.86
-    "@swc/core-linux-arm64-gnu": 1.3.86
-    "@swc/core-linux-arm64-musl": 1.3.86
-    "@swc/core-linux-x64-gnu": 1.3.86
-    "@swc/core-linux-x64-musl": 1.3.86
-    "@swc/core-win32-arm64-msvc": 1.3.86
-    "@swc/core-win32-ia32-msvc": 1.3.86
-    "@swc/core-win32-x64-msvc": 1.3.86
+    "@swc/core-darwin-arm64": 1.3.87
+    "@swc/core-darwin-x64": 1.3.87
+    "@swc/core-linux-arm-gnueabihf": 1.3.87
+    "@swc/core-linux-arm64-gnu": 1.3.87
+    "@swc/core-linux-arm64-musl": 1.3.87
+    "@swc/core-linux-x64-gnu": 1.3.87
+    "@swc/core-linux-x64-musl": 1.3.87
+    "@swc/core-win32-arm64-msvc": 1.3.87
+    "@swc/core-win32-ia32-msvc": 1.3.87
+    "@swc/core-win32-x64-msvc": 1.3.87
     "@swc/types": ^0.1.4
   peerDependencies:
     "@swc/helpers": ^0.5.0
@@ -847,7 +847,7 @@ __metadata:
   peerDependenciesMeta:
     "@swc/helpers":
       optional: true
-  checksum: e2792b836446f2d2c002f7170e5a20aae9d0ca2ef316bef17918a1c87744c354c0c0afd8e2a97312cc017d2253fa60397478a5fe8c1ba12f84e7a293db9df5a5
+  checksum: f10f0f22c7cbe1352482ccd05c95c39abb7ded8c9a04f4bf66b2a1977ba524b5b5174f6bc497665e0c6058078c8a9eca0e5035f4926d98f9dfea331032488270
   languageName: node
   linkType: hard
 
@@ -881,12 +881,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/gradient-string@npm:1.1.2":
-  version: 1.1.2
-  resolution: "@types/gradient-string@npm:1.1.2"
+"@types/gradient-string@npm:1.1.3":
+  version: 1.1.3
+  resolution: "@types/gradient-string@npm:1.1.3"
   dependencies:
     "@types/tinycolor2": "*"
-  checksum: 8bc665bcf277b4da9d30eb1dc5d83990678145700df991a24441948cb86b8e9c453cb701a370d3363dddafdd365748ef3190140601c82916ea70ee577de98dc3
+  checksum: 77fef63750c7b5b8cd3915c8f6343bf138a7de787d5c345696acd01d5c6e184d81ecbf64af2b4c85db54ba92afc3d9999a114d53f73a37e2eb3aa58a690ee181
   languageName: node
   linkType: hard
 
@@ -1447,9 +1447,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bullmq@npm:4.11.2":
-  version: 4.11.2
-  resolution: "bullmq@npm:4.11.2"
+"bullmq@npm:4.11.4":
+  version: 4.11.4
+  resolution: "bullmq@npm:4.11.4"
   dependencies:
     cron-parser: ^4.6.0
     glob: ^8.0.3
@@ -1460,7 +1460,7 @@ __metadata:
     semver: ^7.5.4
     tslib: ^2.0.0
     uuid: ^9.0.0
-  checksum: 4a3953927890b7184811f7d1e230bd91ef89dc3484af9379ecfd77ffd126748a612aac3c4b1226491a88d3dd78c54f952e13762a58bd43151c3c70ba242991d4
+  checksum: 71c2a7e37c0a1003c81f3e3bed461778b841b3ce000601e6427cacd6da65c7ac936d5f42d37c86099c1f6534ffc7773d6ffdf3e23a927c3e427a4f5f4a53428f
   languageName: node
   linkType: hard
 
@@ -3845,7 +3845,7 @@ __metadata:
   resolution: "radon@workspace:."
   dependencies:
     "@devtomio/plugin-botlist": 1.3.0
-    "@favware/cliff-jumper": 2.1.3
+    "@favware/cliff-jumper": 2.2.0
     "@prisma/client": 5.3.1
     "@sapphire/decorators": 6.0.2
     "@sapphire/discord-utilities": 3.1.1
@@ -3861,15 +3861,15 @@ __metadata:
     "@sapphire/ts-config": 4.0.1
     "@sapphire/type": 2.4.0
     "@sapphire/utilities": 3.13.0
-    "@swc/core": 1.3.86
+    "@swc/core": 1.3.87
     "@swc/helpers": 0.5.2
     "@types/colornames": 1.1.2
-    "@types/gradient-string": 1.1.2
+    "@types/gradient-string": 1.1.3
     "@types/node": 20.6.3
     "@types/string-similarity": 4.0.0
     "@typescript-eslint/eslint-plugin": 6.7.2
     "@typescript-eslint/parser": 6.7.2
-    bullmq: 4.11.2
+    bullmq: 4.11.4
     colorette: 2.0.20
     colornames: 1.1.1
     confusables: 1.1.1
@@ -3886,7 +3886,7 @@ __metadata:
     prisma: 5.3.1
     tsup: 7.2.0
     typescript: 5.2.2
-    undici: 5.25.0
+    undici: 5.25.1
   languageName: unknown
   linkType: soft
 
@@ -4477,12 +4477,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici@npm:5.25.0":
-  version: 5.25.0
-  resolution: "undici@npm:5.25.0"
+"undici@npm:5.25.1":
+  version: 5.25.1
+  resolution: "undici@npm:5.25.1"
   dependencies:
     busboy: ^1.6.0
-  checksum: 6672f0d863a430467b76dd906afe8125f2f0a8102e9703d5cde3e36b4173405daed11d014845df5ee40851b2ecb972e30b859fad602c5ebd0c5dc677d15d2645
+  checksum: ed69ef41ef87ccb7925deca2f66841b74aaf01811e1f294a14a1d4ac7dc5aa3d24dcfd877abfa39e7eebf928f4ef1bc149302fd2468e185f90621dd26607efb9
   languageName: node
   linkType: hard
 
