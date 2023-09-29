@@ -1,7 +1,7 @@
 process.env.NODE_ENV ??= 'development';
 
 import { Owners } from '#constants';
-import { envParseBoolean, envParseInteger, envParseString } from '#lib/env';
+import { envParseInteger, envParseString } from '#lib/env';
 import type { BotList } from '@devtomio/plugin-botlist';
 import { Time } from '@sapphire/duration';
 import { BucketScope, type ClientLoggerOptions, type CooldownOptions, LogLevel } from '@sapphire/framework';
@@ -19,9 +19,7 @@ import {
 } from 'discord.js';
 import { config as dotenv } from 'dotenv-cra';
 
-dotenv({
-	debug: process.env.DOTENV_DEBUG_ENABLED ? envParseBoolean('DOTENV_DEBUG_ENABLED') : undefined
-});
+dotenv();
 
 export function parseRedisOption(): Pick<RedisOptions, 'port' | 'password' | 'host'> {
 	return {
