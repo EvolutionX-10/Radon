@@ -2,7 +2,7 @@ process.env.NODE_ENV ??= 'development';
 
 import { Owners } from '#constants';
 import { envParseInteger, envParseString } from '#lib/env';
-import type { BotList } from '@devtomio/plugin-botlist';
+// import type { BotList } from '@devtomio/plugin-botlist';
 import { Time } from '@sapphire/duration';
 import { BucketScope, type ClientLoggerOptions, type CooldownOptions, LogLevel } from '@sapphire/framework';
 import type { ScheduledTaskHandlerOptions } from '@sapphire/plugin-scheduled-tasks';
@@ -51,17 +51,17 @@ export const config: Config = {
 	logger: {
 		level: LogLevel.Info
 	},
-	botlist: {
-		keys: {
-			topGG: envParseString('TOP_BOT_TOKEN'),
-			voidBots: envParseString('VOID_BOT_TOKEN')
-		},
-		clientId: '944833303226236989',
-		autoPost: {
-			enabled: process.env.NODE_ENV === 'production',
-			interval: Time.Hour * 12
-		}
-	},
+	// botlist: {
+	// 	keys: {
+	// 		topGG: envParseString('TOP_BOT_TOKEN'),
+	// 		voidBots: envParseString('VOID_BOT_TOKEN')
+	// 	},
+	// 	clientId: '944833303226236989',
+	// 	autoPost: {
+	// 		enabled: process.env.NODE_ENV === 'production',
+	// 		interval: Time.Hour * 12
+	// 	}
+	// },
 	sweepers: {
 		bans: {
 			interval: 300,
@@ -123,7 +123,7 @@ export const ClientConfig: ClientOptions = {
 	shards: 'auto',
 	disableMentionPrefix: process.env.NODE_ENV === 'production',
 	preventFailedToFetchLogForGuilds: true,
-	botList: config.botlist,
+	// botList: config.botlist,
 	sweepers: config.sweepers,
 	presence: config.presence,
 	tasks: config.tasks
@@ -136,7 +136,7 @@ interface Config {
 	partials: Partials[];
 	logger: ClientLoggerOptions;
 	sweepers: SweeperOptions;
-	botlist: BotList.Options;
+	// botlist: BotList.Options;
 	presence: PresenceData;
 	tasks: ScheduledTaskHandlerOptions;
 }

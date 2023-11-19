@@ -5,18 +5,18 @@ import {
 	Command,
 	type ContextMenuCommand,
 	Identifiers,
-	type PieceContext,
 	Precondition,
 	type PreconditionContext,
 	type PreconditionOptions,
-	type PreconditionResult
+	type PreconditionResult,
+	LoaderPieceContext
 } from '@sapphire/framework';
 import type { CommandInteraction, ContextMenuCommandInteraction, Message } from 'discord.js';
 
 export abstract class PermissionsPrecondition extends Precondition {
 	private readonly guildOnly: boolean;
 
-	public constructor(context: PieceContext, options: PermissionsPrecondition.Options = {}) {
+	public constructor(context: LoaderPieceContext<'preconditions'>, options: PermissionsPrecondition.Options = {}) {
 		super(context, options);
 		this.guildOnly = options.guildOnly ?? true;
 	}
@@ -28,7 +28,7 @@ export abstract class PermissionsPrecondition extends Precondition {
 	): PermissionsPrecondition.AsyncResult {
 		// If not in a guild, resolve on an error:
 		if (message.guild === null || message.member === null) {
-			return this.guildOnly ? this.error({ identifier: Identifiers.PreconditionGuildOnly }) : this.ok();
+			return this.guildOnly ? this.error({ identifier: Identifiers.PreconditionRunIn }) : this.ok();
 		}
 
 		// Run the specific precondition's logic:
@@ -41,7 +41,7 @@ export abstract class PermissionsPrecondition extends Precondition {
 		context: PermissionsPrecondition.Context
 	): PermissionsPrecondition.AsyncResult {
 		if (interaction.guild === null || interaction.member === null) {
-			return this.guildOnly ? this.error({ identifier: Identifiers.PreconditionGuildOnly }) : this.ok();
+			return this.guildOnly ? this.error({ identifier: Identifiers.PreconditionRunIn }) : this.ok();
 		}
 		return this.handle(interaction, command, context);
 	}
@@ -52,7 +52,7 @@ export abstract class PermissionsPrecondition extends Precondition {
 		context: PermissionsPrecondition.Context
 	): PermissionsPrecondition.AsyncResult {
 		if (interaction.guild === null || interaction.member === null) {
-			return this.guildOnly ? this.error({ identifier: Identifiers.PreconditionGuildOnly }) : this.ok();
+			return this.guildOnly ? this.error({ identifier: Identifiers.PreconditionRunIn }) : this.ok();
 		}
 		return this.handle(interaction, command, context);
 	}
