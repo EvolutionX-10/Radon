@@ -2,7 +2,10 @@ import type { PrismaClient } from '@prisma/client';
 import type { Guild } from 'discord.js';
 
 export class Nickname {
-	public constructor(private readonly guild: Guild, private readonly prisma: PrismaClient) {}
+	public constructor(
+		private readonly guild: Guild,
+		private readonly prisma: PrismaClient
+	) {}
 
 	public push(id: string) {
 		return this.prisma.nicknames.upsert({

@@ -3,7 +3,10 @@ import type { Embed } from './Embed.js';
 import { ChannelType, Guild } from 'discord.js';
 
 export class Modlogs {
-	public constructor(private readonly guild: Guild, private readonly prisma: PrismaClient) {
+	public constructor(
+		private readonly guild: Guild,
+		private readonly prisma: PrismaClient
+	) {
 		this.guild = guild;
 	}
 

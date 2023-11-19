@@ -12,7 +12,10 @@ export class GuildSettings {
 	public roles: RolesConfig;
 	public warns: Warn;
 	public nicknames: Nickname;
-	public constructor(private readonly guild: Guild, private readonly prisma: PrismaClient) {
+	public constructor(
+		private readonly guild: Guild,
+		private readonly prisma: PrismaClient
+	) {
 		this.blacklists = new Blacklist(this.prisma);
 		this.modlogs = new Modlogs(this.guild, this.prisma);
 		this.roles = new RolesConfig(this.guild, this.prisma);

@@ -3,7 +3,10 @@ import type { MemberWarnData, PrismaClient } from '@prisma/client';
 import type { Guild, GuildMember } from 'discord.js';
 
 export class Warn {
-	public constructor(private readonly guild: Guild, private readonly prisma: PrismaClient) {}
+	public constructor(
+		private readonly guild: Guild,
+		private readonly prisma: PrismaClient
+	) {}
 
 	public async add({
 		warnId,

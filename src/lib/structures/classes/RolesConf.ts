@@ -2,7 +2,10 @@ import type { PrismaClient } from '@prisma/client';
 import type { Guild } from 'discord.js';
 
 export class RolesConfig {
-	public constructor(private readonly guild: Guild, private readonly prisma: PrismaClient) {
+	public constructor(
+		private readonly guild: Guild,
+		private readonly prisma: PrismaClient
+	) {
 		this.guild = guild;
 	}
 
