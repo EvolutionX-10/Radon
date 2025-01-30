@@ -85,7 +85,7 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private get miscStatistics(): StatsMisc {
-		const { linesOfCode, numOfFiles } = this.container.utils.countlines('dist');
+		const { linesOfCode, numOfFiles } = this.container.utils.countlines('src');
 		return {
 			lines: `${linesOfCode}`,
 			files: `${numOfFiles}`
