@@ -2,7 +2,7 @@ import { Color, Emojis, RecommendedPermissions, UserFlags, voteRow } from '#cons
 import { Button, Embed, RadonCommand, Row, Timestamp } from '#lib/structures';
 import { isOwner } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
-import { ButtonBuilder, ButtonStyle, ChannelType, OAuth2Scopes } from 'discord.js';
+import { ButtonBuilder, ButtonStyle, ChannelType, InteractionContextType, OAuth2Scopes } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'About things!'
@@ -29,7 +29,8 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
-					.setDMPermission(false)
+					.setContexts(InteractionContextType.Guild)
+					.setContexts(InteractionContextType.Guild)
 					.addSubcommand((builder) =>
 						builder //
 							.setName('me')

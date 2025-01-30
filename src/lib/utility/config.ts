@@ -17,9 +17,6 @@ import {
 	type SweeperOptions,
 	ActivityType
 } from 'discord.js';
-import { config as dotenv } from 'dotenv-cra';
-
-dotenv();
 
 export function parseRedisOption(): Pick<RedisOptions, 'port' | 'password' | 'host'> {
 	return {

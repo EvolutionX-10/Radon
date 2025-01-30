@@ -3,7 +3,7 @@ import { PermissionLevels } from '#lib/types';
 import { mention, mins } from '#lib/utility';
 import { Emojis, RecommendedPermissions, RecommendedPermissionsWithoutAdmin } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
-import { ChannelType, Guild } from 'discord.js';
+import { ChannelType, Guild, InteractionContextType } from 'discord.js';
 import { PermissionFlagsBits } from 'discord-api-types/v9';
 
 @ApplyOptions<RadonCommand.Options>({
@@ -39,7 +39,7 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
-					.setDMPermission(false)
+					.setContexts(InteractionContextType.Guild)
 					.setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 			{ idHints: ['1037359307232137297', '1027861261842657301'] }
 		);

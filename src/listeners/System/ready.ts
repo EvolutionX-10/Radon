@@ -4,7 +4,7 @@ import { RadonEvents } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener, Piece, Store } from '@sapphire/framework';
 import { blue, blueBright, cyanBright, green, greenBright, magentaBright, white } from 'colorette';
-import gradient from 'gradient-string';
+import { pastel, fruit } from 'gradient-string';
 
 @ApplyOptions<Listener.Options>({
 	event: RadonEvents.ClientReady,
@@ -16,7 +16,7 @@ export class UserListener extends Listener {
 		this.container.utils = new Utils(client);
 
 		this.container.client = client;
-		this.container.logger.info(`Logged in as ${gradient.fruit(client.user!.username)}`);
+		this.container.logger.info(`Logged in as ${fruit(client.user!.username)}`);
 		this.printBanner();
 		this.container.logger.info(`${greenBright('[')}${blueBright('READY')}${greenBright(']')}`);
 
@@ -37,7 +37,7 @@ export class UserListener extends Listener {
 		const blc = this.isDev ? cyanBright : blue;
 
 		console.log(
-			gradient.pastel(
+			pastel(
 				[
 					String.raw`                                                                      `,
 					String.raw`                                                                      `,

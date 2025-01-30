@@ -5,7 +5,6 @@ import { clean } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { send } from '@sapphire/plugin-editable-commands';
 import { Stopwatch } from '@sapphire/stopwatch';
-import { Type } from '@sapphire/type';
 import { codeBlock, isThenable } from '@sapphire/utilities';
 import { inspect } from 'node:util';
 import { fetch } from 'undici';
@@ -14,7 +13,7 @@ import { fetch } from 'undici';
 	aliases: ['ev'],
 	quotes: [],
 	permissionLevel: PermissionLevels.BotOwner,
-	flags: ['hidden', 'haste', 'silent', 's', 'type', 't', 'v', 'value', 'this', 'stack', 'del', 'd', 'async'],
+	flags: ['hidden', 'haste', 'silent', 's', 'v', 'value', 'this', 'stack', 'del', 'd', 'async'],
 	options: ['depth'],
 	description: 'Evaluate some code',
 	guarded: true
@@ -29,7 +28,7 @@ export class UserCommand extends RadonCommand {
 		if (!code.length) return;
 
 		if (args.getFlags('d', 'del')) await message.delete().catch(() => null);
-		let { success, result, time, type } = await this.eval(
+		let { success, result, time } = await this.eval(
 			message,
 			code,
 			{
@@ -43,11 +42,9 @@ export class UserCommand extends RadonCommand {
 			return {
 				success: false,
 				result: e.message,
-				time: '',
-				type: new Type(e)
+				time: ''
 			};
 		});
-		const footer = codeBlock('ts', type.is);
 
 		if (typeof result !== 'string') return;
 		result = clean(result);
@@ -55,7 +52,7 @@ export class UserCommand extends RadonCommand {
 		if (args.getFlags('haste')) {
 			const url = await this.getHaste(result).catch(() => undefined);
 			if (url) {
-				return send(message, `Here's the result: <${url}>\n\n${footer}\n${time}`);
+				return send(message, `Here's the result: <${url}>\n\n${time}`);
 			}
 			return send(message, `Failed to get haste url`);
 		}
@@ -68,13 +65,9 @@ export class UserCommand extends RadonCommand {
 			return null;
 		}
 
-		if (args.getFlags('type', 't')) {
-			return send(message, type.toString());
-		}
-
 		if (result.length > 1900) {
 			return send(message, {
-				content: `Output was too long... sent the result as a file.\n\n${footer}`,
+				content: `Output was too long... sent the result as a file.\n\n${time}`,
 				files: [
 					{
 						attachment: Buffer.from(result),
@@ -88,7 +81,7 @@ export class UserCommand extends RadonCommand {
 			return send(message, result);
 		}
 
-		return send(message, `${codeBlock('ts', result)}\n${footer}\n${time}`);
+		return send(message, `${codeBlock('ts', result)}\n${time}`);
 	}
 
 	// @ts-expect-error It is because args is unused
@@ -99,29 +92,26 @@ export class UserCommand extends RadonCommand {
 		const last = ar.pop();
 		if (flags.async) code = `(async () => {\n${ar.join(';\n')}\nreturn ${last?.trim() ?? ' '}\n\n})();`;
 		const msg = message;
-		// @ts-expect-error Unused variables
+		// @ts-ignore Unused variables
 		const { guild, channel, member } = msg;
 		const { container: ctn } = this;
-		// @ts-expect-error Unused variables
+		// @ts-ignore Unused variables
 		const { client } = ctn;
 
 		let success: boolean;
 		let result: unknown;
 		let asyncTime = ``;
 		let syncTime = ``;
-		let type: Type;
 		let thenable = false;
 
 		try {
 			// eslint-disable-next-line no-eval
 			result = eval(code);
 			syncTime = stopwatch.toString();
-			type = new Type(result);
 			success = true;
 		} catch (error) {
 			if (!syncTime.length) syncTime = stopwatch.toString();
 			if (thenable && !asyncTime.length) asyncTime = stopwatch.toString();
-			if (!type!) type = new Type(error);
 			success = false;
 			result = flags.stack ? error : (error as Error).message;
 		}
@@ -143,7 +133,7 @@ export class UserCommand extends RadonCommand {
 		}
 		const time = this.formatTime(syncTime, asyncTime ?? '');
 
-		return { result: clean(result as string), success, type, time };
+		return { result: clean(result as string), success, time };
 	}
 
 	private formatTime(syncTime: string, asyncTime?: string) {

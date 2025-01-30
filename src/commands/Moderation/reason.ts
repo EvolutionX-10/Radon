@@ -1,7 +1,7 @@
 import { RadonCommand, Row } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
-import { ModalBuilder, TextChannel, TextInputBuilder, TextInputStyle } from 'discord.js';
+import { ModalBuilder, TextChannel, TextInputBuilder, TextInputStyle, InteractionContextType } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: `Change the reason for the action`,
@@ -63,7 +63,7 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
-					.setDMPermission(false)
+					.setContexts(InteractionContextType.Guild)
 					.addStringOption((option) =>
 						option //
 							.setName('id')

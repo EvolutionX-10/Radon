@@ -10,6 +10,7 @@ import { Duration, DurationFormatter } from '@sapphire/duration';
 import { cutText } from '@sapphire/utilities';
 import { type APIApplicationCommandOptionChoice, ApplicationCommandType } from 'discord-api-types/v9';
 import type { Collection, GuildMember, GuildTextBasedChannel } from 'discord.js';
+import { InteractionContextType } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Manage warnings for a user',
@@ -126,7 +127,7 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
-					.setDMPermission(false)
+					.setContexts(InteractionContextType.Guild)
 					.addSubcommand((builder) =>
 						builder //
 							.setName('add')
@@ -266,7 +267,7 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName('Warn List')
 					.setType(ApplicationCommandType.User)
-					.setDMPermission(false),
+					.setContexts(InteractionContextType.Guild),
 			{ idHints: ['960410679070851122', '1019932007117094982'] }
 		);
 	}

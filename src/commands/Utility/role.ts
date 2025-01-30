@@ -19,7 +19,8 @@ import {
 	ButtonStyle,
 	ButtonBuilder,
 	StringSelectMenuBuilder,
-	type SelectMenuComponentOptionData
+	type SelectMenuComponentOptionData,
+	InteractionContextType
 } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
@@ -68,7 +69,7 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
-					.setDMPermission(false)
+					.setContexts(InteractionContextType.Guild)
 					.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
 					.addSubcommand((builder) =>
 						builder //

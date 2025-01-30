@@ -16,7 +16,8 @@ import {
 	Role,
 	Collection,
 	type APIRole,
-	ChannelSelectMenuBuilder
+	ChannelSelectMenuBuilder,
+	InteractionContextType
 } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
@@ -305,7 +306,7 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
-					.setDMPermission(false)
+					.setContexts(InteractionContextType.Guild)
 					.setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 			{ idHints: ['951113445930065980', '1019931909528223765'] }
 		);

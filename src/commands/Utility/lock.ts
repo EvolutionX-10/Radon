@@ -5,7 +5,17 @@ import { sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { BucketScope } from '@sapphire/framework';
 import { ChannelType, PermissionFlagsBits } from 'discord-api-types/v9';
-import { ActionRowBuilder, CategoryChannel, GuildChannel, ModalBuilder, Role, TextInputBuilder, TextInputStyle, ThreadChannel } from 'discord.js';
+import {
+	ActionRowBuilder,
+	CategoryChannel,
+	GuildChannel,
+	ModalBuilder,
+	Role,
+	TextInputBuilder,
+	TextInputStyle,
+	ThreadChannel,
+	InteractionContextType
+} from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Lock!',
@@ -49,7 +59,7 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
-					.setDMPermission(false)
+					.setContexts(InteractionContextType.Guild)
 					.setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels | PermissionFlagsBits.ManageRoles)
 					.addSubcommand((builder) =>
 						builder //

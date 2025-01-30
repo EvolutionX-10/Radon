@@ -5,7 +5,17 @@ import { sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { BucketScope } from '@sapphire/framework';
 import { ChannelType, PermissionFlagsBits } from 'discord-api-types/v9';
-import { CategoryChannel, GuildChannel, ActionRowBuilder, ModalBuilder, Role, TextInputBuilder, ThreadChannel, TextInputStyle } from 'discord.js';
+import {
+	CategoryChannel,
+	GuildChannel,
+	ActionRowBuilder,
+	ModalBuilder,
+	Role,
+	InteractionContextType,
+	TextInputBuilder,
+	ThreadChannel,
+	TextInputStyle
+} from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Unlock!',
@@ -49,7 +59,7 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
-					.setDMPermission(false)
+					.setContexts(InteractionContextType.Guild)
 					.setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels | PermissionFlagsBits.ManageRoles)
 					.addSubcommand((builder) =>
 						builder //

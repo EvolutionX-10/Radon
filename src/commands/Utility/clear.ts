@@ -4,6 +4,7 @@ import { PermissionLevels } from '#lib/types';
 import { sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { PermissionFlagsBits } from 'discord-api-types/v9';
+import { InteractionContextType } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	cooldownDelay: sec(15),
@@ -65,7 +66,7 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
-					.setDMPermission(false)
+					.setContexts(InteractionContextType.Guild)
 					.setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
 					.addIntegerOption((option) =>
 						option //
