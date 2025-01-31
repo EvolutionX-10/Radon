@@ -8,34 +8,30 @@ on:
 
 jobs:
   Linting:
-    name: Linting NodeJS
+    name: Linting
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
-      - name: Use Node.js v18
-        uses: actions/setup-node@1a4442cacd436585916779262731d5b162bc6ec7 # v3
+      - uses: actions/checkout@v4
+      - name: Uses Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: "18.x"
-          cache: yarn
+          bun-version: 1.2.1
       - name: Install Dependencies
-        run: yarn --immutable
+        run: bun install
       - name: Run Prettier
-        run: yarn pretty
+        run: bun pretty
 
   Building:
-    name: Building NodeJS
+    name: Build
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
-      - name: Use Node.js v18
-        uses: actions/setup-node@1a4442cacd436585916779262731d5b162bc6ec7 # v3
+      - uses: actions/checkout@v4
+      - name: Uses Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: "18.x"
-          cache: yarn
-      - name: Install dependencies
-        run: yarn --immutable
-      - name: Build Code
-        run: yarn compile
+          bun-version: 1.2.1
+      - name: Install Dependencies
+        run: bun install
       - name: TypeCheck
-        run: yarn typecheck
+        run: bun typecheck
