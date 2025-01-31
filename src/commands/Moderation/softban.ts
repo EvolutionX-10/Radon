@@ -4,7 +4,7 @@ import { type BaseModActionData, PermissionLevels, RadonEvents } from '#lib/type
 import { runAllChecks, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { type APIApplicationCommandOptionChoice, PermissionFlagsBits } from 'discord-api-types/v9';
-import { InteractionContextType } from 'discord.js';
+import { InteractionContextType, MessageFlags } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: `Quickly bans and unbans, acts as a quick purge`,
@@ -25,7 +25,7 @@ export class UserCommand extends RadonCommand {
 	];
 
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
-		await interaction.deferReply({ ephemeral: true, fetchReply: true });
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral, withResponse: true });
 		const member = interaction.options.getMember('target');
 		const dm = interaction.options.getBoolean('dm') ?? false;
 

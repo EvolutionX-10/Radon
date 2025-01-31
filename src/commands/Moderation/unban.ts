@@ -4,7 +4,7 @@ import { type BaseModActionData, PermissionLevels, RadonEvents } from '#lib/type
 import { sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { PermissionFlagsBits } from 'discord-api-types/v9';
-import { InteractionContextType } from 'discord.js';
+import { InteractionContextType, MessageFlags } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: `Remove a ban from a user`,
@@ -22,7 +22,7 @@ export class UserCommand extends RadonCommand {
 		if (!ban)
 			return interaction.reply({
 				content: `${Emojis.Cross} ${user} is not banned!`,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 
 		const content = `${Emojis.Confirm} ${user} has been unbanned ${reason ? `for the following reason: ${reason}` : ''}`;

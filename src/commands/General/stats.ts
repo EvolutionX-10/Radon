@@ -10,7 +10,7 @@ import { uptime } from 'node:os';
 	description: 'Provides some stats about me'
 })
 export class UserCommand extends RadonCommand {
-	public override messageRun(message: RadonCommand.Message) {
+	public override messageRun(message: RadonCommand.Message<true>) {
 		return message.channel.send({
 			embeds: [this.statsEmbed()]
 		});

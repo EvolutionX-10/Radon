@@ -5,7 +5,7 @@ import { runAllChecks } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { clean } from 'confusables';
 import { ApplicationCommandType, PermissionFlagsBits } from 'discord-api-types/v9';
-import { InteractionContextType } from 'discord.js';
+import { InteractionContextType, MessageFlags } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: `Manage nicknames`,
@@ -146,21 +146,21 @@ export class UserCommand extends RadonCommand {
 		if (!member) {
 			return interaction.reply({
 				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 		}
 		const reason = `Done by ${interaction.user.tag}`;
 		if (member.id === interaction.guild.ownerId) {
 			return interaction.reply({
 				content: `${Emojis.Cross} I cannot decancer the owner of the server`,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 		}
 		const { result, content } = runAllChecks(interaction.member, member, 'nickname decancer');
 		if (!result) {
 			return interaction.reply({
 				content,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 		}
 		const { displayName } = member;
@@ -169,7 +169,7 @@ export class UserCommand extends RadonCommand {
 		if (nickname === displayName) {
 			return interaction.reply({
 				content: `No changes were made to ${displayName}!`,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 		}
 		await member.setNickname(nickname, reason);
@@ -181,7 +181,7 @@ export class UserCommand extends RadonCommand {
 		if (!member) {
 			return interaction.reply({
 				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 		}
 		const nickname = interaction.options.getString('nickname', true);
@@ -192,7 +192,7 @@ export class UserCommand extends RadonCommand {
 		if (member.id === interaction.guild.ownerId) {
 			return interaction.reply({
 				content: 'I cannot set the nickname of the server owner',
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 		}
 
@@ -200,14 +200,14 @@ export class UserCommand extends RadonCommand {
 		if (!result) {
 			return interaction.reply({
 				content,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 		}
 
 		if (member.displayName === nickname) {
 			return interaction.reply({
 				content: `${member}'s display name is already set to ${nickname}`,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 		}
 		await member.setNickname(nickname, reason);
@@ -221,7 +221,7 @@ export class UserCommand extends RadonCommand {
 		if (!member) {
 			return interaction.reply({
 				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 		}
 		const reason =
@@ -230,20 +230,20 @@ export class UserCommand extends RadonCommand {
 		if (member.id === interaction.guild.ownerId) {
 			return interaction.reply({
 				content: 'I cannot clear the nickname of the server owner',
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 		}
 		const { result, content } = runAllChecks(interaction.member, member, 'nickname clear');
 		if (!result) {
 			return interaction.reply({
 				content,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 		}
 		if (!member.nickname) {
 			return interaction.reply({
 				content: `${member} does not have a nickname`,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 		}
 		await member.setNickname(null, reason);
@@ -257,7 +257,7 @@ export class UserCommand extends RadonCommand {
 		if (!member) {
 			return interaction.reply({
 				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 		}
 		const nick = interaction.options.getString('nickname') ?? member.displayName;
@@ -268,7 +268,7 @@ export class UserCommand extends RadonCommand {
 		if (member.id === interaction.guild.ownerId) {
 			return interaction.reply({
 				content: 'I cannot set the nickname of the server owner',
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 		}
 
@@ -276,7 +276,7 @@ export class UserCommand extends RadonCommand {
 		if (!result) {
 			return interaction.reply({
 				content,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 		}
 
@@ -301,7 +301,7 @@ export class UserCommand extends RadonCommand {
 		if (!member) {
 			return interaction.reply({
 				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 		}
 

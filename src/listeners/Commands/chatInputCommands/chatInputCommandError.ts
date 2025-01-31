@@ -1,6 +1,7 @@
 import { RadonEvents } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener, UserError, type ChatInputCommandErrorPayload } from '@sapphire/framework';
+import { MessageFlags } from 'discord.js';
 
 @ApplyOptions<Listener.Options>({
 	event: RadonEvents.ChatInputCommandError
@@ -17,7 +18,7 @@ export class UserListener extends Listener {
 		return interaction
 			.reply({
 				content: error.message,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			})
 			.catch(() => null);
 	}

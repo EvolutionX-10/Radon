@@ -11,12 +11,13 @@ import type {
 	GuildMember,
 	Message,
 	Role,
-	TextChannel
+	TextChannel,
+	If
 } from 'discord.js';
 
-export interface GuildMessage extends Message {
+export interface GuildMessage<K extends boolean> extends Message<K> {
 	// ! channel: GuildTextBasedChannelTypes; TODO Remove this
-	readonly guild: Guild;
+	readonly guild: If<K, Guild>;
 	readonly member: GuildMember;
 }
 
@@ -25,8 +26,6 @@ export interface DMMessage extends Message {
 	readonly guild: null;
 	readonly member: null;
 }
-
-export type MessageAcknowledgeable = TextChannel | GuildMessage;
 
 export interface GuildInteraction extends CommandInteraction {
 	readonly guild: Guild;

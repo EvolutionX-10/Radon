@@ -4,7 +4,7 @@ import { RadonEvents } from '#lib/types';
 import { isOwner } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener } from '@sapphire/framework';
-import type { CommandInteraction } from 'discord.js';
+import { MessageFlags, type CommandInteraction } from 'discord.js';
 import { fetch } from 'undici';
 
 @ApplyOptions<Listener.Options>({
@@ -43,7 +43,7 @@ export class UserListener extends Listener {
 		await interaction.followUp({
 			embeds: [embed],
 			components: [voteRow],
-			ephemeral: chance(90)
+			flags: chance(90) ? MessageFlags.Ephemeral : undefined
 		});
 	}
 }

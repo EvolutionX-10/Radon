@@ -1,6 +1,7 @@
 import { RadonEvents } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener, UserError, type ContextMenuCommandDeniedPayload } from '@sapphire/framework';
+import { MessageFlags } from 'discord.js';
 
 @ApplyOptions<Listener.Options>({
 	event: RadonEvents.ContextMenuCommandDenied
@@ -11,7 +12,7 @@ export class UserListener extends Listener {
 
 		return interaction.reply({
 			content,
-			ephemeral: true
+			flags: MessageFlags.Ephemeral
 		});
 	}
 }
