@@ -16,6 +16,6 @@ export class UserPermissionsPrecondition extends PermissionsPrecondition {
 			: this.error({
 					identifier: `Not a mod`,
 					message: `You ain't a mod bruh`
-			  });
+				});
 	}
 }

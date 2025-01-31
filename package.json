@@ -6,29 +6,21 @@
 	"type": "module",
 	"private": true,
 	"imports": {
-		"#constants": "./dist/lib/utility/constants.js",
-		"#config": "./dist/lib/utility/config.js",
-		"#lib/RadonClient": "./dist/lib/RadonClient.js",
-		"#lib/*": "./dist/lib/*/index.js",
-		"#root/*": "./dist/*.js"
+		"#constants": "./src/lib/utility/constants.ts",
+		"#config": "./src/lib/utility/config.ts",
+		"#lib/RadonClient": "./src/lib/RadonClient.ts",
+		"#lib/*": "./src/lib/*/index.ts",
+		"#root/*": "./src/*.ts"
 	},
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"start": "yarn compile && NODE_ENV=production && node ./dist/index.js",
-		"dev": "yarn compile && node ./dist/index.js",
-		"deploy": "yarn heroku && yarn backup",
+		"start": "bun .",
+		"dev": "bun .",
 		"release": "cj",
 		"preview": "cj --dry-run",
-		"compile": "tsup",
-		"watch": "tsup --watch --onSuccess \"node ./dist/index.js\"",
-		"postinstall": "husky install",
-		"logs": "heroku logs --app=radon-dev -t --force-colors",
-		"logs2": "heroku logs --app=radon-dev2 -t --force-colors",
-		"format": "prettier --write './src/**/*.ts' './README.md'",
-		"pretty": "prettier --check './src/**/*.ts' './README.md'",
-		"typecheck": "tsc -b src",
-		"lint": "eslint --fix --ext ts",
-		"deps": "yarn upgrade-interactive"
+		"format": "bunx prettier --write './src/**/*.ts' './README.md'",
+		"pretty": "bunx prettier --check './src/**/*.ts' './README.md'",
+		"typecheck": "tsc -b src"
 	},
 	"engines": {
 		"node": "20.10.0"
@@ -56,6 +48,7 @@
 		"@sapphire/ts-config": "5.0.1",
 		"@swc/core": "1.10.12",
 		"@swc/helpers": "0.5.15",
+		"@types/bun": "1.2.1",
 		"@types/colornames": "1.1.4",
 		"@types/gradient-string": "1.1.6",
 		"@types/node": "22.12.0",
@@ -64,7 +57,6 @@
 		"lint-staged": "15.4.3",
 		"prettier": "3.4.2",
 		"prisma": "6.3.0",
-		"tsup": "8.3.6",
 		"typescript": "5.7.3"
 	},
 	"dependencies": {

@@ -12,6 +12,6 @@ export class UserPermissionsPrecondition extends PermissionsPrecondition {
 			: this.error({
 					identifier: `Error`,
 					message: `Only for Admins pal`
-			  });
+				});
 	}
 }

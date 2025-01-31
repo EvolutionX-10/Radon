@@ -8,6 +8,6 @@ export class UserPermissionsPrecondition extends PermissionsPrecondition {
 			: this.error({
 					identifier: `GuildOwner`,
 					message: `Only owner of this server can do!`
-			  });
+				});
 	}
 }
