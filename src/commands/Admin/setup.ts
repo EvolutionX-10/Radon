@@ -17,7 +17,8 @@ import {
 	Collection,
 	type APIRole,
 	ChannelSelectMenuBuilder,
-	InteractionContextType
+	InteractionContextType,
+	MessageFlags
 } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
@@ -29,9 +30,9 @@ import {
 export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		let stage = 0;
-		let msg = (await interaction.reply({
+		let interactionResponse = await interaction.reply({
 			embeds: [this.welcome()],
-			fetchReply: true,
+			withResponse: true,
 			components: [
 				new Row<Button>()._components([
 					new Button() //
@@ -46,7 +47,12 @@ export class UserCommand extends RadonCommand {
 						._emoji('<a:poggershype:879074649781174272>')
 				])
 			]
-		})) as Message;
+		});
+
+		const msg_id = interactionResponse.interaction.responseMessageId;
+		if (!msg_id) return;
+		let msg = (await interaction.channel?.messages.fetch(msg_id)) as Message<boolean>;
+		if (!msg) return;
 
 		const collector = msg.createMessageComponentCollector({ time: mins(3) });
 
@@ -60,7 +66,7 @@ export class UserCommand extends RadonCommand {
 			if (i.user.id !== interaction.user.id) {
 				await i.followUp({
 					content: `This maze isn't for you mate!`,
-					ephemeral: true
+					flags: MessageFlags.Ephemeral
 				});
 				return;
 			}
@@ -97,7 +103,7 @@ export class UserCommand extends RadonCommand {
 					if (adminRoles.some((r) => modRoles.has(r.id))) {
 						await i.reply({
 							content: `Moderation roles and Administration roles cannot be the same!`,
-							ephemeral: true
+							flags: MessageFlags.Ephemeral
 						});
 						break;
 					}
@@ -116,7 +122,6 @@ export class UserCommand extends RadonCommand {
 					modLogChannel = i.channels.first() as TextChannel;
 				case 'confirm_modlog':
 					stage = 4;
-					// eslint-disable-next-line no-case-declarations
 					const edit = await modLogChannel!
 						.edit({
 							permissionOverwrites: permissions(
@@ -124,9 +129,11 @@ export class UserCommand extends RadonCommand {
 							)
 						})
 						.catch(async () => {
-							await i.channel!.send(
-								`I am unable to edit permissions of ${modLogChannel}. Please grant me admin permission or click on "Make a new modlog"`
-							);
+							i.channel &&
+								i.channel.isSendable() &&
+								(await i.channel.send(
+									`I am unable to edit permissions of ${modLogChannel}. Please grant me admin permission or click on "Make a new modlog"`
+								));
 							return null;
 						});
 					if (edit) {
@@ -143,7 +150,7 @@ export class UserCommand extends RadonCommand {
 					if (!interaction.guild.members.me?.permissions.has(PermissionFlagsBits.ManageChannels)) {
 						await i.followUp({
 							content: `I don't have the permissions to create channels!\nPlease give me the \`Manage Channels\` permission!`,
-							ephemeral: true
+							flags: MessageFlags.Ephemeral
 						});
 						return;
 					}
@@ -163,7 +170,7 @@ export class UserCommand extends RadonCommand {
 								`\`Manage Channels\` [Creation of Channel], \`Manage Roles\` [To configure channel permissions], \`Embed Links and Send Messages\` [To send modlogs] permissions to me!\n` +
 								`**Note:** I need a role other than @everyone with the mentioned permissions!` +
 								`If you are still having issues run </about me:970217477126643752> and join our support server!`,
-							ephemeral: true
+							flags: MessageFlags.Ephemeral
 						});
 						return undefined;
 					});

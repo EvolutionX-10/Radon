@@ -2,6 +2,7 @@ import { RadonGuildId } from '#constants';
 import { RadonCommand } from '#lib/structures';
 import { ApplyOptions } from '@sapphire/decorators';
 import { send } from '@sapphire/plugin-editable-commands';
+import { MessageFlags } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: `Check my latency!`
@@ -17,11 +18,12 @@ export class UserCommand extends RadonCommand {
 	}
 
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const msg = (await interaction.reply({
+		const interactionResponse = await interaction.reply({
 			content: `Ping?`,
-			ephemeral: true,
-			fetchReply: true
-		})) as RadonCommand.Message;
+			flags: MessageFlags.Ephemeral,
+			withResponse: true
+		});
+		const msg = interaction.channel?.messages.cache.get(interactionResponse.interaction.responseMessageId!) as RadonCommand.Message;
 		const { diff, ping } = this.getPing(msg, interaction);
 
 		return interaction.editReply({

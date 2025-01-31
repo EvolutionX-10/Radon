@@ -28,6 +28,6 @@ export class UserPrecondition extends Precondition {
 			? this.ok()
 			: this.error({
 					message: `A maintenance is going on, please be paitent. If this persists for long, join my support server to know more about it!`
-			  });
+				});
 	}
 }

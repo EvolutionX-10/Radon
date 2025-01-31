@@ -12,11 +12,11 @@
 
 ## Table of Contents
 
--   [Invite](#invite-radon-to-your-server-click-here)
--   [Beta Testing](#beta-testing-for-radon)
--   [Developing on Radon](#developing-on-radon)
--   [Contributing](#contributing)
--   [Project Stats](#project-stats)
+- [Invite](#invite-radon-to-your-server-click-here)
+- [Beta Testing](#beta-testing-for-radon)
+- [Developing on Radon](#developing-on-radon)
+- [Contributing](#contributing)
+- [Project Stats](#project-stats)
 
 ## Invite Radon to your server [`Click here`][invite]
 
@@ -36,10 +36,10 @@ At the moment I am not completely free but if you are interested in beta testing
 
 **You should have a good understanding of the following:**
 
--   [`Node.js`]: To run the project
--   [`MongoDB`]: To store the data
--   [`Discord.js`][discord.js]: To interact with the Discord API
--   [`Sapphire`]: Framework used in Radon
+- [`Bun`]: To run the project
+- [`MongoDB`]: To store the data
+- [`Discord.js`][discord.js]: To interact with the Discord API
+- [`Sapphire`]: Framework used in Radon
 
 ## Contributing
 
@@ -65,17 +65,18 @@ To contribute to this repository, feel free to fork the repository and make your
 <!-- REFERENCES -->
 
 [^env]: You will need to create a `.env` file in the root directory of the project.
+
 [^lint]: We recommend using [`eslint`] and [`prettier`] to lint your code.
+
 [^commit]: We strongly follow the [`Commit Message Conventions`]. This is important when commiting your code for a PR.
 
 <!-- LINKS -->
 
-[`node.js`]: https://nodejs.org/en/
 [`mongodb`]: https://www.mongodb.com/
 [`git`]: https://git-scm.com/
 [typescript]: https://www.typescriptlang.org/
 [discord.js]: https://discord.js.org/
-[node.js]: https://nodejs.org/en/
+[bun]: https://bun.sh/
 [pr]: https://github.com/EvolutionX-10/Radon/pulls
 [stars]: https://github.com/EvolutionX-10/Radon/stargazers
 [issues]: https://github.com/EvolutionX-10/Radon/issues

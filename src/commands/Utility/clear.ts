@@ -4,7 +4,7 @@ import { PermissionLevels } from '#lib/types';
 import { sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { PermissionFlagsBits } from 'discord-api-types/v9';
-import { InteractionContextType } from 'discord.js';
+import { InteractionContextType, MessageFlags } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	cooldownDelay: sec(15),
@@ -14,7 +14,7 @@ import { InteractionContextType } from 'discord.js';
 })
 export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
-		await interaction.deferReply({ ephemeral: true });
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral, withResponse: true });
 		const count = interaction.options.getInteger('count', true);
 		const pinned = interaction.options.getBoolean('skip_pinned', false) ?? true;
 		const contains = interaction.options.getString('contains', false);

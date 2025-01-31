@@ -2,7 +2,7 @@ import { Timestamp } from '#lib/structures';
 import { RadonEvents } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Identifiers, Listener, UserError, type ChatInputCommandDeniedPayload } from '@sapphire/framework';
-import type { CommandInteraction } from 'discord.js';
+import { MessageFlags, type CommandInteraction } from 'discord.js';
 
 @ApplyOptions<Listener.Options>({
 	event: RadonEvents.ChatInputCommandDenied
@@ -25,7 +25,7 @@ export class UserListener extends Listener {
 		}
 		return interaction.reply({
 			content,
-			ephemeral: true
+			flags: MessageFlags.Ephemeral
 		});
 	}
 }

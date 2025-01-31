@@ -4,7 +4,7 @@ import { PermissionLevels } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Duration, DurationFormatter } from '@sapphire/duration';
 import { PermissionFlagsBits } from 'discord-api-types/v9';
-import { InteractionContextType } from 'discord.js';
+import { InteractionContextType, MessageFlags } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'View and Manage slowmode of current channel',
@@ -15,7 +15,7 @@ export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		let time = interaction.options.getString('duration');
 		if (!time) {
-			await interaction.deferReply({ ephemeral: true });
+			await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 			return interaction.editReply({
 				content: `Currently Slowmode is ${
 					interaction.channel!.rateLimitPerUser
@@ -29,7 +29,7 @@ export class UserCommand extends RadonCommand {
 		if (isNaN(duration))
 			return interaction.reply({
 				content: `${Emojis.Cross} Invalid duration! Valid examples: \`1h\`, \`1m\`, \`1s\`, \`2 hours\`\nTo remove slowmode just put \`0\` as the duration.`,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 
 		const MAX_SLOWMODE_DURATION = new Duration('6hr').offset;

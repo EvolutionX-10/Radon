@@ -4,7 +4,7 @@ import { type BaseModActionData, PermissionLevels, RadonEvents } from '#lib/type
 import { runAllChecks, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { PermissionFlagsBits } from 'discord-api-types/v9';
-import { InteractionContextType } from 'discord.js';
+import { InteractionContextType, MessageFlags } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: `Kick a member`,
@@ -22,12 +22,12 @@ export class UserCommand extends RadonCommand {
 		if (!member) {
 			return interaction.reply({
 				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 		}
 
 		const { content: ctn, result } = runAllChecks(interaction.member, member, 'kick');
-		if (!result) return interaction.reply({ content: ctn, ephemeral: true });
+		if (!result) return interaction.reply({ content: ctn, flags: MessageFlags.Ephemeral });
 
 		let content = `${Emojis.Confirm} ${member.user.tag} has been kicked ${reason ? `for the following reason: ${reason}` : ''}`;
 
@@ -43,7 +43,7 @@ export class UserCommand extends RadonCommand {
 		if (!kicked) {
 			return interaction.reply({
 				content: `Kick failed due to missing permissions, please contact support server if this persists!`,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 		}
 

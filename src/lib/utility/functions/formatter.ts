@@ -66,6 +66,7 @@ const order: Record<PermissionsString, number> = {
 	SendTTSMessages: 10,
 	UseVAD: 11,
 	UseExternalSounds: 11,
+	UseExternalApps: 11,
 	ChangeNickname: 12,
 	UseApplicationCommands: 13,
 	RequestToSpeak: 14,
@@ -76,6 +77,8 @@ const order: Record<PermissionsString, number> = {
 	ManageThreads: 20,
 	MoveMembers: 20,
 	MuteMembers: 20,
+	CreateEvents: 20,
+	CreateGuildExpressions: 20,
 	ManageEmojisAndStickers: 21,
 	ManageGuildExpressions: 21,
 	ManageEvents: 21,
@@ -91,5 +94,6 @@ const order: Record<PermissionsString, number> = {
 	ManageGuild: 31,
 	MentionEveryone: 32,
 	ViewCreatorMonetizationAnalytics: 33,
-	Administrator: 40
+	Administrator: 40,
+	SendPolls: 41
 };

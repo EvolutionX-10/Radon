@@ -10,7 +10,7 @@ import { Duration, DurationFormatter } from '@sapphire/duration';
 import { cutText } from '@sapphire/utilities';
 import { type APIApplicationCommandOptionChoice, ApplicationCommandType } from 'discord-api-types/v9';
 import type { Collection, GuildMember, GuildTextBasedChannel } from 'discord.js';
-import { InteractionContextType } from 'discord.js';
+import { InteractionContextType, MessageFlags } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Manage warnings for a user',
@@ -279,14 +279,14 @@ export class UserCommand extends RadonCommand {
 		if (!member) {
 			return interaction.reply({
 				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 		}
 		const { content: ctn, result } = runAllChecks(interaction.member, member, 'warn');
 		if (!result || member.user.bot)
 			return interaction.reply({
 				content: ctn || `${Emojis.Cross} Bots were not meant to be warned!`,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 		const deleteMsg = interaction.options.getBoolean('delete_messages') ?? false;
 		const severity = (interaction.options.getInteger('severity') ?? 1) as warnSeverityNum;
@@ -296,20 +296,20 @@ export class UserCommand extends RadonCommand {
 		if (isNaN(new Duration(expires).offset)) {
 			return interaction.reply({
 				content: `${Emojis.Cross} Invalid duration! Valid examples: \`1 week\`, \`1h\`, \`10 days\`, \`5 hours\``,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 		}
 		const expiration = new Date(Date.now() + new Duration(expires).offset);
 		if (expiration.getTime() > Date.now() + new Duration('28 days').offset) {
 			return interaction.reply({
 				content: `${Emojis.Cross} Expiration cannot be more than 28 days`,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 		}
 		if (expiration.getTime() < Date.now() + new Duration('1 hour').offset) {
 			return interaction.reply({
 				content: `${Emojis.Cross} Expiration cannot be less than 1 hour. Please use a longer duration.`,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 		}
 		const warnId = uid();
@@ -326,7 +326,7 @@ export class UserCommand extends RadonCommand {
 		if (typeof warn === 'undefined') {
 			return interaction.reply({
 				content: `It seems you've already reached the limit of active warns on ${member}`,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 		}
 		const person = warn.warnlist.find((warn) => warn.id === member.id);
@@ -345,7 +345,7 @@ export class UserCommand extends RadonCommand {
 					content += `\n\n> ${Emojis.Cross} Couldn't DM member`;
 				});
 		}
-		await interaction.reply({ content, ephemeral: true });
+		await interaction.reply({ content, flags: MessageFlags.Ephemeral });
 
 		const data: WarnActionData = {
 			warnId,
@@ -369,7 +369,7 @@ export class UserCommand extends RadonCommand {
 			if (!interaction.guild.members.me?.permissions.has('ManageMessages')) {
 				return interaction.followUp({
 					content: "I don't have the `Manage Messages` permission, so I couldn't delete messages.",
-					ephemeral: true
+					flags: MessageFlags.Ephemeral
 				});
 			}
 			const textChannels = interaction.guild.channels.cache.filter(
@@ -405,7 +405,7 @@ export class UserCommand extends RadonCommand {
 		if (!member) {
 			return interaction.reply({
 				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 		}
 
@@ -445,7 +445,7 @@ export class UserCommand extends RadonCommand {
 		if (!member) {
 			return interaction.reply({
 				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 		}
 		const data = await interaction.guild.settings?.warns.get(member);
@@ -453,7 +453,7 @@ export class UserCommand extends RadonCommand {
 		if (!data?.doc || !data.person.warns.length) {
 			return interaction.reply({
 				content: `${member} has no warnings`,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 		}
 		const warns_size = data!.person.warns.length;
@@ -586,7 +586,7 @@ export class UserCommand extends RadonCommand {
 		if (!rem)
 			return interaction.reply({
 				content: 'No action found for this severity',
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 		return interaction.reply({
 			content: `${Emojis.Confirm} Successfully removed the ${rem.action} action for ${rem.severity} severity`
@@ -599,7 +599,7 @@ export class UserCommand extends RadonCommand {
 		if (!actions?.length)
 			return interaction.reply({
 				content: 'No actions found',
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 
 		const embed_fields = actions.map((e) => {

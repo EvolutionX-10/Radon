@@ -20,7 +20,8 @@ import {
 	ButtonBuilder,
 	StringSelectMenuBuilder,
 	type SelectMenuComponentOptionData,
-	InteractionContextType
+	InteractionContextType,
+	MessageFlags
 } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
@@ -244,7 +245,7 @@ export class UserCommand extends RadonCommand {
 		if (!target)
 			return interaction.reply({
 				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 
 		if (role.position > interaction.guild.members.me!.roles.highest!.position)
@@ -259,7 +260,7 @@ export class UserCommand extends RadonCommand {
 		if (!added) {
 			return interaction.reply({
 				content: `${Emojis.Cross} Failed to add ${role} to ${target}`,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 		}
 
@@ -280,7 +281,7 @@ export class UserCommand extends RadonCommand {
 		if (!target)
 			return interaction.reply({
 				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 
 		if (role.position > interaction.guild.members.me!.roles.highest.position)
@@ -295,7 +296,7 @@ export class UserCommand extends RadonCommand {
 		if (!removed) {
 			return interaction.reply({
 				content: `${Emojis.Cross} Failed to remove ${role} from ${target}`,
-				ephemeral: true
+				flags: MessageFlags.Ephemeral
 			});
 		}
 
@@ -453,7 +454,7 @@ export class UserCommand extends RadonCommand {
 			if (i.user.id !== interaction.user.id) {
 				await i.reply({
 					content: "This maze ain't for you!",
-					ephemeral: true
+					flags: MessageFlags.Ephemeral
 				});
 				return;
 			}
@@ -473,7 +474,7 @@ export class UserCommand extends RadonCommand {
 			collector.resetTimer();
 
 			if (i.customId === 'save') {
-				message = (await message.fetch()) as GuildMessage;
+				message = (await message.fetch()) as GuildMessage<true>;
 
 				await i.update({
 					content: message.content.concat(`\n\n> Saved with ${perms.length ? 'selected' : 'no'} permissions!`),

@@ -3,3 +3,4 @@ CHANGELOG.md
 prisma/
 LICENSE.md
 dist/
+bun.lock

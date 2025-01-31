@@ -4,7 +4,7 @@ import { type BaseModActionData, PermissionLevels, RadonEvents } from '#lib/type
 import { runAllChecks, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { type APIApplicationCommandOptionChoice, PermissionFlagsBits } from 'discord-api-types/v9';
-import { type User, InteractionContextType } from 'discord.js';
+import { type User, InteractionContextType, MessageFlags } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: `Ban a user`,
@@ -31,7 +31,7 @@ export class UserCommand extends RadonCommand {
 		const dm = interaction.options.getBoolean('dm') ?? false;
 
 		const { content: ctn, result } = runAllChecks(interaction.member, user, 'ban');
-		if (!result) return interaction.reply({ content: ctn, ephemeral: true });
+		if (!result) return interaction.reply({ content: ctn, flags: MessageFlags.Ephemeral });
 
 		const confirm = new Confirmation({
 			content: `Are you sure you want to ban ${user}? ${reason ? `\nReason: ${reason}` : ''}`,

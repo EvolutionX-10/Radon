@@ -5,11 +5,12 @@ import {
 	ButtonInteraction,
 	ButtonStyle,
 	ChatInputCommandInteraction,
-	Collection,
 	type ColorResolvable,
 	type ComponentEmojiResolvable,
 	ComponentType,
 	Message,
+	MessageFlags,
+	ReadonlyCollection,
 	User
 } from 'discord.js';
 import { Button } from './Button.js';
@@ -75,19 +76,21 @@ export class Confirmation {
 		row._components(this.buttons);
 		let msg: Message<boolean>;
 		if (message instanceof Message) {
+			if (!message.channel.isSendable()) return;
 			msg = await message.channel.send({
 				content: this.options.content,
 				embeds: this.options?.content ? [] : [embed],
 				components: [row]
 			});
 		} else {
-			msg = (await message.reply({
+			const interactionResponse = await message.reply({
 				content: this.options.content,
 				embeds: this.options?.content ? [] : [embed],
 				components: [row],
-				fetchReply: true,
-				ephemeral: this.options.ephemeral
-			})) as Message;
+				withResponse: true,
+				flags: this.options.ephemeral ? MessageFlags.Ephemeral : undefined
+			});
+			msg = message.channel?.messages.cache.get(interactionResponse.interaction.responseMessageId!) as Message<boolean>;
 		}
 
 		const collector = msg.createMessageComponentCollector({
@@ -174,7 +177,7 @@ interface payload {
 }
 
 interface endPayload {
-	collection: Collection<string, ButtonInteraction>;
+	collection: ReadonlyCollection<string, ButtonInteraction>;
 	msg: Message;
 }
 

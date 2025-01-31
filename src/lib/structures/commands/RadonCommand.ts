@@ -128,7 +128,7 @@ export namespace RadonCommand {
 	export type AutoComplete = AutocompleteInteraction;
 	export type Context = ChatInputCommandContext | ContextMenuCommandContext | Command.Context;
 	export type Args = SapphireArgs;
-	export type Message = GuildMessage;
+	export type Message<K extends boolean = true> = GuildMessage<K>;
 	export type Registry = ApplicationCommandRegistry;
 }
 
