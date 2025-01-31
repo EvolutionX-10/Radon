@@ -3,9 +3,9 @@ import type { GuildMessage } from '#lib/types';
 import { isAdmin, isModerator } from '#lib/utility';
 
 export class UserPermissionsPrecondition extends PermissionsPrecondition {
-	public override async handle(message: GuildMessage): PermissionsPrecondition.AsyncResult {
-		const modRoles = (await message.guild.settings?.roles.mods) ?? [];
-		const adminRoles = (await message.guild.settings?.roles.admins) ?? [];
+	public override async handle(message: GuildMessage<boolean>): PermissionsPrecondition.AsyncResult {
+		const modRoles = (await message.guild?.settings?.roles.mods) ?? [];
+		const adminRoles = (await message.guild?.settings?.roles.admins) ?? [];
 		const allowed =
 			isAdmin(message.member) ||
 			isModerator(message.member) ||

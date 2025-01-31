@@ -29,7 +29,7 @@ export class UserCommand extends RadonCommand {
 		}
 	}
 
-	public override async contextMenuRun(interaction: RadonCommand.ContextMenuCommandInteraction) {
+	public override async contextMenuRun(interaction: RadonCommand.UserContextMenuCommandInteraction) {
 		return this.decancer(interaction);
 	}
 
@@ -141,7 +141,7 @@ export class UserCommand extends RadonCommand {
 		);
 	}
 
-	private async decancer(interaction: RadonCommand.ChatInputCommandInteraction | RadonCommand.ContextMenuCommandInteraction) {
+	private async decancer(interaction: RadonCommand.ChatInputCommandInteraction | RadonCommand.UserContextMenuCommandInteraction) {
 		const member = interaction.options.getMember('target') ?? interaction.options.getMember('user');
 		if (!member) {
 			return interaction.reply({
@@ -173,7 +173,10 @@ export class UserCommand extends RadonCommand {
 			});
 		}
 		await member.setNickname(nickname, reason);
-		return interaction.reply(`${member.user.tag}'s display name has been decancered!`);
+		return interaction.reply({
+			content: `Nickname \`${nickname}\` set for ${member} [DECANCER]`,
+			flags: interaction.isContextMenuCommand() ? MessageFlags.Ephemeral : undefined
+		});
 	}
 
 	private async set(interaction: RadonCommand.ChatInputCommandInteraction) {
