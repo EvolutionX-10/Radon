@@ -313,7 +313,7 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
-					.setContexts(InteractionContextType.Guild)
+					.setContexts([InteractionContextType.Guild])
 					.setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 			{ idHints: ['951113445930065980', '1019931909528223765'] }
 		);
@@ -345,11 +345,13 @@ export class UserCommand extends RadonCommand {
 			.setMinValues(1)
 			.setMaxValues(3);
 
-		return i.update({
+		const interactionResponse = await i.update({
 			embeds: [embed],
 			components: [new Row<RoleSelectMenuBuilder>()._components([rolesMenu])],
-			fetchReply: true
-		}) as Promise<Message>;
+			withResponse: true
+		});
+		return (i.channel?.messages.cache.get(interactionResponse.interaction.responseMessageId!) ||
+			(await i.channel?.messages.fetch(interactionResponse.interaction.responseMessageId!))) as Message<boolean>;
 	}
 
 	/**
@@ -374,11 +376,13 @@ export class UserCommand extends RadonCommand {
 			.setMinValues(0)
 			.setMaxValues(2);
 
-		return i.update({
+		const interactionResponse = await i.update({
 			embeds: [embed],
 			components: [new Row<RoleSelectMenuBuilder>()._components([rolesMenu])],
-			fetchReply: true
-		}) as Promise<Message>;
+			withResponse: true
+		});
+		return (i.channel?.messages.cache.get(interactionResponse.interaction.responseMessageId!) ||
+			(await i.channel?.messages.fetch(interactionResponse.interaction.responseMessageId!))) as Message<boolean>;
 	}
 
 	/**
@@ -404,7 +408,7 @@ export class UserCommand extends RadonCommand {
 			.setMaxValues(1)
 			.setChannelTypes(ChannelType.GuildText);
 
-		return i.update({
+		const interactionResponse = await i.update({
 			embeds: [embed],
 			components: [
 				new Row<ChannelSelectMenuBuilder>()._components([channelMenu]),
@@ -414,8 +418,11 @@ export class UserCommand extends RadonCommand {
 					new Button()._customId('confirm_modlog')._label('Confirm')._style(ButtonStyle.Success)
 				])
 			],
-			fetchReply: true
-		}) as Promise<Message>;
+			withResponse: true
+		});
+
+		return (i.channel?.messages.cache.get(interactionResponse.interaction.responseMessageId!) ||
+			(await i.channel?.messages.fetch(interactionResponse.interaction.responseMessageId!))) as Message<boolean>;
 	}
 
 	/**
@@ -438,7 +445,7 @@ export class UserCommand extends RadonCommand {
 			],
 			true
 		);
-		return i.update({
+		const interactionResponse = await i.update({
 			embeds: [embed],
 			components: [
 				new Row<Button>()._components([
@@ -446,7 +453,10 @@ export class UserCommand extends RadonCommand {
 					new Button()._customId('public_modlog')._label('Public')._style(ButtonStyle.Primary)
 				])
 			],
-			fetchReply: true
-		}) as Promise<Message>;
+			withResponse: true
+		});
+
+		return (i.channel?.messages.cache.get(interactionResponse.interaction.responseMessageId!) ||
+			(await i.channel?.messages.fetch(interactionResponse.interaction.responseMessageId!))) as Message<boolean>;
 	}
 }

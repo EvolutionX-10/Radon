@@ -2,7 +2,7 @@ import type { RadonClient } from '#lib/RadonClient';
 import { GuildSettings, Settings, Utils } from '#lib/structures';
 import { RadonEvents } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
-import { Listener, Piece, Store } from '@sapphire/framework';
+import { ApplicationCommandRegistries, Listener, Piece, RegisterBehavior, Store } from '@sapphire/framework';
 import { blue, blueBright, cyanBright, green, greenBright, magentaBright, white } from 'colorette';
 import { pastel, fruit } from 'gradient-string';
 
@@ -19,7 +19,7 @@ export class UserListener extends Listener {
 		this.container.logger.info(`Logged in as ${fruit(client.user!.username)}`);
 		this.printBanner();
 		this.container.logger.info(`${greenBright('[')}${blueBright('READY')}${greenBright(']')}`);
-
+		ApplicationCommandRegistries.setDefaultBehaviorWhenNotIdentical(RegisterBehavior.VerboseOverwrite);
 		const guilds = client.guilds.cache;
 		for (const guild of guilds.values()) {
 			guild.settings = new GuildSettings(guild, this.container.prisma);

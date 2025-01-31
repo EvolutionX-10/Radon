@@ -14,7 +14,7 @@ import { InteractionContextType } from 'discord.js';
 })
 export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
-		await interaction.deferReply({ fetchReply: true });
+		await interaction.deferReply({ withResponse: true });
 		const member = interaction.options.getMember('target');
 		const dm = interaction.options.getBoolean('dm') ?? false;
 
@@ -86,7 +86,7 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
-					.setContexts(InteractionContextType.Guild)
+					.setContexts([InteractionContextType.Guild])
 					.setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
 					.addUserOption((option) =>
 						option //

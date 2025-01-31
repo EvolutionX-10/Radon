@@ -39,7 +39,7 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
-					.setContexts(InteractionContextType.Guild)
+					.setContexts([InteractionContextType.Guild])
 					.setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 			{ idHints: ['1037359307232137297', '1027861261842657301'] }
 		);

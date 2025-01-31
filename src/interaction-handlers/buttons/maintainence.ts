@@ -30,7 +30,7 @@ export class ButtonHandler extends InteractionHandler {
 
 	public override async parse(interaction: RadonButtonInteraction) {
 		if (interaction.customId !== 'radon-maintenance') return this.none();
-		await interaction.deferUpdate({ fetchReply: true });
+		await interaction.deferUpdate({ withResponse: true });
 
 		const ownerMode = interaction.client.user.presence.status === 'dnd';
 

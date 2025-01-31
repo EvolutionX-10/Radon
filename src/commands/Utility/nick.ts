@@ -39,7 +39,7 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
-					.setContexts(InteractionContextType.Guild)
+					.setContexts([InteractionContextType.Guild])
 					.setDefaultMemberPermissions(PermissionFlagsBits.ManageNicknames)
 					.addSubcommand((builder) =>
 						builder //
@@ -135,7 +135,7 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName('Nick Decancer')
 					.setType(ApplicationCommandType.User)
-					.setContexts(InteractionContextType.Guild)
+					.setContexts([InteractionContextType.Guild])
 					.setDefaultMemberPermissions(PermissionFlagsBits.ManageNicknames),
 			{ idHints: ['954251739077431346', '1019932092592820294'] }
 		);

@@ -70,7 +70,7 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
-					.setContexts(InteractionContextType.Guild)
+					.setContexts([InteractionContextType.Guild])
 					.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
 					.addSubcommand((builder) =>
 						builder //
@@ -307,7 +307,9 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private async create(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const message = (await interaction.deferReply({ fetchReply: true })) as RadonCommand.Message;
+		const interactionResponse = await interaction.deferReply({ withResponse: true });
+		const message = (interaction.channel?.messages.cache.get(interactionResponse.interaction.responseMessageId!) ??
+			(await interaction.channel?.messages.fetch(interactionResponse.interaction.responseMessageId!))) as RadonCommand.Message;
 
 		const name = interaction.options.getString('name', true);
 		const hoist = interaction.options.getBoolean('hoisted') ?? false;

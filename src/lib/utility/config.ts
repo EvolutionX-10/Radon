@@ -46,7 +46,7 @@ export const config: Config = {
 	},
 	partials: [Partials.GuildMember, Partials.Message, Partials.User, Partials.Channel],
 	logger: {
-		level: LogLevel.Info
+		level: LogLevel.Debug
 	},
 	// botlist: {
 	// 	keys: {

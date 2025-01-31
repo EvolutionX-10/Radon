@@ -29,8 +29,8 @@ export class UserCommand extends RadonCommand {
 				builder //
 					.setName(this.name)
 					.setDescription(this.description)
-					.setContexts(InteractionContextType.Guild)
-					.setContexts(InteractionContextType.Guild)
+					.setContexts([InteractionContextType.Guild])
+					.setContexts([InteractionContextType.Guild])
 					.addSubcommand((builder) =>
 						builder //
 							.setName('me')
