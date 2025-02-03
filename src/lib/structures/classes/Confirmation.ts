@@ -103,7 +103,7 @@ export class Confirmation {
 			if (id !== i.user.id) {
 				await i.reply({
 					content: this.options.wrongUserResponse ?? 'Not for you!',
-					ephemeral: true
+					flags: MessageFlags.Ephemeral
 				});
 				return;
 			}

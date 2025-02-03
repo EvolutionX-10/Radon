@@ -54,7 +54,7 @@ export class UserCommand extends RadonCommand {
 		let content = `${Emojis.Confirm} ${member} has been timed out for ${new DurationFormatter().format(duration)}`;
 
 		const reason = interaction.options.getString('reason') ?? undefined;
-		await member.timeout(duration, reason);
+		await member.timeout(duration === 0 ? null : duration, reason);
 
 		if (duration !== 0 && dm) {
 			await member

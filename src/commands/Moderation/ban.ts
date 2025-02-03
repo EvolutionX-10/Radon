@@ -4,7 +4,7 @@ import { type BaseModActionData, PermissionLevels, RadonEvents } from '#lib/type
 import { runAllChecks, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { type APIApplicationCommandOptionChoice, PermissionFlagsBits } from 'discord-api-types/v9';
-import { type User, InteractionContextType, MessageFlags } from 'discord.js';
+import { type User, GuildMember, InteractionContextType, MessageFlags } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: `Ban a user`,
@@ -25,7 +25,7 @@ export class UserCommand extends RadonCommand {
 	];
 
 	public override chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const user = interaction.options.getUser('user', true);
+		const user = interaction.options.getMember('user') ?? interaction.options.getUser('user', true);
 		const reason = interaction.options.getString('reason') ?? undefined;
 		const days = interaction.options.getInteger('days') ?? 0;
 		const dm = interaction.options.getBoolean('dm') ?? false;
@@ -84,7 +84,13 @@ export class UserCommand extends RadonCommand {
 		);
 	}
 
-	private async ban(interaction: RadonCommand.ChatInputCommandInteraction, user: User, reason: string | undefined, days: number, dm = false) {
+	private async ban(
+		interaction: RadonCommand.ChatInputCommandInteraction,
+		user: GuildMember | User,
+		reason: string | undefined,
+		days: number,
+		dm = false
+	) {
 		let content = `${Emojis.Confirm} ${user} has been [banned](https://tenor.com/view/11035060) ${
 			reason ? `for the following reason: __${reason}__` : ''
 		}`;
