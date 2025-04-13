@@ -2,6 +2,7 @@ import { ApplyOptions } from '@sapphire/decorators';
 import { RadonCommand } from '#lib/structures';
 import { EmbedBuilder, InteractionContextType, MessageFlags } from 'discord.js';
 import { Emojis } from '#constants';
+import { RegisterBehavior } from '@sapphire/framework';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Manage Guild Related Command'
@@ -14,7 +15,9 @@ export class UserCommand extends RadonCommand {
 		'RISING-KNIGHT': '1301259231269355661',
 		ARMAANMASHI4: '1296556857149620235',
 		'THE SLAYERS': '1301224537358340096',
-		RYUJIN: '1342595308797825144'
+		RYUJIN: '1342595308797825144',
+		'DEATH FOLLOWS': '1360865183664177172',
+		'DEATH EATER': '1360865100847779861'
 	};
 
 	readonly #GuildChannelIdMap: Record<string, string> = {
@@ -22,17 +25,19 @@ export class UserCommand extends RadonCommand {
 		'RISING-KNIGHT': '1301257711685599313',
 		ARMAANMASHI4: '1296576631091236944',
 		'THE SLAYERS': '1301223586811351083',
-		RYUJIN: '1342941110787637328'
+		RYUJIN: '1342941110787637328',
+		'DEATH FOLLOWS': '1360873061976379534',
+		'DEATH EATER': '1360873117521543288'
 	};
 
 	readonly #GifList: string[] = [
-		'https://media1.tenor.com/m/SpXWQo0Mq7EAAAAd/welcome-michael-scott.gif',
-		'https://media1.tenor.com/m/lO4POoZcaToAAAAd/you%27rebearywelcome-bear.gif',
-		'https://media1.tenor.com/m/_CV7TgcAtLYAAAAd/welcome-to-the-team.gif',
-		'https://media1.tenor.com/m/FitlaSR2PygAAAAd/were-happy-to-have-you-ralph-macchio.gif',
-		'https://media1.tenor.com/m/PsRX-hjYNs8AAAAd/make-yourself-comfortable-jimmy-kwon.gif',
-		'https://media1.tenor.com/m/WrG9kgsAoLwAAAAd/minions-excited.gif',
-		'https://media1.tenor.com/m/fpV02dUZp68AAAAd/gamer-guild-welcome.gif'
+		'https://c.tenor.com/SpXWQo0Mq7EAAAAd/tenor.gif',
+		'https://c.tenor.com/SpXWQo0Mq7EAAAAd/tenor.gif',
+		'https://c.tenor.com/_CV7TgcAtLYAAAAd/tenor.gif',
+		'https://c.tenor.com/FitlaSR2PygAAAAd/tenor.gif',
+		'https://c.tenor.com/PsRX-hjYNs8AAAAd/tenor.gif',
+		'https://c.tenor.com/WrG9kgsAoLwAAAAd/tenor.gif',
+		'https://c.tenor.com/fpV02dUZp68AAAAd/tenor.gif'
 	];
 
 	readonly #AuthorityIds: string[] = [
@@ -94,7 +99,8 @@ export class UserCommand extends RadonCommand {
 			{
 				guildIds: ['1276602245689114725'],
 				idHints: ['1343596093161734156'],
-				registerCommandIfMissing: false
+				registerCommandIfMissing: false,
+				behaviorWhenNotIdentical: RegisterBehavior.Overwrite
 			}
 		);
 	}
