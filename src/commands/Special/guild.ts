@@ -17,7 +17,8 @@ export class UserCommand extends RadonCommand {
 		'THE SLAYERS': '1301224537358340096',
 		RYUJIN: '1342595308797825144',
 		'DEATH FOLLOWS': '1360865183664177172',
-		'DEATH EATER': '1360865100847779861'
+		'DEATH EATER': '1360865100847779861',
+		'SHADOW GARDEN': '1361058728341798962'
 	};
 
 	readonly #GuildChannelIdMap: Record<string, string> = {
@@ -27,7 +28,8 @@ export class UserCommand extends RadonCommand {
 		'THE SLAYERS': '1301223586811351083',
 		RYUJIN: '1342941110787637328',
 		'DEATH FOLLOWS': '1360873061976379534',
-		'DEATH EATER': '1360873117521543288'
+		'DEATH EATER': '1360873117521543288',
+		'SHADOW GARDEN': '1361078281255915607'
 	};
 
 	readonly #GifList: string[] = [
@@ -84,6 +86,12 @@ export class UserCommand extends RadonCommand {
 									.setChoices(Object.keys(this.#GuildIdMap).map((key) => ({ name: key, value: key })))
 									.setRequired(true)
 							)
+							.addBooleanOption((option) =>
+								option //
+									.setName('welcome')
+									.setDescription('Whether to send a welcome message [default: true]')
+									.setRequired(false)
+							)
 					)
 					.addSubcommand((builder) =>
 						builder //
@@ -107,6 +115,8 @@ export class UserCommand extends RadonCommand {
 
 	private async addGuildMember(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const member = interaction.options.getMember('target');
+		const welcome = interaction.options.getBoolean('welcome') ?? true;
+
 		if (!member || member.user.bot)
 			return interaction.reply({ content: 'You must provide a valid member to add', flags: MessageFlags.Ephemeral });
 
@@ -133,9 +143,9 @@ export class UserCommand extends RadonCommand {
 		}
 
 		const guildChannel = await interaction.guild.channels.fetch(this.#GuildChannelIdMap[guildName]).catch(() => null);
+		const randomGif = this.#GifList[Math.floor(Math.random() * this.#GifList.length)];
 
-		if (guildChannel && guildChannel.isSendable()) {
-			const randomGif = this.#GifList[Math.floor(Math.random() * this.#GifList.length)];
+		if (guildChannel && guildChannel.isSendable() && welcome) {
 			const embed = new EmbedBuilder() //
 				.setTitle(`Welcome ${member.displayName}`)
 				.setImage(randomGif)
@@ -145,11 +155,27 @@ export class UserCommand extends RadonCommand {
 					text: `Made with ❤️ by Evo`,
 					iconURL: `https://cdn.discordapp.com/avatars/697795666373640213/feb4fe1b8f2d174b4d66d970c9fc88ef.webp`
 				});
+
 			await guildChannel.send({
 				content: `Everyone Welcome ${member} to ${guildName}`,
 				embeds: [embed]
 			});
 		}
+
+		const welcomeDMEmbed = new EmbedBuilder() //
+			.setTitle(`Welcome to ${guildName}`)
+			.setDescription(
+				`You have been added to ${guildName} by ${interaction.user}\nGuild Chat Channel: <#${this.#GuildChannelIdMap[guildName]}>`
+			)
+			.setColor('Random')
+			.setImage(randomGif)
+			.setTimestamp()
+			.setFooter({
+				text: `Made with ❤️ by Evo`,
+				iconURL: `https://cdn.discordapp.com/avatars/697795666373640213/feb4fe1b8f2d174b4d66d970c9fc88ef.webp`
+			});
+
+		await member.send({ embeds: [welcomeDMEmbed] }).catch(() => null);
 
 		return interaction.reply({ content: `${Emojis.Confirm} Added ${member} to ${guildName}` });
 	}
