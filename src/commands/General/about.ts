@@ -8,8 +8,10 @@ import { ButtonBuilder, ButtonStyle, ChannelType, InteractionContextType, OAuth2
 	description: 'About things!'
 })
 export class UserCommand extends RadonCommand {
-	public override chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
+	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const subcmd = interaction.options.getSubcommand();
+
+		await interaction.guild?.members.fetch(); // Fetch all members to ensure we have the latest data
 
 		switch (subcmd as SubCmd) {
 			case 'me':
