@@ -80,6 +80,7 @@ export class RadonPaginatedMessageEmbedFields extends PaginatedMessageEmbedField
 
 	private updateComponents(handler: PaginatedMessage, interaction: MessageComponentInteraction) {
 		const page = handler.messages[handler.index]!;
+		// @ts-ignore Components exists
 		const { options } = interaction.message.components![1].components[0] as unknown as APIStringSelectComponent;
 		for (const option of options) {
 			if (option.value === `${handler.index}`) option.default = true;

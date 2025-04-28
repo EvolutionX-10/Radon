@@ -489,6 +489,7 @@ export class UserCommand extends RadonCommand {
 		collector.on('end', async (c, r) => {
 			if (r !== 'Saved') perms = [];
 			if ((c.size === 0 || !perms.length) && r !== 'Saved') {
+				// @ts-ignore Expected to be a Button only
 				const row = new Row<Button>(...message.components);
 				row.components.map((c) => c.setDisabled());
 				await message.edit({
