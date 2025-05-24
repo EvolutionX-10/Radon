@@ -18,7 +18,7 @@
 		"dev": "bun .",
 		"release": "cj",
 		"preview": "cj --dry-run",
-		"format": "bunx prettier --write './src/**/*.ts' './README.md'",
+		"format": "prettier --write './src/**/*.ts' './README.md'",
 		"pretty": "bunx prettier --check './src/**/*.ts' './README.md'",
 		"typecheck": "tsc -b src"
 	},
