@@ -16,7 +16,7 @@ export class UserCommand extends RadonCommand {
 		ARMAANMASHI4: '1296556857149620235',
 		'THE SLAYERS': '1301224537358340096',
 		RYUJIN: '1342595308797825144',
-		'DEATH FOLLOWS': '1360865183664177172',
+		'KUROJIN': '1374459049164275732',
 		'DEATH EATER': '1360865100847779861',
 		'SHADOW GARDEN': '1361058728341798962'
 	};
@@ -27,19 +27,23 @@ export class UserCommand extends RadonCommand {
 		ARMAANMASHI4: '1296576631091236944',
 		'THE SLAYERS': '1301223586811351083',
 		RYUJIN: '1342941110787637328',
-		'DEATH FOLLOWS': '1360873061976379534',
+		'KUROJIN': '1374765118142808064',
 		'DEATH EATER': '1360873117521543288',
 		'SHADOW GARDEN': '1361078281255915607'
 	};
 
 	readonly #GifList: string[] = [
-		'https://c.tenor.com/SpXWQo0Mq7EAAAAd/tenor.gif',
-		'https://c.tenor.com/SpXWQo0Mq7EAAAAd/tenor.gif',
-		'https://c.tenor.com/_CV7TgcAtLYAAAAd/tenor.gif',
-		'https://c.tenor.com/FitlaSR2PygAAAAd/tenor.gif',
-		'https://c.tenor.com/PsRX-hjYNs8AAAAd/tenor.gif',
-		'https://c.tenor.com/WrG9kgsAoLwAAAAd/tenor.gif',
-		'https://c.tenor.com/fpV02dUZp68AAAAd/tenor.gif'
+		'https://c.tenor.com/SpXWQo0Mq7EAAAAd/tenor.gif', //Welcome aboard [TheOffice]
+		'https://c.tenor.com/_CV7TgcAtLYAAAAd/tenor.gif', //Welcome to the fam [Cool_Penguin]
+		'https://c.tenor.com/FitlaSR2PygAAAAd/tenor.gif', //we're happy to have you
+		'https://c.tenor.com/PsRX-hjYNs8AAAAd/tenor.gif', //Make yourself comfortable
+		'https://c.tenor.com/WrG9kgsAoLwAAAAd/tenor.gif', //Welcome to the club [minions]
+		'https://c.tenor.com/fpV02dUZp68AAAAd/tenor.gif', //Welcome to gamer guild
+		'https://c.tenor.com/peWLkbIayCEAAAAd/tenor.gif', //Welcome to the Club [Football_Manager]
+		'https://c.tenor.com/2rEDY9t4690AAAAC/tenor.gif', //Thanks for joining us [Leonardo_DiCario]
+		'https://c.tenor.com/Q1s3ZkqW0-YAAAAC/tenor.gif', //Holy shit look who's here
+		'https://c.tenor.com/AvRN6GlmzXsAAAAC/tenor.gif', //Welcome to the family [Godfather]
+		'https://c.tenor.com/mpmbsd82G14AAAAC/tenor.gif' //One of us [Wolf of wall street]
 	];
 
 	readonly #AuthorityIds: string[] = [
