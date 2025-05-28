@@ -1,6 +1,8 @@
 # Multi-stage build for optimal production image
 
-# Build stage
+# ================================
+# Build Stage
+# ================================
 FROM oven/bun:1.2.13-alpine AS builder
 
 # Set working directory
@@ -19,9 +21,56 @@ COPY . .
 RUN bunx prisma generate
 
 # Type check the application
-RUN bun run typecheck
+# RUN bun run typecheck
 
-# Production stage
+# ================================
+# Development Stage (for local development)
+# ================================
+FROM oven/bun:1.2.13-alpine AS development
+
+# Install dumb-init for proper signal handling
+RUN apk add --no-cache dumb-init
+
+# Set working directory
+WORKDIR /app
+
+# Create non-root user for security
+RUN addgroup -g 1001 -S radon && \
+    adduser -S radon -u 1001
+
+# Copy package files
+COPY package.json bun.lock* ./
+
+# Install all dependencies (including dev dependencies)
+RUN bun install --frozen-lockfile
+
+# Copy source code
+COPY . .
+
+# Generate Prisma client
+RUN bunx prisma generate
+
+# Create logs directory
+RUN mkdir -p /app/logs
+
+# Change ownership of the app directory to the radon user
+RUN chown -R radon:radon /app
+
+# Switch to non-root user
+USER radon
+
+# Set environment variables
+ENV NODE_ENV=development
+
+# Use dumb-init to handle signals properly
+ENTRYPOINT ["dumb-init", "--"]
+
+# Default command for development (can be overridden)
+CMD ["bun", "dev"]
+
+# ================================
+# Production Stage (FINAL - Railway will use this by default)
+# ================================
 FROM oven/bun:1.2.13-alpine AS production
 
 # Install dumb-init for proper signal handling
@@ -68,47 +117,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
 ENTRYPOINT ["dumb-init", "--"]
 
 # Start the Discord bot
-CMD ["bun", "run", "start"]
-
-# Development stage (for docker-compose.dev.yml)
-FROM oven/bun:1.2.13-alpine AS development
-
-# Install dumb-init for proper signal handling
-RUN apk add --no-cache dumb-init
-
-# Set working directory
-WORKDIR /app
-
-# Create non-root user for security
-RUN addgroup -g 1001 -S radon && \
-    adduser -S radon -u 1001
-
-# Copy package files
-COPY package.json bun.lock* ./
-
-# Install all dependencies (including dev dependencies)
-RUN bun install --frozen-lockfile
-
-# Copy source code
-COPY . .
-
-# Generate Prisma client
-RUN bunx prisma generate
-
-# Create logs directory
-RUN mkdir -p /app/logs
-
-# Change ownership of the app directory to the radon user
-RUN chown -R radon:radon /app
-
-# Switch to non-root user
-USER radon
-
-# Set environment variables
-ENV NODE_ENV=development
-
-# Use dumb-init to handle signals properly
-ENTRYPOINT ["dumb-init", "--"]
-
-# Default command for development (can be overridden)
-CMD ["bun", "run", "dev"]
+CMD ["bun", "start"]

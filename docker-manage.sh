@@ -123,6 +123,7 @@ case $COMMAND in
     dev)
         check_env_file
         print_message "🛠️  Starting Radon Discord Bot in development mode..." $GREEN
+        print_message "☁️  Using cloud services (MongoDB Atlas + Redis Cloud) with development credentials" $BLUE
         
         BUILD_ARG=""
         if [ "$FORCE_BUILD" == true ]; then
@@ -131,8 +132,7 @@ case $COMMAND in
         
         docker-compose -f $COMPOSE_FILE up -d $BUILD_ARG
         print_message "✅ Development environment started!" $GREEN
-        print_message "🌐 MongoDB Express: http://localhost:8081" $BLUE
-        print_message "🔧 Redis Commander: http://localhost:8082" $BLUE
+        print_message "🌐 Bot accessible on port 3001" $BLUE
         print_message "📋 Use '$0 logs' to view logs" $BLUE
         ;;
         
@@ -195,10 +195,11 @@ case $COMMAND in
         ;;
         
     db)
-        print_message "🗄️  Database Management Interfaces:" $BLUE
-        print_message "MongoDB Express: http://localhost:8081 (admin/admin)" $GREEN
-        print_message "Redis Commander: http://localhost:8082" $GREEN
-        print_message "💡 These are only available in development mode" $YELLOW
+        print_message "🗄️  Cloud Database Services:" $BLUE
+        print_message "Production: Uses .env file credentials" $GREEN
+        print_message "Development: Uses .env.development file credentials" $GREEN
+        print_message "💡 Both environments now use cloud services (MongoDB Atlas + Redis Cloud)" $YELLOW
+        print_message "🌐 Access your databases through their respective cloud dashboards" $BLUE
         ;;
         
     help|"")

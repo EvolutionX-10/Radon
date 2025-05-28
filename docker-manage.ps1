@@ -96,10 +96,10 @@ switch ($Command) {
             exit 1
         }
     }
-    
-    "dev" {
+      "dev" {
         Test-EnvFile
         Write-ColorMessage "🛠️  Starting Radon Discord Bot in development mode..." Green
+        Write-ColorMessage "☁️  Using cloud services (MongoDB Atlas + Redis Cloud) with development credentials" Blue
         
         if ($Build) {
             docker-compose -f $ComposeFile up -d --build
@@ -109,8 +109,7 @@ switch ($Command) {
         
         if ($LASTEXITCODE -eq 0) {
             Write-ColorMessage "✅ Development environment started!" Green
-            Write-ColorMessage "🌐 MongoDB Express: http://localhost:8081" Blue
-            Write-ColorMessage "🔧 Redis Commander: http://localhost:8082" Blue
+            Write-ColorMessage "🌐 Bot accessible on port 3001" Blue
             Write-ColorMessage "📋 Use '.\docker-manage.ps1 logs' to view logs" Blue
         } else {
             Write-ColorMessage "❌ Failed to start development environment" Red
@@ -186,12 +185,12 @@ switch ($Command) {
             exit 1
         }
     }
-    
-    "db" {
-        Write-ColorMessage "🗄️  Database Management Interfaces:" Blue
-        Write-ColorMessage "MongoDB Express: http://localhost:8081 (admin/admin)" Green
-        Write-ColorMessage "Redis Commander: http://localhost:8082" Green
-        Write-ColorMessage "💡 These are only available in development mode" Yellow
+      "db" {
+        Write-ColorMessage "🗄️  Cloud Database Services:" Blue
+        Write-ColorMessage "Production: Uses .env file credentials" Green
+        Write-ColorMessage "Development: Uses .env.development file credentials" Green
+        Write-ColorMessage "💡 Both environments now use cloud services (MongoDB Atlas + Redis Cloud)" Yellow
+        Write-ColorMessage "🌐 Access your databases through their respective cloud dashboards" Blue
     }
     
     "help" {

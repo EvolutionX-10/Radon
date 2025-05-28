@@ -1,26 +1,21 @@
-services: # Discord Bot for Development
+# Development Docker Compose for Radon Discord Bot
+# Uses cloud services (MongoDB Atlas + Redis Cloud) with development credentials
+services:
+  # Discord Bot for Development with Cloud Services
   radon-bot-dev:
     build:
       context: .
+      dockerfile: Dockerfile
       target: development
     container_name: radon-discord-bot-dev
     restart: unless-stopped
+    env_file:
+      - .env.development # Your development environment file with cloud service credentials
     environment:
       - NODE_ENV=development
-      # Discord Bot Configuration
-      - DISCORD_TOKEN=${DEV_DISCORD_TOKEN}
-      - CLIENT_NAME=${CLIENT_NAME:-Radon-Dev}
-
-      # Database Configuration
-      - MONGO=${DEV_MONGO}
-
-      # Redis Configuration
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - REDIS_PASSWORD=${REDIS_PASSWORD:-devpassword}
-    depends_on:
-      - redis-dev
-      - mongodb-dev
+      - BUN_ENV=development
+    ports:
+      - '3001:3000' # Different port from production for local access
     volumes:
       # Mount source code for hot reloading
       - ./src:/app/src
@@ -28,79 +23,19 @@ services: # Discord Bot for Development
       - ./package.json:/app/package.json
       - ./tsconfig.base.json:/app/tsconfig.base.json
       # Mount logs directory for persistence
-      - ./logs:/app/logs
-    command: ['bun', 'run', 'dev']
+      - radon-dev-logs:/app/logs
     networks:
       - radon-dev-network
-
-  # Redis for development
-  redis-dev:
-    image: redis:7-alpine
-    container_name: radon-redis-dev
-    restart: unless-stopped
-    command: redis-server --requirepass ${REDIS_PASSWORD:-devpassword}
-    ports:
-      - '6380:6379'
-    volumes:
-      - redis-dev-data:/data
-    networks:
-      - radon-dev-network
-
-  # MongoDB for development
-  mongodb-dev:
-    image: mongo:7
-    container_name: radon-mongodb-dev
-    restart: unless-stopped
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME:-radon}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:-devpassword}
-      - MONGO_INITDB_DATABASE=${MONGO_DATABASE:-radon_dev}
-    ports:
-      - '27018:27017'
-    volumes:
-      - mongodb-dev-data:/data/db
-      - mongodb-dev-config:/data/configdb
-    networks:
-      - radon-dev-network
-
-  # MongoDB Express for database management
-  mongo-express-dev:
-    image: mongo-express:latest
-    container_name: radon-mongo-express-dev
-    restart: unless-stopped
-    environment:
-      - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGO_USERNAME:-radon}
-      - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGO_PASSWORD:-devpassword}
-      - ME_CONFIG_MONGODB_SERVER=mongodb-dev
-      - ME_CONFIG_BASICAUTH_USERNAME=${MONGO_EXPRESS_USERNAME:-admin}
-      - ME_CONFIG_BASICAUTH_PASSWORD=${MONGO_EXPRESS_PASSWORD:-admin}
-    ports:
-      - '8081:8081'
-    depends_on:
-      - mongodb-dev
-    networks:
-      - radon-dev-network
-
-  # Redis Commander for Redis management
-  redis-commander-dev:
-    image: rediscommander/redis-commander:latest
-    container_name: radon-redis-commander-dev
-    restart: unless-stopped
-    environment:
-      - REDIS_HOSTS=local:redis-dev:6379:0:${REDIS_PASSWORD:-devpassword}
-    ports:
-      - '8082:8081'
-    depends_on:
-      - redis-dev
-    networks:
-      - radon-dev-network
+    # Health check to ensure bot is running
+    healthcheck:
+      test: ['CMD', 'pgrep', '-f', 'bun']
+      interval: 30s
+      timeout: 10s
+      start_period: 15s
+      retries: 3
 
 volumes:
-  redis-dev-data:
-    driver: local
-  mongodb-dev-data:
-    driver: local
-  mongodb-dev-config:
+  radon-dev-logs:
     driver: local
 
 networks:

@@ -1,94 +1,160 @@
-# Radon Discord Bot - Docker Setup
+# 🐳 Radon Discord Bot - Docker Setup (Updated for Cloud Services)
 
-This guide will help you set up and run the Radon Discord bot using Docker and Docker Compose.
+This guide explains how to run Radon using Docker with support for both **local development** and **production deployment with cloud services**.
 
-## Prerequisites
+## 📋 Prerequisites
 
 - [Docker](https://docs.docker.com/get-docker/) installed on your system
 - [Docker Compose](https://docs.docker.com/compose/install/) installed on your system
 - A Discord bot token (from [Discord Developer Portal](https://discord.com/developers/applications))
+- For production: MongoDB Atlas and Redis Cloud accounts (recommended)
 
-## Quick Start
+## 🌐 Production Setup (Cloud Services) - Recommended
 
-### 1. Clone and Setup Environment
+**Perfect for Railway deployment or when using MongoDB Atlas + Redis Cloud:**
+
+### 1. Environment Setup
 
 ```bash
-# Clone the repository (if not already done)
-git clone <repository-url>
-cd Radon
-
 # Copy the environment template
 cp .env.example .env
 ```
 
-### 2. Configure Environment Variables
+### 2. Configure Cloud Services
 
-Edit the `.env` file and add your Discord bot token and other required configurations:
+Edit `.env` with your cloud service credentials:
 
 ```env
-# Required: Your Discord bot token
-DISCORD_TOKEN=your_discord_bot_token_here
+# Discord Bot Configuration
+DISCORD_TOKEN=your_discord_bot_token
+CLIENT_NAME=Radon
 
-# Optional: Development bot token (if you have a separate dev bot)
-DEV_DISCORD_TOKEN=your_development_discord_bot_token_here
+# MongoDB Atlas (Cloud Database)
+MONGO=mongodb+srv://username:password@cluster.mongodb.net/radon?retryWrites=true&w=majority
 
-# Database and Redis passwords (change these for production!)
-MONGO_PASSWORD=your_secure_password_here
-REDIS_PASSWORD=your_secure_redis_password_here
+# Redis Cloud (Cloud Cache)
+REDIS_HOST=your-redis-cloud-host.com
+REDIS_PORT=12345
+REDIS_PASSWORD=your_redis_cloud_password
+
+# Optional: Bot list tokens
+TOP_BOT_TOKEN=your_top_gg_token
+VOID_BOT_TOKEN=your_void_bots_token
 ```
 
-### 3. Run the Bot
-
-#### Production Mode
+### 3. Run Production Bot
 
 ```bash
-# Start all services (bot, MongoDB, Redis)
+# Build and run the bot with cloud services
 docker-compose up -d
 
 # View logs
 docker-compose logs -f radon-bot
 
-# Stop all services
+# Stop the bot
 docker-compose down
 ```
 
-#### Development Mode
+## 🔧 Development Setup (Cloud Services)
+
+**For development with cloud services using separate credentials:**
+
+### 1. Development Environment Setup
 
 ```bash
-# Start development services with hot reloading
+# Copy the development environment template
+cp .env.example .env.development
+```
+
+### 2. Configure Development Cloud Services
+
+Edit `.env.development` with your development cloud service credentials:
+
+```env
+# Discord Bot Configuration
+DISCORD_TOKEN=your_development_discord_bot_token
+CLIENT_NAME=Radon-Dev
+
+# MongoDB Atlas (Development Database)
+MONGO=mongodb+srv://username:password@dev-cluster.mongodb.net/radon_dev?retryWrites=true&w=majority
+
+# Redis Cloud (Development Cache)
+REDIS_HOST=your-dev-redis-cloud-host.com
+REDIS_PORT=12345
+REDIS_PASSWORD=your_dev_redis_cloud_password
+```
+
+### 3. Run Development Bot
+
+```bash
+# Build and run the development bot with cloud services
 docker-compose -f docker-compose.dev.yml up -d
 
 # View logs
 docker-compose -f docker-compose.dev.yml logs -f radon-bot-dev
 
-# Stop development services
+# Stop the development bot
 docker-compose -f docker-compose.dev.yml down
 ```
+
+## 🚀 Railway Deployment
+
+### Automatic Production Stage Detection
+
+Railway will automatically use the **production stage** from our multi-stage Dockerfile since it's positioned as the last stage. No additional configuration needed!
+
+### Optional: Explicit Railway Configuration
+
+Create `railway.toml` for explicit control:
+
+```toml
+[build]
+builder = "dockerfile"
+dockerfilePath = "./Dockerfile"
+
+[deploy]
+restartPolicyType = "on-failure"
+```
+
+### Environment Variables on Railway
+
+Set these via Railway dashboard or CLI:
+
+```bash
+railway variables set DISCORD_TOKEN=your_token
+railway variables set MONGO=your_mongodb_atlas_connection_string
+railway variables set REDIS_HOST=your_redis_cloud_host
+railway variables set REDIS_PASSWORD=your_redis_cloud_password
+```
+
+## 🔍 Multi-Stage Dockerfile Explanation
+
+Our Dockerfile uses a 3-stage build:
+
+1. **Builder Stage**: Compiles TypeScript and installs all dependencies
+2. **Development Stage**: For local development with hot reload
+3. **Production Stage**: Optimized final image with only runtime dependencies
+
+**Important**: Railway and Docker use the **last stage** by default, which is our production stage.
 
 ## Services Included
 
 ### Production (`docker-compose.yml`)
 
-- **radon-bot**: The main Discord bot
-- **mongodb**: MongoDB database for persistent data
-- **redis**: Redis for caching and job queues
-- **mongo-express**: Web UI for MongoDB management (optional, use `--profile development`)
-- **redis-commander**: Web UI for Redis management (optional, use `--profile development`)
+- **radon-bot**: The main Discord bot using cloud services
 
 ### Development (`docker-compose.dev.yml`)
 
-- **radon-bot-dev**: Bot with hot reloading and development configuration
-- **mongodb-dev**: Separate MongoDB instance for development
-- **redis-dev**: Separate Redis instance for development
-- **mongo-express-dev**: MongoDB management UI
-- **redis-commander-dev**: Redis management UI
+- **radon-bot-dev**: Bot with hot reloading and development configuration using cloud services
+
+**Note**: Both environments now use cloud services (MongoDB Atlas + Redis Cloud) with different credentials.
 
 ## Management Interfaces
 
-When running in development mode, you can access:
+Both environments use cloud services:
 
-- **MongoDB Express**: http://localhost:8081 (admin/admin)
-- **Redis Commander**: http://localhost:8082
+- **Production**: Access your production databases through MongoDB Atlas and Redis Cloud dashboards
+- **Development**: Access your development databases through MongoDB Atlas and Redis Cloud dashboards
 
 ## Docker Commands
 

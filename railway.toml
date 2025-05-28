@@ -1,0 +1,12 @@
+# Railway Configuration for Radon Discord Bot
+# Railway will use the last stage in our multi-stage Dockerfile (production stage)
+
+[build]
+dockerfilePath = "./Dockerfile"
+
+[deploy]
+# Railway will automatically detect the start command from CMD in production stage
+# Production stage uses: CMD ["bun", "run", "start"]
+
+# Environment variables are handled via Railway's web dashboard
+# or via the Railway CLI: railway variables set KEY=value
