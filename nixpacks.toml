@@ -1,6 +1,0 @@
-[phases.setup]
-nixPkgs = ['...', 'openssl', 'bun']
-nixLibs = ['...', 'openssl', 'bun']
-
-[phases.build]
-cmds = ['bunx prisma generate']

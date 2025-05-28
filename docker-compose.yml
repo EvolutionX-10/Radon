@@ -1,0 +1,109 @@
+services:
+  # Discord Bot
+  radon-bot:
+    build: .
+    container_name: radon-discord-bot
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      # Discord Bot Configuration
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
+      - CLIENT_NAME=${CLIENT_NAME:-Radon}
+
+      # Database Configuration
+      - MONGO=${MONGO}
+
+      # Redis Configuration
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+
+      # Bot List Tokens (Optional)
+      - TOP_BOT_TOKEN=${TOP_BOT_TOKEN}
+      - VOID_BOT_TOKEN=${VOID_BOT_TOKEN}
+    depends_on:
+      - redis
+      - mongodb
+    volumes:
+      # Mount logs directory for persistence (optional)
+      - ./logs:/app/logs
+    networks:
+      - radon-network
+
+  # Redis for caching and job queues
+  redis:
+    image: redis:7-alpine
+    container_name: radon-redis
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD:-defaultpassword}
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-data:/data
+    networks:
+      - radon-network
+
+  # MongoDB for persistent data storage
+  mongodb:
+    image: mongo:7
+    container_name: radon-mongodb
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME:-radon}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:-defaultpassword}
+      - MONGO_INITDB_DATABASE=${MONGO_DATABASE:-radon}
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongodb-data:/data/db
+      - mongodb-config:/data/configdb
+    networks:
+      - radon-network
+
+  # Optional: MongoDB Express for database management (development only)
+  mongo-express:
+    image: mongo-express:latest
+    container_name: radon-mongo-express
+    restart: unless-stopped
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGO_USERNAME:-radon}
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGO_PASSWORD:-defaultpassword}
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+      - ME_CONFIG_BASICAUTH_USERNAME=${MONGO_EXPRESS_USERNAME:-admin}
+      - ME_CONFIG_BASICAUTH_PASSWORD=${MONGO_EXPRESS_PASSWORD:-admin}
+    ports:
+      - '8081:8081'
+    depends_on:
+      - mongodb
+    networks:
+      - radon-network
+    profiles:
+      - development
+
+  # Optional: Redis Commander for Redis management (development only)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: radon-redis-commander
+    restart: unless-stopped
+    environment:
+      - REDIS_HOSTS=local:redis:6379:0:${REDIS_PASSWORD:-defaultpassword}
+    ports:
+      - '8082:8081'
+    depends_on:
+      - redis
+    networks:
+      - radon-network
+    profiles:
+      - development
+
+volumes:
+  redis-data:
+    driver: local
+  mongodb-data:
+    driver: local
+  mongodb-config:
+    driver: local
+
+networks:
+  radon-network:
+    driver: bridge
