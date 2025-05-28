@@ -3,6 +3,7 @@ import { RadonCommand } from '#lib/structures';
 import { EmbedBuilder, InteractionContextType, MessageFlags } from 'discord.js';
 import { Emojis } from '#constants';
 import { RegisterBehavior } from '@sapphire/framework';
+import { isAdmin, isModerator } from '#lib/utility';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Manage Guild Related Command'
@@ -47,7 +48,6 @@ export class UserCommand extends RadonCommand {
 	];
 
 	readonly #AuthorityIds: string[] = [
-		'1309949497752813608', // Moderator
 		'1320010402557464616', // Guild Master
 		'1320010453757202474' // Vice Guild Master
 	];
@@ -56,7 +56,8 @@ export class UserCommand extends RadonCommand {
 		const subcmd = interaction.options.getSubcommand() as SubCommand;
 
 		const possibleRoles = interaction.member.roles.cache.filter((role) => this.#AuthorityIds.includes(role.id));
-		if (!possibleRoles.size) return interaction.reply({ content: 'You do not have the required permissions to use this command!' });
+		if (!possibleRoles.size && !isModerator(interaction.member) && !isAdmin(interaction.member))
+			return interaction.reply({ content: 'You do not have the required permissions to use this command!' });
 
 		switch (subcmd) {
 			case 'add':
@@ -110,8 +111,7 @@ export class UserCommand extends RadonCommand {
 					),
 			{
 				guildIds: ['1276602245689114725'],
-				idHints: ['1343596093161734156'],
-				registerCommandIfMissing: false,
+				idHints: ['1343596093161734156', '1377122511153791066'],
 				behaviorWhenNotIdentical: RegisterBehavior.Overwrite
 			}
 		);
