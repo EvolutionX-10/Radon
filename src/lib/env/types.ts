@@ -43,4 +43,6 @@ export interface RadonEnv {
 	REDIS_PORT?: string;
 	REDIS_PASSWORD?: string;
 	REDIS_HOST?: string;
+
+	GROK_API_KEY?: string;
 }
