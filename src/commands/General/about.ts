@@ -170,16 +170,18 @@ export class UserCommand extends RadonCommand {
 		if (guildJoinDate)
 			embed._field({ name: 'Joined At', value: `${guildJoinDate.getLongDate()} [${guildJoinDate.getRelativeTime()}]`, inline: true });
 
-		const flags = await user.fetchFlags(true);
-		let flagValue = flags
-			.toArray()
-			.map((f) => UserFlags[f])
-			.join(' ')
-			.trim();
+		const flags = (await user.fetch(true)).flags;
+		if (flags) {
+			let flagValue = flags
+				.toArray()
+				.map((f) => UserFlags[f])
+				.join(' ')
+				.trim();
 
-		if (flagValue.length) {
-			if (isOwner(user)) flagValue = `${Emojis.Owner} ${flagValue}`;
-			flagValue.length > 230 ? embed._description(flagValue) : embed._title((user.globalName ?? user.username).concat(` ${flagValue}`));
+			if (flagValue.length) {
+				if (isOwner(user)) flagValue = `${Emojis.Owner} ${flagValue}`;
+				flagValue.length > 230 ? embed._description(flagValue) : embed._title((user.globalName ?? user.username).concat(` ${flagValue}`));
+			}
 		}
 
 		embed._field({ name: 'ID', value: `\`${user.id}\``, inline: false });
@@ -187,7 +189,19 @@ export class UserCommand extends RadonCommand {
 		if (member?.nickname) embed._field({ name: 'Nickname', value: member.nickname, inline: true });
 		if (perm) embed._field({ name: 'Key Permission', value: perm, inline: true });
 
-		return interaction.editReply({ embeds: [embed] });
+		// Add roles button if user is a guild member
+		const components = [];
+		if (member) {
+			const rolesButton = new Button()._customId(`user-roles-${user.id}`)._label('View Roles')._style(ButtonStyle.Secondary)._emoji('🏷️');
+
+			const row = new Row<ButtonBuilder>()._components(rolesButton);
+			components.push(row);
+		}
+
+		return interaction.editReply({
+			embeds: [embed],
+			components
+		});
 	}
 
 	private async server(interaction: RadonCommand.ChatInputCommandInteraction) {
