@@ -134,7 +134,19 @@ export class UserCommand extends RadonCommand {
 				{ name: 'Advanced Info', value: adv }
 			]);
 
-		return interaction.reply({ embeds: [embed] });
+		// Add members button if role has members
+		const components = [];
+		if (role.members.size > 0) {
+			const membersButton = new Button()._customId(`role-members-${role.id}`)._label('View Members')._style(ButtonStyle.Secondary)._emoji('👥');
+
+			const row = new Row<ButtonBuilder>()._components(membersButton);
+			components.push(row);
+		}
+
+		return interaction.reply({
+			embeds: [embed],
+			components
+		});
 	}
 
 	private async user(interaction: RadonCommand.ChatInputCommandInteraction) {
