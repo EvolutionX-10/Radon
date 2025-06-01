@@ -6,7 +6,8 @@ import { send } from '@sapphire/plugin-editable-commands';
 import { Stopwatch } from '@sapphire/stopwatch';
 import { isThenable } from '@sapphire/utilities';
 import { inspect } from 'node:util';
-import { groq } from '@ai-sdk/groq';
+// import { groq } from '@ai-sdk/groq';
+import { google } from '@ai-sdk/google';
 import { generateObject, generateText, tool } from 'ai';
 import { z } from 'zod';
 
@@ -76,6 +77,9 @@ CAPABILITIES:
 - Provide information about server stats, members, channels, etc.
 - Help with moderation tasks like banning, kicking, timeouts
 - Gather information about users, roles, permissions
+- Create, delete, and manage channels and roles
+- DM users with information or commands
+- Use the performDiscordTask tool to execute operations
 
 IMPORTANT GUIDELINES:
 - Always prioritize safety - be cautious with destructive operations
@@ -91,11 +95,8 @@ CONTEXT:
 
 		try {
 			const { text } = await generateText({
-				model: groq('qwen-qwq-32b'),
+				model: google('gemini-2.0-flash'),
 				system: systemPrompt,
-				providerOptions: {
-					groq: { reasoningFormat: 'hidden' }
-				},
 				prompt: `${message.author.username}: ${chatMessage}`,
 				temperature: 0.1,
 				maxTokens: 2000,
@@ -198,25 +199,25 @@ COMMON PATTERNS TO USE (based on Discord.js v14):
 - Database: container.prisma.modelName.operation()
 - Fetching: guild.members.fetch(id), guild.roles.cache.find(r => r.name === 'name')
 - Information: guild.memberCount, guild.channels.cache.size, member.joinedAt
+- Message History: channel.messages.fetch({ limit: 10 }); -> Fetch last 10 messages in channel
 
 RETURN FORMAT: Generate code that returns a meaningful result, not undefined.
 
 Examples:
 - "ban user 123" → member = await guild.members.fetch('123'); await member.ban({reason: 'Requested by admin'}); return \`Banned \${member.user.tag}\`;
 - "server member count" → return guild.memberCount;
-- "create role test" → const role = await guild.roles.create({name: 'test'}); return \`Created role \${role.name}\`;`;
+- "create role test" → const role = await guild.roles.create({name: 'test'}); return \`Created role \${role.name}\`;
+- "dm member 123 with hello" → const member = await guild.members.fetch('123'); await member.send('hello'); return \`Sent DM to \${member.user.tag}\`;
+- "set your nickname to 'New Nickname'" → const me = await guild.members.fetch(message.client.id);\n await me.setNickname('New Nickname'); return \`Changed nickname to 'New Nickname'
+Note: here message.client.id is SUPER IMPORTANT as it means your ID!`;
 
 		const { object: result } = await generateObject({
-			model: groq('deepseek-r1-distill-llama-70b'),
+			model: google('gemini-2.0-flash-lite'),
 			system: systemPrompt,
-			providerOptions: {
-				groq: { reasoningFormat: 'hidden' }
-			},
 			prompt: `Generate JavaScript code for: "${naturalLanguageRequest}"
 			
 Context: User ${message.author.tag} in ${message.guild?.name || 'DMs'} requests this operation.`,
 			temperature: 0.1,
-			maxTokens: 1000,
 			schema: z.object({
 				code: z.string().describe('Clean executable JavaScript code without any markdown or comments'),
 				description: z.string().describe('Brief description of what the code does'),
@@ -364,7 +365,8 @@ try {
 			}
 
 			const docsData = await response.json();
-
+			console.log('providing complete docs');
+			return JSON.stringify(docsData, null, 2); // For debugging purposes
 			// Extract documentation for requested entities
 			const entityDocs = entities.map((entity) => this.extractEntityDocs(entity, docsData)).filter(Boolean);
 
@@ -635,7 +637,7 @@ try {
 		// Wrap in async function if needed
 		if (flags.async) {
 			const codeBody = ar.length > 0 ? ar.join(';\n') + ';\n' : '';
-			code = `(async () => {\n${codeBody}return ${last || 'undefined'};\n})();`;
+			code = `(async () => {\n${codeBody} ${last || 'return undefined'};\n})();`;
 		} else if (last) {
 			code = ar.length > 0 ? ar.join(';\n') + ';\n' + last : last;
 		}
