@@ -1,13 +1,8 @@
 process.env.NODE_ENV ??= 'development';
 
 import { Owners } from '#constants';
-import { envParseInteger, envParseString } from '#lib/env';
-// import type { BotList } from '@devtomio/plugin-botlist';
 import { Time } from '@sapphire/duration';
 import { BucketScope, type ClientLoggerOptions, type CooldownOptions, LogLevel } from '@sapphire/framework';
-import type { ScheduledTaskHandlerOptions } from '@sapphire/plugin-scheduled-tasks';
-import '@sapphire/plugin-scheduled-tasks/register';
-import type { RedisOptions } from 'bullmq';
 import {
 	type ClientOptions,
 	GatewayIntentBits,
@@ -17,14 +12,6 @@ import {
 	type SweeperOptions,
 	ActivityType
 } from 'discord.js';
-
-export function parseRedisOption(): Pick<RedisOptions, 'port' | 'password' | 'host'> {
-	return {
-		port: envParseInteger('REDIS_PORT'),
-		password: envParseString('REDIS_PASSWORD'),
-		host: envParseString('REDIS_HOST')
-	};
-}
 
 export const config: Config = {
 	intents: [
@@ -94,23 +81,20 @@ export const config: Config = {
 		}
 	},
 	presence: {
-		// status: 'online',
-		// activities: [
-		// 	{
-		// 		name: 'for Rule Breakers',
-		// 		type: ActivityType.Watching
-		// 	}
-		// ]
-		status: 'dnd',
+		status: 'online',
 		activities: [
 			{
-				name: 'Evo',
-				type: ActivityType.Listening
+				name: 'for Rule Breakers',
+				type: ActivityType.Watching
 			}
 		]
-	},
-	tasks: {
-		bull: { connection: { ...parseRedisOption(), maxRetriesPerRequest: null } }
+		// status: 'dnd',
+		// activities: [
+		// 	{
+		// 		name: 'Evo',
+		// 		type: ActivityType.Listening
+		// 	}
+		// ]
 	}
 };
 
@@ -127,10 +111,8 @@ export const ClientConfig: ClientOptions = {
 	shards: 'auto',
 	disableMentionPrefix: process.env.NODE_ENV === 'production',
 	preventFailedToFetchLogForGuilds: true,
-	// botList: config.botlist,
 	sweepers: config.sweepers,
-	presence: config.presence,
-	tasks: config.tasks
+	presence: config.presence
 };
 
 interface Config {
@@ -140,7 +122,5 @@ interface Config {
 	partials: Partials[];
 	logger: ClientLoggerOptions;
 	sweepers: SweeperOptions;
-	// botlist: BotList.Options;
 	presence: PresenceData;
-	tasks: ScheduledTaskHandlerOptions;
 }
