@@ -1,16 +1,15 @@
 import { Color, Emojis, WarnSeverity } from '#constants';
 import { PermissionLevel } from '#lib/decorators';
 import { Embed, JustButtons, RadonCommand, RadonPaginatedMessageEmbedFields, Timestamp } from '#lib/structures';
-import type { warnAction } from '#lib/types';
+import type { RefinedMemberWarnData, warnAction } from '#lib/types';
 import { type BaseWarnActionData, PermissionLevels, RadonEvents, type WarnActionData } from '#lib/types';
 import { mins, runAllChecks, sec, uid } from '#lib/utility';
-import type { MemberWarnData } from '@prisma/client';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Duration, DurationFormatter } from '@sapphire/duration';
 import { cutText } from '@sapphire/utilities';
 import { type APIApplicationCommandOptionChoice, ApplicationCommandType } from 'discord-api-types/v9';
 import type { Collection, GuildMember, GuildTextBasedChannel } from 'discord.js';
-import { InteractionContextType, MessageFlags } from 'discord.js';
+import { InteractionContextType, MessageFlags, userMention } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Manage warnings for a user',
@@ -275,18 +274,17 @@ export class UserCommand extends RadonCommand {
 	private async add(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const member = interaction.options.getMember('target');
 		const reason = interaction.options.getString('reason', true);
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 		if (!interaction.channel) return;
 		if (!member) {
-			return interaction.reply({
-				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
-				flags: MessageFlags.Ephemeral
+			return interaction.editReply({
+				content: `${Emojis.Cross} You must specify a valid member that is in this server!`
 			});
 		}
 		const { content: ctn, result } = runAllChecks(interaction.member, member, 'warn');
 		if (!result || member.user.bot)
-			return interaction.reply({
-				content: ctn || `${Emojis.Cross} Bots were not meant to be warned!`,
-				flags: MessageFlags.Ephemeral
+			return interaction.editReply({
+				content: ctn || `${Emojis.Cross} Bots were not meant to be warned!`
 			});
 		const deleteMsg = interaction.options.getBoolean('delete_messages') ?? false;
 		const severity = (interaction.options.getInteger('severity') ?? 1) as warnSeverityNum;
@@ -294,22 +292,19 @@ export class UserCommand extends RadonCommand {
 		const silent = interaction.options.getBoolean('silent') ?? false;
 
 		if (isNaN(new Duration(expires).offset)) {
-			return interaction.reply({
-				content: `${Emojis.Cross} Invalid duration! Valid examples: \`1 week\`, \`1h\`, \`10 days\`, \`5 hours\``,
-				flags: MessageFlags.Ephemeral
+			return interaction.editReply({
+				content: `${Emojis.Cross} Invalid duration! Valid examples: \`1 week\`, \`1h\`, \`10 days\`, \`5 hours\``
 			});
 		}
 		const expiration = new Date(Date.now() + new Duration(expires).offset);
 		if (expiration.getTime() > Date.now() + new Duration('28 days').offset) {
-			return interaction.reply({
-				content: `${Emojis.Cross} Expiration cannot be more than 28 days`,
-				flags: MessageFlags.Ephemeral
+			return interaction.editReply({
+				content: `${Emojis.Cross} Expiration cannot be more than 28 days`
 			});
 		}
 		if (expiration.getTime() < Date.now() + new Duration('1 hour').offset) {
-			return interaction.reply({
-				content: `${Emojis.Cross} Expiration cannot be less than 1 hour. Please use a longer duration.`,
-				flags: MessageFlags.Ephemeral
+			return interaction.editReply({
+				content: `${Emojis.Cross} Expiration cannot be less than 1 hour. Please use a longer duration.`
 			});
 		}
 		const warnId = uid();
@@ -325,14 +320,14 @@ export class UserCommand extends RadonCommand {
 
 		if (typeof warn === 'undefined') {
 			return interaction.reply({
-				content: `It seems you've already reached the limit of active warns on ${member}`,
-				flags: MessageFlags.Ephemeral
+				content: `It seems you've already reached the limit of active warns on ${member}`
 			});
 		}
-		const person = warn.warnlist.find((warn) => warn.id === member.id);
 
-		const totalSeverity = person?.warns.reduce((acc, warn) => acc + warn.severity, 0) ?? severity;
-		const totalwarns = person!.warns.length;
+		const personWarns = await interaction.guild.settings?.warns.getRefined(member);
+		const totalSeverity = await interaction.guild.settings?.warns.getSeverity(member);
+
+		const totalwarns = personWarns?.active.length ?? 0;
 		const actions = await interaction.guild.settings?.warns.getActions();
 
 		let content = `${member} has been warned for __${reason}__\nWarn ID: \`${warnId}\`\n*They now have ${totalwarns} warning(s)*`;
@@ -345,7 +340,8 @@ export class UserCommand extends RadonCommand {
 					content += `\n\n> ${Emojis.Cross} Couldn't DM member`;
 				});
 		}
-		await interaction.reply({ content, flags: MessageFlags.Ephemeral });
+
+		await interaction.editReply({ content }).catch(() => null);
 
 		const data: WarnActionData = {
 			warnId,
@@ -402,17 +398,19 @@ export class UserCommand extends RadonCommand {
 		const member = interaction.options.getMember('target');
 		const warnId = interaction.options.getString('warn_id', true);
 		const reason = interaction.options.getString('reason') ?? 'No reason provided';
+
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+
 		if (!member) {
-			return interaction.reply({
-				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
-				flags: MessageFlags.Ephemeral
+			return interaction.editReply({
+				content: `${Emojis.Cross} You must specify a valid member that is in this server!`
 			});
 		}
 
 		const warn = await interaction.guild.settings?.warns.remove(warnId, member);
 
 		if (!warn) {
-			return interaction.reply({
+			return interaction.editReply({
 				content:
 					`That warning does not exist on ${member}\n` +
 					`Possible reasons: \n` +
@@ -437,7 +435,7 @@ export class UserCommand extends RadonCommand {
 			this.container.client.emit(RadonEvents.ModAction, data);
 		}
 
-		return interaction.reply({ content, ephemeral: false });
+		return interaction.editReply({ content });
 	}
 
 	private async list(interaction: RadonCommand.ChatInputCommandInteraction | RadonCommand.UserContextMenuCommandInteraction) {
@@ -448,27 +446,35 @@ export class UserCommand extends RadonCommand {
 				flags: MessageFlags.Ephemeral
 			});
 		}
-		const data = await interaction.guild.settings?.warns.get(member);
 
-		if (!data?.doc || !data.person.warns.length) {
+		if (interaction.isContextMenuCommand()) {
+			await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+		} else {
+			await interaction.deferReply();
+		}
+
+		const data = await interaction.guild.settings?.warns.getRefined(member);
+
+		if (!data || data.active.length === 0) {
 			return interaction.reply({
-				content: `${member} has no warnings`,
+				content: `${member} has no active warnings`,
 				flags: MessageFlags.Ephemeral
 			});
 		}
-		const warns_size = data!.person.warns.length;
+
+		const warns_size = data.active.length;
 		const embed_fields = await Promise.all(
-			data.person.warns.map(async (e) => {
-				const mod = await this.container.client.users.fetch(e.mod);
+			data.active.map((e) => {
 				const expiration = new Timestamp(e.expiration.getTime());
 				const time = new Timestamp(e.date.getTime());
+				const expired = e.expiration.getTime() < Date.now();
 				return {
 					name: `Warn ID: ${e.id}`,
 					value:
 						`> Reason: ${e.reason}\n> Given on ${time.getShortDateTime()} (${time.getRelativeTime()})` +
 						`\n> Severity: \`${e.severity}\`` +
-						`\n> Expires ${expiration.getRelativeTime()} (${expiration.getShortDateTime()})` +
-						`\n> Moderator: ${mod} (\`${mod.id}\`)`,
+						`\n> ${expired ? 'Expired' : 'Expires'} ${expiration.getRelativeTime()} (${expiration.getShortDateTime()})` +
+						`\n> Moderator: ${userMention(e.mod)} (\`${e.mod}\`)`,
 					inline: false
 				};
 			})
@@ -476,9 +482,9 @@ export class UserCommand extends RadonCommand {
 
 		const template = new Embed()
 			._color(Color.Moderation)
-			._title(`${member.user.tag}'s Warnings`)
-			._description(`${member} has ${warns_size} warning(s)`)
-			._footer({ text: `Active warnings of ${member.displayName}` })
+			._title(`${member.displayName}'s Warnings`)
+			._description(`### ${member} has ${warns_size} warning(s)`)
+			._footer({ text: `Active warnings of ${member.user.username}` })
 			._timestamp()
 			._thumbnail(member.displayAvatarURL({ forceStatic: false }));
 
@@ -492,19 +498,22 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private async list_all(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const warnData = await this.container.prisma.guildWarns.findUnique({ where: { id: interaction.guildId } });
-
-		if (!warnData || !warnData.warnlist || !warnData.warnlist.length) return interaction.reply(`No warnings found!`);
+		const warns = await interaction.guild.settings?.warns.getAll(interaction.guildId);
+		await interaction.deferReply();
+		if (!warns || !warns.length) return interaction.editReply(`No warnings found!`);
 
 		const paginatedEmbed = new JustButtons();
 
-		for (const warn of warnData.warnlist) {
+		for (const warn of warns) {
 			const target = await this.container.client.users.fetch(warn.id);
+			// get the target as GuildMember from cache if possible
+			const targetMember = interaction.guild.members.cache.get(warn.id) ?? (await interaction.guild.members.fetch(warn.id).catch(() => null));
+
 			const embed = new Embed()
 				._color('Random')
 				._title(`Server Infractions`)
-				._author({ name: target.tag })
-				._description(this.genDescription(warn))
+				._author({ name: targetMember?.displayName || target.tag })
+				._description(this.genDescription(warn) || 'No data available')
 				._footer({ text: `Requested by ${interaction.user.username}` })
 				._timestamp()
 				._thumbnail(target.displayAvatarURL({ forceStatic: false }));
@@ -514,13 +523,21 @@ export class UserCommand extends RadonCommand {
 		return paginatedEmbed.run(interaction);
 	}
 
-	private genDescription(warns: MemberWarnData) {
-		return warns.warns
-			.map((warn) => {
-				const givenDate = new Timestamp(warn.date.getTime()).getShortDate();
-				return `\` - \` Date: ${givenDate} \`|\` Reason: ${warn.reason}`;
-			})
-			.join('\n');
+	private genDescription(warn: RefinedMemberWarnData) {
+		const activeCount = warn.active.length;
+		const inactiveCount = warn.inactive.length;
+		if (activeCount === 0 && inactiveCount === 0) return 'No warnings found';
+
+		let description = ``;
+		if (activeCount > 0) {
+			description += `## Active Warnings: ${activeCount}\n`;
+			description += warn.active.map((w) => `- ID: \`${w.id}\`\n-# Date: ${new Timestamp(w.date.getTime()).getShortDateTime()}`).join('\n');
+		}
+		if (inactiveCount > 0) {
+			description += `\n\n## Inactive Warnings: ${inactiveCount}\n`;
+			description += warn.inactive.map((w) => `- ID: \`${w.id}\`\n-# Date: ${new Timestamp(w.date.getTime()).getShortDateTime()}`).join('\n');
+		}
+		return description;
 	}
 
 	@PermissionLevel('Administrator')

@@ -1,4 +1,5 @@
 import type { Timestamp } from '#lib/structures';
+import { MemberWarnData } from '@prisma/client';
 import type { GuildMember, User } from 'discord.js';
 
 export interface BaseModActionData {
@@ -29,3 +30,9 @@ export interface TimeoutActionData extends BaseModActionData {
 export type ModActionData = (Partial<TimeoutActionData> | Partial<WarnActionData>) & BaseModActionData;
 
 export type warnAction = Exclude<modAction, 'warn' | 'warn_remove' | 'unban'>;
+
+export interface RefinedMemberWarnData {
+	id: string;
+	active: MemberWarnData['warns'];
+	inactive: MemberWarnData['warns'];
+}

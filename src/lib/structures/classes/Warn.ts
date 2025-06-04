@@ -1,4 +1,4 @@
-import type { warnAction } from '#lib/types';
+import type { warnAction, RefinedMemberWarnData } from '#lib/types';
 import type { MemberWarnData, PrismaClient } from '@prisma/client';
 import type { Guild, GuildMember } from 'discord.js';
 
@@ -108,6 +108,52 @@ export class Warn {
 		return null;
 	}
 
+	public async getRefined(member: GuildMember): Promise<RefinedMemberWarnData | null> {
+		const raw = await this.get(member);
+		if (!raw) return null;
+
+		const { person } = raw;
+		// refine the data to return RefinedMemberWarnData
+		const refined: RefinedMemberWarnData = {
+			id: person.id,
+			active: person.warns.filter((w) => !w.expiration || w.expiration > new Date()),
+			inactive: person.warns.filter((w) => w.expiration && w.expiration <= new Date())
+		};
+		return refined;
+	}
+
+	public async getAll(guildId: string): Promise<RefinedMemberWarnData[]> {
+		const doc = await this.prisma.guildWarns.findUnique({
+			where: { id: guildId }
+		});
+
+		if (doc) {
+			// return sorted warns , latest active first, then those who have inactive only
+			return doc.warnlist
+				.map((e) => ({
+					id: e.id,
+					active: e.warns.filter((w) => !w.expiration || w.expiration > new Date()),
+					inactive: e.warns.filter((w) => w.expiration && w.expiration <= new Date())
+				}))
+				.filter((e) => e.active.length + e.inactive.length > 0)
+				.sort((a, b) => {
+					if (b.active.length > 0 && a.active.length === 0) return 1; // b has active, a has none
+					if (a.active.length > 0 && b.active.length === 0) return -1; // a has active, b has none
+					if (b.active.length > 0 && a.active.length > 0) {
+						// both have active, sort by latest active warn
+						const latestA = a.active.reduce((prev, current) => (prev.date > current.date ? prev : current));
+						const latestB = b.active.reduce((prev, current) => (prev.date > current.date ? prev : current));
+						return latestB.date.getTime() - latestA.date.getTime();
+					}
+					// both have no active warns, sort by latest inactive warn
+					const latestA = a.inactive.reduce((prev, current) => (prev.date > current.date ? prev : current));
+					const latestB = b.inactive.reduce((prev, current) => (prev.date > current.date ? prev : current));
+					return latestB.date.getTime() - latestA.date.getTime();
+				});
+		}
+		return [];
+	}
+
 	public update(warnlist: MemberWarnData[]) {
 		return this.prisma.guildWarns.update({
 			where: { id: this.guild.id },
@@ -123,7 +169,8 @@ export class Warn {
 		if (doc) {
 			const person = doc.warnlist.find((e) => e.id === member.id);
 			if (person) {
-				const severity = person.warns.reduce((a, b) => a + b.severity, 0);
+				const activeWarns = person.warns.filter((w) => !w.expiration || w.expiration > new Date());
+				const severity = activeWarns.reduce((a, b) => a + b.severity, 0);
 				return severity;
 			}
 		}
