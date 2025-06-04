@@ -3,7 +3,6 @@ import * as utils from '#lib/utility';
 
 export class Utils {
 	public formatDuration = utils.formatDuration;
-	public generateModLogDescription = utils.generateModLogDescription;
 	public isAdmin = utils.isAdmin;
 	public isGuildOwner = utils.isGuildOwner;
 	public isModerator = utils.isModerator;
