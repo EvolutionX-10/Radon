@@ -1,7 +1,6 @@
 import { Severity } from '#constants';
 import { Embed } from '#lib/structures';
 import { type BaseModActionData, type ModActionData, RadonEvents, type WarnActionData } from '#lib/types';
-import { generateModLogDescription } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener } from '@sapphire/framework';
 
@@ -9,38 +8,68 @@ import { Listener } from '@sapphire/framework';
 	event: RadonEvents.ModAction
 })
 export class UserListener extends Listener {
+	private readonly action = {
+		warn: 'Warn',
+		warn_remove: 'Warn Remove',
+		kick: 'Kick',
+		ban: 'Ban',
+		softban: 'Softban',
+		timeout: 'Timeout',
+		unban: 'Unban'
+	};
+
 	public override run(data: BaseModActionData) {
 		return this.sendModLog(data);
 	}
 
 	private sendModLog(data: ModActionData) {
-		const des = generateModLogDescription({
-			action: action[data.action],
-			member: data.target,
-			reason: data.reason,
-			duration: data.duration,
-			warnId: (data as WarnActionData).warnId
-		});
-
 		const embed = new Embed()
 			._color(Severity[data.action])
 			._author({
-				name: data.moderator.user.tag,
-				iconURL: data.moderator.user.displayAvatarURL({ forceStatic: false })
+				name: data.moderator.displayName,
+				iconURL: data.moderator.displayAvatarURL({ forceStatic: false })
 			})
-			._description(des)
+			._thumbnail(data.target.displayAvatarURL({ forceStatic: false }))
+			._title(`${this.getActionName(data.action)}`)
+			._description(`\`\`\`\n${data.reason || 'No reason provided'}\n\`\`\``)
+			._fields([
+				{
+					name: 'Moderator',
+					value: `- ${data.moderator} \`[${data.moderator.id}]\``,
+					inline: true
+				},
+				{
+					name: 'Target',
+					value: `- ${data.target} \`[${data.target.id}]\``,
+					inline: true
+				}
+			])
 			._timestamp();
 
-		return data.moderator.guild.settings?.modlogs.sendModLog(embed);
+		if (data.duration) {
+			embed.addFields({
+				name: 'Duration',
+				value: `- ${data.duration.getShortDateTime()} [${data.duration.getRelativeTime()}]`
+			});
+		}
+
+		if ((data as WarnActionData)?.warnId) {
+			embed.addFields(
+				{
+					name: 'Warn ID',
+					value: `- \`${(data as WarnActionData).warnId}\``
+				},
+				{
+					name: 'Severity',
+					value: `- ${(data as WarnActionData).severity}`
+				}
+			);
+		}
+
+		return data.moderator.guild.settings?.modlogs.sendModLog(embed, data.url);
+	}
+
+	private getActionName(action: string): string {
+		return action in this.action ? this.action[action as keyof typeof this.action] : action.charAt(0).toUpperCase() + action.slice(1);
 	}
 }
-
-const action = {
-	warn: 'Warn',
-	warn_remove: 'Warn Removal',
-	kick: 'Kick',
-	ban: 'Ban',
-	softban: 'Softban',
-	timeout: 'Timeout',
-	unban: 'Unban'
-};

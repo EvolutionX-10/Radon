@@ -5,7 +5,6 @@ export * from './time.js';
 export * from './permissions.js';
 export * from './role.js';
 export * from './modperms.js';
-export * from './generateDescription.js';
 export * from './uid.js';
 export * from './clean.js';
 export * from './lines.js';

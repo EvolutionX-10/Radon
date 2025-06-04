@@ -25,7 +25,7 @@ export class UserCommand extends RadonCommand {
 	];
 
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
-		await interaction.deferReply({ flags: MessageFlags.Ephemeral, withResponse: true });
+		const reply = await interaction.deferReply({ flags: MessageFlags.Ephemeral, withResponse: true });
 		const member = interaction.options.getMember('target');
 		const dm = interaction.options.getBoolean('dm') ?? false;
 
@@ -57,7 +57,8 @@ export class UserCommand extends RadonCommand {
 			action: 'softban',
 			moderator: interaction.member,
 			target: member,
-			reason
+			reason,
+			url: reply.resource?.message?.url
 		};
 
 		if (await interaction.guild.settings?.modlogs.modLogs_exist()) {

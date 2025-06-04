@@ -4,7 +4,7 @@ import { type BaseModActionData, PermissionLevels, RadonEvents } from '#lib/type
 import { runAllChecks, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { PermissionFlagsBits } from 'discord-api-types/v9';
-import { InteractionContextType, MessageFlags } from 'discord.js';
+import { InteractionContextType } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: `Kick a member`,
@@ -18,16 +18,16 @@ export class UserCommand extends RadonCommand {
 		const member = interaction.options.getMember('target');
 		const reason = interaction.options.getString('reason') ?? undefined;
 		const dm = interaction.options.getBoolean('dm') ?? false;
+		const reply = await interaction.deferReply({ withResponse: true });
 
 		if (!member) {
-			return interaction.reply({
-				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
-				flags: MessageFlags.Ephemeral
+			return interaction.editReply({
+				content: `${Emojis.Cross} You must specify a valid member that is in this server!`
 			});
 		}
 
 		const { content: ctn, result } = runAllChecks(interaction.member, member, 'kick');
-		if (!result) return interaction.reply({ content: ctn, flags: MessageFlags.Ephemeral });
+		if (!result) return interaction.editReply({ content: ctn });
 
 		let content = `${Emojis.Confirm} ${member.user.tag} has been kicked ${reason ? `for the following reason: ${reason}` : ''}`;
 
@@ -41,9 +41,8 @@ export class UserCommand extends RadonCommand {
 
 		const kicked = await member.kick(reason).catch(() => null);
 		if (!kicked) {
-			return interaction.reply({
-				content: `Kick failed due to missing permissions, please contact support server if this persists!`,
-				flags: MessageFlags.Ephemeral
+			return interaction.editReply({
+				content: `Kick failed due to missing permissions, please contact support server if this persists!`
 			});
 		}
 
@@ -51,7 +50,8 @@ export class UserCommand extends RadonCommand {
 			moderator: interaction.member,
 			target: member,
 			action: 'kick',
-			reason
+			reason,
+			url: reply.resource?.message?.url
 		};
 
 		if ((await interaction.guild.settings?.modlogs.modLogs_exist()) && kicked) {

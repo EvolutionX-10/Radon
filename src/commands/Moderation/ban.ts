@@ -24,7 +24,7 @@ export class UserCommand extends RadonCommand {
 		{ name: '7 Days', value: 7 }
 	];
 
-	public override chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
+	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const user = interaction.options.getMember('user') ?? interaction.options.getUser('user', true);
 		const reason = interaction.options.getString('reason') ?? undefined;
 		const days = interaction.options.getInteger('days') ?? 0;
@@ -95,6 +95,16 @@ export class UserCommand extends RadonCommand {
 			reason ? `for the following reason: __${reason}__` : ''
 		}`;
 
+		const ban = await interaction.guild.bans.create(user, { deleteMessageSeconds: 24 * 60 * 60 * days, reason }).catch(() => null);
+
+		if (!ban) {
+			return interaction.editReply({
+				content: `${Emojis.Cross} Failed to ban user, please try again! If this persists, contact support server!`
+			});
+		}
+
+		const reply = await interaction.editReply(content);
+
 		if (dm) {
 			await user
 				.send({
@@ -103,20 +113,18 @@ export class UserCommand extends RadonCommand {
 				.catch(() => (content += `\n\n> ${Emojis.Cross} Couldn't DM user!`));
 		}
 
-		await interaction.guild.bans.create(user, { deleteMessageSeconds: 24 * 60 * 60 * days, reason });
-
 		const data: BaseModActionData = {
 			moderator: interaction.member,
 			target: user,
 			reason,
-			action: 'ban'
+			action: 'ban',
+			url: reply.url
 		};
 
 		if (await interaction.guild.settings?.modlogs.modLogs_exist()) {
 			this.container.client.emit(RadonEvents.ModAction, data);
 		}
-
-		return interaction.editReply(content);
+		return;
 	}
 }
 

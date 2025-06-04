@@ -14,7 +14,7 @@ import { InteractionContextType } from 'discord.js';
 })
 export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
-		await interaction.deferReply({ withResponse: true });
+		const reply = await interaction.deferReply({ withResponse: true });
 		const member = interaction.options.getMember('target');
 		const dm = interaction.options.getBoolean('dm') ?? false;
 
@@ -69,7 +69,8 @@ export class UserCommand extends RadonCommand {
 			target: member,
 			reason,
 			action: 'timeout',
-			duration: new Timestamp(Date.now() + duration)
+			duration: new Timestamp(Date.now() + duration),
+			url: reply.resource?.message?.url
 		};
 
 		if ((await interaction.guild.settings?.modlogs.modLogs_exist()) && duration !== 0) {

@@ -94,11 +94,18 @@ export const config: Config = {
 		}
 	},
 	presence: {
-		status: 'online',
+		// status: 'online',
+		// activities: [
+		// 	{
+		// 		name: 'for Rule Breakers',
+		// 		type: ActivityType.Watching
+		// 	}
+		// ]
+		status: 'dnd',
 		activities: [
 			{
-				name: 'for Rule Breakers',
-				type: ActivityType.Watching
+				name: 'Evo',
+				type: ActivityType.Listening
 			}
 		]
 	},

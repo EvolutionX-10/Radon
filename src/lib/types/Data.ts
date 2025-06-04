@@ -7,6 +7,7 @@ export interface BaseModActionData {
 	target: GuildMember | User;
 	reason?: string;
 	action: modAction;
+	url?: string;
 }
 
 export type modAction = 'warn' | 'kick' | 'ban' | 'softban' | 'unban' | 'timeout' | 'warn_remove';

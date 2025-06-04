@@ -28,18 +28,21 @@ export class UserCommand extends RadonCommand {
 		const content = `${Emojis.Confirm} ${user} has been unbanned ${reason ? `for the following reason: ${reason}` : ''}`;
 		await interaction.guild.bans.remove(user, reason);
 
+		const reply = await interaction.reply({ content, withResponse: true });
+
 		const data: BaseModActionData = {
 			action: 'unban',
 			moderator: interaction.member,
 			reason,
-			target: user
+			target: user,
+			url: reply.resource?.message?.url
 		};
 
 		if (await interaction.guild.settings?.modlogs.modLogs_exist()) {
 			this.container.client.emit(RadonEvents.ModAction, data);
 		}
 
-		return interaction.reply({ content });
+		return;
 	}
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {

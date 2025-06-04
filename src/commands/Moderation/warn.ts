@@ -343,6 +343,15 @@ export class UserCommand extends RadonCommand {
 
 		await interaction.editReply({ content }).catch(() => null);
 
+		const msg = await interaction.channel.send({
+			embeds: [
+				{
+					description: `${member} has been warned`,
+					color: Color.Moderation
+				}
+			]
+		});
+
 		const data: WarnActionData = {
 			warnId,
 			target: member,
@@ -350,7 +359,8 @@ export class UserCommand extends RadonCommand {
 			duration: new Timestamp(expiration.getTime()),
 			reason,
 			severity,
-			action: 'warn'
+			action: 'warn',
+			url: msg.url
 		};
 
 		if (await interaction.guild.settings!.modlogs.modLogs_exist()) {
@@ -383,15 +393,7 @@ export class UserCommand extends RadonCommand {
 				}
 			}
 		}
-
-		return interaction.channel.send({
-			embeds: [
-				{
-					description: `${member} has been warned`,
-					color: Color.Moderation
-				}
-			]
-		});
+		return;
 	}
 
 	private async remove(interaction: RadonCommand.ChatInputCommandInteraction) {
@@ -399,7 +401,7 @@ export class UserCommand extends RadonCommand {
 		const warnId = interaction.options.getString('warn_id', true);
 		const reason = interaction.options.getString('reason') ?? 'No reason provided';
 
-		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+		const reply = await interaction.deferReply({ withResponse: true });
 
 		if (!member) {
 			return interaction.editReply({
@@ -428,7 +430,8 @@ export class UserCommand extends RadonCommand {
 			target: member,
 			moderator: interaction.member,
 			reason,
-			action: 'warn_remove'
+			action: 'warn_remove',
+			url: reply.resource?.message?.url
 		};
 
 		if (await interaction.guild.settings?.modlogs.modLogs_exist()) {

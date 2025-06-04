@@ -1,6 +1,8 @@
 import type { PrismaClient } from '@prisma/client';
 import type { Embed } from './Embed.js';
-import { ChannelType, Guild } from 'discord.js';
+import { ButtonBuilder, ButtonStyle, ChannelType, Guild } from 'discord.js';
+import { Button } from './Button.js';
+import { Row } from './Row.js';
 
 export class Modlogs {
 	public constructor(
@@ -16,7 +18,7 @@ export class Modlogs {
 		return data?.modLogChannel;
 	}
 
-	public async sendModLog(embed: Embed) {
+	public async sendModLog(embed: Embed, url?: string) {
 		const data = await this.prisma.guildSettings.findUnique({ where: { id: this.guild.id } });
 
 		if (data && data.modLogChannel) {
@@ -26,10 +28,21 @@ export class Modlogs {
 				modLogChannel.type === ChannelType.GuildText &&
 				modLogChannel.permissionsFor(this.guild.members.me!).has('SendMessages')
 			) {
-				const sent = await modLogChannel.send({ embeds: [embed] });
+				const row = new Row<ButtonBuilder>()._components([]);
+
+				if (url) {
+					const ModlogButton = new Button() //
+						._style(ButtonStyle.Link)
+						._label('Take me there')
+						._url(url);
+					row._components([ModlogButton]);
+				}
+
+				const sent = await modLogChannel.send({ embeds: [embed], components: url ? [row] : undefined });
 				await sent
 					.edit({
-						embeds: [embed.setFooter({ text: `ID: ${sent.id}` })]
+						embeds: [embed.setFooter({ text: `ID: ${sent.id}` })],
+						components: sent.components
 					})
 					.catch(() => null);
 				return sent;
