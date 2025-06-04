@@ -459,9 +459,8 @@ export class UserCommand extends RadonCommand {
 		const data = await interaction.guild.settings?.warns.getRefined(member);
 
 		if (!data || data.active.length === 0) {
-			return interaction.reply({
-				content: `${member} has no active warnings`,
-				flags: MessageFlags.Ephemeral
+			return interaction.editReply({
+				content: `${member} has no active warnings`
 			});
 		}
 
