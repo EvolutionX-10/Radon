@@ -54,16 +54,16 @@ export class UserListener extends Listener {
 		}
 
 		if ((data as WarnActionData)?.warnId) {
-			embed.addFields(
-				{
-					name: 'Warn ID',
-					value: `- \`${(data as WarnActionData).warnId}\``
-				},
-				{
-					name: 'Severity',
-					value: `- ${(data as WarnActionData).severity}`
-				}
-			);
+			embed.addFields({
+				name: 'Warn ID',
+				value: `- \`${(data as WarnActionData).warnId}\``
+			});
+		}
+		if ((data as WarnActionData)?.severity) {
+			embed.addFields({
+				name: 'Severity',
+				value: `- ${(data as WarnActionData).severity}`
+			});
 		}
 
 		return data.moderator.guild.settings?.modlogs.sendModLog(embed, data.url);

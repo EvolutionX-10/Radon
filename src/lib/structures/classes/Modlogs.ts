@@ -31,18 +31,25 @@ export class Modlogs {
 				const row = new Row<ButtonBuilder>()._components([]);
 
 				if (url) {
-					const ModlogButton = new Button() //
+					const linkButton = new Button() //
 						._style(ButtonStyle.Link)
 						._label('Take me there')
 						._url(url);
-					row._components([ModlogButton]);
+					row._components([linkButton]);
 				}
 
 				const sent = await modLogChannel.send({ embeds: [embed], components: url ? [row] : undefined });
+
+				const editButton = new Button() //
+					._style(ButtonStyle.Secondary)
+					._label('Edit Reason')
+					._customId(`edit_reason:${sent.id}`);
+				row.addComponents(editButton);
+
 				await sent
 					.edit({
 						embeds: [embed.setFooter({ text: `ID: ${sent.id}` })],
-						components: sent.components
+						components: [row]
 					})
 					.catch(() => null);
 				return sent;
