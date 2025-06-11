@@ -58,7 +58,7 @@ export class UserCommand extends RadonCommand {
 			this.container.client.emit(RadonEvents.ModAction, data);
 		}
 
-		return interaction.reply(content);
+		return interaction.editReply(content);
 	}
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {
