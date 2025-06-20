@@ -301,7 +301,7 @@ export class UserCommand extends RadonCommand {
 		}
 
 		return interaction.reply({
-			content: `Removed ${role} to ${target} successfully!`,
+			content: `Removed ${role} from ${target} successfully!`,
 			allowedMentions: { parse: [] }
 		});
 	}
