@@ -1,6 +1,6 @@
 import { ApplyOptions } from '@sapphire/decorators';
 import { RadonCommand } from '#lib/structures';
-import { EmbedBuilder, InteractionContextType, MessageFlags } from 'discord.js';
+import { EmbedBuilder, InteractionContextType } from 'discord.js';
 import { Emojis } from '#constants';
 import { RegisterBehavior } from '@sapphire/framework';
 import { isAdmin, isModerator } from '#lib/utility';
@@ -59,6 +59,7 @@ export class UserCommand extends RadonCommand {
 		if (!possibleRoles.size && !isModerator(interaction.member) && !isAdmin(interaction.member))
 			return interaction.reply({ content: 'You do not have the required permissions to use this command!' });
 
+		await interaction.deferReply();
 		switch (subcmd) {
 			case 'add':
 				return this.addGuildMember(interaction);
@@ -121,29 +122,28 @@ export class UserCommand extends RadonCommand {
 		const member = interaction.options.getMember('target');
 		const welcome = interaction.options.getBoolean('welcome') ?? true;
 
-		if (!member || member.user.bot)
-			return interaction.reply({ content: 'You must provide a valid member to add', flags: MessageFlags.Ephemeral });
+		if (!member || member.user.bot) return interaction.editReply({ content: 'You must provide a valid member to add' });
 
 		const guildName = interaction.options.getString('guild', true);
 		const roleId = this.#GuildIdMap[guildName];
 
-		if (!roleId) return interaction.reply({ content: 'You must provide a valid guild to add the member to', flags: MessageFlags.Ephemeral });
+		if (!roleId) return interaction.editReply({ content: 'You must provide a valid guild to add the member to' });
 
 		const role = await interaction.guild.roles.fetch(roleId).catch(() => null);
-		if (!role) return interaction.reply({ content: 'I could not find that guild', flags: MessageFlags.Ephemeral });
+		if (!role) return interaction.editReply({ content: 'I could not find that guild' });
 
 		if (role.position > interaction.guild.members.me!.roles.highest!.position)
-			return interaction.reply({
+			return interaction.editReply({
 				content: `${Emojis.Cross} I can't add ${role} because its position is higher than my highest role!`
 			});
 
-		if (member.roles.cache.has(role.id)) return interaction.reply(`${member} is already in ${guildName}`);
+		if (member.roles.cache.has(role.id)) return interaction.editReply({ content: `${member} is already in ${guildName}` });
 
 		const added = await member.roles.add(roleId).catch(() => null);
 		await member.roles.remove(this.#WaitlistId).catch(() => null);
 
 		if (!added) {
-			return interaction.reply({ content: `${Emojis.Cross} I could not add ${member} to ${guildName}` });
+			return interaction.editReply({ content: `${Emojis.Cross} I could not add ${member} to ${guildName}` });
 		}
 
 		const guildChannel = await interaction.guild.channels.fetch(this.#GuildChannelIdMap[guildName]).catch(() => null);
@@ -181,19 +181,19 @@ export class UserCommand extends RadonCommand {
 
 		await member.send({ embeds: [welcomeDMEmbed] }).catch(() => null);
 
-		return interaction.reply({ content: `${Emojis.Confirm} Added ${member} to ${guildName}` });
+		return interaction.editReply({ content: `${Emojis.Confirm} Added ${member} to ${guildName}` });
 	}
 
 	private async removeGuildMember(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const member = interaction.options.getMember('target');
-		if (!member || member.user.bot) return interaction.reply({ content: 'You must provide a valid member to remove' });
+		if (!member || member.user.bot) return interaction.editReply({ content: 'You must provide a valid member to remove' });
 
 		const memberRoles = member.roles.cache.map((role) => role.id);
 		const possibleRoles = Object.values(this.#GuildIdMap).filter((guildId) => memberRoles.includes(guildId));
-		if (possibleRoles.length === 0) return interaction.reply({ content: `${member} is not in any guild` });
+		if (possibleRoles.length === 0) return interaction.editReply({ content: `${member} is not in any guild` });
 
 		await Promise.all(possibleRoles.map((roleId) => member.roles.remove(roleId)));
-		return interaction.reply({ content: `${Emojis.Confirm} Removed ${member} from all guilds` });
+		return interaction.editReply({ content: `${Emojis.Confirm} Removed ${member} from all guilds` });
 	}
 }
 
