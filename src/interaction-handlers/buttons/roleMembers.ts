@@ -29,9 +29,7 @@ export class RoleMembersButtonHandler extends InteractionHandler {
 		await role.guild.members.fetch(); // Ensure all members are cached
 		const members = role.members
 			.sort((a, b) => {
-				const aJoined = a.joinedTimestamp || 0;
-				const bJoined = b.joinedTimestamp || 0;
-				return bJoined - aJoined;
+				return (b?.joinedTimestamp || 0) - (a?.joinedTimestamp || 0);
 			})
 			.map((member) => member);
 
@@ -47,16 +45,24 @@ export class RoleMembersButtonHandler extends InteractionHandler {
 			const pageMembers = members.slice(i, i + membersPerPage);
 			const pageNumber = Math.floor(i / membersPerPage) + 1;
 			const totalPages = Math.ceil(members.length / membersPerPage);
-			const memberList = pageMembers
+			const longestName = Math.max(...pageMembers.map((member) => member.displayName.length), 0);
+			const paddedMembers = pageMembers.map((member) => {
+				const padding = longestName - member.displayName.length;
+				return `${member.displayName.trim()}${' '.repeat(padding)} │ ${member.id}`;
+			});
+
+			const memberList = paddedMembers
 				.map((member, index) => {
 					const position = i + index + 1;
-					const joinedDate = member.joinedTimestamp ? `<t:${Math.floor(member.joinedTimestamp / 1000)}:R>` : 'Unknown';
-
-					return `\`${position.toString().padStart(2, '0')}\` **│** ${member} **│** ${joinedDate} **│** \`${member.id}\``;
+					const maxPositionWidth = Math.max(2, (i + pageMembers.length).toString().length);
+					const paddedPosition = position.toString().padStart(maxPositionWidth, '0');
+					return ` ${paddedPosition} │ ${member}`;
 				})
 				.join('\n');
+			const memberTitle = ` Member${' '.repeat(longestName - 'Member'.length)} `;
 
-			const formattedMemberList = `\`\`\`\n #  │ Member │ Joined\n────┼────────┼─────────────────────\`\`\`\n${memberList}`;
+			const maxIndexWidth = Math.max(2, (i + pageMembers.length).toString().length);
+			const formattedMemberList = `\`\`\`\n${''.padStart(maxIndexWidth)}# │${memberTitle}│ ID\n${'─'.repeat(maxIndexWidth)}──┼${'─'.repeat(memberTitle.length)}┼───────────────────\n${memberList}\`\`\``;
 			const embed = new Embed()
 				._title(`Members with ${role.name} role`)
 				._description(formattedMemberList)
