@@ -138,12 +138,10 @@ export class UserCommand extends RadonCommand {
 			const tools = createAllTools(toolContext);
 
 			const { text } = await generateText({
-				model: google('gemini-2.0-flash-exp'),
+				model: google('gemini-2.5-flash'),
 				system: systemPrompt,
 				prompt: chatMessage,
-				temperature: 0.2,
-				maxTokens: 4000,
-				maxSteps: 10,
+				temperature: 0.1,
 				tools
 			});
 
