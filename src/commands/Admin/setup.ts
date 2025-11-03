@@ -162,20 +162,24 @@ export class UserCommand extends RadonCommand {
 
 				case 'public_modlog':
 				case 'private_modlog':
-					modLogChannel = await makeModlog(i.customId === 'private_modlog').catch(async (_) => {
-						collector.stop();
-						await i.followUp({
-							content:
-								`I couldn't create the modlog channel due to insufficient permissions!\nPlease try again after granting ` +
-								`\`Manage Channels\` [Creation of Channel], \`Manage Roles\` [To configure channel permissions], \`Embed Links and Send Messages\` [To send modlogs] permissions to me!\n` +
-								`**Note:** I need a role other than @everyone with the mentioned permissions!` +
-								`If you are still having issues run </about me:970217477126643752> and join our support server!`,
-							flags: MessageFlags.Ephemeral
+					modLogChannel = await makeModlog(i.customId === 'private_modlog')
+						.then((c) => {
+							collector.stop('Complete');
+							stage = 5;
+							return c;
+						})
+						.catch(async () => {
+							if (!i.replied) await i.deferUpdate();
+							await i.followUp({
+								content:
+									`I couldn't create the modlog channel due to insufficient permissions!\nPlease try again after granting ` +
+									`\`Manage Channels\` [Creation of Channel], \`Manage Roles\` [To configure channel permissions], \`Embed Links and Send Messages\` [To send modlogs] permissions to me!\n` +
+									`**Note:** I need a role other than @everyone with the mentioned permissions!\n> ` +
+									`If you are still having issues run </about me:970217477126643752> and join our support server!`,
+								flags: MessageFlags.Ephemeral
+							});
+							return undefined;
 						});
-						return undefined;
-					});
-					collector.stop('Complete');
-					stage = 5;
 					break;
 			}
 		});
@@ -268,7 +272,7 @@ export class UserCommand extends RadonCommand {
 					},
 					{
 						id: interaction.client.user.id,
-						allow: ['ViewChannel', 'SendMessages', 'EmbedLinks', 'ManageChannels', 'ManageRoles'],
+						allow: ['ViewChannel', 'SendMessages', 'EmbedLinks', 'ManageChannels'],
 						type: OverwriteType.Member
 					}
 				];
@@ -276,7 +280,7 @@ export class UserCommand extends RadonCommand {
 					return {
 						id,
 						allow: ['ViewChannel'],
-						deny: mod ? ['SendMessages', 'ManageChannels', 'ManageRoles'] : [],
+						deny: mod ? ['SendMessages', 'ManageChannels'] : [],
 						type: OverwriteType.Role
 					};
 				};
@@ -293,12 +297,12 @@ export class UserCommand extends RadonCommand {
 					{
 						id: interaction.guild.id,
 						allow: ['ViewChannel'],
-						deny: ['ManageChannels', 'SendMessages', 'ManageRoles'],
+						deny: ['ManageChannels', 'SendMessages'],
 						type: OverwriteType.Role
 					},
 					{
 						id: interaction.client.user.id,
-						allow: ['SendMessages', 'EmbedLinks', 'ManageChannels', 'ManageRoles'],
+						allow: ['SendMessages', 'EmbedLinks', 'ManageChannels'],
 						type: OverwriteType.Member
 					}
 				];
