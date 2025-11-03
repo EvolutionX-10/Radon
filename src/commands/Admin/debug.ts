@@ -1,7 +1,7 @@
 import { RadonCommand, RadonPaginatedMessage } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { mention, mins } from '#lib/utility';
-import { Emojis, RecommendedPermissions, RecommendedPermissionsWithoutAdmin } from '#constants';
+import { Emojis, RecommendedPermissionsWithoutAdmin } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
 import { ChannelType, Guild, InteractionContextType } from 'discord.js';
 import { PermissionFlagsBits } from 'discord-api-types/v9';
@@ -73,7 +73,7 @@ export class UserCommand extends RadonCommand {
 		const notes: string[] = [];
 
 		const me = interaction.guild.members.me ?? (await interaction.guild.members.fetch(interaction.client.user.id));
-		notes.push(...this.container.utils.format(me.permissions.missing(RecommendedPermissions)).map((p) => this.note(p)));
+		notes.push(...this.container.utils.format(me.permissions.missing(RecommendedPermissionsWithoutAdmin)).map((p) => this.note(p)));
 
 		if (!notes.length) return `> Server Permissions ${Emojis.Forward} Perfect!`;
 		notes.unshift(`> Server Permissions ${Emojis.Forward} Permissions Missing!`);
