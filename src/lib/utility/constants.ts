@@ -70,7 +70,8 @@ export const UserFlags: Partial<Record<UserFlagsString, string>> = {
 	HypeSquadOnlineHouse2: '<:BadgeBravery:1024918354726752267>',
 	HypeSquadOnlineHouse3: '<:BadgeBrilliance:1024918361026613299>',
 	Hypesquad: '<:BadgeHypeSquadEvents:1024918396040650764>',
-	Partner: '<:BadgePartner:1024918407335919646>'
+	Partner: '<:BadgePartner:1024918407335919646>',
+	ActiveDeveloper: '<:activedev:1434788503912321106>'
 };
 
 const vote_topgg = new Button() //
@@ -83,18 +84,20 @@ const vote_void = new Button() //
 	._style(ButtonStyle.Link)
 	._emoji('<:voidbots:742925293907607624>')
 	._url('https://voidbots.net/bot/944833303226236989/vote');
-const vote_labs = new Button() //
-	._label('Vote on Discord Labs')
-	._style(ButtonStyle.Link)
-	._emoji('<:discordlabsicon:621472531735642130>')
-	._url('https://bots.discordlabs.org/bot/944833303226236989?vote');
+// const vote_labs = new Button() //
+// 	._label('Vote on Discord Labs')
+// 	._style(ButtonStyle.Link)
+// 	._emoji('<:discordlabsicon:621472531735642130>')
+// 	._url('https://bots.discordlabs.org/bot/944833303226236989?vote');
 const vote_dbl = new Button() //
 	._label('Vote on Discord Bot List')
 	._style(ButtonStyle.Link)
 	._emoji('<:dbl:1037357030152863824>')
 	._url('https://discordbotlist.com/bots/radon-1595/upvote');
 
-export const voteRow = new Row<ButtonBuilder>()._components([vote_topgg, vote_void, vote_labs, vote_dbl]);
+export const voteRow = new Row<ButtonBuilder>()._components([vote_topgg, vote_void, vote_dbl]);
 
-export const RecommendedPermissions = 543276137727n;
-export const RecommendedPermissionsWithoutAdmin = 543276137719n;
+// export const RecommendedPermissions = 543276137727n;
+// export const RecommendedPermissionsWithoutAdmin = 543276137719n;
+export const RecommendedPermissions = 3126454834429183n;
+export const RecommendedPermissionsWithoutAdmin = 3126454834429175n;
