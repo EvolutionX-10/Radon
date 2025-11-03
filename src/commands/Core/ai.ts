@@ -58,10 +58,7 @@ export class UserCommand extends RadonCommand {
 			const result = await this.chat(naturalLanguageRequest, message);
 
 			if (!result || !result.trim().length) {
-				return void send(
-					message,
-					"❌ I couldn't generate a response. Could you rephrase that or be more specific about what you need?"
-				);
+				return void send(message, "❌ I couldn't generate a response. Could you rephrase that or be more specific about what you need?");
 			}
 
 			// Split long responses

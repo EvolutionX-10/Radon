@@ -168,7 +168,11 @@ export function createMemberTools(context: AIToolContext) {
 			execute: async ({ userId }) => {
 				try {
 					const member = await context.guild.members.fetch(userId);
-					const roles = member.roles.cache.map((r) => r.name).filter((n) => n !== '@everyone').join(', ') || 'None';
+					const roles =
+						member.roles.cache
+							.map((r) => r.name)
+							.filter((n) => n !== '@everyone')
+							.join(', ') || 'None';
 					const joinedAt = member.joinedAt ? new Date(member.joinedAt).toLocaleDateString() : 'Unknown';
 					const createdAt = new Date(member.user.createdAt).toLocaleDateString();
 

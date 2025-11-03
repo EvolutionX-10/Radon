@@ -15,9 +15,7 @@ export function createChannelTools(context: AIToolContext) {
 			description: 'Create a new channel in the guild. Use this when asked to create a channel.',
 			parameters: z.object({
 				name: z.string().describe('The name of the channel'),
-				type: z
-					.enum(['text', 'voice', 'announcement', 'stage', 'forum', 'category'])
-					.describe('The type of channel to create'),
+				type: z.enum(['text', 'voice', 'announcement', 'stage', 'forum', 'category']).describe('The type of channel to create'),
 				topic: z.string().optional().describe('The topic/description of the channel'),
 				categoryId: z.string().optional().describe('ID of the parent category')
 			}),
@@ -106,7 +104,11 @@ export function createChannelTools(context: AIToolContext) {
 					const channel = await context.guild.channels.fetch(channelId);
 					if (!channel || !channel.isTextBased()) return '❌ Channel not found or not a text channel';
 
-					await (channel as any).setRateLimitPerUser(seconds);
+					if ('setRateLimitPerUser' in channel && typeof channel.setRateLimitPerUser === 'function') {
+						await channel.setRateLimitPerUser(seconds);
+					} else {
+						return '❌ This channel does not support slowmode';
+					}
 					if (seconds === 0) {
 						return `✅ Disabled slowmode for ${channel.name}`;
 					} else {
@@ -134,8 +136,10 @@ export function createChannelTools(context: AIToolContext) {
 					let info = `**Channel Info: ${channel.name}**\n- ID: ${channel.id}\n- Type: ${ChannelType[channel.type]}`;
 
 					if (channel.isTextBased() && 'topic' in channel) {
-						info += `\n- Topic: ${(channel as any).topic || 'None'}`;
-						info += `\n- Slowmode: ${(channel as any).rateLimitPerUser || 0} seconds`;
+						const topic = 'topic' in channel ? channel.topic : null;
+						const rateLimitPerUser = 'rateLimitPerUser' in channel ? channel.rateLimitPerUser : 0;
+						info += `\n- Topic: ${topic || 'None'}`;
+						info += `\n- Slowmode: ${rateLimitPerUser || 0} seconds`;
 					}
 
 					if (channel.parent) {
@@ -143,7 +147,7 @@ export function createChannelTools(context: AIToolContext) {
 					}
 
 					if ('position' in channel) {
-						info += `\n- Position: ${(channel as any).position}`;
+						info += `\n- Position: ${channel.position}`;
 					}
 					info += `\n- Created: ${channel.createdAt ? new Date(channel.createdAt).toLocaleDateString() : 'Unknown'}`;
 
@@ -176,14 +180,12 @@ export function createChannelTools(context: AIToolContext) {
 					}
 
 					channels.sort((a, b) => {
-						const aPos = 'position' in a ? (a as any).position : 0;
-						const bPos = 'position' in b ? (b as any).position : 0;
+						const aPos = 'position' in a ? (a.position as number) : 0;
+						const bPos = 'position' in b ? (b.position as number) : 0;
 						return aPos - bPos;
 					});
 
-					const channelList = channels
-						.map((c) => `- ${c.name} (ID: ${c.id}, Type: ${ChannelType[c.type]})`)
-						.join('\n');
+					const channelList = channels.map((c) => `- ${c.name} (ID: ${c.id}, Type: ${ChannelType[c.type]})`).join('\n');
 
 					return `**Channels in ${context.guild.name}:**\n${channelList || 'No channels found'}`;
 				} catch (error) {
@@ -205,9 +207,11 @@ export function createChannelTools(context: AIToolContext) {
 			execute: async ({ channelId, maxAge, maxUses }) => {
 				try {
 					const channel = await context.guild.channels.fetch(channelId);
-					if (!channel || !('createInvite' in channel)) return '❌ Cannot create invite for this channel type';
+					if (!channel || !('createInvite' in channel) || typeof channel.createInvite !== 'function') {
+						return '❌ Cannot create invite for this channel type';
+					}
 
-					const invite = await (channel as any).createInvite({
+					const invite = await channel.createInvite({
 						maxAge: maxAge || 0,
 						maxUses: maxUses || 0
 					});

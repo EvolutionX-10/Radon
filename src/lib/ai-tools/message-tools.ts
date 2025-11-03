@@ -46,7 +46,11 @@ export function createMessageTools(context: AIToolContext) {
 						return '❌ Channel not found or not a text channel';
 					}
 
-					await (channel as any).send(message);
+					if ('send' in channel && typeof channel.send === 'function') {
+						await channel.send(message);
+					} else {
+						return '❌ Cannot send messages to this channel';
+					}
 					return `✅ Successfully sent message to ${channel.name}`;
 				} catch (error) {
 					return `❌ Failed to send message: ${error instanceof Error ? error.message : 'Unknown error'}`;
@@ -70,8 +74,12 @@ export function createMessageTools(context: AIToolContext) {
 						return '❌ Channel not found or not a text channel';
 					}
 
-					const deleted = await (channel as any).bulkDelete(amount, true);
-					return `✅ Successfully deleted ${deleted.size} messages from ${channel.name}`;
+					if ('bulkDelete' in channel && typeof channel.bulkDelete === 'function') {
+						const deleted = await channel.bulkDelete(amount, true);
+						return `✅ Successfully deleted ${deleted.size} messages from ${channel.name}`;
+					}
+
+					return '❌ Cannot bulk delete messages in this channel';
 				} catch (error) {
 					return `❌ Failed to delete messages: ${error instanceof Error ? error.message : 'Unknown error'}. Note: Messages older than 14 days cannot be bulk deleted.`;
 				}
@@ -94,7 +102,11 @@ export function createMessageTools(context: AIToolContext) {
 						return '❌ Channel not found or not a text channel';
 					}
 
-					const message = await (channel as any).messages.fetch(messageId);
+					if (!('messages' in channel)) {
+						return '❌ Cannot access messages in this channel';
+					}
+
+					const message = await channel.messages.fetch(messageId);
 					await message.pin();
 					return `✅ Successfully pinned message in ${channel.name}`;
 				} catch (error) {
@@ -119,7 +131,11 @@ export function createMessageTools(context: AIToolContext) {
 						return '❌ Channel not found or not a text channel';
 					}
 
-					const message = await (channel as any).messages.fetch(messageId);
+					if (!('messages' in channel)) {
+						return '❌ Cannot access messages in this channel';
+					}
+
+					const message = await channel.messages.fetch(messageId);
 					await message.unpin();
 					return `✅ Successfully unpinned message in ${channel.name}`;
 				} catch (error) {
@@ -145,7 +161,11 @@ export function createMessageTools(context: AIToolContext) {
 						return '❌ Channel not found or not a text channel';
 					}
 
-					const message = await (channel as any).messages.fetch(messageId);
+					if (!('messages' in channel)) {
+						return '❌ Cannot access messages in this channel';
+					}
+
+					const message = await channel.messages.fetch(messageId);
 					await message.react(emoji);
 					return `✅ Successfully reacted to message with ${emoji}`;
 				} catch (error) {

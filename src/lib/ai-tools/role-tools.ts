@@ -1,6 +1,6 @@
 import { tool } from 'ai';
 import { z } from 'zod';
-import { PermissionFlagsBits } from 'discord.js';
+import { PermissionFlagsBits, type ColorResolvable } from 'discord.js';
 import type { AIToolContext } from './types.js';
 
 /**
@@ -23,7 +23,7 @@ export function createRoleTools(context: AIToolContext) {
 				try {
 					const role = await context.guild.roles.create({
 						name,
-						color: color as any,
+						color: (color as ColorResolvable) || undefined,
 						hoist: hoist || false,
 						mentionable: mentionable || false
 					});
@@ -75,7 +75,7 @@ export function createRoleTools(context: AIToolContext) {
 
 					await role.edit({
 						name: name || role.name,
-						color: (color as any) || role.color,
+						color: color ? (color as ColorResolvable) : role.color,
 						hoist: hoist !== undefined ? hoist : role.hoist,
 						mentionable: mentionable !== undefined ? mentionable : role.mentionable
 					});

@@ -135,10 +135,19 @@ export function createInfoTools(context: AIToolContext) {
 						return '❌ Channel not found or not a text channel';
 					}
 
-					const messages = await (channel as any).messages.fetch({ limit: limit || 10 });
+					if (!('messages' in channel)) {
+						return '❌ Cannot access messages in this channel';
+					}
+
+					const messages = await channel.messages.fetch({ limit: limit || 10 });
 					const messageList = Array.from(messages.values())
 						.reverse()
-						.map((m: any) => `[${new Date(m.createdAt).toLocaleTimeString()}] ${m.author.tag}: ${m.content.substring(0, 100)}${m.content.length > 100 ? '...' : ''}`)
+						.map((m) => {
+							const timestamp = new Date(m.createdAt).toLocaleTimeString();
+							const content = m.content.substring(0, 100);
+							const truncated = m.content.length > 100 ? '...' : '';
+							return `[${timestamp}] ${m.author.tag}: ${content}${truncated}`;
+						})
 						.join('\n');
 
 					return `**Recent messages in ${channel.name}:**\n${messageList || 'No messages found'}`;
@@ -202,8 +211,7 @@ export function createInfoTools(context: AIToolContext) {
 					if (!member) {
 						member = context.guild.members.cache.find(
 							(m) =>
-								m.user.username.toLowerCase().includes(name.toLowerCase()) ||
-								m.nickname?.toLowerCase().includes(name.toLowerCase())
+								m.user.username.toLowerCase().includes(name.toLowerCase()) || m.nickname?.toLowerCase().includes(name.toLowerCase())
 						);
 					}
 

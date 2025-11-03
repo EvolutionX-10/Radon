@@ -62,9 +62,7 @@ export class ConversationManager {
 		const state = this.getConversation(userId, guildId);
 		if (state.messages.length === 0) return '';
 
-		return state.messages
-			.map((msg) => `${msg.role}: ${msg.content}`)
-			.join('\n');
+		return state.messages.map((msg) => `${msg.role}: ${msg.content}`).join('\n');
 	}
 
 	/**
