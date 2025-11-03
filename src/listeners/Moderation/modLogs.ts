@@ -31,7 +31,7 @@ export class UserListener extends Listener {
 			})
 			._thumbnail(data.target.displayAvatarURL({ forceStatic: false }))
 			._title(`${this.getActionName(data.action)}`)
-			._description(`\`\`\`\n${data.reason || 'No reason provided'}\n\`\`\``)
+			._description(data.reason?.length ? data.reason : '```\nNo reason provided\n```')
 			._fields([
 				{
 					name: 'Moderator',

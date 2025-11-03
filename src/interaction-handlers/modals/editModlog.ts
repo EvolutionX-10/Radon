@@ -17,7 +17,7 @@ export class ModalHandler extends InteractionHandler {
 		await interaction.deferUpdate();
 
 		await message.edit({
-			embeds: [new Embed(message.embeds[0].data)._description(`\`\`\`\n${result.reason}\n\`\`\``)]
+			embeds: [new Embed(message.embeds[0].data)._description(result.reason)]
 		});
 
 		if (message.embeds[0].title === 'Warn') {
@@ -59,6 +59,7 @@ export class ModalHandler extends InteractionHandler {
 
 		return member.guild.settings?.warns.update(warns.doc.warnlist);
 	}
+
 	private getID(message: Message) {
 		const embed = message.embeds[0];
 		if (!embed) return;

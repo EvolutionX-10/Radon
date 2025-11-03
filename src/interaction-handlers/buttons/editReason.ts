@@ -30,10 +30,9 @@ export class EditReasonButtonHandler extends InteractionHandler {
 			.setCustomId(`@edit_reason/${interaction.channelId}/${messageId}`)
 			.setTitle('Edit Reason');
 
-		let reason = message.embeds[0].description?.match(/```(.+?)```/s)?.[1].trim();
-		if (reason === 'No reason provided') {
-			reason = undefined;
-		}
+		let reason;
+		if (message.embeds[0].description?.startsWith('```')) reason = undefined;
+		else reason = message.embeds[0].description?.trim();
 
 		const reasonInput = new TextInputBuilder()
 			.setLabel('Reason')
