@@ -248,9 +248,14 @@ export class UserCommand extends RadonCommand {
 				flags: MessageFlags.Ephemeral
 			});
 
-		if (role.position > interaction.guild.members.me!.roles.highest!.position)
+		if (role.position >= interaction.member.roles.highest.position)
 			return interaction.reply({
-				content: `${Emojis.Cross} I can't add ${role} because its position is higher than my highest role!`
+				content: `${Emojis.Cross} You can't add ${role} because its position is higher than or equal to your highest role!`
+			});
+
+		if (role.position >= interaction.guild.members.me!.roles.highest.position)
+			return interaction.reply({
+				content: `${Emojis.Cross} I can't add ${role} because its position is higher than or equal to my highest role!`
 			});
 
 		if (target.roles.cache.has(role.id)) return interaction.reply(`${target} already has ${role}`);
@@ -284,9 +289,14 @@ export class UserCommand extends RadonCommand {
 				flags: MessageFlags.Ephemeral
 			});
 
-		if (role.position > interaction.guild.members.me!.roles.highest.position)
+		if (role.position >= interaction.member.roles.highest.position)
 			return interaction.reply({
-				content: `${Emojis.Cross} I can't remove ${role} because its position is higher than my highest role!`
+				content: `${Emojis.Cross} You can't remove ${role} because its position is higher than or equal to your highest role!`
+			});
+
+		if (role.position >= interaction.guild.members.me!.roles.highest.position)
+			return interaction.reply({
+				content: `${Emojis.Cross} I can't remove ${role} because its position is higher than or equal to my highest role!`
 			});
 
 		if (!target.roles.cache.has(role.id)) return interaction.reply(`${target} doesn't have ${role}`);
@@ -369,11 +379,21 @@ export class UserCommand extends RadonCommand {
 		const reason = interaction.options.getString('reason') ?? undefined;
 
 		if (role.managed) {
-			return interaction.editReply("This role is managed by an integration, you can't delete it!");
+			return interaction.reply("This role is managed by an integration, you can't delete it!");
 		}
-		if (role.position > interaction.guild.members.me!.roles?.highest?.position) {
-			return interaction.editReply(`${Emojis.Cross} I can't delete ${role} because its position is higher than my highest role!`);
+
+		if (role.position >= interaction.member.roles.highest.position) {
+			return interaction.reply({
+				content: `${Emojis.Cross} You can't delete ${role} because its position is higher than or equal to your highest role!`
+			});
 		}
+
+		if (role.position >= interaction.guild.members.me!.roles.highest.position) {
+			return interaction.reply({
+				content: `${Emojis.Cross} I can't delete ${role} because its position is higher than or equal to my highest role!`
+			});
+		}
+
 		await role.delete(reason);
 		return interaction.reply(`Role __*${role.name}*__ deleted!`);
 	}
