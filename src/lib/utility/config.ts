@@ -84,7 +84,7 @@ export const config: Config = {
 		status: 'online',
 		activities: [
 			{
-				name: 'for Rule Breakers',
+				name: 'Rule Breakers',
 				type: ActivityType.Watching
 			}
 		]
