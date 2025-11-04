@@ -13,7 +13,7 @@ export function createInfoTools(context: AIToolContext) {
 		 */
 		getServerInfo: tool({
 			description: 'Get detailed information about the current Discord server/guild.',
-			parameters: z.object({}),
+			inputSchema: z.object({}),
 			execute: async () => {
 				try {
 					const { guild } = context;
@@ -59,7 +59,7 @@ export function createInfoTools(context: AIToolContext) {
 		 */
 		searchMembers: tool({
 			description: 'Search for members by username (fuzzy search). Use this when you need to find members by name.',
-			parameters: z.object({
+			inputSchema: z.object({
 				query: z.string().describe('The username or partial username to search for'),
 				limit: z.number().min(1).max(20).optional().describe('Maximum number of results to return (default 10)')
 			}),
@@ -90,7 +90,7 @@ export function createInfoTools(context: AIToolContext) {
 		 */
 		getBotInfo: tool({
 			description: 'Get information about the bot itself (uptime, ping, stats).',
-			parameters: z.object({}),
+			inputSchema: z.object({}),
 			execute: async () => {
 				try {
 					const { client } = context;
@@ -124,7 +124,7 @@ export function createInfoTools(context: AIToolContext) {
 		 */
 		getMessageHistory: tool({
 			description: 'Fetch recent messages from a channel. Use this when asked to see recent messages or chat history.',
-			parameters: z.object({
+			inputSchema: z.object({
 				channelId: z.string().describe('The ID of the channel'),
 				limit: z.number().min(1).max(100).optional().describe('Number of messages to fetch (max 100, default 10)')
 			}),
@@ -162,7 +162,7 @@ export function createInfoTools(context: AIToolContext) {
 		 */
 		findChannelByName: tool({
 			description: 'Find a channel by name (case-insensitive partial match). Use this when you need to find a channel ID from its name.',
-			parameters: z.object({
+			inputSchema: z.object({
 				name: z.string().describe('The name (or partial name) of the channel to find'),
 				type: z.enum(['text', 'voice', 'category', 'any']).optional().describe('The type of channel to find')
 			}),
@@ -197,7 +197,7 @@ export function createInfoTools(context: AIToolContext) {
 		 */
 		findMemberByName: tool({
 			description: 'Find a member by username or nickname (fuzzy search). Use this when you need to find a member ID from their name.',
-			parameters: z.object({
+			inputSchema: z.object({
 				name: z.string().describe('The username or nickname to search for')
 			}),
 			execute: async ({ name }) => {

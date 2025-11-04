@@ -12,7 +12,7 @@ export function createMemberTools(context: AIToolContext) {
 		 */
 		banMember: tool({
 			description: 'Ban a member from the Discord server. Use this when asked to ban someone.',
-			parameters: z.object({
+			inputSchema: z.object({
 				userId: z.string().describe('The ID of the user to ban'),
 				reason: z.string().optional().describe('Reason for the ban'),
 				deleteMessageDays: z.number().min(0).max(7).optional().describe('Number of days of messages to delete (0-7)')
@@ -36,7 +36,7 @@ export function createMemberTools(context: AIToolContext) {
 		 */
 		kickMember: tool({
 			description: 'Kick a member from the Discord server. Use this when asked to kick someone.',
-			parameters: z.object({
+			inputSchema: z.object({
 				userId: z.string().describe('The ID of the user to kick'),
 				reason: z.string().optional().describe('Reason for the kick')
 			}),
@@ -56,7 +56,7 @@ export function createMemberTools(context: AIToolContext) {
 		 */
 		timeoutMember: tool({
 			description: 'Timeout (mute) a member for a specified duration. Use this when asked to mute or timeout someone.',
-			parameters: z.object({
+			inputSchema: z.object({
 				userId: z.string().describe('The ID of the user to timeout'),
 				duration: z.number().describe('Duration in seconds (max 2419200 = 28 days)'),
 				reason: z.string().optional().describe('Reason for the timeout')
@@ -79,7 +79,7 @@ export function createMemberTools(context: AIToolContext) {
 		 */
 		removeTimeout: tool({
 			description: 'Remove timeout from a member (unmute). Use this when asked to unmute someone.',
-			parameters: z.object({
+			inputSchema: z.object({
 				userId: z.string().describe('The ID of the user to unmute')
 			}),
 			execute: async ({ userId }) => {
@@ -98,7 +98,7 @@ export function createMemberTools(context: AIToolContext) {
 		 */
 		addRole: tool({
 			description: 'Add a role to a member. Use this when asked to give someone a role.',
-			parameters: z.object({
+			inputSchema: z.object({
 				userId: z.string().describe('The ID of the user'),
 				roleId: z.string().describe('The ID of the role to add')
 			}),
@@ -120,7 +120,7 @@ export function createMemberTools(context: AIToolContext) {
 		 */
 		removeRole: tool({
 			description: 'Remove a role from a member. Use this when asked to remove a role from someone.',
-			parameters: z.object({
+			inputSchema: z.object({
 				userId: z.string().describe('The ID of the user'),
 				roleId: z.string().describe('The ID of the role to remove')
 			}),
@@ -142,7 +142,7 @@ export function createMemberTools(context: AIToolContext) {
 		 */
 		setNickname: tool({
 			description: "Change a member's nickname. Use this when asked to change someone's nickname or your own.",
-			parameters: z.object({
+			inputSchema: z.object({
 				userId: z.string().describe('The ID of the user (use client.user.id for bot itself)'),
 				nickname: z.string().describe('The new nickname (null to reset)')
 			}),
@@ -162,7 +162,7 @@ export function createMemberTools(context: AIToolContext) {
 		 */
 		getMemberInfo: tool({
 			description: 'Get detailed information about a guild member. Use this when asked about user info, join date, roles, etc.',
-			parameters: z.object({
+			inputSchema: z.object({
 				userId: z.string().describe('The ID of the user')
 			}),
 			execute: async ({ userId }) => {

@@ -13,7 +13,7 @@ export function createChannelTools(context: AIToolContext) {
 		 */
 		createChannel: tool({
 			description: 'Create a new channel in the guild. Use this when asked to create a channel.',
-			parameters: z.object({
+			inputSchema: z.object({
 				name: z.string().describe('The name of the channel'),
 				type: z.enum(['text', 'voice', 'announcement', 'stage', 'forum', 'category']).describe('The type of channel to create'),
 				topic: z.string().optional().describe('The topic/description of the channel'),
@@ -52,7 +52,7 @@ export function createChannelTools(context: AIToolContext) {
 		 */
 		deleteChannel: tool({
 			description: 'Delete a channel from the guild. Use this when asked to delete or remove a channel.',
-			parameters: z.object({
+			inputSchema: z.object({
 				channelId: z.string().describe('The ID of the channel to delete')
 			}),
 			execute: async ({ channelId }) => {
@@ -73,7 +73,7 @@ export function createChannelTools(context: AIToolContext) {
 		 */
 		renameChannel: tool({
 			description: 'Rename a channel. Use this when asked to change a channel name.',
-			parameters: z.object({
+			inputSchema: z.object({
 				channelId: z.string().describe('The ID of the channel to rename'),
 				newName: z.string().describe('The new name for the channel')
 			}),
@@ -95,7 +95,7 @@ export function createChannelTools(context: AIToolContext) {
 		 */
 		setSlowmode: tool({
 			description: 'Set slowmode for a text channel. Use this when asked to enable/disable slowmode.',
-			parameters: z.object({
+			inputSchema: z.object({
 				channelId: z.string().describe('The ID of the channel'),
 				seconds: z.number().min(0).max(21600).describe('Slowmode duration in seconds (0 to disable, max 21600)')
 			}),
@@ -125,7 +125,7 @@ export function createChannelTools(context: AIToolContext) {
 		 */
 		getChannelInfo: tool({
 			description: 'Get information about a channel. Use this when asked about channel details.',
-			parameters: z.object({
+			inputSchema: z.object({
 				channelId: z.string().describe('The ID of the channel')
 			}),
 			execute: async ({ channelId }) => {
@@ -163,7 +163,7 @@ export function createChannelTools(context: AIToolContext) {
 		 */
 		listChannels: tool({
 			description: 'List all channels in the guild by type. Use this when asked to list channels.',
-			parameters: z.object({
+			inputSchema: z.object({
 				type: z.enum(['all', 'text', 'voice', 'category']).optional().describe('Filter by channel type')
 			}),
 			execute: async ({ type }) => {
@@ -199,7 +199,7 @@ export function createChannelTools(context: AIToolContext) {
 		 */
 		createInvite: tool({
 			description: 'Create an invite link for a channel. Use this when asked to create an invite.',
-			parameters: z.object({
+			inputSchema: z.object({
 				channelId: z.string().describe('The ID of the channel'),
 				maxAge: z.number().optional().describe('Max age in seconds (0 for permanent)'),
 				maxUses: z.number().optional().describe('Max number of uses (0 for unlimited)')

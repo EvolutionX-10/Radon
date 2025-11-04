@@ -12,7 +12,7 @@ export function createMessageTools(context: AIToolContext) {
 		 */
 		sendDM: tool({
 			description: 'Send a direct message to a user. Use this when asked to DM someone.',
-			parameters: z.object({
+			inputSchema: z.object({
 				userId: z.string().describe('The ID of the user to send a DM to'),
 				message: z.string().describe('The message content to send')
 			}),
@@ -35,7 +35,7 @@ export function createMessageTools(context: AIToolContext) {
 		 */
 		sendMessage: tool({
 			description: 'Send a message to a specific channel. Use this when asked to send a message somewhere.',
-			parameters: z.object({
+			inputSchema: z.object({
 				channelId: z.string().describe('The ID of the channel to send message to'),
 				message: z.string().describe('The message content to send')
 			}),
@@ -63,7 +63,7 @@ export function createMessageTools(context: AIToolContext) {
 		 */
 		bulkDeleteMessages: tool({
 			description: 'Delete multiple messages from a channel (bulk delete). Use this when asked to clear or purge messages.',
-			parameters: z.object({
+			inputSchema: z.object({
 				channelId: z.string().describe('The ID of the channel'),
 				amount: z.number().min(1).max(100).describe('Number of messages to delete (1-100)')
 			}),
@@ -91,7 +91,7 @@ export function createMessageTools(context: AIToolContext) {
 		 */
 		pinMessage: tool({
 			description: 'Pin a message in a channel. Use this when asked to pin a message.',
-			parameters: z.object({
+			inputSchema: z.object({
 				channelId: z.string().describe('The ID of the channel'),
 				messageId: z.string().describe('The ID of the message to pin')
 			}),
@@ -120,7 +120,7 @@ export function createMessageTools(context: AIToolContext) {
 		 */
 		unpinMessage: tool({
 			description: 'Unpin a message in a channel. Use this when asked to unpin a message.',
-			parameters: z.object({
+			inputSchema: z.object({
 				channelId: z.string().describe('The ID of the channel'),
 				messageId: z.string().describe('The ID of the message to unpin')
 			}),
@@ -149,7 +149,7 @@ export function createMessageTools(context: AIToolContext) {
 		 */
 		reactToMessage: tool({
 			description: 'Add a reaction to a message. Use this when asked to react to a message.',
-			parameters: z.object({
+			inputSchema: z.object({
 				channelId: z.string().describe('The ID of the channel'),
 				messageId: z.string().describe('The ID of the message to react to'),
 				emoji: z.string().describe('The emoji to react with (Unicode emoji or custom emoji ID)')

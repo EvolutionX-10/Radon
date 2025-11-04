@@ -13,7 +13,7 @@ export function createRoleTools(context: AIToolContext) {
 		 */
 		createRole: tool({
 			description: 'Create a new role in the guild. Use this when asked to create a role.',
-			parameters: z.object({
+			inputSchema: z.object({
 				name: z.string().describe('The name of the role'),
 				color: z.string().optional().describe('The color of the role (hex code like #FF0000 or color name)'),
 				hoist: z.boolean().optional().describe('Whether to display role members separately'),
@@ -23,7 +23,7 @@ export function createRoleTools(context: AIToolContext) {
 				try {
 					const role = await context.guild.roles.create({
 						name,
-						color: (color as ColorResolvable) || undefined,
+						colors: color ? { primaryColor: color as ColorResolvable } : undefined,
 						hoist: hoist || false,
 						mentionable: mentionable || false
 					});
@@ -40,7 +40,7 @@ export function createRoleTools(context: AIToolContext) {
 		 */
 		deleteRole: tool({
 			description: 'Delete a role from the guild. Use this when asked to delete or remove a role.',
-			parameters: z.object({
+			inputSchema: z.object({
 				roleId: z.string().describe('The ID of the role to delete')
 			}),
 			execute: async ({ roleId }) => {
@@ -61,7 +61,7 @@ export function createRoleTools(context: AIToolContext) {
 		 */
 		editRole: tool({
 			description: 'Edit role properties. Use this when asked to change role name, color, or other properties.',
-			parameters: z.object({
+			inputSchema: z.object({
 				roleId: z.string().describe('The ID of the role to edit'),
 				name: z.string().optional().describe('New name for the role'),
 				color: z.string().optional().describe('New color (hex code or color name)'),
@@ -92,7 +92,7 @@ export function createRoleTools(context: AIToolContext) {
 		 */
 		setRolePermissions: tool({
 			description: 'Set permissions for a role. Use this when asked to change role permissions.',
-			parameters: z.object({
+			inputSchema: z.object({
 				roleId: z.string().describe('The ID of the role'),
 				permissions: z
 					.array(z.string())
@@ -126,7 +126,7 @@ export function createRoleTools(context: AIToolContext) {
 		 */
 		getRoleInfo: tool({
 			description: 'Get information about a role. Use this when asked about role details or permissions.',
-			parameters: z.object({
+			inputSchema: z.object({
 				roleId: z.string().describe('The ID of the role')
 			}),
 			execute: async ({ roleId }) => {
@@ -157,7 +157,7 @@ export function createRoleTools(context: AIToolContext) {
 		 */
 		listRoles: tool({
 			description: 'List all roles in the guild. Use this when asked to list roles.',
-			parameters: z.object({}),
+			inputSchema: z.object({}),
 			execute: async () => {
 				try {
 					const roles = Array.from(context.guild.roles.cache.values())
@@ -178,7 +178,7 @@ export function createRoleTools(context: AIToolContext) {
 		 */
 		findRoleByName: tool({
 			description: 'Find a role by name (case-insensitive partial match). Use this when you need to find a role ID from its name.',
-			parameters: z.object({
+			inputSchema: z.object({
 				name: z.string().describe('The name (or partial name) of the role to find')
 			}),
 			execute: async ({ name }) => {

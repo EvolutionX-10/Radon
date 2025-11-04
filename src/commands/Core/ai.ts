@@ -142,8 +142,6 @@ export class UserCommand extends RadonCommand {
 				system: systemPrompt,
 				prompt: chatMessage,
 				temperature: 0.2,
-				maxTokens: 4000,
-				maxSteps: 10,
 				tools
 			});
 
