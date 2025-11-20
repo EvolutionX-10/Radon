@@ -23,7 +23,7 @@ export function createRoleTools(context: AIToolContext) {
 				try {
 					const role = await context.guild.roles.create({
 						name,
-						colors: color ? { primaryColor: color as ColorResolvable } : undefined,
+						color: color ? (color as ColorResolvable) : undefined,
 						hoist: hoist || false,
 						mentionable: mentionable || false
 					});
