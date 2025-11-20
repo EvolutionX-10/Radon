@@ -416,7 +416,9 @@ export class UserCommand extends RadonCommand {
 
 		if (interaction.guild.bulkRoleInProgress) return interaction.reply(`${Emojis.Cross} A bulk role process is already in progress!`);
 
-		await interaction.guild.members.fetch();
+		if (interaction.guild.memberCount > interaction.guild.members.cache.size) {
+			await interaction.guild.members.fetch();
+		}
 
 		let { members } = base;
 		members = members.filter((m) => (option === 'add' ? !m.roles.cache.has(role.id) : m.roles.cache.has(role.id)));
