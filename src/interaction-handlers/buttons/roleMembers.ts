@@ -26,7 +26,12 @@ export class RoleMembersButtonHandler extends InteractionHandler {
 		const { role } = result;
 
 		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-		await role.guild.members.fetch(); // Ensure all members are cached
+		if (role.guild.members.cache.size < role.guild.memberCount) {
+			console.log('Fetching all members for role members display...');
+			console.log('Current Cache Size: ', role.guild.members.cache.size, ' | Total Members: ', role.guild.memberCount);
+			await role.guild.members.fetch().catch(() => null);
+			console.log('Finished fetching members. Cache Size: ', role.guild.members.cache.size);
+		}
 		const members = role.members
 			.sort((a, b) => {
 				return (b?.joinedTimestamp || 0) - (a?.joinedTimestamp || 0);

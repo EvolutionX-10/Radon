@@ -10,8 +10,10 @@ import { ButtonBuilder, ButtonStyle, ChannelType, InteractionContextType, OAuth2
 export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const subcmd = interaction.options.getSubcommand();
-
-		await interaction.guild?.members.fetch(); // Fetch all members to ensure we have the latest data
+		// TODO: Defer the reply or fetch members only for relevant subcommands
+		if (interaction.guild && interaction.guild.memberCount > interaction.guild.members.cache.size) {
+			await interaction.guild.members.fetch(); // Fetch all members to ensure we have the latest data
+		}
 
 		switch (subcmd as SubCmd) {
 			case 'me':
@@ -151,7 +153,6 @@ export class UserCommand extends RadonCommand {
 
 	private async user(interaction: RadonCommand.ChatInputCommandInteraction) {
 		await interaction.deferReply();
-		await interaction.guild?.members.fetch();
 		const user = await interaction.options.getUser('user', true).fetch(true);
 		const member = await interaction.options.getMember('user')?.fetch(true);
 		const pfp = member?.displayAvatarURL({ forceStatic: false, size: 4096 }) ?? user.displayAvatarURL({ forceStatic: false, size: 4096 });
@@ -224,7 +225,7 @@ export class UserCommand extends RadonCommand {
 		const icon = guild.iconURL({ forceStatic: false, size: 2048 });
 		const banner = guild.bannerURL({ size: 4096 });
 		const create = new Timestamp(guild.createdTimestamp);
-		const members = await guild.members.fetch();
+		const members = guild.members.cache;
 		const humans = members.filter((m) => !m.user.bot);
 
 		const member =
