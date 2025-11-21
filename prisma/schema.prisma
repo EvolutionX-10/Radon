@@ -59,3 +59,10 @@ model nicknames {
   updatedAt DateTime? @db.Date
   freezed   String[]
 }
+
+model memberCodes {
+  id          String    @id @map("_id")
+  createdAt   DateTime? @db.Date
+  updatedAt   DateTime? @db.Date
+  memberCodes String[]
+}
