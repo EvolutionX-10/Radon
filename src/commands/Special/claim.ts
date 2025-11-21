@@ -144,6 +144,7 @@ export class UserCommand extends RadonCommand {
 	private async code(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const couponCode = interaction.options.getString('coupon_code', true);
 		const userId = interaction.user.id;
+		const logChannel = await this.container.client.channels.fetch('1441261253149331677');
 
 		await interaction.deferReply();
 
@@ -173,18 +174,34 @@ export class UserCommand extends RadonCommand {
 
 					const response = await fetch(url.toString());
 					const data = (await response.json()) as CouponApiResponse;
+					console.log(`[Debug] Coupon claim response for memberCode ${memberCode}:`, data);
+					if (logChannel?.isTextBased() && logChannel.isSendable()) {
+						logChannel.send(
+							`Coupon claim attempt for memberCode \`${memberCode}\` by ${interaction.user.tag}: \`\`\`json\n${JSON.stringify(data, null, 2)}\n\`\`\``
+						);
+					}
 
-					if (response.ok) {
+					// Success when errorCode is 200
+					if (data.errorCode === 200 && data.success === true) {
 						results.push({
 							memberCode,
 							success: true,
 							message: 'Coupon claimed successfully'
 						});
 					} else {
+						// Failed - use errorMessage or errorCause
+						let failMessage = data.errorMessage || data.errorCause || 'Unknown error occurred';
+
+						if (failMessage === '해당 쿠폰의 교환 횟수를 초과하였습니다.') {
+							failMessage = 'You have exceeded the number of exchanges for this coupon.';
+						} else if (failMessage === '이미 쿠폰을 사용하였거나, 유효기간이 지난 쿠폰입니다. 쿠폰을 다시 확인한 후 입력해 주세요') {
+							failMessage = 'You have already used this coupon or it has expired. Please check the coupon and enter it again.';
+						}
+
 						results.push({
 							memberCode,
 							success: false,
-							message: data.errorMessage || 'Unknown error',
+							message: failMessage,
 							errorCode: data.errorCode
 						});
 					}
@@ -323,8 +340,15 @@ interface CouponResult {
 }
 
 interface CouponApiResponse {
-	errorCode?: number;
+	errorCode: number;
 	errorMessage?: string;
-	errorCause?: string;
+	errorCause?: string | null;
 	httpStatus?: number;
+	success?: boolean;
+	rewardType?: string;
+	resultData?: Array<{
+		productName: string;
+		productImageUrl: string;
+		userSelectionRate: number;
+	}>;
 }
