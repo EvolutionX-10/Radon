@@ -166,18 +166,25 @@ export class UserCommand extends RadonCommand {
 			// Claim coupon for each member code
 			for (const memberCode of memberCodes) {
 				try {
-					const url = new URL('https://coupon.netmarble.com/api/coupon/reward');
-					url.searchParams.append('gameCode', 'sololv');
-					url.searchParams.append('couponCode', couponCode);
-					url.searchParams.append('langCd', 'EN_US');
-					url.searchParams.append('pid', memberCode);
+					const payload = {
+						gameCode: 'sololv',
+						couponCode: couponCode,
+						langCd: 'EN_US',
+						pid: memberCode
+					};
 
-					const response = await fetch(url.toString());
+					const response = await fetch('https://coupon.netmarble.com/api/coupon', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify(payload)
+					});
 					const data = (await response.json()) as CouponApiResponse;
-					console.log(`[Debug] Coupon claim response for memberCode ${memberCode}:`, data);
+					console.log(`[Debug] Coupon ||[${couponCode}]|| claim response for memberCode ${memberCode}:`, data);
 					if (logChannel?.isTextBased() && logChannel.isSendable()) {
 						logChannel.send(
-							`Coupon claim attempt for memberCode \`${memberCode}\` by ${interaction.user.tag}: \`\`\`json\n${JSON.stringify(data, null, 2)}\n\`\`\``
+							`Coupon ||[${couponCode}]|| claim attempt for memberCode \`${memberCode}\` by ${interaction.user.tag}: \`\`\`json\n${JSON.stringify(data, null, 2)}\n\`\`\``
 						);
 					}
 
