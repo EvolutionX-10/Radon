@@ -1,6 +1,6 @@
 import { Emojis } from '#constants';
 import { Button, Embed, RadonCommand, Row } from '#lib/structures';
-import { sec } from '#lib/utility';
+import { isAdmin, isModerator, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { RegisterBehavior } from '@sapphire/framework';
 import { ButtonStyle, InteractionContextType, MessageFlags, type User } from 'discord.js';
@@ -11,6 +11,11 @@ import { ButtonStyle, InteractionContextType, MessageFlags, type User } from 'di
 	cooldownLimit: 2
 })
 export class UserCommand extends RadonCommand {
+	readonly #AuthorityIds: string[] = [
+		'1320010402557464616', // Guild Master
+		'1320010453757202474' // Vice Guild Master
+	];
+
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const subcmd = interaction.options.getSubcommand();
 
@@ -302,6 +307,10 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private async post(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const possibleRoles = interaction.member.roles.cache.filter((role) => this.#AuthorityIds.includes(role.id));
+		if (!possibleRoles.size && !isModerator(interaction.member) && !isAdmin(interaction.member))
+			return interaction.reply({ content: 'You do not have the required permissions to use this command!' });
+
 		const code = interaction.options.getString('code', true);
 		const userData = await this.container.prisma.memberCodes.findUnique({
 			where: { id: interaction.user.id }
