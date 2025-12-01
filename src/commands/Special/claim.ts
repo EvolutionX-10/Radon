@@ -64,7 +64,14 @@ export class UserCommand extends RadonCommand {
 			const postData = (await postResponse.json()) as PostCouponApiResponse;
 
 			console.log(`[Debug] POST Coupon claim for code ${code}:`, postData);
-			if (logChannel?.isTextBased() && logChannel.isSendable()) {
+			if (logChannel && logChannel.isTextBased() && logChannel.isSendable() && 'topic' in logChannel) {
+				const topic = logChannel.topic!;
+				// Successful Claims: X
+				let number = topic.match(/Successful Claims: (\d+)/);
+				if (number && number[1]) {
+					const totalClaims = parseInt(number[1], 10) + 1;
+					await logChannel.setTopic(topic.replace(/Successful Claims: \d+/, `Successful Claims: ${totalClaims}`));
+				}
 				logChannel.send(
 					`POST Coupon claim for code \`${code}\` by ${user.tag}:\n\`\`\`json\n${JSON.stringify(postData, null, 2)}\n\`\`\`\n-# PID: ${memberCode}`
 				);
