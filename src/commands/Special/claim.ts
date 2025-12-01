@@ -12,8 +12,7 @@ import { ButtonStyle, InteractionContextType, MessageFlags, type User } from 'di
 })
 export class UserCommand extends RadonCommand {
 	readonly #AuthorityIds: string[] = [
-		'1320010402557464616', // Guild Master
-		'1320010453757202474' // Vice Guild Master
+		'1444955256504062003' // Guild Officer
 	];
 
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
