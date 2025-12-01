@@ -83,6 +83,8 @@ export class UserCommand extends RadonCommand {
 					failMessage = 'You have exceeded the number of exchanges for this coupon.';
 				} else if (failMessage === '이미 쿠폰을 사용하였거나, 유효기간이 지난 쿠폰입니다. 쿠폰을 다시 확인한 후 입력해 주세요') {
 					failMessage = 'You have already used this coupon or it has expired. Please check the coupon and enter it again.';
+				} else if (failMessage === '잘못된 쿠폰 번호입니다. 쿠폰을 다시 확인한 후 입력해 주세요.') {
+					failMessage = 'Invalid coupon code. Please check the coupon and enter it again.';
 				}
 
 				return {
