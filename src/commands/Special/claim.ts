@@ -68,7 +68,7 @@ export class UserCommand extends RadonCommand {
 				const topic = logChannel.topic!;
 				// Successful Claims: X
 				let number = topic.match(/Successful Claims: (\d+)/);
-				if (number && number[1]) {
+				if (number && number[1] && postData.success === true) {
 					const totalClaims = parseInt(number[1], 10) + 1;
 					await logChannel.setTopic(topic.replace(/Successful Claims: \d+/, `Successful Claims: ${totalClaims}`));
 				}
