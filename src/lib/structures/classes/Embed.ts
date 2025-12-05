@@ -52,6 +52,10 @@ export class Embed extends EmbedBuilder {
 	 * @returns Embed
 	 */
 	public _description(str: string | null) {
+		if (typeof str === 'string' && str.length === 0) str = null;
+		if (typeof str === 'string' && str.length > 4096) {
+			str = str.slice(0, 4093) + '...';
+		}
 		return this.setDescription(str);
 	}
 
