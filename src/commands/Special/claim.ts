@@ -1,14 +1,13 @@
 import { Emojis } from '#constants';
 import { Button, Embed, RadonCommand, Row } from '#lib/structures';
-import { isAdmin, isModerator, sec } from '#lib/utility';
+import { isAdmin, isModerator, sec, wait } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { RegisterBehavior } from '@sapphire/framework';
 import { ButtonStyle, InteractionContextType, MessageFlags, type User } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Claim coupons for Solo Leveling Arise',
-	cooldownDelay: sec(10),
-	cooldownLimit: 2
+	cooldownDelay: sec(10)
 })
 export class UserCommand extends RadonCommand {
 	readonly #AuthorityIds: string[] = [
@@ -60,7 +59,8 @@ export class UserCommand extends RadonCommand {
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify(payload)
-			});
+			}).catch(() => null);
+			if (!postResponse) throw new Error('Fetch Failed...');
 			const postData = (await postResponse.json()) as PostCouponApiResponse;
 
 			console.log(`[Debug] POST Coupon claim for code ${code}:`, postData);
@@ -84,7 +84,7 @@ export class UserCommand extends RadonCommand {
 					message: 'Coupon claimed successfully'
 				};
 			} else {
-				let failMessage = postData.errorMessage || postData.errorCause || 'Unknown error occurred';
+				let failMessage = postData.errorCause || postData.errorMessage || 'Unknown error occurred';
 
 				if (failMessage === '해당 쿠폰의 교환 횟수를 초과하였습니다.') {
 					failMessage = 'You have exceeded the number of exchanges for this coupon.';
@@ -275,7 +275,9 @@ export class UserCommand extends RadonCommand {
 
 			// Claim coupon for each member code
 			for (const memberCode of memberCodes) {
-				const result = await UserCommand.claimCoupon(couponCode, memberCode, interaction.user, this.container);
+				await wait(500);
+				const result = await UserCommand.claimCoupon(couponCode, memberCode, interaction.user, this.container).catch(() => null);
+				if (!result) continue;
 				results.push({
 					memberCode,
 					success: result.success,
