@@ -1,6 +1,6 @@
 import { Emojis } from '#constants';
 import { Button, Embed, RadonCommand, Row } from '#lib/structures';
-import { isAdmin, isModerator, sec, wait } from '#lib/utility';
+import { isAdmin, isModerator, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { RegisterBehavior } from '@sapphire/framework';
 import { ButtonStyle, InteractionContextType, MessageFlags, type User } from 'discord.js';
@@ -63,8 +63,6 @@ export class UserCommand extends RadonCommand {
 			if (!postResponse) throw new Error('Fetch Failed...');
 			const postData = (await postResponse.json()) as PostCouponApiResponse;
 
-			console.log(`[Debug] POST Coupon claim for code ${code}:`, postData);
-			console.log(logChannel?.toString());
 			if (logChannel && logChannel.isTextBased() && logChannel.isSendable() && 'topic' in logChannel) {
 				const topic = logChannel.topic!;
 				// Successful Claims: X
@@ -73,7 +71,7 @@ export class UserCommand extends RadonCommand {
 					const totalClaims = parseInt(number[1], 10) + 1;
 					await logChannel.setTopic(topic.replace(/Successful Claims: \d+/, `Successful Claims: ${totalClaims}`));
 				}
-				logChannel.send(
+				await logChannel.send(
 					`POST Coupon claim for code \`${code}\` by ${user.tag}:\n\`\`\`json\n${JSON.stringify(postData, null, 2)}\n\`\`\`\n-# PID: ${memberCode}`
 				);
 			}
@@ -276,7 +274,6 @@ export class UserCommand extends RadonCommand {
 
 			// Claim coupon for each member code
 			for (const memberCode of memberCodes) {
-				await wait(500);
 				const result = await UserCommand.claimCoupon(couponCode, memberCode, interaction.user, this.container).catch(() => null);
 				if (!result) continue;
 				results.push({
