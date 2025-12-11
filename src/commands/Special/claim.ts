@@ -42,7 +42,7 @@ export class UserCommand extends RadonCommand {
 	 * @returns Claim result with success status and message
 	 */
 	public static async claimCoupon(code: string, memberCode: string, user: User, container: RadonCommand['container']): Promise<ClaimResult> {
-		const logChannel = await container.client.channels.fetch('1441261253149331677');
+		const logChannel = user.client.channels.cache.get('1441261253149331677') ?? (await container.client.channels.fetch('1441261253149331677'));
 
 		try {
 			// Claim via POST request
@@ -64,6 +64,7 @@ export class UserCommand extends RadonCommand {
 			const postData = (await postResponse.json()) as PostCouponApiResponse;
 
 			console.log(`[Debug] POST Coupon claim for code ${code}:`, postData);
+			console.log(logChannel?.toString());
 			if (logChannel && logChannel.isTextBased() && logChannel.isSendable() && 'topic' in logChannel) {
 				const topic = logChannel.topic!;
 				// Successful Claims: X
