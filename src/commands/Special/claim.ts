@@ -63,14 +63,7 @@ export class UserCommand extends RadonCommand {
 			if (!postResponse) throw new Error('Fetch Failed...');
 			const postData = (await postResponse.json()) as PostCouponApiResponse;
 
-			if (logChannel && logChannel.isTextBased() && logChannel.isSendable() && 'topic' in logChannel) {
-				const topic = logChannel.topic!;
-				// Successful Claims: X
-				let number = topic.match(/Successful Claims: (\d+)/);
-				if (number && number[1] && postData.success === true) {
-					const totalClaims = parseInt(number[1], 10) + 1;
-					await logChannel.setTopic(topic.replace(/Successful Claims: \d+/, `Successful Claims: ${totalClaims}`));
-				}
+			if (logChannel && logChannel.isTextBased() && logChannel.isSendable()) {
 				await logChannel.send(
 					`POST Coupon claim for code \`${code}\` by ${user.tag}:\n\`\`\`json\n${JSON.stringify(postData, null, 2)}\n\`\`\`\n-# PID: ${memberCode}`
 				);
