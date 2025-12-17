@@ -1,9 +1,10 @@
 import { Emojis } from '#constants';
 import { Button, Embed, RadonCommand, Row } from '#lib/structures';
-import { isAdmin, isModerator, sec } from '#lib/utility';
+import { RadonEvents } from '#lib/types';
+import { claimCoupon, CouponResult, GetCouponApiResponse, isAdmin, isModerator, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { RegisterBehavior } from '@sapphire/framework';
-import { ButtonStyle, InteractionContextType, MessageFlags, type User } from 'discord.js';
+import { ButtonStyle, InteractionContextType, MessageFlags } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Claim coupons for Solo Leveling Arise',
@@ -30,74 +31,6 @@ export class UserCommand extends RadonCommand {
 				return this.post(interaction);
 			case 'solo':
 				return this.solo(interaction);
-		}
-	}
-
-	/**
-	 * Static method to claim a coupon code
-	 * @param code - The coupon code to claim
-	 * @param memberCode - The member code to use for claiming
-	 * @param user - The user claiming the coupon
-	 * @param container - The Sapphire container
-	 * @returns Claim result with success status and message
-	 */
-	public static async claimCoupon(code: string, memberCode: string, user: User, container: RadonCommand['container']): Promise<ClaimResult> {
-		const logChannel = user.client.channels.cache.get('1441261253149331677') ?? (await container.client.channels.fetch('1441261253149331677'));
-
-		try {
-			// Claim via POST request
-			const payload = {
-				gameCode: 'sololv',
-				couponCode: code,
-				langCd: 'EN_US',
-				pid: memberCode
-			};
-
-			const postResponse = await fetch('https://coupon.netmarble.com/api/coupon', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(payload)
-			}).catch(() => null);
-			if (!postResponse) throw new Error('Fetch Failed...');
-			const postData = (await postResponse.json()) as PostCouponApiResponse;
-
-			if (logChannel && logChannel.isTextBased() && logChannel.isSendable()) {
-				await logChannel.send(
-					`POST Coupon claim for code \`${code}\` by ${user.tag}:\n\`\`\`json\n${JSON.stringify(postData, null, 2)}\n\`\`\`\n-# PID: ${memberCode}`
-				);
-			}
-
-			// Check success
-			if (postData.errorCode === 200 && postData.success === true) {
-				return {
-					success: true,
-					message: 'Coupon claimed successfully'
-				};
-			} else {
-				let failMessage = postData.errorCause || postData.errorMessage || 'Unknown error occurred';
-
-				if (failMessage === '해당 쿠폰의 교환 횟수를 초과하였습니다.') {
-					failMessage = 'You have exceeded the number of exchanges for this coupon.';
-				} else if (failMessage === '이미 쿠폰을 사용하였거나, 유효기간이 지난 쿠폰입니다. 쿠폰을 다시 확인한 후 입력해 주세요') {
-					failMessage = 'You have already used this coupon or it has expired. Please check the coupon and enter it again.';
-				} else if (failMessage === '잘못된 쿠폰 번호입니다. 쿠폰을 다시 확인한 후 입력해 주세요.') {
-					failMessage = 'Invalid coupon code. Please check the coupon and enter it again.';
-				}
-
-				return {
-					success: false,
-					message: failMessage,
-					errorCode: postData.errorCode
-				};
-			}
-		} catch (error) {
-			console.error('[Error] Coupon claim error:', error);
-			return {
-				success: false,
-				message: 'Network error occurred'
-			};
 		}
 	}
 
@@ -267,14 +200,14 @@ export class UserCommand extends RadonCommand {
 
 			// Claim coupon for each member code
 			for (const memberCode of memberCodes) {
-				const result = await UserCommand.claimCoupon(couponCode, memberCode, interaction.user, this.container).catch(() => null);
+				const result = await claimCoupon(couponCode, memberCode).catch(() => null);
 				if (!result) continue;
-				results.push({
-					memberCode,
-					success: result.success,
-					message: result.message,
-					errorCode: result.errorCode
+				this.container.client.emit(RadonEvents.CodeClaim, {
+					...result,
+					userTag: interaction.user.tag,
+					avatarURL: interaction.user.displayAvatarURL()
 				});
+				results.push(result);
 			}
 
 			// Build response message
@@ -369,7 +302,12 @@ export class UserCommand extends RadonCommand {
 		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
 		try {
-			const result = await UserCommand.claimCoupon(couponCode, memberCode, interaction.user, this.container);
+			const result = await claimCoupon(couponCode, memberCode);
+			this.container.client.emit(RadonEvents.CodeClaim, {
+				...result,
+				userTag: interaction.user.tag,
+				avatarURL: interaction.user.displayAvatarURL()
+			});
 
 			if (result.success) {
 				return interaction.editReply({
@@ -479,43 +417,3 @@ export class UserCommand extends RadonCommand {
 }
 
 type Subcommands = 'set' | 'code' | 'delete' | 'view' | 'post' | 'solo';
-
-interface CouponResult {
-	memberCode: string;
-	success: boolean;
-	message: string;
-	errorCode?: number;
-}
-
-interface ClaimResult {
-	success: boolean;
-	message: string;
-	errorCode?: number;
-}
-
-// GET request response (for coupon info)
-interface GetCouponApiResponse {
-	errorCode: number;
-	errorMessage?: string;
-	errorCause?: string | null;
-	httpStatus?: number;
-	success?: boolean;
-	rewardType?: string;
-	resultData?: Array<{
-		productName: string;
-		productImageUrl: string;
-		userSelectionRate: number;
-	}>;
-}
-
-// POST request response (for claiming)
-interface PostCouponApiResponse {
-	errorCode: number;
-	errorMessage?: string;
-	errorCause?: string | null;
-	httpStatus?: number;
-	success?: boolean;
-	resultData?: Array<{
-		quantity: number;
-	}>;
-}

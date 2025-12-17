@@ -1,4 +1,6 @@
 import { Emojis } from '#constants';
+import { RadonEvents } from '#lib/types';
+import { claimCoupon } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework';
 import { MessageFlags, type ButtonInteraction } from 'discord.js';
@@ -35,12 +37,14 @@ export class ButtonHandler extends InteractionHandler {
 			let failCount = 0;
 			const failedDetails: string[] = [];
 
-			// Import the UserCommand class to access the static method
-			const { UserCommand } = await import('#root/commands/Special/claim.js');
-
 			// Claim coupon for each member code
 			for (const memberCode of memberCodes) {
-				const result = await UserCommand.claimCoupon(code, memberCode, interaction.user, this.container);
+				const result = await claimCoupon(code, memberCode);
+				this.container.client.emit(RadonEvents.CodeClaim, {
+					...result,
+					userTag: interaction.user.tag,
+					avatarURL: interaction.user.displayAvatarURL()
+				});
 
 				if (result.success) {
 					successCount++;
