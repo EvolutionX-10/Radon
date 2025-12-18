@@ -46,6 +46,8 @@ export async function claimCoupon(code: string, memberCode: string): Promise<Cla
 				failMessage = 'You have already used this coupon or it has expired. Please check the coupon and enter it again.';
 			} else if (failMessage === '잘못된 쿠폰 번호입니다. 쿠폰을 다시 확인한 후 입력해 주세요.') {
 				failMessage = 'Invalid coupon code. Please check the coupon and enter it again.';
+			} else if (failMessage === '회원번호 확인 후 다시 시도해주세요.') {
+				failMessage = 'Please check your account ID again.';
 			}
 
 			return {
