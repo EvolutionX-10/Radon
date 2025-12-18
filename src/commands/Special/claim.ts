@@ -402,7 +402,7 @@ export class UserCommand extends RadonCommand {
 				});
 			}
 
-			const codesList = existingData.memberCodes.map((code, index) => `${index + 1}. \`${code.slice(0, 4)}...${code.slice(-4)}\``).join('\n');
+			const codesList = existingData.memberCodes.map((code, index) => `${index + 1}. \`${code}\``).join('\n');
 
 			const content = `## Your Registered Member Codes\n\n${codesList}\n\n**Total:** ${existingData.memberCodes.length}/5`;
 
