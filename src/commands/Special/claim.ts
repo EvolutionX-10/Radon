@@ -34,6 +34,35 @@ export class UserCommand extends RadonCommand {
 		}
 	}
 
+	public override async autocompleteRun(interaction: RadonCommand.AutoComplete) {
+		const focus = interaction.options.getFocused(true);
+
+		if (focus.name === 'member_code') {
+			const userId = interaction.user.id;
+			const data = await this.container.prisma.memberCodes.findUnique({
+				where: { id: userId }
+			});
+
+			if (!data?.memberCodes?.length) {
+				return interaction.respond([
+					{
+						name: 'No member codes found!',
+						value: ''
+					}
+				]);
+			}
+
+			const choices = data.memberCodes.map((code, index) => ({
+				name: `${index + 1}: ${code}`,
+				value: code
+			}));
+
+			const filtered = choices.filter((choice) => choice.value.toLowerCase().includes((focus.value as string).toLowerCase())).slice(0, 24);
+
+			return interaction.respond(filtered.length > 0 ? filtered : choices);
+		}
+	}
+
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
 			(builder) =>
@@ -72,6 +101,7 @@ export class UserCommand extends RadonCommand {
 									.setName('member_code')
 									.setDescription('The member code to delete')
 									.setRequired(true)
+									.setAutocomplete(true)
 							)
 					)
 					.addSubcommand((builder) =>
@@ -99,6 +129,7 @@ export class UserCommand extends RadonCommand {
 									.setName('member_code')
 									.setDescription('Your Solo Leveling member code')
 									.setRequired(true)
+									.setAutocomplete(true)
 							)
 							.addStringOption((option) =>
 								option //
