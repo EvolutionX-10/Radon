@@ -330,7 +330,7 @@ export class UserCommand extends RadonCommand {
 		const memberCode = interaction.options.getString('member_code', true);
 		const couponCode = interaction.options.getString('coupon_code', true);
 
-		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+		await interaction.deferReply();
 
 		try {
 			const result = await claimCoupon(couponCode, memberCode);
