@@ -64,7 +64,7 @@ export class RoleMembersButtonHandler extends InteractionHandler {
 					return ` ${paddedPosition} │ ${member}`;
 				})
 				.join('\n');
-			const memberTitle = ` Member${' '.repeat(longestName - 'Member'.length)} `;
+			const memberTitle = ` Member${' '.repeat(Math.max(longestName - 'Member'.length, 0))} `;
 
 			const maxIndexWidth = Math.max(2, (i + pageMembers.length).toString().length);
 			const formattedMemberList = `\`\`\`\n${''.padStart(maxIndexWidth)}# │${memberTitle}│ ID\n${'─'.repeat(maxIndexWidth)}──┼${'─'.repeat(memberTitle.length)}┼───────────────────\n${memberList}\`\`\``;
