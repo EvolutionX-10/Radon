@@ -3,7 +3,7 @@
 # ================================
 # Build Stage
 # ================================
-FROM oven/bun:1.2.13-alpine AS builder
+FROM oven/bun:1.3.5-alpine AS builder
 
 # Set working directory
 WORKDIR /app
@@ -26,7 +26,7 @@ RUN bunx prisma generate
 # ================================
 # Development Stage (for local development)
 # ================================
-FROM oven/bun:1.2.13-alpine AS development
+FROM oven/bun:1.3.5-alpine AS development
 
 # Install dumb-init for proper signal handling
 RUN apk add --no-cache dumb-init
@@ -71,7 +71,7 @@ CMD ["bun", "dev"]
 # ================================
 # Production Stage (FINAL - Railway will use this by default)
 # ================================
-FROM oven/bun:1.2.13-alpine AS production
+FROM oven/bun:1.3.5-alpine AS production
 
 # Install dumb-init for proper signal handling
 RUN apk add --no-cache dumb-init
