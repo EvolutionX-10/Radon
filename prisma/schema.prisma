@@ -66,3 +66,15 @@ model memberCodes {
   updatedAt   DateTime? @db.Date
   memberCodes String[]
 }
+
+model aiChatConfig {
+  id              String    @id @map("_id") // channelId
+  guildId         String
+  enabled         Boolean   @default(true)
+  targetUserIds   String[]  // Specific users to interact with, empty = everyone
+  motive          String?   // Optional goal/motive for the AI
+  createdAt       DateTime  @default(now()) @db.Date
+  updatedAt       DateTime  @updatedAt @db.Date
+  createdBy       String    // Owner who enabled it
+  personalityMode String    @default("default") // For future: different personality modes
+}
