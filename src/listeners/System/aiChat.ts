@@ -7,7 +7,7 @@ import { Owners } from '#constants';
 
 export class UserListener extends Listener {
 	private readonly ownerIds: string[] = Owners;
-	private readonly responseChance = 0.2; // 20% chance to respond to non-targeted messages
+	private readonly responseChance = 0.05; // 5% chance to respond to non-targeted messages
 	private readonly conversationHistory = new Map<string, Array<{ role: 'user' | 'assistant'; content: string; author?: string }>>();
 	private readonly cooldowns = new Map<string, number>(); // userId -> timestamp
 	private readonly multiMessageWindow = 2000; // 2 seconds to detect rapid messages
@@ -109,7 +109,7 @@ export class UserListener extends Listener {
 				}
 
 				// Update conversation history
-				this.updateHistory(message.channelId, 'user', combinedMessage, message.author.username);
+				this.updateHistory(message.channelId, 'user', combinedMessage, message.member!.displayName);
 				this.updateHistory(message.channelId, 'assistant', response);
 
 				// Decide whether to reply or just send
@@ -137,7 +137,7 @@ export class UserListener extends Listener {
 		}
 
 		// Always respond if bot name is mentioned in the message
-		const botName = this.container.client.user?.username.toLowerCase() || 'radon';
+		const botName = 'beru';
 		if (message.content.toLowerCase().includes(botName)) {
 			return true;
 		}
@@ -266,7 +266,7 @@ export class UserListener extends Listener {
 		// Reply if the response seems to be directly addressing the user
 		// (contains question marks, starts with addressing them, etc.)
 		const lowerResponse = response.toLowerCase();
-		const lowerUsername = message.author.username.toLowerCase();
+		const lowerUsername = message.member!.displayName.toLowerCase();
 
 		// Check if response mentions the user or seems like a direct answer
 		if (
@@ -317,7 +317,7 @@ PERSONALITY TRAITS:
 - Keep responses concise and natural - you're chatting, not writing essays
 
 IMPORTANT RULES:
-${isOwner ? '- This is YOUR CREATOR AND OWNER. Be friendly, respectful, and treat them as a close friend. NEVER roast or be sarcastic toward them. You can be casual but always show respect for the hierarchy.' : '- You can be playfully sarcastic and roast others (within limits), but keep it fun and lighthearted.'}
+${isOwner ? '- This is YOUR CREATOR AND OWNER (Also called Evo). Be friendly, respectful, and treat them as a close friend. NEVER roast or be sarcastic toward them. You can be casual but always show respect for the hierarchy.' : '- You can be playfully sarcastic and roast others (within limits), but keep it fun and lighthearted.'}
 - NEVER be offensive, hateful, or cross the line into genuine rudeness
 - Don't respond to every single message - act human (this is already filtered, so DO respond now)
 - Only use emojis when they genuinely fit - you're not an emoji bot
