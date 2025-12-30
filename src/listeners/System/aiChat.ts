@@ -2,12 +2,13 @@ import { Emojis, Prefixes } from '#constants';
 import { Listener } from '@sapphire/framework';
 import type { Message } from 'discord.js';
 import { groq } from '@ai-sdk/groq';
-import { generateText } from 'ai';
+import { generateText, Output } from 'ai';
 import { Owners } from '#constants';
+import z from 'zod';
 
 export class UserListener extends Listener {
 	private readonly ownerIds: string[] = Owners;
-	private readonly responseChance = 0.05; // 5% chance to respond to non-targeted messages
+	private readonly responseChance = 0.4; // 40% chance to respond to non-targeted messages
 	private readonly conversationHistory = new Map<string, Array<{ role: 'user' | 'assistant'; content: string; author?: string }>>();
 	private readonly cooldowns = new Map<string, number>(); // userId -> timestamp
 	private readonly multiMessageWindow = 2000; // 2 seconds to detect rapid messages
@@ -131,6 +132,21 @@ export class UserListener extends Listener {
 	}
 
 	private async shouldRespond(message: Message, config: any): Promise<boolean> {
+		const preference = await generateText({
+			model: groq('openai/gpt-oss-20b'),
+			system: `You are an AI that decides whether a bot should respond to a user's message in a Discord channel.`,
+			output: Output.object({
+				schema: z.object({
+					respond: z.boolean().describe('Whether the bot should respond to the message or not.')
+				})
+			}),
+			prompt: `Based on the following message, decide if the bot should respond. Consider if the bot is mentioned, if the message is a reply to the bot, if the bot's name is mentioned, and if the user is targeted. If none of these apply, respond randomly with a low chance (around 5%).
+
+Message: "${message.content}".`
+		});
+
+		console.log('[AI Chat] Response preference decision:', preference.output);
+		if (!preference.output.respond) return false;
 		// Always respond if bot is mentioned
 		if (message.mentions.has(this.container.client.user!.id)) {
 			return true;

@@ -52,7 +52,7 @@ export const enum WarnSeverity {
 
 export const Owners = ['697795666373640213'];
 
-export const Prefixes = process.env.NODE_ENV === 'development' ? ['$', '.'] : ['$', '.'];
+export const Prefixes = process.env.NODE_ENV === 'development' ? ['$'] : ['.'];
 
 export const RadonGuildId = ['944833697251721246'];
 
