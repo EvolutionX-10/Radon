@@ -95,20 +95,23 @@ CONTEXT:
 
 		try {
 			const { text } = await generateText({
-				model: google('gemini-2.0-flash'),
+				model: google('gemini-2.5-flash'),
 				system: systemPrompt,
 				prompt: `${message.author.username}: ${chatMessage}`,
 				temperature: 0.1,
-				maxTokens: 2000,
-				maxSteps: 5,
 				tools: {
 					performDiscordTask: tool({
 						description:
 							'Execute Discord bot operations like moderation actions, information gathering, server management, etc. Use this when the user asks you to DO something rather than just answer questions.',
-						parameters: z.object({
+						args: {
+							task: 'The Discord operation to perform, described clearly and concisely.',
+							reasoning: 'A brief explanation of why this task is being performed.'
+						},
+						inputSchema: z.object({
 							task: z.string().describe('Clear description of what Discord operation to perform'),
 							reasoning: z.string().describe('Brief explanation of why this task is needed')
 						}),
+						outputSchema: z.string().describe('The result of executing the Discord task, or an error message if it failed.'),
 						execute: async ({ task, reasoning }) => {
 							console.log(`Executing Discord task: ${task} (${reasoning})`);
 
@@ -170,6 +173,7 @@ CONTEXT:
 		const context = this.buildContext(message);
 
 		// Fetch relevant Discord.js documentation
+		console.log('Determining relevant entities for documentation fetch...', naturalLanguageRequest);
 		const relevantEntities = this.getRelevantEntities(naturalLanguageRequest);
 		const discordJsDocs = await this.fetchDiscordJsDocs(relevantEntities);
 
@@ -212,7 +216,7 @@ Examples:
 Note: here message.client.id is SUPER IMPORTANT as it means your ID!`;
 
 		const { object: result } = await generateObject({
-			model: google('gemini-2.0-flash-lite'),
+			model: google('gemini-2.5-flash'),
 			system: systemPrompt,
 			prompt: `Generate JavaScript code for: "${naturalLanguageRequest}"
 			
