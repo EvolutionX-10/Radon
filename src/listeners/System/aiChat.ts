@@ -411,7 +411,6 @@ Current message author: ${message.author.username}${isOwner ? ' (YOUR OWNER - sh
 - ${Emojis.Owner} - When talking about ownership/admin stuff
 - ${Emojis.Member} - When referring to members
 - ${Emojis.Bot} - When referring to bots
-- Standard Discord emojis (🤔, 👀, 💀, 🔥, ✨, etc.) - Use naturally, but PREFER server emojis
 
 Remember: Less is more. Don't use emojis in every message.`;
 	}
@@ -424,9 +423,8 @@ Remember: Less is more. Don't use emojis in every message.`;
 
 		// Limit to 20 most relevant emojis to avoid token bloat
 		const emojiList = emojis
-			.filter((emoji) => !emoji.animated) // Prefer static for simplicity
 			.first(20)
-			.map((emoji) => `- ${emoji.toString()} (:${emoji.name}:) - Use for ${emoji.name}-related reactions`)
+			.map((emoji) => `- ${emoji.toString()} - Use for ${emoji.name} related reactions`)
 			.join('\n');
 
 		// Always include kekw if it exists
