@@ -51,10 +51,10 @@ export abstract class RadonCommand extends Command {
 			runIn: [CommandOptionsRunTypeEnum.GuildAny],
 			...options
 		});
-		(this.guarded = options.guarded ?? false),
+		((this.guarded = options.guarded ?? false),
 			(this.hidden = options.hidden ?? false),
 			(this.permissionLevel = options.permissionLevel ?? PermissionLevels.Everyone),
-			(this.community = options.community ?? false);
+			(this.community = options.community ?? false));
 	}
 
 	protected error(identifier: string | UserError, context?: unknown): never {
