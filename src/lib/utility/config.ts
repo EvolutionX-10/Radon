@@ -81,20 +81,13 @@ export const config: Config = {
 		}
 	},
 	presence: {
-		status: 'online',
+		status: 'dnd',
 		activities: [
 			{
-				name: 'Rule Breakers',
-				type: ActivityType.Watching
+				name: 'Watching you',
+				type: ActivityType.Custom
 			}
 		]
-		// status: 'dnd',
-		// activities: [
-		// 	{
-		// 		name: 'Evo',
-		// 		type: ActivityType.Listening
-		// 	}
-		// ]
 	}
 };
 
