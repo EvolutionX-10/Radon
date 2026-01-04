@@ -20,7 +20,7 @@ export function runAllChecks(executor: GuildMember, target: GuildMember | User, 
 		content = `${Emojis.Cross} You can't ${action} ${target}`;
 		result = false;
 	} else {
-		(result = true), (content = '');
+		((result = true), (content = ''));
 	}
 	return { result, content };
 }
