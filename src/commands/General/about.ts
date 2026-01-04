@@ -2,7 +2,18 @@ import { Color, Emojis, RecommendedPermissions, UserFlags, voteRow } from '#cons
 import { Button, Embed, RadonCommand, Row, Timestamp } from '#lib/structures';
 import { isOwner } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
-import { ButtonBuilder, ButtonStyle, ChannelType, InteractionContextType, OAuth2Scopes } from 'discord.js';
+import {
+	italic,
+	ButtonBuilder,
+	ButtonStyle,
+	ChannelType,
+	ContainerBuilder,
+	heading,
+	InteractionContextType,
+	MessageFlags,
+	OAuth2Scopes,
+	subtext
+} from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'About things!'
@@ -76,24 +87,39 @@ export class UserCommand extends RadonCommand {
 			scopes: [OAuth2Scopes.ApplicationsCommands, OAuth2Scopes.Bot],
 			permissions: RecommendedPermissions
 		});
+
 		const inviteRow = new Row<ButtonBuilder>() //
 			._components(
 				new Button()._label(`Add me to your server!`)._style(ButtonStyle.Link)._emoji('<:radon:959378366874664972>')._url(invite),
 				new Button()._label(`Join Support Server!`)._style(ButtonStyle.Link)._emoji('🆘')._url(`https://discord.gg/YBFaDggpvt`)
 			);
 
-		const embed = new Embed()
-			._title('About me!')
-			._author({ name: this.container.client.user!.tag })
-			._color(Color.General)
-			._description("Hey there! I'm Radon, a *moderation* bot dedicated to make your server a better place.")
-			._timestamp()
-			._footer({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ forceStatic: false }) })
-			._thumbnail(this.container.client.user!.displayAvatarURL());
+		const textContent = `${heading('About me!')}\nHello ${interaction.user}!\nI am Radon, a ${italic('moderation')} bot dedicated to make your server a better place`;
+
+		const container = new ContainerBuilder() //
+			.addSectionComponents((section) =>
+				section
+					.addTextDisplayComponents((textDisplay) => textDisplay.setContent(textContent))
+					.setThumbnailAccessory((thumbnail) =>
+						thumbnail
+							.setURL(interaction.guild.members.me?.displayAvatarURL() || this.container.client.user!.displayAvatarURL())
+							.setDescription('Radon Avatar')
+					)
+			)
+			.addSeparatorComponents((s) => s)
+			.addTextDisplayComponents((textDisplay) =>
+				textDisplay.setContent(
+					`If you like using me, consider voting to help me grow and reach more servers!\n` +
+						subtext('Your support means a lot and helps keep the bot running smoothly. Thank you!')
+				)
+			)
+			.addActionRowComponents(voteRow)
+			.addSeparatorComponents((s) => s)
+			.addActionRowComponents(inviteRow);
 
 		return interaction.reply({
-			embeds: [embed],
-			components: [voteRow, inviteRow]
+			components: [container],
+			flags: MessageFlags.IsComponentsV2
 		});
 	}
 
