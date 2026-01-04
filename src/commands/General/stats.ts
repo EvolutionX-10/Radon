@@ -1,9 +1,8 @@
-import { Color } from '#constants';
-import { Embed, RadonCommand, Timestamp } from '#lib/structures';
+import { RadonCommand, Timestamp } from '#lib/structures';
 import { ApplyOptions } from '@sapphire/decorators';
 import { version as sapphireVersion } from '@sapphire/framework';
 import { roundNumber } from '@sapphire/utilities';
-import { version } from 'discord.js';
+import { ContainerBuilder, MessageFlags, version, bold, heading, HeadingLevel } from 'discord.js';
 import { uptime } from 'node:os';
 
 @ApplyOptions<RadonCommand.Options>({
@@ -11,48 +10,59 @@ import { uptime } from 'node:os';
 })
 export class UserCommand extends RadonCommand {
 	public override messageRun(message: RadonCommand.Message<true>) {
-		return message.channel.send({
-			embeds: [this.statsEmbed()]
+		return message.reply({
+			components: [this.buildContainer()],
+			flags: MessageFlags.IsComponentsV2
 		});
 	}
 
-	public statsEmbed() {
-		const titles = {
-			stats: 'Statistics',
-			uptime: 'Uptime',
-			serverUsage: 'Server Usage',
-			misc: 'Misc'
-		};
+	private buildContainer() {
+		const stats = this.buildStats();
+		const container = new ContainerBuilder();
+
+		for (const [section, entries] of Object.entries(stats)) {
+			container.addTextDisplayComponents((textDisplay) =>
+				textDisplay.setContent(
+					`${heading(section, HeadingLevel.Two)}\n` +
+						Object.entries(entries)
+							.map(([key, value]) => `- ${bold(key)}: ${value}`)
+							.join('\n')
+				)
+			);
+			if (section !== 'Misc') container.addSeparatorComponents((s) => s);
+		}
+
+		return container;
+	}
+
+	private buildStats() {
 		const stats = this.generalStatistics;
 		const uptime = this.uptimeStatistics;
 		const usage = this.usageStatistics;
 		const misc = this.miscStatistics;
 
-		const fields = {
-			stats: `• **Users**: ${stats.users}\n• **Servers**: ${stats.guilds}\n• **Channels**: ${stats.channels}\n• **Discord.js**: ${stats.version}\n• **Node.js**: ${stats.nodeJs}\n• **Framework**: ${stats.sapphireVersion}`,
-			uptime: `• **Host**: ${uptime.host}\n• **Total**: ${uptime.total}\n• **Client**: ${uptime.client}`,
-			serverUsage: `• **Heap**: ${usage.ramUsed}MB (Total: ${usage.ramTotal}MB)`,
-			misc: `• **Lines of code**: ${misc.lines}\n• **Files**: ${misc.files}`
-		};
-
-		return new Embed()._color(Color.General)._fields([
-			{
-				name: titles.stats,
-				value: fields.stats
+		return {
+			Statistics: {
+				Users: stats.users.toString(),
+				Servers: stats.guilds.toString(),
+				Channels: stats.channels.toString(),
+				'Discord.js': stats.version,
+				'Node.js': stats.nodeJs,
+				Framework: stats.sapphireVersion
 			},
-			{
-				name: titles.uptime,
-				value: fields.uptime
+			Uptime: {
+				Host: uptime.host,
+				Total: uptime.total,
+				Client: uptime.client
 			},
-			{
-				name: titles.serverUsage,
-				value: fields.serverUsage
+			'Server Usage': {
+				Heap: `${usage.ramUsed}MB (Total: ${usage.ramTotal}MB)`
 			},
-			{
-				name: titles.misc,
-				value: fields.misc
+			Misc: {
+				'Lines of code': misc.lines,
+				Files: misc.files
 			}
-		]);
+		};
 	}
 
 	private get generalStatistics(): StatsGeneral {
