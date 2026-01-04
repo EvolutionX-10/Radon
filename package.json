@@ -62,7 +62,7 @@
 		"@ai-sdk/google": "^3.0.2",
 		"@ai-sdk/groq": "3.0.2",
 		"@devtomio/plugin-botlist": "1.3.0",
-		"@prisma/client": "7.2.0",
+		"@prisma/client": "6.19.0",
 		"@sapphire/decorators": "6.2.0",
 		"@sapphire/discord-utilities": "4.0.0",
 		"@sapphire/discord.js-utilities": "7.3.3",
@@ -79,7 +79,7 @@
 		"discord.js": "14.25.1",
 		"gradient-string": "3.0.0",
 		"ioredis": "5.8.2",
-		"prisma": "7.2.0",
+		"prisma": "6.19.0",
 		"undici": "7.16.0",
 		"zod": "4.3.4"
 	},
