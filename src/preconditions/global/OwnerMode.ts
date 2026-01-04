@@ -19,7 +19,9 @@ export class UserPrecondition extends Precondition {
 		return this.inOwnerMode(interaction.user.id);
 	}
 
+	// TODO: revamp logic of owner mode
 	private async inOwnerMode(id: string) {
+		return this.ok();
 		const mode = this.container.client.user?.presence.status === 'dnd';
 
 		if (!mode) return this.ok();
