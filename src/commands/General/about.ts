@@ -12,7 +12,8 @@ import {
 	InteractionContextType,
 	MessageFlags,
 	OAuth2Scopes,
-	subtext
+	subtext,
+	HeadingLevel
 } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
@@ -128,13 +129,13 @@ export class UserCommand extends RadonCommand {
 		const date = new Timestamp(role.createdTimestamp);
 
 		let basic =
-			`\` - \` Rank **${role.guild.roles.cache.size - role.position}**\n` +
-			`\` - \` Created At ${date.getShortDate()} [${date.getRelativeTime()}]\n` +
-			`\` - \` Hex *\`${role.hexColor}\`*\n` +
-			`\` - \` Hoisted ${bool(role.hoist)}\n` +
-			`\` - \` Restricted to Bot: ${role.tags?.botId ? `${Emojis.Confirm} [<@${role.tags?.botId}>]` : Emojis.Cross}\n` +
-			`\` - \` Mentionable ${bool(role.mentionable)}\n` +
-			`\` - \` Managed externally ${bool(role.managed)}`;
+			` -  Rank **${role.guild.roles.cache.size - role.position}**\n` +
+			` -  Created At ${date.getShortDate()} [${date.getRelativeTime()}]\n` +
+			` -  Hex *\`${role.hexColor}\`*\n` +
+			` -  Hoisted ${bool(role.hoist)}\n` +
+			` -  Restricted to Bot: ${role.tags?.botId ? `${Emojis.Confirm} [<@${role.tags?.botId}>]` : Emojis.Cross}\n` +
+			` -  Mentionable ${bool(role.mentionable)}\n` +
+			` -  Managed externally ${bool(role.managed)}`;
 
 		basic = basic
 			.split('\n')
@@ -144,23 +145,11 @@ export class UserCommand extends RadonCommand {
 		const perms = this.container.utils.format(role.permissions.toArray());
 
 		const adv =
-			`\` - \` ID: **\`${role.id}\`**\n` +
-			`\` - \` Members: **${role.members.size}**\n` +
-			`\` - \` Key Permission: ${perms.length ? perms[0] : 'None!'}\n`;
+			` -  ID: **\`${role.id}\`**\n` + //
+			` -  Members: **${role.members.size}**\n` + //
+			` -  Key Permission: ${perms.length ? perms[0] : 'None!'}\n`;
 
 		const hex = role.hexColor.slice(1);
-
-		const embed = new Embed()
-			._author({ name: 'Role Information' })
-			._color(hex === '000000' ? Color.Invisible : role.color)
-			._description(role.toString())
-			._timestamp()
-			._thumbnail(role.iconURL({ size: 4096 }) ?? `https://singlecolorimage.com/get/${hex === '000000' ? '2f3136' : hex}/400x400`)
-			._footer({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ forceStatic: false }) })
-			._fields([
-				{ name: 'Basic Info', value: basic },
-				{ name: 'Advanced Info', value: adv }
-			]);
 
 		// Add members button if role has members
 		const components = [];
@@ -171,9 +160,29 @@ export class UserCommand extends RadonCommand {
 			components.push(row);
 		}
 
+		const container = new ContainerBuilder() //
+			.addSectionComponents((section) =>
+				section
+					.addTextDisplayComponents((textDisplay) =>
+						textDisplay.setContent(heading(role.toString()) + '\n' + heading('Basic Info', HeadingLevel.Two) + '\n' + basic)
+					)
+					.setThumbnailAccessory((thumbnail) =>
+						thumbnail
+							.setURL(role.iconURL({ size: 4096 }) ?? `https://singlecolorimage.com/get/${hex === '000000' ? '2f3136' : hex}/400x400`)
+							.setDescription('Role Icon')
+					)
+			)
+			.addSeparatorComponents((s) => s)
+			.addTextDisplayComponents((textDisplay) =>
+				textDisplay //
+					.setContent(heading('Advanced Info', HeadingLevel.Two) + '\n' + adv)
+			)
+			.addSeparatorComponents((s) => s)
+			.addActionRowComponents(...components);
+
 		return interaction.reply({
-			embeds: [embed],
-			components
+			components: [container],
+			flags: MessageFlags.IsComponentsV2
 		});
 	}
 
