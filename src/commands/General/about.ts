@@ -13,7 +13,9 @@ import {
 	MessageFlags,
 	OAuth2Scopes,
 	subtext,
-	HeadingLevel
+	HeadingLevel,
+	bold,
+	inlineCode
 } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
@@ -192,7 +194,7 @@ export class UserCommand extends RadonCommand {
 		const user = await interaction.options.getUser('user', true).fetch(true);
 		const member = await interaction.options.getMember('user')?.fetch(true);
 		const pfp = member?.displayAvatarURL({ forceStatic: false, size: 4096 }) ?? user.displayAvatarURL({ forceStatic: false, size: 4096 });
-		const banner = user.bannerURL({ forceStatic: false, size: 4096 }) ?? null;
+		const banner = member?.bannerURL({ forceStatic: false, size: 4096 }) ?? user.bannerURL({ forceStatic: false, size: 4096 }) ?? null;
 		const createdAt = new Timestamp(user.createdTimestamp);
 		const guildJoinDate = member?.joinedTimestamp ? new Timestamp(member.joinedTimestamp) : null;
 		const perm = member
@@ -201,25 +203,8 @@ export class UserCommand extends RadonCommand {
 				: this.container.utils.format(member.permissions.toArray(), false)[0]
 			: null;
 
-		const embed = new Embed() //
-			._title(user.globalName ?? user.username)
-			._color(user.hexAccentColor ?? Color.General)
-			._footer({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ forceStatic: false }) })
-			._fields([
-				{
-					name: 'Created At',
-					value: `${createdAt.getLongDate()} [${createdAt.getRelativeTime()}]`,
-					inline: true
-				}
-			])
-			._timestamp()
-			._image(banner)
-			._thumbnail(pfp);
-
-		if (guildJoinDate)
-			embed._field({ name: 'Joined At', value: `${guildJoinDate.getLongDate()} [${guildJoinDate.getRelativeTime()}]`, inline: true });
-
 		const flags = (await user.fetch(true)).flags;
+		let flagBadges = '';
 		if (flags) {
 			let flagValue = flags
 				.toArray()
@@ -229,27 +214,64 @@ export class UserCommand extends RadonCommand {
 
 			if (flagValue.length) {
 				if (isOwner(user)) flagValue = `${Emojis.Owner} ${flagValue}`;
-				flagValue.length > 230 ? embed._description(flagValue) : embed._title((user.globalName ?? user.username).concat(` ${flagValue}`));
+				flagBadges = subtext(flagValue);
 			}
 		}
 
-		embed._field({ name: 'ID', value: `\`${user.id}\``, inline: false });
+		let basicInfo = [
+			heading('Basic Info', HeadingLevel.Two),
+			`- ${bold('Bot')}: ${bool(user.bot)}`,
+			`- ${bold('Global Name')}: ${user.globalName ?? 'None'}`,
+			`- ${bold('ID')}: \`${user.id}\``,
+			`- ${bold('Created At')}: ${createdAt.getShortDate()} [${createdAt.getRelativeTime()}]`
+		];
 
-		if (member?.nickname) embed._field({ name: 'Nickname', value: member.nickname, inline: true });
-		if (perm) embed._field({ name: 'Key Permission', value: perm, inline: true });
+		basicInfo = basicInfo.filter((s) => !s.includes(Emojis.Cross) && !s.includes('None'));
 
-		// Add roles button if user is a guild member
-		const components = [];
+		const container = new ContainerBuilder() //
+			.setAccentColor(user.accentColor ?? Color.General)
+			.addSectionComponents((section) =>
+				section //
+					.setThumbnailAccessory((thumbnail) => thumbnail.setURL(pfp).setDescription(`${user.username}'s Avatar`))
+					.addTextDisplayComponents((textDisplay) => textDisplay.setContent(heading(inlineCode(user.username)) + '\n' + flagBadges))
+					.addTextDisplayComponents((textDisplay) => textDisplay.setContent(basicInfo.join('\n')))
+			);
+
 		if (member) {
-			const rolesButton = new Button()._customId(`user-roles-${user.id}`)._label('View Roles')._style(ButtonStyle.Secondary)._emoji('🏷️');
+			let serverInfo = [
+				heading('Server Info', HeadingLevel.Two),
+				`- ${bold('Nickname')}: ${member.nickname ?? 'None'}`,
+				`- ${bold('Roles')}: **${member.roles.cache.size - 1}** Role(s)`,
+				`- ${bold('Joined At')}: ${guildJoinDate?.getShortDate()} [${guildJoinDate?.getRelativeTime()}]`
+			];
+			if (perm) serverInfo.push(`- ${bold('Key Permission')}: ${perm}`);
 
-			const row = new Row<ButtonBuilder>()._components(rolesButton);
-			components.push(row);
+			serverInfo = serverInfo.filter((s) => !s.includes('None') && !s.includes(Emojis.Cross));
+
+			container
+				.addSeparatorComponents((s) => s)
+				.addSectionComponents((section) =>
+					section
+						.addTextDisplayComponents((textDisplay) => textDisplay.setContent(serverInfo.join('\n')))
+						.setButtonAccessory((button) =>
+							button
+								.setLabel('View Roles')
+								.setStyle(ButtonStyle.Secondary)
+								.setCustomId(`user-roles-${user.id}`)
+								.setEmoji({ name: '🏷️' })
+						)
+				);
+		}
+
+		if (banner) {
+			container.addMediaGalleryComponents((gallery) =>
+				gallery.addItems((item) => item.setURL(banner).setDescription(`${user.username}'s Banner`))
+			);
 		}
 
 		return interaction.editReply({
-			embeds: [embed],
-			components
+			components: [container],
+			flags: MessageFlags.IsComponentsV2
 		});
 	}
 
