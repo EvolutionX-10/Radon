@@ -161,6 +161,7 @@ export class UserCommand extends RadonCommand {
 		}
 
 		const container = new ContainerBuilder() //
+			.setAccentColor(role.colors.primaryColor)
 			.addSectionComponents((section) =>
 				section
 					.addTextDisplayComponents((textDisplay) =>
