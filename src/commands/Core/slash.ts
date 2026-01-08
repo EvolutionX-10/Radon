@@ -75,9 +75,11 @@ export class UserCommand extends RadonCommand {
 		const global = await this.container.client.application?.commands.fetch();
 		const guild = await message.guild.commands.fetch();
 
-		const cmd_name = await args.pick('string').catch(() => null);
-		if (!cmd_name) return;
-		const cmd = global?.find((c) => c.name === cmd_name) || guild?.find((c) => c.name === cmd_name);
+		const cmd_nameOrId = await args.pick('string').catch(() => null);
+		if (!cmd_nameOrId) return;
+		const cmd =
+			global?.find((c) => c.name === cmd_nameOrId || c.id === cmd_nameOrId) ||
+			guild?.find((c) => c.name === cmd_nameOrId || c.id === cmd_nameOrId);
 		if (!cmd) return;
 		await new Confirmation({
 			onConfirm: async ({ i }) => {
