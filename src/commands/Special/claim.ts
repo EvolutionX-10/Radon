@@ -44,6 +44,19 @@ export class UserCommand extends RadonCommand {
 	public override async autocompleteRun(interaction: RadonCommand.AutoComplete) {
 		const focus = interaction.options.getFocused(true);
 
+		const config = await this.container.prisma.specialConfig.findUnique({
+			where: { id: interaction.guild!.id }
+		});
+
+		if (!config || !config.claimEnabled) {
+			return interaction.respond([
+				{
+					name: 'Claim commands are not enabled in this server.',
+					value: ''
+				}
+			]);
+		}
+
 		if (focus.name === 'member_code') {
 			const userId = interaction.user.id;
 			const data = await this.container.prisma.memberCodes.findUnique({
