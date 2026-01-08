@@ -4,7 +4,7 @@ import { RadonEvents } from '#lib/types';
 import { claimCoupon, CouponResult, GetCouponApiResponse, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { RegisterBehavior } from '@sapphire/framework';
-import { ButtonStyle, InteractionContextType, MessageFlags } from 'discord.js';
+import { ButtonStyle, GuildTextBasedChannel, InteractionContextType, MessageFlags } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Claim coupons for Solo Leveling Arise',
@@ -255,7 +255,11 @@ export class UserCommand extends RadonCommand {
 				this.container.client.emit(RadonEvents.CodeClaim, {
 					...result,
 					userTag: interaction.user.tag,
-					avatarURL: interaction.user.displayAvatarURL()
+					avatarURL: interaction.user.displayAvatarURL(),
+					guild: interaction.guild!.name,
+					guildId: interaction.guild!.id,
+					channel: (interaction.channel as GuildTextBasedChannel).name,
+					channelId: interaction.channel!.id
 				});
 				results.push(result);
 			}
@@ -352,7 +356,11 @@ export class UserCommand extends RadonCommand {
 			this.container.client.emit(RadonEvents.CodeClaim, {
 				...result,
 				userTag: interaction.user.tag,
-				avatarURL: interaction.user.displayAvatarURL()
+				avatarURL: interaction.user.displayAvatarURL(),
+				guild: interaction.guild!.name,
+				guildId: interaction.guild!.id,
+				channel: (interaction.channel as GuildTextBasedChannel).name,
+				channelId: interaction.channel!.id
 			});
 
 			if (result.success) {

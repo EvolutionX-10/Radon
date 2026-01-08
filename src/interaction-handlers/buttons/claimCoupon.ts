@@ -3,7 +3,7 @@ import { RadonEvents } from '#lib/types';
 import { claimCoupon } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework';
-import { MessageFlags, type ButtonInteraction } from 'discord.js';
+import { GuildTextBasedChannel, MessageFlags, type ButtonInteraction } from 'discord.js';
 
 @ApplyOptions<InteractionHandler.Options>({
 	interactionHandlerType: InteractionHandlerTypes.Button
@@ -43,7 +43,11 @@ export class ButtonHandler extends InteractionHandler {
 				this.container.client.emit(RadonEvents.CodeClaim, {
 					...result,
 					userTag: interaction.user.tag,
-					avatarURL: interaction.user.displayAvatarURL()
+					avatarURL: interaction.user.displayAvatarURL(),
+					guild: interaction.guild!.name,
+					guildId: interaction.guild!.id,
+					channel: (interaction.channel as GuildTextBasedChannel).name,
+					channelId: interaction.channel!.id
 				});
 
 				if (result.success) {
