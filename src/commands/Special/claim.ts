@@ -1,22 +1,29 @@
 import { Emojis } from '#constants';
 import { Button, Embed, RadonCommand, Row } from '#lib/structures';
 import { RadonEvents } from '#lib/types';
-import { claimCoupon, CouponResult, GetCouponApiResponse, isAdmin, isModerator, sec } from '#lib/utility';
+import { claimCoupon, CouponResult, GetCouponApiResponse, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { RegisterBehavior } from '@sapphire/framework';
 import { ButtonStyle, InteractionContextType, MessageFlags } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Claim coupons for Solo Leveling Arise',
-	cooldownDelay: sec(10)
+	cooldownDelay: sec(3)
 })
 export class UserCommand extends RadonCommand {
-	readonly #AuthorityIds: string[] = [
-		'1444955256504062003' // Guild Officer
-	];
-
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const subcmd = interaction.options.getSubcommand();
+
+		const config = await this.container.prisma.specialConfig.findUnique({
+			where: { id: interaction.guild.id }
+		});
+
+		if (!config || !config.claimEnabled) {
+			return interaction.reply({
+				content: `${Emojis.Cross} Claim commands are not enabled in this server, please contact <@697795666373640213> to enable them!`,
+				allowedMentions: { users: [] }
+			});
+		}
 
 		switch (subcmd as Subcommands) {
 			case 'set':
@@ -139,8 +146,7 @@ export class UserCommand extends RadonCommand {
 							)
 					),
 			{
-				guildIds: ['1276602245689114725'],
-				idHints: ['1441251701725073482', '1441251868583137330'],
+				idHints: ['1458819699272978505', '1458818793659961516'],
 				behaviorWhenNotIdentical: RegisterBehavior.Overwrite
 			}
 		);
@@ -272,10 +278,6 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private async post(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const possibleRoles = interaction.member.roles.cache.filter((role) => this.#AuthorityIds.includes(role.id));
-		if (!possibleRoles.size && !isModerator(interaction.member) && !isAdmin(interaction.member))
-			return interaction.reply({ content: 'You do not have the required permissions to use this command!' });
-
 		const code = interaction.options.getString('code', true);
 		const userData = await this.container.prisma.memberCodes.findUnique({
 			where: { id: interaction.user.id }

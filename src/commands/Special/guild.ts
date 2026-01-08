@@ -6,7 +6,8 @@ import { RegisterBehavior } from '@sapphire/framework';
 import { isAdmin, isModerator } from '#lib/utility';
 
 @ApplyOptions<RadonCommand.Options>({
-	description: 'Manage Guild Related Command'
+	description: 'Manage Guild Related Command',
+	enabled: false
 })
 export class UserCommand extends RadonCommand {
 	readonly #WaitlistId = '1322121858153320520';
