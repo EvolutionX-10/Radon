@@ -17,7 +17,7 @@ export class UserListener extends Listener {
 		const webhook = (await channel.fetchWebhooks()).first();
 		if (!webhook || !webhook?.token) return;
 
-		const content = `## \`${data.userTag}\` ${data.success ? 'claimed' : 'tried to claim'} code \`${data.code}\`\n> Message: ${data.message}\n\`\`\`json\n${JSON.stringify(data.apiResponse, null, 2)}\n\`\`\`\n - PID: \`${data.memberCode}\`\n - Result: ${data.success ? `Successful ${Emojis.Confirm}` : `Failed ${Emojis.Cross}`}\n - Guild: \`${data.guild}\` (\`${data.guildId}\`)\n - Channel: \`#${data.channel}\` [<#${data.channelId}] (\`${data.channelId}\`)\n - Time Taken: ⏱ ${data.elapsedTime}`;
+		const content = `## \`${data.userTag}\` ${data.success ? 'claimed' : 'tried to claim'} code \`${data.code}\`\n> Message: ${data.message}\n\`\`\`json\n${JSON.stringify(data.apiResponse, null, 2)}\n\`\`\`\n - PID: \`${data.memberCode}\`\n - Result: ${data.success ? `Successful ${Emojis.Confirm}` : `Failed ${Emojis.Cross}`}\n - Guild: \`${data.guild}\` (\`${data.guildId}\`)\n - Channel: \`#${data.channel}\` [<#${data.channelId}>] (\`${data.channelId}\`)\n - Time Taken: ⏱ ${data.elapsedTime}`;
 
 		return webhook.send({
 			username: data.userTag,
