@@ -1,10 +1,20 @@
 import { Emojis } from '#constants';
-import { Button, Embed, RadonCommand, Row } from '#lib/structures';
+import { RadonCommand } from '#lib/structures';
 import { RadonEvents } from '#lib/types';
 import { claimCoupon, CouponResult, GetCouponApiResponse, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { RegisterBehavior } from '@sapphire/framework';
-import { ButtonStyle, GuildTextBasedChannel, InteractionContextType, MessageFlags } from 'discord.js';
+import {
+	ButtonStyle,
+	ChannelType,
+	codeBlock,
+	ContainerBuilder,
+	GuildTextBasedChannel,
+	heading,
+	HeadingLevel,
+	InteractionContextType,
+	MessageFlags
+} from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'Claim coupons for Solo Leveling Arise',
@@ -138,6 +148,12 @@ export class UserCommand extends RadonCommand {
 									.setName('code')
 									.setDescription('The coupon code to post')
 									.setRequired(true)
+							)
+							.addChannelOption((option) =>
+								option //
+									.setName('channel')
+									.setDescription('The channel to post the coupon in (defaults to current channel)')
+									.addChannelTypes(ChannelType.GuildText)
 							)
 					)
 					.addSubcommand((builder) =>
@@ -296,12 +312,14 @@ export class UserCommand extends RadonCommand {
 
 	private async post(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const code = interaction.options.getString('code', true);
+		const guildTextChannel = (interaction.options.getChannel('channel') ?? interaction.channel) as GuildTextBasedChannel;
+
 		const userData = await this.container.prisma.memberCodes.findUnique({
 			where: { id: interaction.user.id }
 		});
 		const dummyPID = userData?.memberCodes[0] || 'EDC9B7A5D68B4F0B9E7293500507E850';
 
-		await interaction.deferReply();
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
 		try {
 			// Get coupon info
@@ -313,7 +331,6 @@ export class UserCommand extends RadonCommand {
 
 			const response = await fetch(getUrl.toString());
 			const couponInfo = (await response.json()) as GetCouponApiResponse;
-			console.log(`[Debug] GET Coupon info for posting code ${code}:`, couponInfo);
 
 			if (!couponInfo.resultData?.[0]?.productName) {
 				return interaction.editReply({
@@ -321,21 +338,38 @@ export class UserCommand extends RadonCommand {
 				});
 			}
 
-			const embed = new Embed()
-				._color('Random')
-				._title('🎁 New Coupon Available!')
-				._description(couponInfo.resultData[0].productName || 'Coupon rewards available')
-				._thumbnail(couponInfo.resultData[0].productImageUrl || '')
-				._footer({ text: `Code: ${code}` })
-				._timestamp();
+			const container = new ContainerBuilder()
+				.addSectionComponents((section) =>
+					section
+						.addTextDisplayComponents((text) =>
+							text.setContent(
+								heading('New Code!', HeadingLevel.Two) +
+									'\n' +
+									heading(couponInfo.resultData![0].productName || 'Coupon rewards available', HeadingLevel.Three)
+							)
+						)
+						.setThumbnailAccessory((thumbnail) =>
+							thumbnail.setURL(couponInfo.resultData![0].productImageUrl).setDescription('Coupon Code Image')
+						)
+				)
+				.addSectionComponents((section) =>
+					section
+						.addTextDisplayComponents((text) => text.setContent(codeBlock(code)))
+						.setButtonAccessory((button) => button.setLabel('CLAIM').setStyle(ButtonStyle.Success).setCustomId(`code-${code}`))
+				);
 
-			const claimButton = new Button()._customId(`code-${code}`)._label('Claim!')._style(ButtonStyle.Success);
+			const msg = await guildTextChannel.send({
+				components: [container],
+				flags: MessageFlags.IsComponentsV2
+			});
 
-			const row = new Row()._components(claimButton);
+			if (msg)
+				return interaction.editReply({
+					content: `${Emojis.Confirm} Successfully posted the coupon code in ${msg.url}`
+				});
 
 			return interaction.editReply({
-				embeds: [embed],
-				components: [row.toJSON()]
+				content: `${Emojis.Cross} Failed to post the coupon code. Please try again later.`
 			});
 		} catch (error) {
 			this.container.logger.error('Error posting coupon:', error);
