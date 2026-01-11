@@ -1,8 +1,23 @@
-import { Color, Emojis, RecommendedPermissions, UserFlags, voteRow } from '#constants';
-import { Button, Embed, RadonCommand, Row, Timestamp } from '#lib/structures';
+import { Emojis, RecommendedPermissions, UserFlags, voteRow } from '#constants';
+import { Button, RadonCommand, Row, Timestamp } from '#lib/structures';
 import { isOwner } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
-import { ButtonBuilder, ButtonStyle, ChannelType, InteractionContextType, OAuth2Scopes } from 'discord.js';
+import {
+	italic,
+	ButtonBuilder,
+	ButtonStyle,
+	ChannelType,
+	ContainerBuilder,
+	heading,
+	InteractionContextType,
+	MessageFlags,
+	OAuth2Scopes,
+	subtext,
+	HeadingLevel,
+	bold,
+	inlineCode,
+	SectionBuilder
+} from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: 'About things!'
@@ -76,24 +91,42 @@ export class UserCommand extends RadonCommand {
 			scopes: [OAuth2Scopes.ApplicationsCommands, OAuth2Scopes.Bot],
 			permissions: RecommendedPermissions
 		});
+
 		const inviteRow = new Row<ButtonBuilder>() //
 			._components(
 				new Button()._label(`Add me to your server!`)._style(ButtonStyle.Link)._emoji('<:radon:959378366874664972>')._url(invite),
 				new Button()._label(`Join Support Server!`)._style(ButtonStyle.Link)._emoji('🆘')._url(`https://discord.gg/YBFaDggpvt`)
 			);
 
-		const embed = new Embed()
-			._title('About me!')
-			._author({ name: this.container.client.user!.tag })
-			._color(Color.General)
-			._description("Hey there! I'm Radon, a *moderation* bot dedicated to make your server a better place.")
-			._timestamp()
-			._footer({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ forceStatic: false }) })
-			._thumbnail(this.container.client.user!.displayAvatarURL());
+		const textContent = `${heading('About me!')}\nHello ${interaction.user}!\nI am Radon, a ${italic('moderation')} bot dedicated to make your server a better place`;
+
+		const container = new ContainerBuilder() //
+			.addSectionComponents((section) =>
+				section
+					.addTextDisplayComponents((textDisplay) => textDisplay.setContent(textContent))
+					.setThumbnailAccessory((thumbnail) =>
+						thumbnail
+							.setURL(interaction.guild.members.me?.displayAvatarURL() || this.container.client.user!.displayAvatarURL())
+							.setDescription('Radon Avatar')
+					)
+			)
+			.addSeparatorComponents((s) => s)
+			.addTextDisplayComponents((textDisplay) =>
+				textDisplay.setContent(
+					`If you like using me, consider voting to help me grow and reach more servers!\n` +
+						subtext('Your support means a lot and helps keep the bot running smoothly. Thank you!')
+				)
+			)
+			.addActionRowComponents(voteRow)
+			.addSeparatorComponents((s) => s)
+			.addActionRowComponents(inviteRow);
 
 		return interaction.reply({
-			embeds: [embed],
-			components: [voteRow, inviteRow]
+			components: [container],
+			flags: MessageFlags.IsComponentsV2,
+			allowedMentions: {
+				parse: []
+			}
 		});
 	}
 
@@ -102,13 +135,13 @@ export class UserCommand extends RadonCommand {
 		const date = new Timestamp(role.createdTimestamp);
 
 		let basic =
-			`\` - \` Rank **${role.guild.roles.cache.size - role.position}**\n` +
-			`\` - \` Created At ${date.getShortDate()} [${date.getRelativeTime()}]\n` +
-			`\` - \` Hex *\`${role.hexColor}\`*\n` +
-			`\` - \` Hoisted ${bool(role.hoist)}\n` +
-			`\` - \` Restricted to Bot: ${role.tags?.botId ? `${Emojis.Confirm} [<@${role.tags?.botId}>]` : Emojis.Cross}\n` +
-			`\` - \` Mentionable ${bool(role.mentionable)}\n` +
-			`\` - \` Managed externally ${bool(role.managed)}`;
+			` -  Rank **${role.guild.roles.cache.size - role.position}**\n` +
+			` -  Created At ${date.getShortDate()} [${date.getRelativeTime()}]\n` +
+			` -  Hex *\`${role.hexColor}\`*\n` +
+			` -  Hoisted ${bool(role.hoist)}\n` +
+			` -  Restricted to Bot: ${role.tags?.botId ? `${Emojis.Confirm} [<@${role.tags?.botId}>]` : Emojis.Cross}\n` +
+			` -  Mentionable ${bool(role.mentionable)}\n` +
+			` -  Managed externally ${bool(role.managed)}`;
 
 		basic = basic
 			.split('\n')
@@ -118,36 +151,50 @@ export class UserCommand extends RadonCommand {
 		const perms = this.container.utils.format(role.permissions.toArray());
 
 		const adv =
-			`\` - \` ID: **\`${role.id}\`**\n` +
-			`\` - \` Members: **${role.members.size}**\n` +
-			`\` - \` Key Permission: ${perms.length ? perms[0] : 'None!'}\n`;
+			` -  ID: **\`${role.id}\`**\n` + //
+			` -  Members: **${role.members.size}**\n` + //
+			` -  Key Permission: ${perms.length ? perms[0] : 'None!'}\n`;
 
 		const hex = role.hexColor.slice(1);
 
-		const embed = new Embed()
-			._author({ name: 'Role Information' })
-			._color(hex === '000000' ? Color.Invisible : role.color)
-			._description(role.toString())
-			._timestamp()
-			._thumbnail(role.iconURL({ size: 4096 }) ?? `https://singlecolorimage.com/get/${hex === '000000' ? '2f3136' : hex}/400x400`)
-			._footer({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ forceStatic: false }) })
-			._fields([
-				{ name: 'Basic Info', value: basic },
-				{ name: 'Advanced Info', value: adv }
-			]);
+		const container = new ContainerBuilder() //
+			.setAccentColor(role.colors.primaryColor)
+			.addSectionComponents((section) =>
+				section
+					.addTextDisplayComponents((textDisplay) =>
+						textDisplay.setContent(heading(role.toString()) + '\n' + heading('Basic Info', HeadingLevel.Two) + '\n' + basic)
+					)
+					.setThumbnailAccessory((thumbnail) =>
+						thumbnail
+							.setURL(role.iconURL({ size: 4096 }) ?? `https://singlecolorimage.com/get/${hex === '000000' ? '2f3136' : hex}/400x400`)
+							.setDescription('Role Icon')
+					)
+			)
+			.addSeparatorComponents((s) => s);
 
 		// Add members button if role has members
-		const components = [];
 		if (role.members.size > 0) {
-			const membersButton = new Button()._customId(`role-members-${role.id}`)._label('View Members')._style(ButtonStyle.Secondary)._emoji('👥');
-
-			const row = new Row<ButtonBuilder>()._components(membersButton);
-			components.push(row);
+			container.addSectionComponents((section) =>
+				section
+					.setButtonAccessory((button) =>
+						button
+							.setCustomId(`role-members-${role.id}`)
+							.setLabel('View Members')
+							.setStyle(ButtonStyle.Secondary)
+							.setEmoji({ name: '👥' })
+					)
+					.addTextDisplayComponents((textDisplay) => textDisplay.setContent(heading('Advanced Info', HeadingLevel.Two) + '\n' + adv))
+			);
+		} else {
+			container.addTextDisplayComponents((textDisplay) => textDisplay.setContent(heading('Advanced Info', HeadingLevel.Two) + '\n' + adv));
 		}
 
 		return interaction.reply({
-			embeds: [embed],
-			components
+			components: [container],
+			flags: MessageFlags.IsComponentsV2,
+			allowedMentions: {
+				parse: []
+			}
 		});
 	}
 
@@ -156,7 +203,7 @@ export class UserCommand extends RadonCommand {
 		const user = await interaction.options.getUser('user', true).fetch(true);
 		const member = await interaction.options.getMember('user')?.fetch(true);
 		const pfp = member?.displayAvatarURL({ forceStatic: false, size: 4096 }) ?? user.displayAvatarURL({ forceStatic: false, size: 4096 });
-		const banner = user.bannerURL({ forceStatic: false, size: 4096 }) ?? null;
+		const banner = member?.bannerURL({ forceStatic: false, size: 4096 }) ?? user.bannerURL({ forceStatic: false, size: 4096 }) ?? null;
 		const createdAt = new Timestamp(user.createdTimestamp);
 		const guildJoinDate = member?.joinedTimestamp ? new Timestamp(member.joinedTimestamp) : null;
 		const perm = member
@@ -165,25 +212,8 @@ export class UserCommand extends RadonCommand {
 				: this.container.utils.format(member.permissions.toArray(), false)[0]
 			: null;
 
-		const embed = new Embed() //
-			._title(user.globalName ?? user.username)
-			._color(user.hexAccentColor ?? Color.General)
-			._footer({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ forceStatic: false }) })
-			._fields([
-				{
-					name: 'Created At',
-					value: `${createdAt.getLongDate()} [${createdAt.getRelativeTime()}]`,
-					inline: true
-				}
-			])
-			._timestamp()
-			._image(banner)
-			._thumbnail(pfp);
-
-		if (guildJoinDate)
-			embed._field({ name: 'Joined At', value: `${guildJoinDate.getLongDate()} [${guildJoinDate.getRelativeTime()}]`, inline: true });
-
 		const flags = (await user.fetch(true)).flags;
+		let flagBadges = '';
 		if (flags) {
 			let flagValue = flags
 				.toArray()
@@ -193,33 +223,72 @@ export class UserCommand extends RadonCommand {
 
 			if (flagValue.length) {
 				if (isOwner(user)) flagValue = `${Emojis.Owner} ${flagValue}`;
-				flagValue.length > 230 ? embed._description(flagValue) : embed._title((user.globalName ?? user.username).concat(` ${flagValue}`));
+				flagBadges = subtext(flagValue);
 			}
 		}
 
-		embed._field({ name: 'ID', value: `\`${user.id}\``, inline: false });
+		let basicInfo = [
+			heading('Basic Info', HeadingLevel.Two),
+			`- ${bold('Bot')}: ${bool(user.bot)}`,
+			`- ${bold('Global Name')}: ${user.globalName ?? 'None'}`,
+			`- ${bold('ID')}: \`${user.id}\``,
+			`- ${bold('Created At')}: ${createdAt.getShortDate()} [${createdAt.getRelativeTime()}]`
+		];
 
-		if (member?.nickname) embed._field({ name: 'Nickname', value: member.nickname, inline: true });
-		if (perm) embed._field({ name: 'Key Permission', value: perm, inline: true });
+		basicInfo = basicInfo.filter((s) => !s.includes(Emojis.Cross) && !s.includes('None'));
 
-		// Add roles button if user is a guild member
-		const components = [];
+		const container = new ContainerBuilder() //
+			.addSectionComponents((section) =>
+				section //
+					.setThumbnailAccessory((thumbnail) => thumbnail.setURL(pfp).setDescription(`${user.username}'s Avatar`))
+					.addTextDisplayComponents((textDisplay) => textDisplay.setContent(heading(inlineCode(user.username)) + '\n' + flagBadges))
+					.addTextDisplayComponents((textDisplay) => textDisplay.setContent(basicInfo.join('\n')))
+			);
+
+		if (user.accentColor) container.setAccentColor(user.accentColor);
+
 		if (member) {
-			const rolesButton = new Button()._customId(`user-roles-${user.id}`)._label('View Roles')._style(ButtonStyle.Secondary)._emoji('🏷️');
+			let serverInfo = [
+				heading('Server Info', HeadingLevel.Two),
+				`- ${bold('Nickname')}: ${member.nickname ?? 'None'}`,
+				`- ${bold('Roles')}: **${member.roles.cache.size - 1}** Role(s)`,
+				`- ${bold('Joined At')}: ${guildJoinDate?.getShortDate()} [${guildJoinDate?.getRelativeTime()}]`
+			];
+			if (perm) serverInfo.push(`- ${bold('Key Permission')}: ${perm}`);
 
-			const row = new Row<ButtonBuilder>()._components(rolesButton);
-			components.push(row);
+			serverInfo = serverInfo.filter((s) => !s.includes('None') && !s.includes(Emojis.Cross));
+
+			container
+				.addSeparatorComponents((s) => s)
+				.addSectionComponents((section) =>
+					section
+						.addTextDisplayComponents((textDisplay) => textDisplay.setContent(serverInfo.join('\n')))
+						.setButtonAccessory((button) =>
+							button
+								.setLabel('View Roles')
+								.setStyle(ButtonStyle.Secondary)
+								.setCustomId(`user-roles-${user.id}`)
+								.setEmoji({ name: '🏷️' })
+						)
+				);
+		}
+
+		if (banner) {
+			container.addMediaGalleryComponents((gallery) =>
+				gallery.addItems((item) => item.setURL(banner).setDescription(`${user.username}'s Banner`))
+			);
 		}
 
 		return interaction.editReply({
-			embeds: [embed],
-			components
+			components: [container],
+			flags: MessageFlags.IsComponentsV2
 		});
 	}
 
 	private async server(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const { guild } = interaction;
 		if (!guild.available) return;
+		await interaction.deferReply();
 
 		const owner = await guild.fetchOwner();
 		const icon = guild.iconURL({ forceStatic: false, size: 2048 });
@@ -229,9 +298,9 @@ export class UserCommand extends RadonCommand {
 		const humans = members.filter((m) => !m.user.bot);
 
 		const member =
-			`\` - \` ${Emojis.Member} **${humans.size}** Member(s)\n` + //
-			`\` - \` ${Emojis.Bot} **${guild.memberCount - humans.size}** Bot(s)\n` + //
-			`\` - \` ${Emojis.Owner} ${owner.user} [\`${owner.id}\`]`;
+			` - ${Emojis.Member} ${bold(humans.size.toString())} Member(s)\n` + //
+			` - ${Emojis.Bot} ${bold((guild.memberCount - humans.size).toString())} Bot(s)\n` + //
+			` - ${Emojis.Owner} ${owner.user} [${inlineCode(owner.id)}]`;
 
 		const allChannels = guild.channels.cache;
 		const category = allChannels.filter((c) => c.type === ChannelType.GuildCategory).size;
@@ -240,14 +309,14 @@ export class UserCommand extends RadonCommand {
 		const threads = allChannels.filter((c) => c.isThread()).size;
 
 		let channels =
-			`\` - \` ${Emojis.TextChannel} **${text}** Text\n` + //
-			`\` - \` ${Emojis.VoiceChannel} **${voice}** Voice\n` + //
-			`\` - \` ${Emojis.CategoryChannel} **${category}** Category\n` + //
-			`\` - \` ${Emojis.ThreadChannel} **${threads}** Thread\n`;
+			` - ${Emojis.TextChannel} ${bold(text.toString())} Text\n` + //
+			` - ${Emojis.VoiceChannel} ${bold(voice.toString())} Voice\n` + //
+			` - ${Emojis.CategoryChannel} ${bold(category.toString())} Category\n` + //
+			` - ${Emojis.ThreadChannel} ${bold(threads.toString())} Thread\n`;
 
 		channels = channels
 			.split('\n')
-			.filter((t) => !t.includes('**0**'))
+			.filter((t) => !t.includes(bold('0')))
 			.join('\n');
 
 		const roles = guild.roles.cache
@@ -257,55 +326,79 @@ export class UserCommand extends RadonCommand {
 		roles.pop();
 
 		let misc =
-			`\` - \` ID: **\`${guild.id}\`**\n` +
-			`\` - \` Created at ${create.getShortDate()}\n` + //
-			`\` - \` Partnered ${bool(guild.partnered)}\n` +
-			`\` - \` Verified ${bool(guild.verified)}\n` +
-			`\` - \` AFK Channel ${guild.afkChannel ?? '**0**'}\n` +
-			`\` - \` Emojis: **${guild.emojis.cache.size}**\n` +
-			`\` - \` Stickers: **${guild.stickers.cache.size}**\n` +
-			`\` - \` Boosts: **${guild.premiumSubscriptionCount ?? Emojis.Cross}**\n` +
-			`\` - \` Vanity: \`discord.gg/${guild.vanityURLCode ?? Emojis.Cross}\``;
+			` - ID: ${bold(inlineCode(guild.id))}\n` +
+			` - Created at ${create.getLongDateTime()}\n` + //
+			` - Partnered ${bool(guild.partnered)}\n` +
+			` - Verified ${bool(guild.verified)}\n` +
+			` - AFK Channel ${guild.afkChannel ?? bold('0')}\n` +
+			` - Emojis: ${bold(guild.emojis.cache.size.toString())}\n` +
+			` - Stickers: ${bold(guild.stickers.cache.size.toString())}\n` +
+			` - Boosts: ${bold((guild.premiumSubscriptionCount ?? Emojis.Cross).toString())}\n` +
+			` - Vanity: ${inlineCode(`discord.gg/${guild.vanityURLCode ?? Emojis.Cross}`)}`;
 
 		misc = misc
 			.split('\n')
-			.filter((s) => !s.includes(Emojis.Cross) && !s.includes('**0**'))
+			.filter((s) => !s.includes(Emojis.Cross) && !s.includes(bold('0')))
 			.join('\n');
 
-		const embed = new Embed()
-			._color(Color.General)
-			._title(`[${guild.nameAcronym}] ${guild.name}`)
-			._thumbnail(icon)
-			._timestamp()
-			._image(banner)
-			._description(guild.description)
-			._footer({ text: `Requested by ${interaction.user.username}`, iconURL: interaction.user.displayAvatarURL({ forceStatic: false }) })
-			._fields([
-				{
-					name: `Members [${guild.memberCount}]`,
-					value: member,
-					inline: true
-				},
-				{
-					name: `Channels [${allChannels.size}]`,
-					value: channels,
-					inline: true
-				}
-			]);
+		const container = new ContainerBuilder();
+		if (icon) {
+			const section = new SectionBuilder() //
+				.setThumbnailAccessory((thumbnail) => thumbnail.setURL(icon).setDescription(`${guild.name} Icon`))
+				.addTextDisplayComponents((textDisplay) =>
+					textDisplay.setContent(
+						heading(`[${guild.nameAcronym}] ${guild.name}`) + '\n' + (guild.description ? italic(guild.description) : '')
+					)
+				)
+				.addTextDisplayComponents((textDisplay) => textDisplay.setContent(heading('Members', HeadingLevel.Two) + '\n' + member));
 
-		if (roles.length !== 0) {
-			embed._field({
-				name: `Roles [${roles.length}]`,
-				value: roles
-					.slice(0, 3)
-					.join(', ')
-					.concat(roles.length > 3 ? ` and **${roles.length - 3}** more...` : '')
-			});
+			container.addSectionComponents(section);
+		} else {
+			container
+				.addTextDisplayComponents((textDisplay) =>
+					textDisplay.setContent(
+						heading(`[${guild.nameAcronym}] ${guild.name}`) + '\n' + (guild.description ? italic(guild.description) : '')
+					)
+				)
+				.addTextDisplayComponents((textDisplay) => textDisplay.setContent(heading('Members', HeadingLevel.Two) + '\n' + member));
 		}
 
-		embed._field({ name: 'Misc', value: misc });
+		container
+			.addSeparatorComponents((s) => s)
+			.addTextDisplayComponents((textDisplay) => textDisplay.setContent(heading('Channels', HeadingLevel.Two) + '\n' + channels));
 
-		return interaction.reply({ embeds: [embed] });
+		if (roles.length !== 0) {
+			container
+				.addSeparatorComponents((s) => s)
+				.addTextDisplayComponents((textDisplay) =>
+					textDisplay.setContent(
+						heading('Roles', HeadingLevel.Two) +
+							'\n' +
+							roles
+								.slice(0, 3)
+								.join(', ')
+								.concat(roles.length > 3 ? ` and **${roles.length - 3}** more...` : '')
+					)
+				);
+		}
+
+		container
+			.addSeparatorComponents((s) => s)
+			.addTextDisplayComponents((textDisplay) => textDisplay.setContent(heading('Misc', HeadingLevel.Two) + '\n' + misc));
+
+		if (banner) {
+			container.addMediaGalleryComponents((gallery) =>
+				gallery.addItems((item) => item.setURL(banner).setDescription(`${guild.name}'s Banner`))
+			);
+		}
+
+		return interaction.editReply({
+			components: [container],
+			flags: MessageFlags.IsComponentsV2,
+			allowedMentions: {
+				parse: []
+			}
+		});
 	}
 }
 

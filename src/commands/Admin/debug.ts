@@ -1,9 +1,9 @@
-import { RadonCommand, RadonPaginatedMessage } from '#lib/structures';
+import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { mention, mins } from '#lib/utility';
 import { Emojis, RecommendedPermissionsWithoutAdmin } from '#constants';
 import { ApplyOptions } from '@sapphire/decorators';
-import { ChannelType, Guild, InteractionContextType } from 'discord.js';
+import { ChannelType, ContainerBuilder, Guild, heading, HeadingLevel, InteractionContextType, MessageFlags } from 'discord.js';
 import { PermissionFlagsBits } from 'discord-api-types/v9';
 
 @ApplyOptions<RadonCommand.Options>({
@@ -13,24 +13,16 @@ import { PermissionFlagsBits } from 'discord-api-types/v9';
 	cooldownLimit: 2
 })
 export class UserCommand extends RadonCommand {
-	readonly #SelectMessages = [
-		['Server Setup', 'The /setup'],
-		['Server Permissions', 'My permissions in the server'], //
-		['Per Channel Permissions', 'The per channel perms especially for locking mechanism'],
-		['Roles', 'The amount of roles in server'],
-		['Role Hierarchy', 'The order of roles in server']
-	];
-
 	readonly #Counts = {
-		Low: { Admins: { min: 1, max: 3 }, Roles: { min: 5, max: 20 } },
+		Low: { Admins: { min: 1, max: 3 }, Roles: { min: 5, max: 25 } },
 		Medium: { Admins: { min: 1, max: 5 }, Roles: { min: 10, max: 50 } },
 		High: { Admins: { min: 2, max: 10 }, Roles: { min: 10, max: 100 } }
 	};
 
 	readonly #GuildSize = {
 		Low: 50,
-		Medium: 10000,
-		High: 500000
+		Medium: 500,
+		High: 1000
 	};
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {
@@ -46,15 +38,10 @@ export class UserCommand extends RadonCommand {
 	}
 
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const title = '__**Results**__';
-
-		const msg = new RadonPaginatedMessage() //
-			.setSelectMenuPlaceholder('View Results')
-			.setSelectMenuOptions((i) => ({ label: this.#SelectMessages[i - 1][0], description: this.#SelectMessages[i - 1][1] }));
-
+		const title = heading('Server Debug Report');
 		const results: string[] = [];
 
-		await interaction.reply(`Debugging...`);
+		await interaction.deferReply();
 
 		results.push(await this.setupCheck(interaction));
 		results.push(await this.guildPermissions(interaction));
@@ -62,38 +49,49 @@ export class UserCommand extends RadonCommand {
 		results.push(await this.roleCheck(interaction));
 		results.push(await this.roleHierarchy(interaction));
 
-		results.forEach((r, i) => msg.addPageContent(`${title} [${i + 1}/${this.#SelectMessages.length}]\n${r}`));
+		const container = new ContainerBuilder() //
+			.addTextDisplayComponents((textDisplay) =>
+				textDisplay //
+					.setContent(title)
+			)
+			.addSeparatorComponents((s) => s);
 
-		return msg.run(interaction);
+		for (let i = 0; i < results.length; i++) {
+			container.addTextDisplayComponents((textDisplay) =>
+				textDisplay //
+					.setContent(results[i])
+			);
+		}
+
+		return interaction.editReply({ components: [container], flags: MessageFlags.IsComponentsV2 });
 	}
 
 	private async guildPermissions(interaction: RadonCommand.ChatInputCommandInteraction) {
-		await interaction.editReply(`Checking Overall Permissions...`);
-
-		const notes: string[] = [];
+		const notes: string[] = [heading('Server Permissions', HeadingLevel.Two)];
 
 		const me = interaction.guild.members.me ?? (await interaction.guild.members.fetch(interaction.client.user.id));
 		notes.push(...this.container.utils.format(me.permissions.missing(RecommendedPermissionsWithoutAdmin)).map((p) => this.note(p)));
 
-		if (!notes.length) return `> Server Permissions ${Emojis.Forward} Perfect!`;
-		notes.unshift(`> Server Permissions ${Emojis.Forward} Permissions Missing!`);
+		if (notes.length === 1) {
+			notes.push(`${Emojis.Confirm} All Recommended Permissions Present!`);
+			return notes.join('\n');
+		}
+		notes.splice(1, 0, `${Emojis.Cross} Permissions Missing!`);
 
 		return notes.join('\n');
 	}
 
 	private async setupCheck(interaction: RadonCommand.ChatInputCommandInteraction) {
-		await interaction.editReply(`Checking Setup...`);
-
 		const modlog = await interaction.guild.settings?.modlogs.modLogs_exist();
 		const mods = await interaction.guild.settings?.roles.mods;
 		const admins = await interaction.guild.settings?.roles.admins;
 
-		const notes: string[] = [];
+		const notes: string[] = [heading('Server Setup', HeadingLevel.Two)];
 
 		if (modlog) {
 			const channel = interaction.guild.channels.cache.get(modlog);
 			if (!channel) notes.push(this.note(`No Modlogs channel found with ID \`${modlog}\``));
-		} else notes.push(this.note(`No Modlogs channel setup found`));
+		} else notes.push(this.note('No Modlogs channel setup found'));
 
 		const roles = [mods, admins];
 		for (let k = 0; k < 2; k++) {
@@ -103,47 +101,52 @@ export class UserCommand extends RadonCommand {
 				const roles = impRole.map((r) => interaction.guild.roles.cache.get(r));
 				for (let i = 0; i < roles.length; i++) {
 					const role = roles[i];
-					if (!role) notes.push(this.note(`No ${key} Role found with ID \`${impRole[i]}\``));
+					if (!role) notes.push(this.note(`No ${key} role found with ID \`${impRole[i]}\``));
 				}
-			} else notes.push(this.note(`No ${key} Roles setup found`));
+			} else notes.push(this.note(`No ${key} roles setup found`));
 		}
 
-		if (!notes.length) return `> Server Setup ${Emojis.Forward} Perfect!`;
-		notes.unshift(`> Server Setup ${Emojis.Forward} Issues found!`);
+		if (notes.length === 1) {
+			notes.push(`${Emojis.Confirm} All required setup found!`);
+			return notes.join('\n');
+		}
 
-		return notes.join('\n').concat(`\n\n> *TIP: Use ${await mention('setup', interaction.client)} to fix the issues*`);
+		notes.splice(1, 0, `${Emojis.Cross} Setup issues found!`);
+		notes.push('', `*Tip: Use ${await mention('setup', interaction.client)} to fix the issues.*`);
+
+		return notes.join('\n');
 	}
 
 	private async perChannelPermissions(interaction: RadonCommand.ChatInputCommandInteraction) {
-		await interaction.editReply(`Checking per channel overwrites...`);
-
 		const channels = interaction.guild.channels.cache.filter((c) => c.type !== ChannelType.GuildCategory);
 		const me = interaction.guild.members.me ?? (await interaction.guild.members.fetch(interaction.client.user.id));
-		const notes: string[] = [];
+		const notes: string[] = [heading('Per-Channel Permissions', HeadingLevel.Two)];
 
 		for (const channel of channels.values()) {
 			const perm = channel.permissionsFor(me);
 			const missing = this.container.utils.format(perm.missing(RecommendedPermissionsWithoutAdmin)).map((c) => `\`${c}\``);
 			if (missing.length) {
-				notes.push(this.note(`<#${channel.id}> [${missing.length > 3 ? `${missing.length} Permissions` : `${missing.join(', ')}`}] `));
+				notes.push(this.note(`<#${channel.id}> [${missing.length > 3 ? `${missing.length} Permissions` : `${missing.join(', ')}`}]`));
 			}
 		}
 
-		if (!notes.length) return `> Per Channel Permissions ${Emojis.Forward} Perfect!`;
-		notes.unshift(`> Per Channel Permissions ${Emojis.Forward} Permission Overwrites found!`);
+		if (notes.length === 1) {
+			notes.push(`${Emojis.Confirm} All channel overwrites look good!`);
+			return notes.join('\n');
+		}
 
-		return notes
-			.join('\n')
-			.concat(
-				'\n\n> *Tip: Granting `Administrator` Permission can solve all permission related issues, but it is not a necessity for me to function!*'
-			);
+		notes.splice(1, 0, `${Emojis.Cross} Permission overwrites found!`);
+		notes.push(
+			'',
+			'*Tip: Granting Administrator solves every permission issue, but it is not required for me to function. Prefer scoped fixes per channel.*'
+		);
+
+		return notes.join('\n');
 	}
 
 	private async roleCheck(interaction: RadonCommand.ChatInputCommandInteraction) {
-		await interaction.editReply(`Checking Roles...`);
-
 		const { guild } = interaction;
-		const notes: string[] = [];
+		const notes: string[] = [heading('Role Check', HeadingLevel.Two)];
 		const roles = (await guild.roles.fetch()).filter((r) => !r.managed);
 		const { everyone } = guild.roles;
 		const admins = roles.filter((r) => r.permissions.has(PermissionFlagsBits.Administrator)).size;
@@ -155,26 +158,28 @@ export class UserCommand extends RadonCommand {
 
 		if (!this.range(counts.Admins.max, admins, counts.Admins.min))
 			notes.push(
-				this.note(`Too ${size(counts.Admins.max, admins, counts.Admins.min)} [**${admins}**] amount of Roles with Administrator Permissions!`)
+				this.note(`Too ${size(counts.Admins.max, admins, counts.Admins.min)} [**${admins}**] amount of roles with Administrator Permissions!`)
 			);
 		if (!this.range(counts.Roles.max, totalRoles, counts.Roles.min))
-			notes.push(this.note(`Too ${size(counts.Roles.max, totalRoles, counts.Roles.min)} [**${totalRoles}**] amount of Roles in Server!`));
+			notes.push(this.note(`Too ${size(counts.Roles.max, totalRoles, counts.Roles.min)} [**${totalRoles}**] amount of roles in server!`));
 
 		if (everyone.permissions.has(PermissionFlagsBits.Administrator)) {
-			notes.push(this.note(`@everyone Role should **NOT** have Administrator Permissions!`));
+			notes.push(this.note('@everyone role should **NOT** have Administrator Permission!'));
 		}
 
-		if (!notes.length) return `> Role Check ${Emojis.Forward} Perfect!`;
-		notes.unshift(`> Role Check ${Emojis.Forward} Issues Found!`);
+		if (notes.length === 1) {
+			notes.push(`${Emojis.Confirm} Roles and permissions look balanced!`);
+			return notes.join('\n');
+		}
+
+		notes.splice(1, 0, `${Emojis.Cross} Role issues found!`);
 
 		return notes.join('\n');
 	}
 
 	private async roleHierarchy(interaction: RadonCommand.ChatInputCommandInteraction) {
-		await interaction.editReply('Checking Role Hierarchy...');
-
 		const { guild, client } = interaction;
-		const notes: string[] = [];
+		const notes: string[] = [heading('Role Hierarchy', HeadingLevel.Two)];
 
 		const totalRoles = guild.roles.cache.size;
 		const me = guild.members.me ?? (await guild.members.fetch(client.user.id));
@@ -184,10 +189,15 @@ export class UserCommand extends RadonCommand {
 		if (topRole.id === guild.id)
 			notes.push(this.note('My highest Role is @everyone and it will cause issues with commands, please assign a higher role to me!'));
 
-		if (!notes.length) return `> Role Hierarchy ${Emojis.Forward} Perfect!`;
-		notes.unshift(`> Role Hierarchy ${Emojis.Forward} Issues Found!`);
+		if (notes.length === 1) {
+			notes.push(`${Emojis.Confirm} Role hierarchy is healthy!`);
+			return notes.join('\n');
+		}
 
-		return notes.join('\n').concat(`\n\n> *Tip: Role Hierarchy plays important role in moderating people!*`);
+		notes.splice(1, 0, `${Emojis.Cross} Hierarchy issues found!`);
+		notes.push('', '*Tip: Role hierarchy is critical for moderation actions to work reliably.*');
+
+		return notes.join('\n');
 	}
 
 	private getRecommendedCounts(guild: Guild) {

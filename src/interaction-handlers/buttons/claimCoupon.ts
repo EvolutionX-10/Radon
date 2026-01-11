@@ -3,7 +3,7 @@ import { RadonEvents } from '#lib/types';
 import { claimCoupon } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework';
-import { GuildTextBasedChannel, MessageFlags, type ButtonInteraction } from 'discord.js';
+import { bold, GuildTextBasedChannel, MessageFlags, ModalBuilder, TextInputStyle, type ButtonInteraction } from 'discord.js';
 
 @ApplyOptions<InteractionHandler.Options>({
 	interactionHandlerType: InteractionHandlerTypes.Button
@@ -18,8 +18,6 @@ export class ButtonHandler extends InteractionHandler {
 	}
 
 	public override async run(interaction: ButtonInteraction, { code }: { code: string }) {
-		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-
 		try {
 			// Get member codes for this user
 			const userData = await this.container.prisma.memberCodes.findUnique({
@@ -27,11 +25,10 @@ export class ButtonHandler extends InteractionHandler {
 			});
 
 			if (!userData || userData.memberCodes.length === 0) {
-				return interaction.editReply({
-					content: `${Emojis.Cross} You don't have any member codes registered! Please use \`/claim set\` to register your member code first.`
-				});
+				return this.fallbackModal(interaction, code);
 			}
 
+			await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 			const memberCodes = userData.memberCodes;
 			let successCount = 0;
 			let failCount = 0;
@@ -82,5 +79,30 @@ export class ButtonHandler extends InteractionHandler {
 				content: `${Emojis.Cross} An error occurred while claiming the coupon. Please try again later.`
 			});
 		}
+	}
+
+	private async fallbackModal(interaction: ButtonInteraction, code: string) {
+		const modal = new ModalBuilder() //
+			.setCustomId(`claim-set-modal/${code}`)
+			.setTitle('Adding Member Code')
+			.addTextDisplayComponents((textDisplay) =>
+				textDisplay.setContent(
+					`It seems you don't have any member codes registered. Follow the steps to get your member code:\n 1. Open your game\n 2. Go to Settings > Account\n 3. Copy your ${bold('Member Code')}`
+				)
+			)
+			.addLabelComponents((label) =>
+				label
+					.setLabel('Member Code')
+					.setTextInputComponent((textInput) =>
+						textInput
+							.setCustomId('memberCodeInput')
+							.setStyle(TextInputStyle.Short)
+							.setMinLength(30)
+							.setMaxLength(36)
+							.setPlaceholder('Enter your Member Code here, Ex: C9AFA7145EF0406E900966B0201ZBB50')
+							.setRequired(true)
+					)
+			);
+		await interaction.showModal(modal);
 	}
 }
