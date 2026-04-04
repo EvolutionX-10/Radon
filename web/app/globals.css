@@ -1,0 +1,112 @@
+@import 'tailwindcss';
+
+:root {
+	--background: #f6f8fb;
+	--surface: #ffffff;
+	--foreground: #0f172a;
+	--muted: #475569;
+	--line: #dbe4f0;
+	--primary: #0f766e;
+	--primary-strong: #115e59;
+	--ring: rgba(15, 118, 110, 0.35);
+}
+
+@theme inline {
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--font-sans: var(--font-space-grotesk);
+	--font-mono: var(--font-jetbrains-mono);
+}
+
+body {
+	background:
+		radial-gradient(circle at 8% 10%, rgba(15, 118, 110, 0.16), transparent 38%),
+		radial-gradient(circle at 90% 0%, rgba(30, 64, 175, 0.16), transparent 34%), linear-gradient(180deg, #f8fbff 0%, #f2f6fb 52%, #eef3f9 100%);
+	color: var(--foreground);
+	font-family: var(--font-space-grotesk), 'Segoe UI', sans-serif;
+}
+
+.grain-overlay {
+	position: fixed;
+	inset: 0;
+	pointer-events: none;
+	opacity: 0.22;
+	background-image:
+		linear-gradient(rgba(15, 23, 42, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(15, 23, 42, 0.02) 1px, transparent 1px);
+	background-size: 3px 3px;
+	mask-image: radial-gradient(circle at center, black 38%, transparent 100%);
+}
+
+.glass-panel {
+	border: 1px solid rgba(226, 232, 240, 0.95);
+	border-radius: 1rem;
+	background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.74));
+	backdrop-filter: blur(10px);
+	box-shadow: 0 16px 40px -32px rgba(15, 23, 42, 0.52);
+}
+
+.nav-link {
+	border-radius: 9999px;
+	padding: 0.4rem 0.78rem;
+	transition:
+		background-color 160ms ease,
+		color 160ms ease;
+}
+
+.nav-link:hover {
+	background-color: rgba(15, 118, 110, 0.12);
+	color: var(--primary-strong);
+}
+
+.content-panel {
+	border: 1px solid var(--line);
+	border-radius: 1.2rem;
+	background-color: rgba(255, 255, 255, 0.94);
+	box-shadow: 0 14px 34px -30px rgba(15, 23, 42, 0.8);
+}
+
+.badge {
+	display: inline-block;
+	border-radius: 9999px;
+	border: 1px solid rgba(15, 118, 110, 0.28);
+	background: rgba(15, 118, 110, 0.08);
+	color: var(--primary-strong);
+	font-size: 0.8rem;
+	font-weight: 600;
+	padding: 0.25rem 0.65rem;
+}
+
+.cta {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 0.8rem;
+	font-weight: 600;
+	padding: 0.62rem 1rem;
+	transition:
+		transform 180ms ease,
+		box-shadow 180ms ease,
+		background-color 180ms ease;
+}
+
+.cta-primary {
+	color: #f8fafc;
+	background-color: var(--primary);
+	box-shadow: 0 8px 20px -14px rgba(15, 118, 110, 0.92);
+}
+
+.cta-primary:hover {
+	background-color: var(--primary-strong);
+	transform: translateY(-1px);
+}
+
+.cta-secondary {
+	color: #0f172a;
+	border: 1px solid #cbd5e1;
+	background-color: #ffffff;
+}
+
+.cta-secondary:hover {
+	background-color: #f8fafc;
+	box-shadow: 0 0 0 3px var(--ring);
+}
