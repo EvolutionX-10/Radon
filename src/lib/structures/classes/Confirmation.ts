@@ -9,6 +9,7 @@ import {
 	type ComponentEmojiResolvable,
 	ComponentType,
 	Message,
+	MessageComponentInteraction,
 	MessageFlags,
 	ReadonlyCollection,
 	User
@@ -52,7 +53,7 @@ export class Confirmation {
 		return this;
 	}
 
-	public async run(message: Message | ChatInputCommandInteraction<'cached'>, user?: User) {
+	public async run(message: Message | ChatInputCommandInteraction<'cached'> | MessageComponentInteraction<'cached'>, user?: User) {
 		const id = user ? user.id : message instanceof Message ? message.author.id : message.user.id;
 		const default_embed = new Embed()
 			._author({
@@ -83,14 +84,25 @@ export class Confirmation {
 				components: [row]
 			});
 		} else {
-			const interactionResponse = await message.reply({
-				content: this.options.content,
-				embeds: this.options?.content ? [] : [embed],
-				components: [row],
-				withResponse: true,
-				flags: this.options.ephemeral ? MessageFlags.Ephemeral : undefined
-			});
-			msg = message.channel?.messages.cache.get(interactionResponse.interaction.responseMessageId!) as Message<boolean>;
+			if (message instanceof ChatInputCommandInteraction) {
+				const interactionResponse = await message.reply({
+					content: this.options.content,
+					embeds: this.options?.content ? [] : [embed],
+					components: [row],
+					withResponse: true,
+					flags: this.options.ephemeral ? MessageFlags.Ephemeral : undefined
+				});
+				msg = message.channel?.messages.cache.get(interactionResponse.interaction.responseMessageId!) as Message<boolean>;
+			} else {
+				const interactionResponse = await message.followUp({
+					content: this.options.content,
+					embeds: this.options?.content ? [] : [embed],
+					components: [row],
+					withResponse: true,
+					flags: this.options.ephemeral ? MessageFlags.Ephemeral : undefined
+				});
+				msg = message.channel?.messages.cache.get(interactionResponse.id) as Message<boolean>;
+			}
 		}
 
 		const collector = msg.createMessageComponentCollector({
