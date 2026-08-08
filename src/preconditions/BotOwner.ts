@@ -17,6 +17,11 @@ export class UserPrecondition extends Precondition {
 	}
 
 	private async isBotOwner(id: string): AsyncPreconditionResult {
-		return Owners.includes(id) ? this.ok() : this.error({ context: { silent: true } });
+		return Owners.includes(id)
+			? this.ok()
+			: this.error({
+					message:
+						'Special command activated...\n<:sussy:1458685275512377377> But wait, you are not special enough....\nCommand failed <:pepe_exit:1313232039012597780>'
+				});
 	}
 }
