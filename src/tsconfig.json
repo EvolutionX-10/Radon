@@ -1,7 +1,7 @@
 {
 	"extends": "../tsconfig.base.json",
 	"compilerOptions": {
-		"experimentalDecorators": true,
+		"experimentalDecorators": false,
 		"allowJs": true,
 		"outDir": "../dist",
 		"rootDir": ".",
