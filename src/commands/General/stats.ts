@@ -1,4 +1,6 @@
+import { RadonGuildId, TestServerGuildIds } from '#constants';
 import { RadonCommand, Timestamp } from '#lib/structures';
+import { PermissionLevels } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
 import { version as sapphireVersion } from '@sapphire/framework';
 import { roundNumber } from '@sapphire/utilities';
@@ -6,11 +8,25 @@ import { ContainerBuilder, MessageFlags, version, bold, heading, HeadingLevel } 
 import { uptime } from 'node:os';
 
 @ApplyOptions<RadonCommand.Options>({
-	description: 'Provides some stats about me'
+	name: 'stats',
+	description: 'Provides some stats about me',
+	permissionLevel: PermissionLevels.BotOwner
 })
 export class UserCommand extends RadonCommand {
-	public override messageRun(message: RadonCommand.Message<true>) {
-		return message.reply({
+	public override registerApplicationCommands(registry: RadonCommand.Registry) {
+		registry.registerChatInputCommand(
+			(builder) =>
+				builder //
+					.setName(this.name)
+					.setDescription(this.description),
+			{
+				guildIds: [...RadonGuildId, ...TestServerGuildIds]
+			}
+		);
+	}
+
+	public override chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
+		return interaction.reply({
 			components: [this.buildContainer()],
 			flags: MessageFlags.IsComponentsV2
 		});

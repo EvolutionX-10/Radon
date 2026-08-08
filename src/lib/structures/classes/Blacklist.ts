@@ -22,4 +22,9 @@ export class Blacklist {
 		const doc = await this.prisma.blacklist.delete({ where: { id } });
 		return doc.reason;
 	}
+
+	public async getAll() {
+		const docs = await this.prisma.blacklist.findMany();
+		return docs;
+	}
 }

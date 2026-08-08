@@ -1,26 +1,61 @@
+import { RadonGuildId, TestServerGuildIds } from '#constants';
 import { Confirmation, RadonCommand, Timestamp } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { wait } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
+import { ApplicationCommandRegistry } from '@sapphire/framework';
 import { Stopwatch } from '@sapphire/stopwatch';
+import { AutocompleteInteraction, MessageFlags } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	description: `Nuke a guild by deleting all channels, roles and banning all members.`,
 	permissionLevel: PermissionLevels.BotOwner
 })
 export class UserCommand extends RadonCommand {
-	public override async messageRun(message: RadonCommand.Message, args: RadonCommand.Args) {
-		const id = await args.pick('string');
+	public override registerApplicationCommands(registry: ApplicationCommandRegistry) {
+		registry.registerChatInputCommand(
+			(builder) =>
+				builder //
+					.setName(this.name)
+					.setDescription(this.description)
+					.addStringOption((option) =>
+						option //
+							.setName('id')
+							.setDescription('The ID of the guild to nuke')
+							.setAutocomplete(true)
+							.setRequired(true)
+					),
+			{
+				guildIds: [...RadonGuildId, ...TestServerGuildIds],
+				idHints: ['1535548117003538464', '1535548115606831215', '1535548118664482907']
+			}
+		);
+	}
+
+	public override async autocompleteRun(interaction: AutocompleteInteraction) {
+		const focus = interaction.options.getFocused(true);
+		if (focus.name !== 'id') return;
+
+		const guilds = this.container.client.guilds.cache;
+		const choices = guilds
+			.sort((a, b) => (b.members.me?.joinedTimestamp ?? 0) - (a.members.me?.joinedTimestamp ?? 0))
+			.map((guild) => ({ name: guild.name, value: guild.id }));
+		const filtered = choices.filter((choice) => choice.name.toLowerCase().includes(focus.value.toLowerCase()));
+		await interaction.respond(filtered.slice(0, 25));
+	}
+
+	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const id = interaction.options.getString('id', true);
 		const guild = await this.container.client.guilds.fetch(id).catch(() => null);
 
 		if (!guild) {
-			return void message.channel.send(`Guild with ID \`${id}\` not found.`);
+			return interaction.reply({ content: `Guild with ID \`${id}\` not found.`, flags: MessageFlags.Ephemeral });
 		}
 
 		const members = guild.memberCount == guild.members.cache.size ? guild.members.cache : await guild.members.fetch().catch(() => null);
 		const channels = await guild.channels.fetch().catch(() => null);
 		if (!members || !channels) {
-			return void message.channel.send(`Could not fetch members or channels for guild with ID \`${id}\`.`);
+			return interaction.reply({ content: `Could not fetch members or channels for guild with ID \`${id}\`.`, flags: MessageFlags.Ephemeral });
 		}
 
 		// Filter bannable members
@@ -54,7 +89,7 @@ export class UserCommand extends RadonCommand {
 			}
 		});
 
-		return confirmation.run(message);
+		return confirmation.run(interaction);
 	}
 
 	private async nukeGuild(guildId: string) {
