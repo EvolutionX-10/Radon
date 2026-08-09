@@ -67,13 +67,6 @@ model memberCodes {
   memberCodes String[]
 }
 
-model specialConfig {
-  id           String   @id @map("_id") // guildId
-  claimEnabled Boolean? @default(false)
-  createdAt    DateTime @default(now()) @db.Date
-  updatedAt    DateTime @updatedAt @db.Date
-}
-
 model aiChatConfig {
   id              String   @id @map("_id") // channelId
   guildId         String

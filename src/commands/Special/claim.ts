@@ -22,20 +22,9 @@ import {
 })
 export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const subcmd = interaction.options.getSubcommand();
+		const subcmd = interaction.options.getSubcommand(true) as Subcommands;
 
-		const config = await this.container.prisma.specialConfig.findUnique({
-			where: { id: interaction.guild.id }
-		});
-
-		if (!config || !config.claimEnabled) {
-			return interaction.reply({
-				content: `${Emojis.Cross} Claim commands are not enabled in this server, please contact <@697795666373640213> to enable them!`,
-				allowedMentions: { users: [] }
-			});
-		}
-
-		switch (subcmd as Subcommands) {
+		switch (subcmd) {
 			case 'set':
 				return this.set(interaction);
 			case 'code':
@@ -53,19 +42,6 @@ export class UserCommand extends RadonCommand {
 
 	public override async autocompleteRun(interaction: RadonCommand.AutoComplete) {
 		const focus = interaction.options.getFocused(true);
-
-		const config = await this.container.prisma.specialConfig.findUnique({
-			where: { id: interaction.guild!.id }
-		});
-
-		if (!config || !config.claimEnabled) {
-			return interaction.respond([
-				{
-					name: 'Claim commands are not enabled in this server.',
-					value: ''
-				}
-			]);
-		}
 
 		if (focus.name === 'member_code') {
 			const userId = interaction.user.id;
