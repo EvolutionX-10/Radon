@@ -14,14 +14,7 @@ import {
 } from 'discord.js';
 
 export const config: Config = {
-	intents: [
-		GatewayIntentBits.Guilds,
-		GatewayIntentBits.GuildMessages,
-		GatewayIntentBits.MessageContent,
-		GatewayIntentBits.GuildModeration,
-		GatewayIntentBits.DirectMessages,
-		GatewayIntentBits.GuildMembers
-	],
+	intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildModeration, GatewayIntentBits.DirectMessages],
 	cooldown_options: {
 		delay: Time.Second * 10,
 		filteredUsers: Owners,
