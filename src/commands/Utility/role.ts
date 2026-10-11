@@ -400,6 +400,10 @@ export class UserCommand extends RadonCommand {
 
 	@PermissionLevel('Administrator')
 	private async bulk(interaction: RadonCommand.ChatInputCommandInteraction, option: bulkActions) {
+		return interaction.reply({
+			content: `${Emojis.Cross} This command is currently disabled due to Discord API restrictions. Sorry for the inconvenience!`,
+			flags: MessageFlags.Ephemeral
+		});
 		const role = interaction.options.getRole('role', true);
 		const reason = interaction.options.getString('reason') ?? undefined;
 		const base = interaction.options.getRole('base_role') ?? interaction.guild.roles.everyone;

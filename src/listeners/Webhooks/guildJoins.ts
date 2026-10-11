@@ -18,11 +18,8 @@ export class UserListener extends Listener {
 			await guild.leave();
 			return;
 		}
-		if (guild.memberCount > guild.members.cache.size) {
-			await guild.members.fetch();
-		}
-		const bots = guild.members.cache.filter((m) => m.user.bot).size;
-		const humans = guild.members.cache.filter((m) => !m.user.bot).size;
+		const bots = (await guild.roles.fetch()).filter((r) => r.tags?.botId).size;
+		const humans = guild.memberCount - bots;
 
 		guild.settings = new GuildSettings(guild, this.container.prisma);
 		await this.container.client.guilds.fetch();
