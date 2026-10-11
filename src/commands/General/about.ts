@@ -26,9 +26,10 @@ export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const subcmd = interaction.options.getSubcommand();
 		// TODO: Defer the reply or fetch members only for relevant subcommands
-		if (interaction.guild && interaction.guild.memberCount > interaction.guild.members.cache.size) {
-			await interaction.guild.members.fetch(); // Fetch all members to ensure we have the latest data
-		}
+		// TODO: Figure out a way around this without fetching all members because it needs GUILD_MEMBERS intent
+		// if (interaction.guild && interaction.guild.memberCount > interaction.guild.members.cache.size) {
+		// 	await interaction.guild.members.fetch(); // Fetch all members to ensure we have the latest data
+		// }
 
 		switch (subcmd as SubCmd) {
 			case 'me':
@@ -130,9 +131,10 @@ export class UserCommand extends RadonCommand {
 		});
 	}
 
-	private role(interaction: RadonCommand.ChatInputCommandInteraction) {
+	private async role(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const role = interaction.options.getRole('role', true);
 		const date = new Timestamp(role.createdTimestamp);
+		const memberCount = (await role.guild.roles.fetchMemberCounts()).get(role.id) ?? -1;
 
 		let basic =
 			` -  Rank **${role.guild.roles.cache.size - role.position}**\n` +
@@ -152,7 +154,7 @@ export class UserCommand extends RadonCommand {
 
 		const adv =
 			` -  ID: **\`${role.id}\`**\n` + //
-			` -  Members: **${role.members.size}**\n` + //
+			` -  Members: **${memberCount}**\n` + //
 			` -  Key Permission: ${perms.length ? perms[0] : 'None!'}\n`;
 
 		const hex = role.hexColor.slice(1);
@@ -179,9 +181,10 @@ export class UserCommand extends RadonCommand {
 					.setButtonAccessory((button) =>
 						button
 							.setCustomId(`role-members-${role.id}`)
-							.setLabel('View Members')
+							.setLabel('View Members (NO LONGER AVAILABLE)')
 							.setStyle(ButtonStyle.Secondary)
 							.setEmoji({ name: '👥' })
+							.setDisabled(true)
 					)
 					.addTextDisplayComponents((textDisplay) => textDisplay.setContent(heading('Advanced Info', HeadingLevel.Two) + '\n' + adv))
 			);
@@ -294,12 +297,12 @@ export class UserCommand extends RadonCommand {
 		const icon = guild.iconURL({ forceStatic: false, size: 2048 });
 		const banner = guild.bannerURL({ size: 4096 });
 		const create = new Timestamp(guild.createdTimestamp);
-		const members = guild.members.cache;
-		const humans = members.filter((m) => !m.user.bot);
+		const members = guild.memberCount;
+		const bots = (await guild.roles.fetch()).filter((r) => r.tags?.botId).size;
 
 		const member =
-			` - ${Emojis.Member} ${bold(humans.size.toString())} Member(s)\n` + //
-			` - ${Emojis.Bot} ${bold((guild.memberCount - humans.size).toString())} Bot(s)\n` + //
+			` - ${Emojis.Member} ${bold((members - bots).toString())} Member(s)\n` + //
+			` - ${Emojis.Bot} ${bold(bots.toString())} Bot(s)\n` + //
 			` - ${Emojis.Owner} ${owner.user} [${inlineCode(owner.id)}]`;
 
 		const allChannels = guild.channels.cache;
