@@ -31,10 +31,11 @@ Browser test files use `*.pw.ts` so the bot's root `bun test` does not discover 
 
 - `/`: features, interactive illustrative preview, supported games, searchable command examples, optional voting perks, and FAQ.
 - `/guide`: setup, account management, all three supported games, Supporter Pass behavior, opt-in alerts, staff posting, and troubleshooting.
+- `/guide/server`: visual server handbook with a situation picker, real command examples, warnings and severity, direct moderation, cases and logs, reports, AutoMod, locks, utilities, and troubleshooting. All examples are illustrative; nothing invokes Discord. Guide topic links connect both handbooks.
 - `/updates`: a dated, linkable history shared with the bot's `/updates` command. The home page shows the newest entry.
 - `/terms-of-service` and `/privacy-policy`: legal and data-handling information.
 - `/opengraph-image` and `/icon.svg`: self-contained social preview and favicon.
-- `/robots.txt` and `/sitemap.xml`: discovery for all five public content routes.
+- `/robots.txt` and `/sitemap.xml`: discovery for all six public content routes.
 
 `lib/site.ts` centralizes public links, game display data, command examples, and FAQs. The guide and privacy copy reflect the multi-game and vote-reward behavior documented in PR #591 (`docs/player-guide.md`). Copy deliberately avoids live server-count claims, uptime guarantees, valid-coupon claims, or automatic redemption promises. The preview CLAIM button changes local demo state only.
 
