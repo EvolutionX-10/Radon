@@ -63,6 +63,9 @@ local MongoDB replica set. Setup and checks do not log in to Discord
 or apply database schema changes. Running the bot requires your configured
 Discord and MongoDB credentials.
 
+The [implementation checklist](docs/implementation-checklist.md) tracks the
+moderation improvements, individual PR review order, and remaining rollout checks.
+
 ## Contributing
 
 To contribute to this repository, feel free to fork the repository and make your own changes. Once you have made your changes, you can submit a pull request.

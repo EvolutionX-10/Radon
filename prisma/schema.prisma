@@ -197,3 +197,21 @@ model moderationReport {
   reviewMessageId String?
   @@index([guildId, status, createdAt])
 }
+
+model moderationScheduledBan {
+  id String @id @map("_id")
+  generation String
+  guildId String
+  targetId String
+  actorId String
+  expectedReason String
+  dueAt DateTime @db.Date
+  status String
+  leaseOwner String?
+  leaseUntil DateTime? @db.Date
+  nextAttemptAt DateTime @db.Date
+  createdAt DateTime @default(now()) @db.Date
+  completedAt DateTime? @db.Date
+  lastError String?
+  @@index([status, nextAttemptAt])
+}
