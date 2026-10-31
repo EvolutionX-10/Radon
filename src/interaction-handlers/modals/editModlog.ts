@@ -47,17 +47,7 @@ export class ModalHandler extends InteractionHandler {
 	}
 
 	private async updateReason(member: GuildMember, id: string, reason: string) {
-		const warns = await member.guild.settings?.warns.get(member);
-		if (!warns || !warns?.doc || !warns?.person) return;
-		const warn = warns.person.warns.find((warn) => warn.id === id);
-		if (!warn) return;
-		warn.reason = reason;
-
-		warns.doc.warnlist.forEach((person) => {
-			if (person.id === member.id) person.warns = warns.person.warns;
-		});
-
-		return member.guild.settings?.warns.update(warns.doc.warnlist);
+		return member.guild.settings?.warns.updateReason(member.id, id, reason);
 	}
 
 	private getID(message: Message) {
