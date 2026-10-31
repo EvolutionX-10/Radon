@@ -1,9 +1,8 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-	// The website builds independently of the bot and its root dependencies.
-	turbopack: { root: __dirname },
-	outputFileTracingRoot: __dirname
+	// Preserve Next.js's platform-provided tracing root. Vercel packages this
+	// app relative to the repository root, including its web/ directory prefix.
 };
 
 export default nextConfig;
