@@ -1,4 +1,5 @@
 import { Severity } from '#constants';
+import { ModerationCases } from '../../lib/moderation/cases.js';
 import { Embed } from '#lib/structures';
 import { type BaseModActionData, type ModActionData, RadonEvents, type WarnActionData } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
@@ -18,11 +19,25 @@ export class UserListener extends Listener {
 		unban: 'Unban'
 	};
 
-	public override run(data: BaseModActionData) {
-		return this.sendModLog(data);
+	public override async run(data: BaseModActionData) {
+		let record: Awaited<ReturnType<ModerationCases['record']>> | undefined;
+		try {
+			record = await new ModerationCases(this.container.prisma).record(data);
+		} catch (error) {
+			this.container.logger.error('Moderation action succeeded but case persistence failed', error);
+		}
+		const sent = await this.sendModLog(data, record?.id);
+		if (record && sent) {
+			try {
+				await this.container.prisma.moderationCase.update({ where: { id: record.id }, data: { logMessageId: sent.id } });
+			} catch (error) {
+				this.container.logger.error('Moderation log sent but case association failed', error);
+			}
+		}
+		return sent;
 	}
 
-	private sendModLog(data: ModActionData) {
+	private sendModLog(data: ModActionData, caseId?: string) {
 		const embed = new Embed()
 			._color(Severity[data.action])
 			._author({
@@ -30,7 +45,7 @@ export class UserListener extends Listener {
 				iconURL: data.moderator.displayAvatarURL({ forceStatic: false })
 			})
 			._thumbnail(data.target.displayAvatarURL({ forceStatic: false }))
-			._title(`${this.getActionName(data.action)}`)
+			._title(`${this.getActionName(data.action)}${caseId ? ` · Case ${caseId}` : ''}`)
 			._description(data.reason?.length ? data.reason : '```\nNo reason provided\n```')
 			._fields([
 				{
