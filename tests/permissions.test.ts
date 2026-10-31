@@ -1,122 +1,87 @@
 import { describe, expect, it } from 'bun:test';
-import { User, type GuildMember } from 'discord.js';
-import { Emojis } from '../src/lib/utility/constants.js';
+import { PermissionsBitField, type User } from 'discord.js';
 import { runAllChecks } from '../src/lib/utility/functions/modperms.js';
 import { isAdmin, isGuildOwner, isModerator, isOwner } from '../src/lib/utility/functions/permissions.js';
-
-type PermissionFlag = 'Administrator' | 'ManageGuild';
-
-function makeMember(options?: {
-	id?: string;
-	permissions?: PermissionFlag[];
-	manageable?: boolean;
-	highestPosition?: number;
-	ownerId?: string;
-	roleNames?: string[];
-}) {
-	const { id = 'member', permissions = [], manageable = true, highestPosition = 1, ownerId = 'owner', roleNames = [] } = options ?? {};
-	const permissionSet = new Set<PermissionFlag>(permissions);
-
-	const member: Partial<GuildMember> = {
-		id,
-		manageable,
-		permissions: {
-			has: (perm: PermissionFlag) => permissionSet.has(perm)
-		} as GuildMember['permissions'],
-		roles: {
-			highest: { position: highestPosition },
-			cache: {
-				some: (predicate: (role: { name: string }) => boolean) => roleNames.some((name) => predicate({ name }))
-			}
-		} as GuildMember['roles'],
-		guild: { ownerId } as GuildMember['guild'],
-		toString: () => `<@${id}>`,
-		valueOf: () => id
-	};
-
-	return member as GuildMember;
-}
-
-function makeUserTarget(id = 'user-target') {
-	return Object.assign(Object.create(User.prototype), { id }) as User;
-}
+import { makeExecutor, makeMember, makeUserTarget } from './fixtures/moderation.js';
 
 describe('permission helpers', () => {
-	it('detects administrators and moderators', () => {
+	it('recognizes native administrators and configured role IDs, never role names', () => {
 		const admin = makeMember({ permissions: ['Administrator'] });
-		const mod = makeMember({ roleNames: ['cool moderator'] });
-		const regular = makeMember();
-
+		const namedMod = makeMember({ roles: [{ id: 'ordinary', name: 'cool moderator' }] });
+		const staff = makeMember({ roles: [{ id: 'staff', name: 'Helpers' }] });
 		expect(isAdmin(admin)).toBe(true);
-		expect(isAdmin(regular)).toBe(false);
-		expect(isModerator(mod)).toBe(true);
-		expect(isModerator(regular)).toBe(false);
+		expect(isModerator(admin)).toBe(true);
+		expect(isModerator(namedMod)).toBe(false);
+		expect(isModerator(staff, ['staff'])).toBe(true);
+		expect(isModerator(staff, ['other'])).toBe(false);
 	});
 
 	it('detects guild owners and bot owners', () => {
-		const ownerMember = makeMember({ id: '123', ownerId: '123' });
-		const nonOwner = makeMember({ id: '456', ownerId: '123' });
-		const botOwner = { id: '697795666373640213' } as User;
-		const outsider = { id: '111' } as User;
-
-		expect(isGuildOwner(ownerMember)).toBe(true);
-		expect(isGuildOwner(nonOwner)).toBe(false);
-		expect(isOwner(botOwner)).toBe(true);
-		expect(isOwner(outsider)).toBe(false);
+		expect(isGuildOwner(makeMember({ id: 'owner' }))).toBe(true);
+		expect(isGuildOwner(makeMember())).toBe(false);
+		expect(isOwner({ id: '697795666373640213' } as User)).toBe(true);
+		expect(isOwner({ id: 'outsider' } as User)).toBe(false);
 	});
 });
 
-describe('runAllChecks moderation guardrail', () => {
-	const action = 'ban';
-
-	it('permits when the target is a plain User', () => {
-		const executor = makeMember();
-		const target = makeUserTarget();
-		const result = runAllChecks(executor, target, action);
-		expect(result).toEqual({ result: true, content: '' });
+describe('moderation guardrails', () => {
+	it('permits ID bans but rejects member-only actions on a plain User', () => {
+		const executor = makeExecutor();
+		expect(runAllChecks(executor, makeUserTarget(), 'ban').result).toBe(true);
+		expect(runAllChecks(executor, makeUserTarget(), 'kick').result).toBe(false);
+		expect(runAllChecks(executor, makeUserTarget(), 'timeout').result).toBe(false);
 	});
 
-	it('blocks unmanageable members', () => {
-		const executor = makeMember();
-		const target = makeMember({ manageable: false });
-		target.toString = () => '<@target>';
-		const result = runAllChecks(executor, target, action);
-		expect(result.result).toBe(false);
-		expect(result.content).toContain(Emojis.Cross);
-		expect(result.content).toContain('<@target>');
+	it('rejects self, bot and server owner, including targets supplied as a User', () => {
+		const executor = makeExecutor();
+		for (const id of ['mod', 'bot', 'owner']) {
+			expect(runAllChecks(executor, makeUserTarget(id), 'ban').result).toBe(false);
+			expect(runAllChecks(executor, makeMember({ id }), 'ban').result).toBe(false);
+		}
 	});
 
-	it('blocks privileged targets (admin or owner)', () => {
-		const executor = makeMember({ highestPosition: 10 });
-		const adminTarget = makeMember({ permissions: ['Administrator'] });
-		adminTarget.toString = () => '<@admin>';
-		const ownerTarget = makeMember({ id: 'owner', ownerId: 'owner' });
-		ownerTarget.toString = () => '<@owner>';
-
-		const adminResult = runAllChecks(executor, adminTarget, action);
-		const ownerResult = runAllChecks(executor, ownerTarget, action);
-
-		expect(adminResult.result).toBe(false);
-		expect(adminResult.content).toContain(Emojis.Cross);
-		expect(ownerResult.result).toBe(false);
-		expect(ownerResult.content).toContain(Emojis.Cross);
+	it('rejects targets above or equal to the moderator, including administrators', () => {
+		for (const position of [10, 11]) {
+			expect(runAllChecks(makeExecutor(), makeMember({ highestPosition: position }), 'ban').result).toBe(false);
+			expect(runAllChecks(makeExecutor({ permissions: ['Administrator'] }), makeMember({ highestPosition: position }), 'ban').result).toBe(
+				false
+			);
+		}
 	});
 
-	it('blocks when executor and target share the same top role position', () => {
-		const executor = makeMember({ highestPosition: 5 });
-		const target = makeMember({ highestPosition: 5 });
-		target.toString = () => '<@peer>';
-
-		const result = runAllChecks(executor, target, action);
-		expect(result.result).toBe(false);
-		expect(result.content).toContain(Emojis.Cross);
-		expect(result.content).toContain('<@peer>');
+	it('lets the server owner bypass their own role hierarchy while retaining bot restrictions', () => {
+		expect(runAllChecks(makeExecutor({ id: 'owner' }), makeMember({ highestPosition: 20 }), 'ban').result).toBe(true);
+		expect(runAllChecks(makeExecutor({ id: 'owner' }), makeMember({ highestPosition: 20, manageable: false }), 'ban').result).toBe(false);
 	});
 
-	it('allows moderation when hierarchy permits', () => {
-		const executor = makeMember({ highestPosition: 10 });
-		const target = makeMember({ highestPosition: 3 });
+	it('rejects unmanageable and protected targets and permits a lower member', () => {
+		const executor = makeExecutor();
+		expect(runAllChecks(executor, makeMember({ manageable: false }), 'ban').result).toBe(false);
+		expect(runAllChecks(executor, makeMember({ permissions: ['Administrator'] }), 'ban').result).toBe(false);
+		expect(runAllChecks(executor, makeMember({ permissions: ['ManageGuild'] }), 'warn').result).toBe(false);
+		expect(runAllChecks(executor, makeMember(), 'ban')).toEqual({ result: true, content: '' });
+	});
 
-		expect(runAllChecks(executor, target, action)).toEqual({ result: true, content: '' });
+	it('requires action-specific bot permissions, including for ID bans', () => {
+		const executor = makeExecutor();
+		Object.assign(executor.guild.members.me!, { permissions: new PermissionsBitField() });
+		for (const action of ['ban', 'softban', 'kick', 'timeout']) expect(runAllChecks(executor, makeMember(), action).result).toBe(false);
+		expect(runAllChecks(executor, makeUserTarget(), 'ban').result).toBe(false);
+		Object.assign(executor.guild.members.me!, { permissions: new PermissionsBitField(['BanMembers']) });
+		expect(runAllChecks(executor, makeMember(), 'ban').result).toBe(true);
+		expect(runAllChecks(executor, makeMember(), 'kick').result).toBe(false);
+	});
+
+	it('checks bannability, kickability and timeout eligibility separately', () => {
+		expect(runAllChecks(makeExecutor(), makeMember({ bannable: false }), 'ban').result).toBe(false);
+		expect(runAllChecks(makeExecutor(), makeMember({ kickable: false }), 'kick').result).toBe(false);
+		expect(runAllChecks(makeExecutor(), makeMember({ moderatable: false }), 'timeout').result).toBe(false);
+		expect(runAllChecks(makeExecutor(), makeMember({ isBot: true }), 'timeout').result).toBe(false);
+	});
+
+	it('rejects a member from another server', () => {
+		const target = makeMember();
+		Object.assign(target, { guild: { ...target.guild, id: 'other-guild' } });
+		expect(runAllChecks(makeExecutor(), target, 'ban').result).toBe(false);
 	});
 });

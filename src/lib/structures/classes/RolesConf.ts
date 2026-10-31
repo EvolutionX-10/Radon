@@ -5,29 +5,19 @@ export class RolesConfig {
 	public constructor(
 		private readonly guild: Guild,
 		private readonly prisma: PrismaClient
-	) {
-		this.guild = guild;
+	) {}
+
+	/** One fresh settings read for all role checks in an operation; never caches revocations. */
+	public async snapshot() {
+		const data = await this.prisma.guildSettings.findUnique({ where: { id: this.guild.id } });
+		return { admins: data?.adminRoles ?? [], mods: data?.modRoles ?? [] };
 	}
 
 	public get admins() {
-		return (async () => {
-			const data = await this.prisma.guildSettings.findUnique({
-				where: {
-					id: this.guild.id
-				}
-			});
-			return data?.adminRoles ?? [];
-		})();
+		return this.snapshot().then((roles) => roles.admins);
 	}
 
 	public get mods() {
-		return (async () => {
-			const data = await this.prisma.guildSettings.findUnique({
-				where: {
-					id: this.guild.id
-				}
-			});
-			return data?.modRoles ?? [];
-		})();
+		return this.snapshot().then((roles) => roles.mods);
 	}
 }

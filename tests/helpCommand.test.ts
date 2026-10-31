@@ -111,7 +111,13 @@ function makeInteraction(profile: Profile = {}) {
 		id: guildId,
 		ownerId: '654321',
 		features: profile.community ? ['COMMUNITY'] : [],
-		settings: { roles: { admins: Promise.resolve(profile.adminRoles ?? []), mods: Promise.resolve(profile.modRoles ?? []) } }
+		settings: {
+			roles: {
+				admins: Promise.resolve(profile.adminRoles ?? []),
+				mods: Promise.resolve(profile.modRoles ?? []),
+				snapshot: async () => ({ admins: profile.adminRoles ?? [], mods: profile.modRoles ?? [] })
+			}
+		}
 	};
 	const channel = {
 		id: '222222',
@@ -242,7 +248,12 @@ describe('help discovery with actual commands and preconditions', () => {
 		expect(await canDiscoverCommand(serverOwner, makeInteraction({ id: '654321' }).interaction)).toBe(true);
 	});
 	it('keeps cooldowns untouched during discovery and hides disabled commands or missing bot permissions', async () => {
-		const i = makeInteraction({ id: '700001', roles: [{ id: 'mod', name: 'Moderator' }], permissions: nativeModPermissions }).interaction;
+		const i = makeInteraction({
+			id: '700001',
+			roles: [{ id: 'mod', name: 'Moderator' }],
+			modRoles: ['mod'],
+			permissions: nativeModPermissions
+		}).interaction;
 		for (let n = 0; n < 5; n++) expect(await canDiscoverCommand(lock, i)).toBe(true);
 		for (let n = 0; n < 3; n++) expect((await lock.preconditions.chatInputRun(i, lock, {})).isOk()).toBe(true);
 		expect((await lock.preconditions.chatInputRun(i, lock, {})).isOk()).toBe(false);

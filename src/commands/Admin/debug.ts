@@ -83,8 +83,9 @@ export class UserCommand extends RadonCommand {
 
 	private async setupCheck(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const modlog = await interaction.guild.settings?.modlogs.modLogs_exist();
-		const mods = await interaction.guild.settings?.roles.mods;
-		const admins = await interaction.guild.settings?.roles.admins;
+		const roleSnapshot = await interaction.guild.settings?.roles.snapshot();
+		const mods = roleSnapshot?.mods;
+		const admins = roleSnapshot?.admins;
 
 		const notes: string[] = [heading('Server Setup', HeadingLevel.Two)];
 
