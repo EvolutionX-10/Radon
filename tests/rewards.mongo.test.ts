@@ -82,7 +82,7 @@ suite('vote rewards and alert outbox against disposable MongoDB', () => {
 			}) as typeof fetch);
 			const result = await service.check('123');
 			expect(await prisma.supporterPass.count()).toBe(result[0].status === 'verified' ? 1 : 0);
-			expect(result[0].status).toBe('expires_at' in body && Date.parse(body.created_at) <= Date.now() ? 'verified' : 'unavailable');
+			expect(result[0].status).toBe('expires_at' in body && Date.parse(body.created_at!) <= Date.now() ? 'verified' : 'unavailable');
 		}
 	});
 	it('falls back for existing Top.gg tokens, rate limits repeated checks, and reports missing DBL setup', async () => {
@@ -121,7 +121,7 @@ suite('vote rewards and alert outbox against disposable MongoDB', () => {
 		const service = new VoteService(
 			prisma,
 			{ botId: '999', topggToken: 'test' },
-			(async () => new Response('', { status: 429 })) as typeof fetch
+			(async () => new Response('', { status: 429 })) as unknown as typeof fetch
 		);
 		expect((await service.check('123'))[0].status).toBe('unavailable');
 		expect(await supporterUntil(prisma, '123')).toBe(before);

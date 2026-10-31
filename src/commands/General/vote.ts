@@ -15,7 +15,7 @@ export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 		try {
-			const checks = await voteService(this.container.prisma, interaction.client.user.id).check(interaction.user.id);
+			const checks = await voteService(this.container.prisma, '944833303226236989').check(interaction.user.id);
 			return interaction.editReply({
 				components: [rewardContainer(await supporterUntil(this.container.prisma, interaction.user.id), checks)],
 				flags: MessageFlags.IsComponentsV2,
