@@ -97,3 +97,30 @@ model channelLockSnapshot {
   @@index([guildId])
   @@index([expiresAt])
 }
+
+model automodConfig {
+  id                  String    @id @map("_id")
+  alertChannelId      String
+  exemptRoleIds       String[]
+  exemptChannelIds    String[]
+  floodMode           String    @default("off")
+  floodThreshold      Int       @default(6)
+  duplicateThreshold  Int       @default(3)
+  windowSeconds       Int       @default(10)
+  linkMode            String    @default("off")
+  blockedDomains      String[]
+  allowedDomains      String[]
+  allowedInviteCodes  String[]  @default([])
+  blockInvites        Boolean   @default(false)
+  raidMode            String    @default("off")
+  raidThreshold       Int       @default(10)
+  raidWindowSeconds   Int       @default(10)
+  raidDurationSeconds Int       @default(600)
+  raidRestoreLevel    Int?
+  raidRestoreAt       DateTime? @db.Date
+  raidLeaseToken      String?
+  raidLeaseUntil      DateTime? @db.Date
+  updatedAt           DateTime  @updatedAt @db.Date
+
+  @@index([raidRestoreAt])
+}

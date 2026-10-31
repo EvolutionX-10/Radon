@@ -1,6 +1,7 @@
 process.env.NODE_ENV ??= 'development';
 
 import { Owners } from '#constants';
+import { envParseBoolean } from '../env/utils.js';
 import { Time } from '@sapphire/duration';
 import { BucketScope, type ClientLoggerOptions, type CooldownOptions, LogLevel } from '@sapphire/framework';
 import {
@@ -14,7 +15,14 @@ import {
 } from 'discord.js';
 
 export const config: Config = {
-	intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildModeration, GatewayIntentBits.DirectMessages],
+	intents: [
+		GatewayIntentBits.Guilds,
+		GatewayIntentBits.GuildMessages,
+		GatewayIntentBits.GuildModeration,
+		GatewayIntentBits.DirectMessages,
+		...(envParseBoolean('RADON_AUTOMOD_CONTENT_ENABLED', false) ? [GatewayIntentBits.MessageContent] : []),
+		...(envParseBoolean('RADON_AUTOMOD_MEMBERS_ENABLED', false) ? [GatewayIntentBits.GuildMembers] : [])
+	],
 	cooldown_options: {
 		delay: Time.Second * 10,
 		filteredUsers: Owners,
