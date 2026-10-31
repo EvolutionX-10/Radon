@@ -108,7 +108,8 @@ export class RedemptionService {
 		private readonly receipts: ReceiptStore,
 		private readonly adapters: readonly GameAdapter[],
 		private readonly timeoutMs = 10_000,
-		private readonly intervalMs = 1_000
+		private readonly intervalMs = 1_000,
+		private readonly maxAccounts = 5
 	) {}
 	public async preview(game: string, coupon: string, account: RedemptionAccount): Promise<CouponPreview | null> {
 		const adapter = this.adapters.find((entry) => entry.id === game);
@@ -134,7 +135,8 @@ export class RedemptionService {
 		const adapter = this.adapters.find((entry) => entry.id === game);
 		if (!adapter) throw new RedemptionError('This game is not supported yet.');
 		if (!validateCoupon(coupon)) throw new RedemptionError('Enter a coupon containing 1–64 letters, numbers, underscores or hyphens.');
-		if (accounts.length < 1 || accounts.length > 5) throw new RedemptionError('Choose between one and five accounts.');
+		if (accounts.length < 1 || accounts.length > this.maxAccounts)
+			throw new RedemptionError(`Choose between one and ${this.maxAccounts} accounts.`);
 		const cooldown = await this.receipts.reserve(`user:${receiptKey('user', userId, '')}`, 3_000);
 		if (cooldown.kind !== 'acquired') throw new RedemptionError('Please wait three seconds between redemption requests.');
 		const unique = [
@@ -208,15 +210,16 @@ export class RedemptionService {
 	}
 }
 
-export function makeNetmarbleAdapter(fetcher: typeof fetch = fetch): GameAdapter {
+export function makeNetmarbleAdapter(fetcher: typeof fetch = fetch, game = 'sololv'): GameAdapter {
+	if (!['sololv', 'tskgb', 'nanarise'].includes(game)) throw new RedemptionError('Unsupported Netmarble game.');
 	return {
-		id: 'sololv',
+		id: game,
 		provider: 'netmarble',
 		// Preserve the existing accepted 30–36 character account-code range.
-		validateAccount: (value) => /^[A-Za-z0-9]{30,36}$/.test(value),
+		validateAccount: (value) => (game === 'sololv' ? /^[A-Za-z0-9]{30,36}$/.test(value) : /^[A-Za-z0-9_-]{1,64}$/.test(value)),
 		async preview(coupon, account, signal) {
 			const url = new URL('https://coupon.netmarble.com/api/coupon/reward');
-			url.search = new URLSearchParams({ gameCode: 'sololv', couponCode: coupon, langCd: 'EN_US', pid: account.memberCode }).toString();
+			url.search = new URLSearchParams({ gameCode: game, couponCode: coupon, langCd: 'EN_US', pid: account.memberCode }).toString();
 			const response = await fetcher(url, { signal });
 			if (response.status === 429) throw new PublisherRateLimit(retryAfterMs(response.headers.get('Retry-After')));
 			if (!response.ok) return null;
@@ -234,7 +237,7 @@ export function makeNetmarbleAdapter(fetcher: typeof fetch = fetch): GameAdapter
 			const response = await fetcher('https://coupon.netmarble.com/api/coupon', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ gameCode: 'sololv', couponCode: coupon, langCd: 'EN_US', pid: account.memberCode }),
+				body: JSON.stringify({ gameCode: game, couponCode: coupon, langCd: 'EN_US', pid: account.memberCode }),
 				signal
 			});
 			if (response.status === 429)

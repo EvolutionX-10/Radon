@@ -3,6 +3,7 @@ import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework
 import { MessageFlags, ModalBuilder, TextInputStyle, type ButtonInteraction } from 'discord.js';
 import { disableClaimButtons, parseClaimButton } from '../../lib/redemption/posts.js';
 import { runClaims } from '../../lib/redemption/runtime.js';
+import { accountOwnerKey, getGame } from '../../lib/redemption/games.js';
 
 @ApplyOptions<InteractionHandler.Options>({ interactionHandlerType: InteractionHandlerTypes.Button })
 export class ButtonHandler extends InteractionHandler {
@@ -10,7 +11,11 @@ export class ButtonHandler extends InteractionHandler {
 		const parsed = parseClaimButton(interaction.customId);
 		return parsed ? this.some(parsed) : this.none();
 	}
-	public override async run(interaction: ButtonInteraction, { code, expired }: { code: string; expired: boolean }) {
+	public override async run(
+		interaction: ButtonInteraction,
+		{ code, expired, game: gameId = 'sololv', expiresAt: gameExpiry }: { code: string; expired: boolean; game?: string; expiresAt?: number }
+	) {
+		const game = getGame(gameId);
 		if (expired) {
 			await interaction.reply({ content: 'This coupon post has expired.', flags: MessageFlags.Ephemeral });
 			await interaction.message
@@ -22,29 +27,39 @@ export class ButtonHandler extends InteractionHandler {
 		try {
 			// A modal must be the initial response; bound lookup time to preserve Discord's response deadline.
 			const data = await Promise.race([
-				this.container.prisma.memberCodes.findUnique({ where: { id: interaction.user.id } }),
+				this.container.prisma.memberCodes.findUnique({ where: { id: accountOwnerKey(interaction.user.id, game.id) } }),
 				new Promise<never>((_, reject) => {
 					timer = setTimeout(() => reject(new Error('Account lookup timed out')), 1_500);
 				})
 			]);
 			if (data?.memberCodes.length) {
 				await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-				return runClaims(interaction, code, data.memberCodes);
+				return runClaims(interaction, code, data.memberCodes, game.id);
 			}
-			const expiresAt = interaction.customId.startsWith('redeem:') ? interaction.customId.split(':')[1] : '0';
+			const expiresAt =
+				gameExpiry !== undefined
+					? gameExpiry.toString(36)
+					: interaction.customId.startsWith('redeem:')
+						? interaction.customId.split(':')[1]
+						: '0';
 			const modal = new ModalBuilder()
-				.setCustomId(`claim-set-modal/${expiresAt}/${code}`)
-				.setTitle('Save your Solo Leveling account')
+				.setCustomId(game.id === 'sololv' ? `claim-set-modal/${expiresAt}/${code}` : `claim-game/${game.id}/${expiresAt}/${code}`)
+				.setTitle(`Save ${game.name} account`.slice(0, 45))
 				.addTextDisplayComponents((text) =>
 					text.setContent(
-						'In Solo Leveling: ARISE, open Settings → Account and copy your Member Code. Radon saves it so future claims need only a button click.'
+						`In ${game.name}, open Settings → Account and copy your Member Code. Radon saves it so future claims need only a button click. Use /guide for help.`
 					)
 				)
 				.addLabelComponents((label) =>
 					label
 						.setLabel('Member Code')
 						.setTextInputComponent((input) =>
-							input.setCustomId('memberCodeInput').setStyle(TextInputStyle.Short).setMinLength(30).setMaxLength(36).setRequired(true)
+							input
+								.setCustomId('memberCodeInput')
+								.setStyle(TextInputStyle.Short)
+								.setMinLength(game.minLength)
+								.setMaxLength(game.maxLength)
+								.setRequired(true)
 						)
 				);
 			return interaction.showModal(modal);

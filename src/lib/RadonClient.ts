@@ -1,4 +1,6 @@
 import { stopTemporaryBanWorker } from './moderation/temporaryBans.js';
+import { stopListingReporter } from './rewards/listings.js';
+import { stopCouponAlerts } from './rewards/alerts.js';
 import { ClientConfig } from '#config';
 import type { Settings, Utils } from '#lib/structures';
 import { PrismaClient } from '@prisma/client';
@@ -29,6 +31,8 @@ export class RadonClient<Ready extends boolean = boolean> extends SapphireClient
 
 	public override destroy(): Promise<void> {
 		stopTemporaryBanWorker(this);
+		stopListingReporter(this);
+		stopCouponAlerts(this);
 		return super.destroy();
 	}
 }

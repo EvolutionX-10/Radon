@@ -5,6 +5,8 @@ import { ApplyOptions } from '@sapphire/decorators';
 import { ApplicationCommandRegistries, Listener, Piece, RegisterBehavior, Store } from '@sapphire/framework';
 import { blue, blueBright, cyanBright, green, greenBright, magentaBright, white } from 'colorette';
 import { pastel, fruit } from 'gradient-string';
+import { startListingReporter } from '../../lib/rewards/listings.js';
+import { startCouponAlerts } from '../../lib/rewards/alerts.js';
 
 @ApplyOptions<Listener.Options>({
 	event: RadonEvents.ClientReady,
@@ -16,6 +18,8 @@ export class UserListener extends Listener {
 		this.container.utils = new Utils(client);
 
 		this.container.client = client;
+		startListingReporter(client);
+		startCouponAlerts(client, this.container.prisma);
 		this.container.logger.info(`Logged in as ${fruit(client.user!.username)}`);
 		this.printBanner();
 		this.container.logger.info(`${greenBright('[')}${blueBright('READY')}${greenBright(']')}`);

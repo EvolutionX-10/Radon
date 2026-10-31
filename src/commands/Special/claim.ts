@@ -3,41 +3,67 @@ import { RadonCommand } from '#lib/structures';
 import { sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { RegisterBehavior } from '@sapphire/framework';
-import { ButtonStyle, ChannelType, ContainerBuilder, InteractionContextType, MessageFlags, PermissionFlagsBits, escapeMarkdown } from 'discord.js';
-import { canPostCoupon } from '../../lib/redemption/posts.js';
+import {
+	ButtonBuilder,
+	ButtonStyle,
+	ChannelType,
+	ContainerBuilder,
+	InteractionContextType,
+	MessageFlags,
+	PermissionFlagsBits,
+	escapeMarkdown
+} from 'discord.js';
+import { accountOwnerKey, games, getGame } from '../../lib/redemption/games.js';
+import { accountLimit, supporterUntil } from '../../lib/rewards/service.js';
+import { subscribeCoupons } from '../../lib/rewards/alerts.js';
+import type { SlashCommandStringOption } from 'discord.js';
+import { canPostCoupon, claimButtonId } from '../../lib/redemption/posts.js';
 import { deleteMemberCode, saveMemberCode } from '../../lib/redemption/persistence.js';
 import { redemptionService, runClaims } from '../../lib/redemption/runtime.js';
 import { makeNetmarbleAdapter, maskMemberCode, RedemptionError, receiptKey, validateCoupon } from '../../lib/redemption/service.js';
 
-@ApplyOptions<RadonCommand.Options>({ description: 'Claim coupons for Solo Leveling Arise', cooldownDelay: sec(3) })
+@ApplyOptions<RadonCommand.Options>({ description: 'Claim game coupons; defaults to Solo Leveling: ARISE', cooldownDelay: sec(3) })
 export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 		try {
+			const game = getGame(interaction.options.getString('game') ?? 'sololv');
+			const owner = accountOwnerKey(interaction.user.id, game.id);
 			switch (interaction.options.getSubcommand(true)) {
 				case 'set':
 					return await this.set(interaction);
 				case 'code': {
-					const data = await this.container.prisma.memberCodes.findUnique({ where: { id: interaction.user.id } });
+					const data = await this.container.prisma.memberCodes.findUnique({
+						where: { id: accountOwnerKey(interaction.user.id, interaction.options.getString('game') ?? 'sololv') }
+					});
 					if (!data?.memberCodes.length) return interaction.editReply('Use `/claim set` to save your member code first.');
-					return runClaims(interaction, interaction.options.getString('coupon_code', true), data.memberCodes);
+					return runClaims(interaction, interaction.options.getString('coupon_code', true), data.memberCodes, game.id);
 				}
 				case 'solo':
-					return runClaims(interaction, interaction.options.getString('coupon_code', true), [
-						interaction.options.getString('member_code', true)
-					]);
-				case 'delete': {
-					const remaining = await deleteMemberCode(
-						this.container.prisma,
-						interaction.user.id,
-						interaction.options.getString('member_code', true).trim()
+					return runClaims(
+						interaction,
+						interaction.options.getString('coupon_code', true),
+						[interaction.options.getString('member_code', true)],
+						game.id
 					);
-					return interaction.editReply(`${Emojis.Confirm} Account deleted. You have ${remaining}/5 saved accounts.`);
+				case 'delete': {
+					const remaining = await deleteMemberCode(this.container.prisma, owner, interaction.options.getString('member_code', true).trim());
+					return interaction.editReply(`${Emojis.Confirm} Account deleted. You have ${remaining} saved accounts for ${game.name}.`);
 				}
 				case 'view':
 					return await this.view(interaction);
 				case 'post':
 					return await this.post(interaction);
+				case 'alerts': {
+					const enabled = interaction.options.getBoolean('enabled', true);
+					await subscribeCoupons(this.container.prisma, interaction.user.id, interaction.guildId!, game.id, enabled);
+					const active = enabled && (await supporterUntil(this.container.prisma, interaction.user.id));
+					return interaction.editReply(
+						!enabled
+							? `Alerts for ${game.name} in this server are off.`
+							: `Subscribed to ${game.name} coupons posted by staff in this server. ${active ? 'Alerts are active; allow direct messages from this server.' : 'Alerts will start when you activate a Supporter Pass with /vote.'}`
+					);
+				}
 				case 'policy':
 					return await this.policy(interaction);
 				default:
@@ -64,13 +90,16 @@ export class UserCommand extends RadonCommand {
 	public override async autocompleteRun(interaction: RadonCommand.AutoComplete) {
 		const focus = interaction.options.getFocused(true);
 		if (focus.name !== 'member_code') return interaction.respond([]);
-		const data = await this.container.prisma.memberCodes.findUnique({ where: { id: interaction.user.id } });
+		const data = await this.container.prisma.memberCodes.findUnique({
+			where: { id: accountOwnerKey(interaction.user.id, interaction.options.getString('game') ?? 'sololv') }
+		});
 		const codes = data?.memberCodes ?? [];
+		const owner = accountOwnerKey(interaction.user.id, interaction.options.getString('game') ?? 'sololv');
 		const labels = await this.container.prisma.redemptionAccountLabel.findMany({
-			where: { id: { in: codes.map((code) => receiptKey('label', interaction.user.id, code)) } }
+			where: { id: { in: codes.map((code) => receiptKey('label', owner, code)) } }
 		});
 		const choices = codes.map((code, index) => ({
-			name: `${labels.find((label) => label.id === receiptKey('label', interaction.user.id, code))?.name ?? `Account ${index + 1}`} · ${maskMemberCode(code)}`,
+			name: `${labels.find((label) => label.id === receiptKey('label', owner, code))?.name ?? `Account ${index + 1}`} · ${maskMemberCode(code)}`,
 			value: code
 		}));
 		return interaction.respond(
@@ -87,18 +116,19 @@ export class UserCommand extends RadonCommand {
 					.addSubcommand((sub) =>
 						sub
 							.setName('set')
-							.setDescription('Save or name a Solo Leveling account')
+							.setDescription('Save or name a game account (Solo Leveling by default)')
 							.addStringOption((option) =>
 								option
 									.setName('member_code')
-									.setDescription('Your Solo Leveling member code')
+									.setDescription('Your game member code')
 									.setRequired(true)
-									.setMinLength(30)
-									.setMaxLength(36)
+									.setMinLength(1)
+									.setMaxLength(64)
 							)
 							.addStringOption((option) =>
 								option.setName('name').setDescription('An optional account name, such as Main or Alt').setMaxLength(32)
 							)
+							.addStringOption(gameOption)
 					)
 					.addSubcommand((sub) =>
 						sub
@@ -107,6 +137,7 @@ export class UserCommand extends RadonCommand {
 							.addStringOption((option) =>
 								option.setName('coupon_code').setDescription('The coupon code').setRequired(true).setMaxLength(64)
 							)
+							.addStringOption(gameOption)
 					)
 					.addSubcommand((sub) =>
 						sub
@@ -115,15 +146,16 @@ export class UserCommand extends RadonCommand {
 							.addStringOption((option) =>
 								option
 									.setName('member_code')
-									.setDescription('Your Solo Leveling member code')
+									.setDescription('Your game member code')
 									.setRequired(true)
 									.setAutocomplete(true)
-									.setMinLength(30)
-									.setMaxLength(36)
+									.setMinLength(1)
+									.setMaxLength(64)
 							)
 							.addStringOption((option) =>
 								option.setName('coupon_code').setDescription('The coupon code').setRequired(true).setMaxLength(64)
 							)
+							.addStringOption(gameOption)
 					)
 					.addSubcommand((sub) =>
 						sub
@@ -132,8 +164,9 @@ export class UserCommand extends RadonCommand {
 							.addStringOption((option) =>
 								option.setName('member_code').setDescription('The account to delete').setRequired(true).setAutocomplete(true)
 							)
+							.addStringOption(gameOption)
 					)
-					.addSubcommand((sub) => sub.setName('view').setDescription('View your saved accounts privately'))
+					.addSubcommand((sub) => sub.setName('view').setDescription('View your saved accounts privately').addStringOption(gameOption))
 					.addSubcommand((sub) =>
 						sub
 							.setName('post')
@@ -152,6 +185,16 @@ export class UserCommand extends RadonCommand {
 									.setMinValue(1)
 									.setMaxValue(43_200)
 							)
+							.addStringOption(gameOption)
+					)
+					.addSubcommand((sub) =>
+						sub
+							.setName('alerts')
+							.setDescription('Opt in or out of personal coupon alerts for this server')
+							.addBooleanOption((option) =>
+								option.setName('enabled').setDescription('Receive alerts while your Supporter Pass is active').setRequired(true)
+							)
+							.addStringOption(gameOption)
 					)
 					.addSubcommand((sub) =>
 						sub
@@ -173,30 +216,36 @@ export class UserCommand extends RadonCommand {
 	}
 	private async set(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const memberCode = interaction.options.getString('member_code', true).trim();
-		if (!makeNetmarbleAdapter().validateAccount(memberCode))
-			throw new RedemptionError('Copy your 30–36 character member code from the game account settings.');
+		const game = getGame(interaction.options.getString('game') ?? 'sololv');
+		const limit = await accountLimit(this.container.prisma, interaction.user.id);
+		if (!makeNetmarbleAdapter(fetch, game.id).validateAccount(memberCode))
+			throw new RedemptionError(`Copy your ${game.minLength}–${game.maxLength} character member code from the ${game.name} account settings.`);
 		const count = await saveMemberCode(
 			this.container.prisma,
-			interaction.user.id,
+			accountOwnerKey(interaction.user.id, game.id),
 			memberCode,
-			interaction.options.getString('name')?.trim() || undefined
+			interaction.options.getString('name')?.trim() || undefined,
+			limit
 		);
-		return interaction.editReply(`${Emojis.Confirm} Saved account. You have ${count}/5 saved accounts.`);
+		return interaction.editReply(`${Emojis.Confirm} Saved account. You have ${count}/${limit} saved accounts for ${game.name}.`);
 	}
 	private async view(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const data = await this.container.prisma.memberCodes.findUnique({ where: { id: interaction.user.id } });
+		const data = await this.container.prisma.memberCodes.findUnique({
+			where: { id: accountOwnerKey(interaction.user.id, interaction.options.getString('game') ?? 'sololv') }
+		});
 		if (!data?.memberCodes.length) return interaction.editReply('You have no saved accounts. Use `/claim set` to add one.');
+		const owner = accountOwnerKey(interaction.user.id, interaction.options.getString('game') ?? 'sololv');
 		const labels = await this.container.prisma.redemptionAccountLabel.findMany({
-			where: { id: { in: data.memberCodes.map((code) => receiptKey('label', interaction.user.id, code)) } }
+			where: { id: { in: data.memberCodes.map((code) => receiptKey('label', owner, code)) } }
 		});
 		const content = data.memberCodes
 			.map(
 				(code, index) =>
-					`${index + 1}. **${escapeMarkdown(labels.find((label) => label.id === receiptKey('label', interaction.user.id, code))?.name ?? `Account ${index + 1}`)}** · \`${maskMemberCode(code)}\``
+					`${index + 1}. **${escapeMarkdown(labels.find((label) => label.id === receiptKey('label', owner, code))?.name ?? `Account ${index + 1}`)}** · \`${maskMemberCode(code)}\``
 			)
 			.join('\n');
 		return interaction.editReply({
-			content: `Your Solo Leveling accounts (${data.memberCodes.length}/5):\n${content}`,
+			content: `Your ${getGame(interaction.options.getString('game') ?? 'sololv').name} accounts (${data.memberCodes.length} saved):\n${content}\nThe first ${await accountLimit(this.container.prisma, interaction.user.id)} are active for batch claims. Use /claim solo for a specific account.`,
 			allowedMentions: { parse: [] }
 		});
 	}
@@ -218,6 +267,7 @@ export class UserCommand extends RadonCommand {
 		return interaction.editReply('Coupon posting policy saved. Staff with Manage Messages can also post in the configured channel.');
 	}
 	private async post(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const game = getGame(interaction.options.getString('game') ?? 'sololv');
 		const code = interaction.options.getString('code', true).trim();
 		if (!validateCoupon(code)) throw new RedemptionError('Enter a coupon containing 1–64 letters, numbers, underscores or hyphens.');
 		const policy = await this.container.prisma.redemptionGuildPolicy.findUnique({ where: { id: interaction.guildId! } });
@@ -234,15 +284,15 @@ export class UserCommand extends RadonCommand {
 			throw new RedemptionError('Choose a text channel you can view and send messages in.');
 		const minutes = interaction.options.getInteger('expires_in');
 		const expiresAt = minutes ? Date.now() + minutes * 60_000 : 0;
-		const saved = await this.container.prisma.memberCodes.findUnique({ where: { id: interaction.user.id } });
+		const saved = await this.container.prisma.memberCodes.findUnique({
+			where: { id: accountOwnerKey(interaction.user.id, interaction.options.getString('game') ?? 'sololv') }
+		});
 		const preview = saved?.memberCodes[0]
-			? await redemptionService(this.container.prisma).preview('sololv', code, { memberCode: saved.memberCodes[0] })
+			? await redemptionService(this.container.prisma).preview(game.id, code, { memberCode: saved.memberCodes[0] })
 			: null;
 		const container = new ContainerBuilder()
 			.addTextDisplayComponents((text) =>
-				text.setContent(
-					`## Solo Leveling: ARISE coupon\n\`${code}\`${expiresAt ? `\nClaim before <t:${Math.floor(expiresAt / 1_000)}:F>.` : ''}`
-				)
+				text.setContent(`## ${game.name} coupon\n\`${code}\`${expiresAt ? `\nClaim before <t:${Math.floor(expiresAt / 1_000)}:F>.` : ''}`)
 			)
 			.addSectionComponents((section) =>
 				section
@@ -251,7 +301,7 @@ export class UserCommand extends RadonCommand {
 						button
 							.setLabel('CLAIM')
 							.setStyle(ButtonStyle.Success)
-							.setCustomId(`redeem:${expiresAt.toString(36)}:${code}`)
+							.setCustomId(claimButtonId(game.id, code, expiresAt))
 					)
 			);
 		if (preview) {
@@ -263,7 +313,35 @@ export class UserCommand extends RadonCommand {
 				);
 			else container.addTextDisplayComponents((text) => text.setContent(escapeMarkdown(preview.name)));
 		}
+		container.addActionRowComponents((row) =>
+			row.addComponents(new ButtonBuilder().setCustomId('guide:start').setStyle(ButtonStyle.Secondary).setLabel('How to claim'))
+		);
 		const message = await channel.send({ components: [container], flags: MessageFlags.IsComponentsV2, allowedMentions: { parse: [] } });
+		try {
+			await this.container.prisma.couponAlert.create({
+				data: {
+					id: message.id,
+					guildId: interaction.guildId!,
+					channelId: channel.id,
+					game: game.id,
+					code,
+					messageUrl: message.url,
+					cursor: '',
+					createdAt: new Date(),
+					expiresAt: new Date(Math.min(expiresAt || Infinity, Date.now() + 24 * 60 * 60_000)),
+					couponExpiresAt: expiresAt ? new Date(expiresAt) : null
+				}
+			});
+		} catch {
+			this.container.logger.warn('Coupon posted, but personal alerts could not be queued.');
+		}
 		return interaction.editReply(`${Emojis.Confirm} Posted coupon: ${message.url}`);
 	}
+}
+
+function gameOption(option: SlashCommandStringOption) {
+	return option
+		.setName('game')
+		.setDescription('Optional — Solo Leveling: ARISE when omitted')
+		.addChoices(...games.map((game) => ({ name: game.name, value: game.id })));
 }

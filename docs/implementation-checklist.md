@@ -46,14 +46,14 @@ or production database operation is configured by these PRs.
 
 ## Rollout and external validation still to do
 
-- [ ] Review and merge the individual PRs.
+- [x] Review and merge the nine moderation PRs (owner confirmed on 2026-10-31).
 - [ ] Provision the additive MongoDB indexes/collections through the deployment's reviewed schema workflow; regenerate Prisma Client.
 - [ ] Deploy warning writers together so older code cannot bypass revision checks.
 - [ ] Configure staff role IDs for servers that previously relied on role names.
 - [ ] Smoke-test registration, role hierarchy, report routing, lock restoration and restart recovery in a Discord staging guild.
 - [ ] Observe and tune AutoMod before enforcement. Custom content and join detection require explicit operator intent opt-ins; defaults remain off.
 - [ ] Perform an account-owner-approved Solo Leveling redemption acceptance test.
-- [ ] Confirm publisher automation policy and validate a consented account before enabling another game. A public form is not proof of a supported bot API or a guarantee against limits.
+- [ ] Validate the new Re:BIRTH and Idle Adventure adapters with consented accounts before production rollout and confirm publisher automation policy. The deployed request contract is inspected; live delivery remains unverified.
 - [ ] Add explicit per-game account/server/character persistence before enabling multi-server games; no other game's account is stored in the Solo Leveling array.
 - [ ] Configure `bash scripts/setup.sh` in saved cloud-environment setup if fresh instances should bootstrap automatically. The current running instance has Bun in its user-wide PATH; repository code cannot modify the saved cloud image.
 
@@ -67,3 +67,7 @@ local MongoDB test URLs enabled, including 33 integration tests. The default
 offline run passed 218 tests. TypeScript, source formatting, Prisma schema
 validation and whitespace checks also passed. Discord actions and publisher
 redemptions remain mocked; no production database schema was applied.
+
+## Game and reward follow-up
+
+The single game/rewards PR preserves default Solo Leveling command and button paths, adds optional per-game account storage and two member-code adapters, optional fixed-expiry vote perks, server/game coupon subscriptions, and current listing statistics. See [player guide](player-guide.md) and [operations and acceptance checks](vote-rewards.md).
