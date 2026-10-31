@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
 	title: 'Privacy Policy',
-	description: 'Privacy policy for the Radon Discord moderation bot.'
+	description: 'Privacy policy for the Radon Discord bot for moderation, game coupon claiming, and server utilities.'
 };
 
 const dataGroups = [
@@ -17,69 +17,75 @@ const dataGroups = [
 	},
 	{
 		title: 'Optional feature data',
-		body: 'Feature-specific entries such as nickname locks, member code lists, claim settings, and optional AI chat channel configuration.'
+		body: 'Game Member Codes and optional account names are saved per game for coupon claiming. Feature data also includes claim settings, nickname locks, and optional AI chat channel configuration.'
 	}
 ];
 
 const policySections = [
 	{
 		title: '1. Information we process',
-		body: 'Radon processes only the data needed to provide moderation and utility features in Discord servers where it is installed.'
+		body: 'Radon processes data needed to provide moderation, game coupon claiming, optional vote rewards, and utility features in Discord servers where it is installed.'
 	},
 	{
 		title: '2. How information is used',
 		body: 'Data is used to execute moderation actions, keep server configuration state, and provide command results and related automation.'
 	},
 	{
-		title: '3. AI chat mode',
+		title: '3. Game coupons and optional voting perks',
+		body: 'Member Codes and coupon codes are sent to the relevant game publisher to redeem rewards. Redemption records help prevent duplicate submissions. Optional vote verification uses your Discord user ID with Top.gg or Discord Bot List; pass expiry, per-server/game alert subscriptions, and delivery records support these perks. Account names and masked account lists are shown privately. You can remove saved accounts with /claim delete and disable alerts with /claim alerts enabled:False in the relevant server and game.'
+	},
+	{
+		title: '4. AI chat mode',
 		body: 'If AI chat mode is enabled by server admins, channel-level AI settings are stored. Message content can be processed to generate replies in that channel.'
 	},
 	{
-		title: '4. Data retention',
-		body: 'Data is retained for operational moderation needs and can be updated or removed when no longer required by bot functionality.'
+		title: '5. Data retention',
+		body: 'Data is retained for operational needs, including moderation, duplicate-redemption prevention, and alert deduplication. Saved game accounts remain stored after a Supporter Pass expires until you remove them; turning off alerts disables the subscription. Removing an account or subscription does not necessarily remove operational redemption or delivery records.'
 	},
 	{
-		title: '5. Data sharing',
+		title: '6. Data sharing',
 		body: 'Radon does not sell personal data. Data is only processed as required for bot operation and integrated services.'
 	},
 	{
-		title: '6. Security',
+		title: '7. Security',
 		body: 'Reasonable technical safeguards are applied, but no platform can guarantee absolute security or uninterrupted availability.'
 	},
 	{
-		title: '7. Policy updates',
+		title: '8. Policy updates',
 		body: 'This policy may change as the bot evolves. Continued use after updates means acceptance of the latest version.'
 	}
 ];
 
 export default function PrivacyPolicyPage() {
 	return (
-		<article className="content-panel p-6 md:p-9">
-			<span className="badge">Legal</span>
-			<h1 className="mt-4 text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">Privacy Policy</h1>
-			<p className="mt-3 max-w-3xl text-sm leading-7 text-slate-700 md:text-base">
-				This policy explains what data Radon processes and why. Effective date: April 4, 2026.
-			</p>
-
-			<div className="mt-6 grid gap-4 md:grid-cols-3">
+		<article className="container legal-page">
+			<header className="document-heading">
+				<Link href="/" className="text-link">
+					← Back to Radon
+				</Link>
+				<p className="eyebrow">THE GOOD-TO-KNOW STUFF</p>
+				<h1>Privacy Policy</h1>
+				<p>This policy explains what data Radon processes and why. Effective date: October 31, 2026.</p>
+			</header>
+			<div className="data-groups">
 				{dataGroups.map((group) => (
-					<section key={group.title} className="rounded-xl border border-slate-200 bg-white/70 p-4 md:p-5">
-						<h2 className="text-base font-semibold text-slate-900">{group.title}</h2>
-						<p className="mt-2 text-sm leading-6 text-slate-700">{group.body}</p>
+					<section key={group.title} className="document-section">
+						<h2>{group.title}</h2>
+						<p>{group.body}</p>
 					</section>
 				))}
 			</div>
 
-			<div className="mt-6 space-y-4">
+			<div className="document-sections">
 				{policySections.map((section) => (
-					<section key={section.title} className="rounded-xl border border-slate-200 bg-white/70 p-4 md:p-5">
-						<h2 className="text-lg font-semibold text-slate-900">{section.title}</h2>
-						<p className="mt-2 text-sm leading-7 text-slate-700 md:text-base">{section.body}</p>
+					<section key={section.title} className="document-section">
+						<h2>{section.title}</h2>
+						<p>{section.body}</p>
 					</section>
 				))}
 			</div>
 
-			<p className="mt-6 text-sm text-slate-600">
+			<p className="document-footer">
 				For usage rules, see the{' '}
 				<Link href="/terms-of-service" className="underline underline-offset-4">
 					Terms of Service
