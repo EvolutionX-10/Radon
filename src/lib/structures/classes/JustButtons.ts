@@ -1,11 +1,26 @@
+import type { Collection, Snowflake } from 'discord.js';
+import { componentPage, endComponentPagination } from '../../presentation/pagination.js';
 import { Emojis } from '#constants';
-import { PaginatedMessage, type PaginatedMessageOptions, type PaginatedMessagePage } from '@sapphire/discord.js-utilities';
+import {
+	type PaginatedMessageStopReasons,
+	type PaginatedMessageInteractionUnion,
+	PaginatedMessage,
+	type PaginatedMessageOptions,
+	type PaginatedMessagePage
+} from '@sapphire/discord.js-utilities';
 import { ButtonStyle, ComponentType } from 'discord.js';
 /**
  * Extends Paginated message with custom order and no select menus
  * as well as unlimited pages
  */
 export class JustButtons extends PaginatedMessage {
+	public override async resolvePage(...args: Parameters<PaginatedMessage['resolvePage']>) {
+		return componentPage(this, await super.resolvePage(...args), args[2]);
+	}
+	protected override async handleEnd(_collected: Collection<Snowflake, PaginatedMessageInteractionUnion>, reason: PaginatedMessageStopReasons) {
+		await endComponentPagination(this, reason);
+	}
+
 	public constructor(options: PaginatedMessageOptions = {}) {
 		super(options);
 		this.setActions([

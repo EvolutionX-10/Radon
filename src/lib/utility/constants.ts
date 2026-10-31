@@ -79,11 +79,6 @@ const vote_topgg = new Button() //
 	._style(ButtonStyle.Link)
 	._emoji('<:topgg:918280202398875758>')
 	._url('https://top.gg/bot/944833303226236989/vote');
-const vote_void = new Button() //
-	._label('Vote on Void Bots')
-	._style(ButtonStyle.Link)
-	._emoji('<:voidbots:742925293907607624>')
-	._url('https://voidbots.net/bot/944833303226236989/vote');
 // const vote_labs = new Button() //
 // 	._label('Vote on Discord Labs')
 // 	._style(ButtonStyle.Link)
@@ -95,7 +90,11 @@ const vote_dbl = new Button() //
 	._emoji('<:dbl:1037357030152863824>')
 	._url('https://discordbotlist.com/bots/radon-1595/upvote');
 
-export const voteRow = new Row<ButtonBuilder>()._components([vote_topgg, vote_void, vote_dbl]);
+export const voteRow = new Row<ButtonBuilder>()._components([
+	vote_topgg,
+	vote_dbl,
+	new Button()._label('Check my vote')._style(ButtonStyle.Primary)._customId('rewards:check')
+]);
 
 // export const RecommendedPermissions = 543276137727n;
 // export const RecommendedPermissionsWithoutAdmin = 543276137719n;

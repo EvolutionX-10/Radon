@@ -1,3 +1,4 @@
+import { displayText } from './fixtures/presentation.js';
 import { afterAll, beforeAll, describe, expect, it, mock, spyOn } from 'bun:test';
 import { container, SapphireClient, type Command } from '@sapphire/framework';
 import { fileURLToPath } from 'node:url';
@@ -333,7 +334,7 @@ describe('help collector lifecycle', () => {
 		try {
 			await help.chatInputRun(session.interaction);
 			expect(session.edits).toHaveLength(1);
-			expect(session.edits[0].content).toContain('Please try /help again');
+			expect(displayText(session.edits[0])).toContain('Please try /help again');
 			expect(session.message.createMessageComponentCollector).not.toHaveBeenCalled();
 			expect(logger).toHaveBeenCalledTimes(1);
 		} finally {

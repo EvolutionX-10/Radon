@@ -1,3 +1,4 @@
+import { v2 } from '../../lib/presentation/components.js';
 import { Emojis } from '#constants';
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
@@ -144,48 +145,78 @@ export class UserCommand extends RadonCommand {
 	private async decancer(interaction: RadonCommand.ChatInputCommandInteraction | RadonCommand.UserContextMenuCommandInteraction) {
 		const member = interaction.options.getMember('target') ?? interaction.options.getMember('user');
 		if (!member) {
-			return interaction.reply({
-				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
-				flags: MessageFlags.Ephemeral
-			});
+			return interaction.reply(
+				v2(
+					{
+						content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
+						flags: MessageFlags.Ephemeral
+					},
+					'Radon · Nick'
+				)
+			);
 		}
 		const reason = `Done by ${interaction.user.tag}`;
 		if (member.id === interaction.guild.ownerId) {
-			return interaction.reply({
-				content: `${Emojis.Cross} I cannot decancer the owner of the server`,
-				flags: MessageFlags.Ephemeral
-			});
+			return interaction.reply(
+				v2(
+					{
+						content: `${Emojis.Cross} I cannot decancer the owner of the server`,
+						flags: MessageFlags.Ephemeral
+					},
+					'Radon · Nick'
+				)
+			);
 		}
 		const { result, content } = runAllChecks(interaction.member, member, 'nickname decancer');
 		if (!result) {
-			return interaction.reply({
-				content,
-				flags: MessageFlags.Ephemeral
-			});
+			return interaction.reply(
+				v2(
+					{
+						content,
+						flags: MessageFlags.Ephemeral
+					},
+					'Radon · Nick'
+				)
+			);
 		}
 		const { displayName } = member;
 		const nickname = clean(displayName).replace(/[^a-z 0-9]+/gi, '');
 
 		if (nickname === displayName) {
-			return interaction.reply({
-				content: `No changes were made to ${displayName}!`,
-				flags: MessageFlags.Ephemeral
-			});
+			return interaction.reply(
+				v2(
+					{
+						content: `No changes were made to ${displayName}!`,
+						flags: MessageFlags.Ephemeral
+					},
+					'Radon · Nick'
+				)
+			);
 		}
 		await member.setNickname(nickname, reason);
-		return interaction.reply({
-			content: `Nickname \`${nickname}\` set for ${member} [DECANCER]`,
-			flags: interaction.isContextMenuCommand() ? MessageFlags.Ephemeral : undefined
-		});
+		return interaction.reply(
+			v2(
+				{
+					content: `Nickname \`${nickname}\` set for ${member} [DECANCER]`,
+					flags: interaction.isContextMenuCommand() ? MessageFlags.Ephemeral : undefined
+				},
+				'Radon · Nick'
+			)
+		);
 	}
 
 	private async set(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const member = interaction.options.getMember('target');
 		if (!member) {
-			return interaction.reply({
-				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
-				flags: MessageFlags.Ephemeral
-			});
+			return interaction.reply(
+				v2(
+					{
+						content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
+						flags: MessageFlags.Ephemeral
+					},
+					'Radon · Nick'
+				)
+			);
 		}
 		const nickname = interaction.options.getString('nickname', true);
 		const reason =
@@ -193,75 +224,125 @@ export class UserCommand extends RadonCommand {
 			`Done by ${interaction.user.tag}`;
 
 		if (member.id === interaction.guild.ownerId) {
-			return interaction.reply({
-				content: 'I cannot set the nickname of the server owner',
-				flags: MessageFlags.Ephemeral
-			});
+			return interaction.reply(
+				v2(
+					{
+						content: 'I cannot set the nickname of the server owner',
+						flags: MessageFlags.Ephemeral
+					},
+					'Radon · Nick'
+				)
+			);
 		}
 
 		const { result, content } = runAllChecks(interaction.member, member, 'nickname set');
 		if (!result) {
-			return interaction.reply({
-				content,
-				flags: MessageFlags.Ephemeral
-			});
+			return interaction.reply(
+				v2(
+					{
+						content,
+						flags: MessageFlags.Ephemeral
+					},
+					'Radon · Nick'
+				)
+			);
 		}
 
 		if (member.displayName === nickname) {
-			return interaction.reply({
-				content: `${member}'s display name is already set to ${nickname}`,
-				flags: MessageFlags.Ephemeral
-			});
+			return interaction.reply(
+				v2(
+					{
+						content: `${member}'s display name is already set to ${nickname}`,
+						flags: MessageFlags.Ephemeral
+					},
+					'Radon · Nick'
+				)
+			);
 		}
 		await member.setNickname(nickname, reason);
-		return interaction.reply({
-			content: `Nickname \`${nickname}\` set for ${member}`
-		});
+		return interaction.reply(
+			v2(
+				{
+					content: `Nickname \`${nickname}\` set for ${member}`
+				},
+				'Radon · Nick'
+			)
+		);
 	}
 
 	private async clear(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const member = interaction.options.getMember('target');
 		if (!member) {
-			return interaction.reply({
-				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
-				flags: MessageFlags.Ephemeral
-			});
+			return interaction.reply(
+				v2(
+					{
+						content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
+						flags: MessageFlags.Ephemeral
+					},
+					'Radon · Nick'
+				)
+			);
 		}
 		const reason =
 			(interaction.options.getString('reason', false) ? `${interaction.options.getString('reason', false)} (${interaction.user.tag})` : null) ??
 			`Done by ${interaction.user.tag}`;
 		if (member.id === interaction.guild.ownerId) {
-			return interaction.reply({
-				content: 'I cannot clear the nickname of the server owner',
-				flags: MessageFlags.Ephemeral
-			});
+			return interaction.reply(
+				v2(
+					{
+						content: 'I cannot clear the nickname of the server owner',
+						flags: MessageFlags.Ephemeral
+					},
+					'Radon · Nick'
+				)
+			);
 		}
 		const { result, content } = runAllChecks(interaction.member, member, 'nickname clear');
 		if (!result) {
-			return interaction.reply({
-				content,
-				flags: MessageFlags.Ephemeral
-			});
+			return interaction.reply(
+				v2(
+					{
+						content,
+						flags: MessageFlags.Ephemeral
+					},
+					'Radon · Nick'
+				)
+			);
 		}
 		if (!member.nickname) {
-			return interaction.reply({
-				content: `${member} does not have a nickname`,
-				flags: MessageFlags.Ephemeral
-			});
+			return interaction.reply(
+				v2(
+					{
+						content: `${member} does not have a nickname`,
+						flags: MessageFlags.Ephemeral
+					},
+					'Radon · Nick'
+				)
+			);
 		}
 		await member.setNickname(null, reason);
-		return interaction.reply({
-			content: `Nickname cleared for ${member}`
-		});
+		return interaction.reply(
+			v2(
+				{
+					content: `Nickname cleared for ${member}`
+				},
+				'Radon · Nick'
+			)
+		);
 	}
 
 	private async freeze(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const member = interaction.options.getMember('target');
 		if (!member) {
-			return interaction.reply({
-				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
-				flags: MessageFlags.Ephemeral
-			});
+			return interaction.reply(
+				v2(
+					{
+						content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
+						flags: MessageFlags.Ephemeral
+					},
+					'Radon · Nick'
+				)
+			);
 		}
 		const nick = interaction.options.getString('nickname') ?? member.displayName;
 		const reason =
@@ -269,56 +350,91 @@ export class UserCommand extends RadonCommand {
 			`Done by ${interaction.user.tag}`;
 
 		if (member.id === interaction.guild.ownerId) {
-			return interaction.reply({
-				content: 'I cannot set the nickname of the server owner',
-				flags: MessageFlags.Ephemeral
-			});
+			return interaction.reply(
+				v2(
+					{
+						content: 'I cannot set the nickname of the server owner',
+						flags: MessageFlags.Ephemeral
+					},
+					'Radon · Nick'
+				)
+			);
 		}
 
 		const { result, content } = runAllChecks(interaction.member, member, 'freeze');
 		if (!result) {
-			return interaction.reply({
-				content,
-				flags: MessageFlags.Ephemeral
-			});
+			return interaction.reply(
+				v2(
+					{
+						content,
+						flags: MessageFlags.Ephemeral
+					},
+					'Radon · Nick'
+				)
+			);
 		}
 
 		if (nick !== member.displayName) await member.setNickname(nick, reason);
 
 		const db = await interaction.guild.settings?.nicknames.get();
 		if (db && db.freezed.includes(member.id))
-			return interaction.reply({
-				content: `${member}'s nickname is already freezed!`
-			});
+			return interaction.reply(
+				v2(
+					{
+						content: `${member}'s nickname is already freezed!`
+					},
+					'Radon · Nick'
+				)
+			);
 
 		await interaction.guild.settings?.nicknames.push(member.id);
 
-		return interaction.reply({
-			content: `Successfully freezed nickname of ${member}!`
-		});
+		return interaction.reply(
+			v2(
+				{
+					content: `Successfully freezed nickname of ${member}!`
+				},
+				'Radon · Nick'
+			)
+		);
 	}
 
 	private async unfreeze(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const member = interaction.options.getMember('target');
 
 		if (!member) {
-			return interaction.reply({
-				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
-				flags: MessageFlags.Ephemeral
-			});
+			return interaction.reply(
+				v2(
+					{
+						content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
+						flags: MessageFlags.Ephemeral
+					},
+					'Radon · Nick'
+				)
+			);
 		}
 
 		const nicks = await interaction.guild.settings?.nicknames.get();
 		if (!nicks || (nicks && !nicks.freezed.includes(member.id)))
-			return interaction.reply({
-				content: `${member}'s nickname is NOT freezed!`
-			});
+			return interaction.reply(
+				v2(
+					{
+						content: `${member}'s nickname is NOT freezed!`
+					},
+					'Radon · Nick'
+				)
+			);
 
 		await interaction.guild.settings?.nicknames.pull(member.id);
 
-		return interaction.reply({
-			content: `Sucessfully unfreezed ${member}'s nickname!`
-		});
+		return interaction.reply(
+			v2(
+				{
+					content: `Sucessfully unfreezed ${member}'s nickname!`
+				},
+				'Radon · Nick'
+			)
+		);
 	}
 }
 

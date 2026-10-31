@@ -1,3 +1,4 @@
+import { v2 } from '../../../lib/presentation/components.js';
 import { Timestamp } from '#lib/structures';
 import { RadonEvents } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
@@ -19,14 +20,24 @@ export class UserListener extends Listener {
 
 	private async reply(interaction: CommandInteraction, content: string) {
 		if (interaction.deferred || interaction.replied) {
-			return interaction.editReply({
-				content
-			});
+			return interaction.editReply(
+				v2(
+					{
+						content
+					},
+					'Command unavailable'
+				)
+			);
 		}
-		return interaction.reply({
-			content,
-			flags: MessageFlags.Ephemeral
-		});
+		return interaction.reply(
+			v2(
+				{
+					content,
+					flags: MessageFlags.Ephemeral
+				},
+				'Command unavailable'
+			)
+		);
 	}
 }
 interface CooldownContext {

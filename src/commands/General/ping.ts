@@ -1,3 +1,4 @@
+import { v2 } from '../../lib/presentation/components.js';
 import { RadonCommand } from '#lib/structures';
 import { ApplyOptions } from '@sapphire/decorators';
 import { MessageFlags } from 'discord.js';
@@ -7,17 +8,27 @@ import { MessageFlags } from 'discord.js';
 })
 export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const interactionResponse = await interaction.reply({
-			content: `Ping?`,
-			flags: MessageFlags.Ephemeral,
-			withResponse: true
-		});
+		const interactionResponse = await interaction.reply(
+			v2(
+				{
+					content: `Ping?`,
+					flags: MessageFlags.Ephemeral,
+					withResponse: true
+				},
+				'Connection'
+			)
+		);
 		const msg = interaction.channel?.messages.cache.get(interactionResponse.interaction.responseMessageId!) as RadonCommand.Message;
 		const { diff, ping } = this.getPing(msg, interaction);
 
-		return interaction.editReply({
-			content: `Pong! (Roundtrip took: ${diff}ms. Heartbeat: ${ping}ms.)`
-		});
+		return interaction.editReply(
+			v2(
+				{
+					content: `Pong! (Roundtrip took: ${diff}ms. Heartbeat: ${ping}ms.)`
+				},
+				'Connection'
+			)
+		);
 	}
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {

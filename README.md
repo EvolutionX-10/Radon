@@ -27,6 +27,8 @@ Run `/help` in a server to open a private Components V2 command browser. Choose 
 
 Help reflects your access in the current server and channel, including configured moderator/admin roles, bot owner access, community restrictions, Discord command permissions, and commands registered only in specific servers. It includes slash subcommands, context menus (right-click → Apps), and eligible prefix commands. Disabled commands are omitted, and browsing does not consume command cooldowns. Target-specific checks such as role hierarchy still apply when running a command.
 
+Use `/guide` for the first-time coupon walkthrough, supported games, optional vote rewards, and troubleshooting. Existing `/claim` commands and Solo Leveling CLAIM buttons work as before; choose the optional `game` field for Seven Knights Re:BIRTH or The Seven Deadly Sins: Idle Adventure. `/vote` offers an optional 24-hour Supporter Pass for extra saved accounts and personal coupon alerts. See the [player guide](docs/player-guide.md) and [vote rewards setup](docs/vote-rewards.md).
+
 For developers: help reads the live application registrations and command preconditions. When guarding an individual route with `@PermissionLevel`, pass its subcommand path as the second argument (for example, `@PermissionLevel('Administrator', 'action create')`) so help uses the same guard declaration. Add temporarily unavailable routes to the command's `unavailableSubcommands` list.
 
 ## Beta Testing for Radon

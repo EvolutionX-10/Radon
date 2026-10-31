@@ -28,7 +28,9 @@ export function registerPerformanceListeners(client: SapphireClient, metrics: Pe
 				: 'elapsedTime' in result
 					? stopwatchMilliseconds(result.elapsedTime)
 					: undefined;
-		metrics.record('redemption:sololv', duration, result.success);
+		const game =
+			'game' in result && typeof result.game === 'string' && ['sololv', 'tskgb', 'nanarise'].includes(result.game) ? result.game : 'sololv';
+		metrics.record(`redemption:${game}`, duration, result.success);
 		const statuses = ['already_claimed', 'rejected', 'rate_limited', 'unknown', 'busy', 'invalid'];
 		if (!result.success && 'status' in result && typeof result.status === 'string' && statuses.includes(result.status)) {
 			metrics.record(`redemption-failure:${result.status}`, duration, false);

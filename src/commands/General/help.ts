@@ -1,3 +1,4 @@
+import { v2 } from '../../lib/presentation/components.js';
 import { Prefixes } from '#constants';
 import type { PermissionLevel } from '#lib/decorators';
 import { RadonCommand } from '#lib/structures';
@@ -26,7 +27,7 @@ export class UserCommand extends RadonCommand {
 			entries = await this.getEntries(interaction);
 		} catch (error) {
 			this.container.logger.error('Failed to build help catalogue', error);
-			return interaction.editReply({ content: 'I could not load the command list. Please try /help again in a moment.' });
+			return interaction.editReply(v2({ content: 'I could not load the command list. Please try /help again in a moment.' }, 'Radon · Help'));
 		}
 
 		const state: HelpState = { category: 'all', page: 0 };
@@ -49,7 +50,7 @@ export class UserCommand extends RadonCommand {
 		collector.on('collect', async (i) => {
 			try {
 				if (i.user.id !== interaction.user.id) {
-					await i.reply({ content: 'Run /help to open your own command list.', flags: MessageFlags.Ephemeral });
+					await i.reply(v2({ content: 'Run /help to open your own command list.', flags: MessageFlags.Ephemeral }, 'Radon · Help'));
 					return;
 				}
 				// Acknowledge immediately; serialize edits so rapid clicks and expiry cannot race.

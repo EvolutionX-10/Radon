@@ -1,3 +1,4 @@
+import { v2 } from '../presentation/components.js';
 import type { PrismaClient } from '@prisma/client';
 import {
 	ActionRowBuilder,
@@ -21,7 +22,9 @@ import { channelTarget, roleTarget, threadTarget, TEXT_FLAGS, THREAD_FLAGS, VOIC
 export async function beginLockPrompt(interaction: RadonCommand.ChatInputCommandInteraction, action: 'lock' | 'unlock', scope: LockScope) {
 	const role = interaction.options.getRole('role') ?? interaction.guild.roles.everyone;
 	if (scope !== 'thread' && (role.managed || (role.id !== interaction.guildId && !role.editable))) {
-		return interaction.reply({ content: 'This role is managed or is at or above my highest role.', flags: MessageFlags.Ephemeral });
+		return interaction.reply(
+			v2({ content: 'This role is managed or is at or above my highest role.', flags: MessageFlags.Ephemeral }, 'Channel access')
+		);
 	}
 	const token = lockSessions.create({
 		userId: interaction.user.id,
@@ -99,11 +102,11 @@ export async function getLockTargets(guild: Guild, session: LockSession): Promis
 
 export async function completeLockPrompt(interaction: ModalSubmitInteraction, prisma: PrismaClient) {
 	await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-	if (!interaction.inCachedGuild()) return interaction.editReply('This operation requires a server.');
+	if (!interaction.inCachedGuild()) return interaction.editReply(v2('This operation requires a server.', 'Channel access'));
 	const [, action, token] = interaction.customId.split(':');
 	const session = lockSessions.consume(token, interaction.user.id, interaction.guildId);
 	if (!session || session.action !== action)
-		return interaction.editReply('This lock prompt expired or belongs to another session. Run the command again.');
+		return interaction.editReply(v2('This lock prompt expired or belongs to another session. Run the command again.', 'Channel access'));
 	try {
 		await authorize(interaction, session, prisma);
 		const reason = interaction.fields.getTextInputValue('reason').trim();
@@ -126,7 +129,7 @@ export async function completeLockPrompt(interaction: ModalSubmitInteraction, pr
 				return outcome === 'locked' || outcome === 'restored';
 			},
 			(target) => (target.kind === 'role' ? `<@&${target.targetId}>` : `<#${target.targetId}>`),
-			(done, total) => interaction.editReply(`Processing ${session.action}: ${done}/${total} targets finished…`)
+			(done, total) => interaction.editReply(v2(`Processing ${session.action}: ${done}/${total} targets finished…`, 'Channel access'))
 		);
 		let content = `${session.action === 'lock' ? 'Locked' : 'Restored'} **${result.completed}** target(s); skipped **${result.skipped}**; failed **${result.failures.length}**.`;
 		if (missing)
@@ -138,11 +141,16 @@ export async function completeLockPrompt(interaction: ModalSubmitInteraction, pr
 				.join('\n')}\nFailed locks retain their recovery snapshot. Retry the matching unlock command.`;
 		if (expiresAt && result.completed) content += `\nAutomatic restoration scheduled for <t:${Math.floor(expiresAt.getTime() / 1000)}:F>.`;
 		if (reason) content += `\nReason: ${reason}`;
-		return interaction.editReply({ content: content.slice(0, 2000), allowedMentions: { parse: [] } });
+		return interaction.editReply(v2({ content: content.slice(0, 2000), allowedMentions: { parse: [] } }, 'Channel access'));
 	} catch (error) {
-		return interaction.editReply({
-			content: `Lock operation failed: ${error instanceof Error ? error.message : 'Unexpected error'}`.slice(0, 2000),
-			allowedMentions: { parse: [] }
-		});
+		return interaction.editReply(
+			v2(
+				{
+					content: `Lock operation failed: ${error instanceof Error ? error.message : 'Unexpected error'}`.slice(0, 2000),
+					allowedMentions: { parse: [] }
+				},
+				'Channel access'
+			)
+		);
 	}
 }

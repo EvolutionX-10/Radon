@@ -1,3 +1,4 @@
+import { v2 } from '../../lib/presentation/components.js';
 import { Emojis } from '#constants';
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
@@ -43,8 +44,8 @@ export class UserCommand extends RadonCommand {
 			});
 
 			return p.then(() => {
-				if (dels === 0) return interaction.editReply(content);
-				return interaction.editReply({ content: `${Emojis.Confirm} Deleted ${dels} messages` });
+				if (dels === 0) return interaction.editReply(v2(content, 'Radon · Clear'));
+				return interaction.editReply(v2({ content: `${Emojis.Confirm} Deleted ${dels} messages` }, 'Radon · Clear'));
 			});
 		}
 
@@ -55,9 +56,9 @@ export class UserCommand extends RadonCommand {
 
 		dels = (await channel.bulkDelete(messages, true)).size;
 
-		if (dels === 0) return interaction.editReply(content);
+		if (dels === 0) return interaction.editReply(v2(content, 'Radon · Clear'));
 
-		return interaction.editReply({ content: `${Emojis.Confirm} Deleted ${dels} messages` });
+		return interaction.editReply(v2({ content: `${Emojis.Confirm} Deleted ${dels} messages` }, 'Radon · Clear'));
 	}
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {

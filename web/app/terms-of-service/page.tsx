@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
 	title: 'Terms of Service',
-	description: 'Terms for using the Radon Discord moderation bot.'
+	description: 'Terms for using the Radon Discord bot for moderation, game coupon claiming, and server utilities.'
 };
 
 const sections = [
@@ -13,7 +13,7 @@ const sections = [
 	},
 	{
 		title: '2. Intended use',
-		body: 'Radon is provided for Discord server moderation and management tasks. You must use it in compliance with Discord rules and applicable law.'
+		body: 'Radon provides Discord moderation, server utilities, and game coupon claiming. Game publishers control coupon validity, rewards, and account restrictions. Optional voting perks require verification and do not guarantee redemption. You must use it in compliance with Discord rules and applicable law.'
 	},
 	{
 		title: '3. Moderation responsibility',
@@ -39,23 +39,28 @@ const sections = [
 
 export default function TermsOfServicePage() {
 	return (
-		<article className="content-panel p-6 md:p-9">
-			<span className="badge">Legal</span>
-			<h1 className="mt-4 text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">Terms of Service</h1>
-			<p className="mt-3 max-w-3xl text-sm leading-7 text-slate-700 md:text-base">
-				These terms apply to use of Radon, a Discord moderation bot. Effective date: April 4, 2026.
-			</p>
-
-			<div className="mt-6 space-y-4">
+		<article className="container legal-page">
+			<header className="document-heading">
+				<Link href="/" className="text-link">
+					← Back to Radon
+				</Link>
+				<p className="eyebrow">THE GOOD-TO-KNOW STUFF</p>
+				<h1>Terms of Service</h1>
+				<p>
+					These terms apply to use of Radon, a Discord bot for moderation, game coupon claiming, and server utilities. Effective date:
+					October 31, 2026.
+				</p>
+			</header>
+			<div className="document-sections">
 				{sections.map((section) => (
-					<section key={section.title} className="rounded-xl border border-slate-200 bg-white/70 p-4 md:p-5">
-						<h2 className="text-lg font-semibold text-slate-900">{section.title}</h2>
-						<p className="mt-2 text-sm leading-7 text-slate-700 md:text-base">{section.body}</p>
+					<section key={section.title} className="document-section">
+						<h2>{section.title}</h2>
+						<p>{section.body}</p>
 					</section>
 				))}
 			</div>
 
-			<p className="mt-6 text-sm text-slate-600">
+			<p className="document-footer">
 				For privacy details, see the{' '}
 				<Link href="/privacy-policy" className="underline underline-offset-4">
 					Privacy Policy

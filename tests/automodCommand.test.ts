@@ -1,3 +1,4 @@
+import { displayText } from './fixtures/presentation.js';
 import { beforeAll, beforeEach, describe, expect, it, mock, spyOn } from 'bun:test';
 import { ChannelType, Collection, IntentsBitField, SlashCommandBuilder } from 'discord.js';
 import { UserCommand } from '../src/commands/Admin/automod.js';
@@ -56,7 +57,7 @@ describe('AutoMod command safety', () => {
 			const f = interaction({ subcommand: module, mode: 'off' });
 			await command.chatInputRun(f.value);
 			expect((writes.mock.calls.at(-1)![0] as any).update[`${module === 'links' ? 'link' : module}Mode`]).toBe('off');
-			expect(String(f.response.mock.calls[0][0])).toContain(`${module}: off`);
+			expect(displayText(f.response.mock.calls[0][0])).toContain(`${module}: off`);
 		}
 	});
 	it('persists raid mode off before requesting early restoration', async () => {
@@ -69,7 +70,7 @@ describe('AutoMod command safety', () => {
 			await command.chatInputRun(f.value);
 			expect((writes.mock.calls[0][0] as any).update.raidMode).toBe('off');
 			expect(restore).toHaveBeenCalledWith(testContainer.prisma, f.value.guild, true);
-			expect(String(f.response.mock.calls[0][0])).toContain('raid: off');
+			expect(displayText(f.response.mock.calls[0][0])).toContain('raid: off');
 		} finally {
 			restore.mockRestore();
 		}
@@ -77,19 +78,19 @@ describe('AutoMod command safety', () => {
 	it('refuses content inspection before runtime intent opt-in without writing configuration', async () => {
 		const f = interaction({ subcommand: 'flood', mode: 'observe', alert_channel: true });
 		await command.chatInputRun(f.value);
-		expect(String(f.response.mock.calls[0][0])).toContain('RADON_AUTOMOD_CONTENT_ENABLED=true');
+		expect(displayText(f.response.mock.calls[0][0])).toContain('RADON_AUTOMOD_CONTENT_ENABLED=true');
 		expect(writes).not.toHaveBeenCalled();
 	});
 	it('refuses join inspection before runtime intent opt-in without writing configuration', async () => {
 		const f = interaction({ subcommand: 'raid', mode: 'observe', alert_channel: true });
 		await command.chatInputRun(f.value);
-		expect(String(f.response.mock.calls[0][0])).toContain('RADON_AUTOMOD_MEMBERS_ENABLED=true');
+		expect(displayText(f.response.mock.calls[0][0])).toContain('RADON_AUTOMOD_MEMBERS_ENABLED=true');
 		expect(writes).not.toHaveBeenCalled();
 	});
 	it('does not create configuration when disabling a rule that was never enabled', async () => {
 		const f = interaction({ subcommand: 'flood', mode: 'off' });
 		await command.chatInputRun(f.value);
-		expect(f.response.mock.calls[0][0]).toBe('This custom rule is already off.');
+		expect(displayText(f.response.mock.calls[0][0])).toContain('This custom rule is already off.');
 		expect(writes).not.toHaveBeenCalled();
 	});
 	it('registers a Discord-valid guild-only command with all intended routes', () => {
@@ -107,7 +108,7 @@ describe('AutoMod command safety', () => {
 		const f = interaction({ preset: 'mentions', mode: 'observe', alert_channel: true });
 		(f.value as any).memberPermissions.has = () => false;
 		await command.chatInputRun(f.value);
-		expect(f.response.mock.calls[0][0]).toBe('Manage Server is required to configure AutoMod.');
+		expect(displayText(f.response.mock.calls[0][0])).toContain('Manage Server is required to configure AutoMod.');
 		expect(f.creates).not.toHaveBeenCalled();
 	});
 	it('does not delete a matching rule created by an administrator or another bot', async () => {
@@ -116,7 +117,7 @@ describe('AutoMod command safety', () => {
 		const f = interaction({ subcommand: 'remove', preset: 'mentions' }, rules);
 		await command.chatInputRun(f.value);
 		expect(remove).not.toHaveBeenCalled();
-		expect(f.response.mock.calls[0][0]).toBe('No matching native rule owned by this bot was found.');
+		expect(displayText(f.response.mock.calls[0][0])).toContain('No matching native rule owned by this bot was found.');
 	});
 	it('disables an owned native rule without requiring new keywords or an alert channel', async () => {
 		const disable = mock(async () => undefined);

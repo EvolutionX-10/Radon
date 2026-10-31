@@ -1,3 +1,4 @@
+import { v2, messageText } from '../../lib/presentation/components.js';
 import { Emojis } from '#constants';
 import { PermissionLevel } from '#lib/decorators';
 import { Button, Confirmation, RadonCommand, Row } from '#lib/structures';
@@ -240,40 +241,65 @@ export class UserCommand extends RadonCommand {
 
 		if (!role) return;
 
-		if (role.id === interaction.guildId) return interaction.reply(`You can't add @everyone role`);
-		if (role.tags) return interaction.reply(`I cannot add roles which are linked to bots/server`);
+		if (role.id === interaction.guildId) return interaction.reply(v2(`You can't add @everyone role`, 'Radon · Role'));
+		if (role.tags) return interaction.reply(v2(`I cannot add roles which are linked to bots/server`, 'Radon · Role'));
 
 		if (!target)
-			return interaction.reply({
-				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
-				flags: MessageFlags.Ephemeral
-			});
+			return interaction.reply(
+				v2(
+					{
+						content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
+						flags: MessageFlags.Ephemeral
+					},
+					'Radon · Role'
+				)
+			);
 
 		if (role.position >= interaction.member.roles.highest.position)
-			return interaction.reply({
-				content: `${Emojis.Cross} You can't add ${role} because its position is higher than or equal to your highest role!`
-			});
+			return interaction.reply(
+				v2(
+					{
+						content: `${Emojis.Cross} You can't add ${role} because its position is higher than or equal to your highest role!`
+					},
+					'Radon · Role'
+				)
+			);
 
 		if (role.position >= interaction.guild.members.me!.roles.highest.position)
-			return interaction.reply({
-				content: `${Emojis.Cross} I can't add ${role} because its position is higher than or equal to my highest role!`
-			});
+			return interaction.reply(
+				v2(
+					{
+						content: `${Emojis.Cross} I can't add ${role} because its position is higher than or equal to my highest role!`
+					},
+					'Radon · Role'
+				)
+			);
 
-		if (target.roles.cache.has(role.id)) return interaction.reply(`${target} already has ${role}`);
+		if (target.roles.cache.has(role.id)) return interaction.reply(v2(`${target} already has ${role}`, 'Radon · Role'));
 
 		const added = await target.roles.add(role, reason).catch(() => null);
 
 		if (!added) {
-			return interaction.reply({
-				content: `${Emojis.Cross} Failed to add ${role} to ${target}`,
-				flags: MessageFlags.Ephemeral
-			});
+			return interaction.reply(
+				v2(
+					{
+						content: `${Emojis.Cross} Failed to add ${role} to ${target}`,
+						flags: MessageFlags.Ephemeral
+					},
+					'Radon · Role'
+				)
+			);
 		}
 
-		return interaction.reply({
-			content: `Added ${role} to ${target} successfully!`,
-			allowedMentions: { parse: [] }
-		});
+		return interaction.reply(
+			v2(
+				{
+					content: `Added ${role} to ${target} successfully!`,
+					allowedMentions: { parse: [] }
+				},
+				'Radon · Role'
+			)
+		);
 	}
 
 	private async remove(interaction: RadonCommand.ChatInputCommandInteraction) {
@@ -281,40 +307,65 @@ export class UserCommand extends RadonCommand {
 		const target = interaction.options.getMember('target');
 		const reason = interaction.options.getString('reason') ?? undefined;
 
-		if (role.id === interaction.guildId) return interaction.reply(`You can't remove @everyone role`);
-		if (role.tags) return interaction.reply(`I cannot remove roles which are linked to bots/server`);
+		if (role.id === interaction.guildId) return interaction.reply(v2(`You can't remove @everyone role`, 'Radon · Role'));
+		if (role.tags) return interaction.reply(v2(`I cannot remove roles which are linked to bots/server`, 'Radon · Role'));
 
 		if (!target)
-			return interaction.reply({
-				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
-				flags: MessageFlags.Ephemeral
-			});
+			return interaction.reply(
+				v2(
+					{
+						content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
+						flags: MessageFlags.Ephemeral
+					},
+					'Radon · Role'
+				)
+			);
 
 		if (role.position >= interaction.member.roles.highest.position)
-			return interaction.reply({
-				content: `${Emojis.Cross} You can't remove ${role} because its position is higher than or equal to your highest role!`
-			});
+			return interaction.reply(
+				v2(
+					{
+						content: `${Emojis.Cross} You can't remove ${role} because its position is higher than or equal to your highest role!`
+					},
+					'Radon · Role'
+				)
+			);
 
 		if (role.position >= interaction.guild.members.me!.roles.highest.position)
-			return interaction.reply({
-				content: `${Emojis.Cross} I can't remove ${role} because its position is higher than or equal to my highest role!`
-			});
+			return interaction.reply(
+				v2(
+					{
+						content: `${Emojis.Cross} I can't remove ${role} because its position is higher than or equal to my highest role!`
+					},
+					'Radon · Role'
+				)
+			);
 
-		if (!target.roles.cache.has(role.id)) return interaction.reply(`${target} doesn't have ${role}`);
+		if (!target.roles.cache.has(role.id)) return interaction.reply(v2(`${target} doesn't have ${role}`, 'Radon · Role'));
 
 		const removed = await target.roles.remove(role, reason).catch(() => null);
 
 		if (!removed) {
-			return interaction.reply({
-				content: `${Emojis.Cross} Failed to remove ${role} from ${target}`,
-				flags: MessageFlags.Ephemeral
-			});
+			return interaction.reply(
+				v2(
+					{
+						content: `${Emojis.Cross} Failed to remove ${role} from ${target}`,
+						flags: MessageFlags.Ephemeral
+					},
+					'Radon · Role'
+				)
+			);
 		}
 
-		return interaction.reply({
-			content: `Removed ${role} from ${target} successfully!`,
-			allowedMentions: { parse: [] }
-		});
+		return interaction.reply(
+			v2(
+				{
+					content: `Removed ${role} from ${target} successfully!`,
+					allowedMentions: { parse: [] }
+				},
+				'Radon · Role'
+			)
+		);
 	}
 
 	private async create(interaction: RadonCommand.ChatInputCommandInteraction) {
@@ -356,7 +407,7 @@ export class UserCommand extends RadonCommand {
 		if (perms.includes('Administrator')) perms = new PermissionsBitField(PermissionsBitField.All).toArray();
 		perms = perms.filter((perm) => interaction.member.permissions.toArray().includes(perm));
 
-		if (!perms.length) return interaction.editReply(content);
+		if (!perms.length) return interaction.editReply(v2(content, 'Radon · Role'));
 
 		const menus = this.gimmeMenu(perms);
 		const rows = Array(menus.length)
@@ -367,10 +418,15 @@ export class UserCommand extends RadonCommand {
 
 		const row = new Row<ButtonBuilder>()._components(save);
 
-		await interaction.editReply({
-			content,
-			components: [...rows, row]
-		});
+		await interaction.editReply(
+			v2(
+				{
+					content,
+					components: [...rows, row]
+				},
+				'Radon · Role'
+			)
+		);
 
 		return this.collector(message, role, interaction);
 	}
@@ -380,46 +436,67 @@ export class UserCommand extends RadonCommand {
 		const reason = interaction.options.getString('reason') ?? undefined;
 
 		if (role.managed) {
-			return interaction.reply("This role is managed by an integration, you can't delete it!");
+			return interaction.reply(v2("This role is managed by an integration, you can't delete it!", 'Radon · Role'));
 		}
 
 		if (role.position >= interaction.member.roles.highest.position) {
-			return interaction.reply({
-				content: `${Emojis.Cross} You can't delete ${role} because its position is higher than or equal to your highest role!`
-			});
+			return interaction.reply(
+				v2(
+					{
+						content: `${Emojis.Cross} You can't delete ${role} because its position is higher than or equal to your highest role!`
+					},
+					'Radon · Role'
+				)
+			);
 		}
 
 		if (role.position >= interaction.guild.members.me!.roles.highest.position) {
-			return interaction.reply({
-				content: `${Emojis.Cross} I can't delete ${role} because its position is higher than or equal to my highest role!`
-			});
+			return interaction.reply(
+				v2(
+					{
+						content: `${Emojis.Cross} I can't delete ${role} because its position is higher than or equal to my highest role!`
+					},
+					'Radon · Role'
+				)
+			);
 		}
 
 		await role.delete(reason);
-		return interaction.reply(`Role __*${role.name}*__ deleted!`);
+		return interaction.reply(v2(`Role __*${role.name}*__ deleted!`, 'Radon · Role'));
 	}
 
 	@PermissionLevel('Administrator')
 	private async bulk(interaction: RadonCommand.ChatInputCommandInteraction, option: bulkActions) {
-		return interaction.reply({
-			content: `${Emojis.Cross} This command is currently disabled due to Discord API restrictions. Sorry for the inconvenience!`,
-			flags: MessageFlags.Ephemeral
-		});
+		return interaction.reply(
+			v2(
+				{
+					content: `${Emojis.Cross} This command is currently disabled due to Discord API restrictions. Sorry for the inconvenience!`,
+					flags: MessageFlags.Ephemeral
+				},
+				'Radon · Role'
+			)
+		);
 		const role = interaction.options.getRole('role', true);
 		const reason = interaction.options.getString('reason') ?? undefined;
 		const base = interaction.options.getRole('base_role') ?? interaction.guild.roles.everyone;
 
-		if (role.id === interaction.guildId) return interaction.reply(`You can't add @everyone role`);
-		if (role.tags) return interaction.reply(`I cannot add roles which are linked to bots/server`);
+		if (role.id === interaction.guildId) return interaction.reply(v2(`You can't add @everyone role`, 'Radon · Role'));
+		if (role.tags) return interaction.reply(v2(`I cannot add roles which are linked to bots/server`, 'Radon · Role'));
 
 		if (role.position > interaction.guild.members.me!.roles.highest!.position)
-			return interaction.reply({
-				content: `${Emojis.Cross} I can't add ${role} because its position is higher than my highest role!`
-			});
+			return interaction.reply(
+				v2(
+					{
+						content: `${Emojis.Cross} I can't add ${role} because its position is higher than my highest role!`
+					},
+					'Radon · Role'
+				)
+			);
 
-		if (role.id === base.id) return interaction.reply(`${Emojis.Cross} You can't bulk ${option} same role as base role!`);
+		if (role.id === base.id) return interaction.reply(v2(`${Emojis.Cross} You can't bulk ${option} same role as base role!`, 'Radon · Role'));
 
-		if (interaction.guild.bulkRoleInProgress) return interaction.reply(`${Emojis.Cross} A bulk role process is already in progress!`);
+		if (interaction.guild.bulkRoleInProgress)
+			return interaction.reply(v2(`${Emojis.Cross} A bulk role process is already in progress!`, 'Radon · Role'));
 
 		if (interaction.guild.memberCount > interaction.guild.members.cache.size) {
 			await interaction.guild.members.fetch();
@@ -428,7 +505,7 @@ export class UserCommand extends RadonCommand {
 		let { members } = base;
 		members = members.filter((m) => (option === 'add' ? !m.roles.cache.has(role.id) : m.roles.cache.has(role.id)));
 
-		if (!members.size) return interaction.reply(`${Emojis.Cross} No members found for the action to proceed! Terminating...`);
+		if (!members.size) return interaction.reply(v2(`${Emojis.Cross} No members found for the action to proceed! Terminating...`, 'Radon · Role'));
 
 		const confirm = new Confirmation({
 			content: `Are you sure you want to ${option} ${role} ${option === 'add' ? 'to' : 'from'} every member ${
@@ -438,7 +515,7 @@ export class UserCommand extends RadonCommand {
 				await this.bulkAction(interaction, members, option, role, reason);
 			},
 			onCancel: async ({ i }) => {
-				await i.editReply('Process cancelled!');
+				await i.editReply(v2('Process cancelled!', 'Radon · Role'));
 			}
 		});
 		return confirm.run(interaction);
@@ -481,10 +558,15 @@ export class UserCommand extends RadonCommand {
 
 		collector.on('collect', async (i) => {
 			if (i.user.id !== interaction.user.id) {
-				await i.reply({
-					content: "This maze ain't for you!",
-					flags: MessageFlags.Ephemeral
-				});
+				await i.reply(
+					v2(
+						{
+							content: "This maze ain't for you!",
+							flags: MessageFlags.Ephemeral
+						},
+						'Radon · Role'
+					)
+				);
 				return;
 			}
 
@@ -505,10 +587,15 @@ export class UserCommand extends RadonCommand {
 			if (i.customId === 'save') {
 				message = (await message.fetch()) as GuildMessage<true>;
 
-				await i.update({
-					content: message.content.concat(`\n\n> Saved with ${perms.length ? 'selected' : 'no'} permissions!`),
-					components: []
-				});
+				await i.update(
+					v2(
+						{
+							content: messageText(message).concat(`\n\n> Saved with ${perms.length ? 'selected' : 'no'} permissions!`),
+							components: []
+						},
+						'Radon · Role'
+					)
+				);
 				collector.stop('Saved');
 			}
 		});
@@ -516,13 +603,15 @@ export class UserCommand extends RadonCommand {
 		collector.on('end', async (c, r) => {
 			if (r !== 'Saved') perms = [];
 			if ((c.size === 0 || !perms.length) && r !== 'Saved') {
-				// @ts-ignore Expected to be a Button only
-				const row = new Row<Button>(...message.components);
-				row.components.map((c) => c.setDisabled());
-				await message.edit({
-					content: message.content.concat('\n\n> Role was created with no permissions!'),
-					components: [row]
-				});
+				await message.edit(
+					v2(
+						{
+							content: messageText(message).concat('\n\n> Role was created with no permissions!'),
+							components: []
+						},
+						'Roles'
+					)
+				);
 				return;
 			}
 
@@ -538,7 +627,7 @@ export class UserCommand extends RadonCommand {
 		reason?: string
 	) {
 		const estimate = new DurationFormatter().format((members.size + 2) * 1000);
-		interaction.editReply(`Starting bulk role action...\nEstimated time: **~${estimate}**`);
+		interaction.editReply(v2(`Starting bulk role action...\nEstimated time: **~${estimate}**`, 'Radon · Role'));
 		interaction.guild!.bulkRoleInProgress = true;
 		let i = 0;
 		const stopwatch = new Stopwatch().start();
@@ -554,10 +643,15 @@ export class UserCommand extends RadonCommand {
 
 		const time = stopwatch.stop().toString();
 		interaction.guild.bulkRoleInProgress = false;
-		return interaction.editReply({
-			content: `Process completed!\n\nTime taken: **${time}**\nMembers affected: **${i}**`,
-			components: []
-		});
+		return interaction.editReply(
+			v2(
+				{
+					content: `Process completed!\n\nTime taken: **${time}**\nMembers affected: **${i}**`,
+					components: []
+				},
+				'Radon · Role'
+			)
+		);
 	}
 }
 

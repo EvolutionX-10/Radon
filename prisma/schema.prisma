@@ -145,6 +145,41 @@ model redemptionGuildPolicy {
   channelId String?
 }
 
+// Additive: no changes to existing Solo Leveling account documents.
+model supporterPass {
+  id        String   @id @map("_id")
+  userId    String
+  provider  String
+  expiresAt DateTime @db.Date
+  @@index([userId, expiresAt])
+}
+
+model couponSubscription {
+  id        String   @id @map("_id")
+  userId    String
+  guildId   String
+  game      String
+  enabled   Boolean
+  createdAt DateTime @db.Date
+  @@index([guildId, game, enabled])
+}
+
+model couponAlert {
+  id         String    @id @map("_id")
+  guildId    String
+  channelId  String
+  game       String
+  code       String
+  messageUrl String
+  cursor     String
+  createdAt  DateTime  @db.Date
+  expiresAt  DateTime  @db.Date
+  couponExpiresAt DateTime? @db.Date
+  leaseToken String?
+  leaseUntil DateTime? @db.Date
+  @@index([expiresAt])
+}
+
 // New collections are additive. Existing guild warning documents are unchanged.
 type ModerationCaseNote {
   actorId String

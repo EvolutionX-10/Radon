@@ -3,6 +3,8 @@ import type { Embed } from './Embed.js';
 import { ButtonBuilder, ButtonStyle, ChannelType, Guild } from 'discord.js';
 import { Button } from './Button.js';
 import { Row } from './Row.js';
+import { componentMessage, divider } from '../../presentation/components.js';
+import { modlogContainer } from '../../presentation/modlog.js';
 
 export class Modlogs {
 	public constructor(
@@ -38,18 +40,20 @@ export class Modlogs {
 					row._components([linkButton]);
 				}
 
-				const sent = await modLogChannel.send({ embeds: [embed], components: url ? [row] : undefined });
+				const panel = modlogContainer(embed.toJSON());
+				const sent = await modLogChannel.send({ ...componentMessage(panel), components: url ? [panel, row] : [panel] });
 
 				const editButton = new Button() //
 					._style(ButtonStyle.Secondary)
 					._label('Edit Reason')
 					._customId(`edit_reason:${sent.id}`);
 				row.addComponents(editButton);
+				row.addComponents(new ButtonBuilder().setCustomId('guide:cases').setStyle(ButtonStyle.Secondary).setLabel('About cases'));
+				divider(panel);
 
 				await sent
 					.edit({
-						embeds: [embed.setFooter({ text: `ID: ${sent.id}` })],
-						components: [row]
+						components: [panel, row]
 					})
 					.catch(() => null);
 				return sent;
