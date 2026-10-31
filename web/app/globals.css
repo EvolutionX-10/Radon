@@ -3134,3 +3134,22 @@ h2 {
 		padding: 14px 16px;
 	}
 }
+
+.brand-release {
+	display: inline-block;
+	margin-left: 8px;
+	padding: 3px 5px;
+	border: 1px solid #685080;
+	border-radius: 5px;
+	vertical-align: middle;
+	color: #d9c2fa;
+	font:
+		9px var(--font-code),
+		monospace;
+	letter-spacing: 0;
+}
+@media (max-width: 640px) {
+	.brand-release {
+		display: none;
+	}
+}

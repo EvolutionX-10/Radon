@@ -1,0 +1,41 @@
+{
+	"id": "radon-v3",
+	"name": "Radon V3",
+	"version": "3.0.0",
+	"stage": "preview",
+	"headline": "Four years in. A whole new chapter.",
+	"summary": "A fresh look, more worlds to play in, and better tools for the people who keep your community going. This is Radon, renewed.",
+	"status": "V3 preview · Full launch planned after Discord intent approval.",
+	"improvements": [
+		{
+			"area": "More worlds, same CLAIM button",
+			"before": "Solo Leveling coupon claiming.",
+			"now": "Three supported games, separate saved accounts, optional coupon alerts, and a 24-hour Supporter Pass. Basic claiming stays free."
+		},
+		{
+			"area": "Context that stays with an action",
+			"before": "Warnings, severity-based actions, and editable mod logs.",
+			"now": "Those tools stay, joined by searchable case history, private staff notes, audited reason edits, and member message reports."
+		},
+		{
+			"area": "A calmer way to get set up",
+			"before": "Interactive setup for staff roles and moderation logs.",
+			"now": "A four-step setup with review before saving, optional report routing and observation rules, plus /doctor to check readiness."
+		},
+		{
+			"area": "Protection you can ease into",
+			"before": "Staff-led moderation and configurable warning actions.",
+			"now": "Opt-in native presets, flood and link rules, and join-burst response. Observe first; enable enforcement when it suits your server."
+		},
+		{
+			"area": "Better follow-through",
+			"before": "Channel locks, bans, and warning updates without the new recovery safeguards.",
+			"now": "Locks restore saved permissions, temporary bans keep their unban schedules through restarts, and warning writes handle concurrent staff actions."
+		},
+		{
+			"area": "Less guesswork, clearer feedback",
+			"before": "Command help and feedback spread across older message layouts.",
+			"now": "Consistent Discord cards, contextual /help, claim progress feedback, visual web guides, private /bug reports, and the same /updates history here and in Discord."
+		}
+	]
+}

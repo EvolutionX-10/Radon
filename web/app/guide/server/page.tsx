@@ -136,8 +136,8 @@ export default function ServerGuidePage() {
 								<span>1</span>
 								<h3>Choose your staff</h3>
 								<p>
-									Run <code>/setup</code> as an administrator. Choose the existing roles Radon should recognize as moderators and
-									administrators.
+									Run <code>/setup start</code> as an administrator. Choose the existing roles Radon should recognize as moderators
+									and administrators.
 								</p>
 							</div>
 							<div>
@@ -152,14 +152,15 @@ export default function ServerGuidePage() {
 								<span>3</span>
 								<h3>Give actions a home</h3>
 								<p>
-									Choose a mod-log channel in setup. Review who can read it. Use <code>/help</code> to check what is available to
-									your role and channel.
+									Choose log and report channels, then review before saving. Use /setup view to check saved choices. Use{' '}
+									<code>/help</code> to check what is available to your role and channel.
 								</p>
 							</div>
 						</div>
 						<Note>
-							A role called “Moderator” does not grant access by its name alone. Configured staff roles, Discord command permissions,
-							and role hierarchy all matter. Cases can still be saved without a mod-log channel.
+							Use /doctor for private, read-only checks of permissions, role order, and readiness. A role called “Moderator” does not
+							grant access by its name alone. Configured staff roles, Discord command permissions, and role hierarchy all matter. Cases
+							can still be saved without a mod-log channel.
 						</Note>
 					</Chapter>
 

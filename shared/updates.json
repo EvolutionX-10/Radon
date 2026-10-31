@@ -1,5 +1,22 @@
 [
 	{
+		"id": "radon-v3",
+		"date": "2026-11-01",
+		"title": "Radon V3 — a new chapter, four years in",
+		"summary": "Version 3.0.0 brings a fresh logo and website, more games, clearer Discord cards, and a stronger moderation toolkit. V3 is in preview; the full launch is planned after Discord intent approval.",
+		"changes": [
+			"Born in February 2022, renewed for the communities here today. The new look comes with player and server guides that explain what to use, when, and how.",
+			"More worlds, familiar controls: Solo Leveling: ARISE, Seven Knights Re:BIRTH, and The Seven Deadly Sins: Idle Adventure. Existing accounts and CLAIM buttons keep working. Basic claiming and five saved accounts per game stay free.",
+			"Optional voting perks: a verified vote unlocks a fixed 24-hour Supporter Pass with ten accounts per game and opt-in alerts for future staff-posted coupons. Voting is never required for basic claiming.",
+			"A clearer Discord experience: consistent cards, contextual /help, /guide, and private claim-progress feedback. Saved accounts and duplicate-redemption protection help avoid repeat work; publisher delays can still affect speed.",
+			"More context for moderators: /case history, staff notes, reason-edit history, and private message reports. Warnings, severity thresholds, and editable mod logs still have their own jobs.",
+			"More control over safety: opt-in AutoMod presets, flood and link rules, and join-burst response. Start in observe mode. Custom message and join features require the relevant Discord access and operator configuration; they are not enabled by this release.",
+			"Better recovery: restorable timed locks, persistent temporary-ban schedules, stronger permission checks, and warning updates protected against concurrent writes. Scheduled actions can run late after downtime.",
+			"An easier start: /setup start walks through roles, logs and reports, optional observation, then review and save. /setup view shows saved choices; /doctor provides private, read-only readiness checks.",
+			"A direct line for feedback: /bug saves private bot reports for the owner. /updates and the website share this release history. Full V3 launch is planned after intent approval; no launch date or approval is promised."
+		]
+	},
+	{
 		"id": "bug-reports-and-updates",
 		"date": "2026-10-31",
 		"title": "A direct line for bugs, and a place for updates",

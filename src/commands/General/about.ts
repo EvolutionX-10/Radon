@@ -1,3 +1,4 @@
+import { release } from '#lib/release.js';
 import { Emojis, RecommendedPermissions, UserFlags, voteRow } from '#constants';
 import { RadonCommand } from '#lib/structures/commands/RadonCommand.js';
 import { Button } from '#lib/structures/classes/Button.js';
@@ -102,7 +103,7 @@ export class UserCommand extends RadonCommand {
 				new Button()._label(`Join Support Server!`)._style(ButtonStyle.Link)._emoji('🆘')._url(`https://discord.gg/YBFaDggpvt`)
 			);
 
-		const textContent = `${heading('About me!')}\nHello ${interaction.user}!\nI am Radon, a ${italic('moderation')} bot dedicated to make your server a better place`;
+		const textContent = `${heading(`${release.name} · v${release.version}`)}\nHello ${interaction.user}!\nI am Radon, your teammate for ${italic('moderation')}, game coupons, and a better community.\n${subtext(release.status)}`;
 
 		const container = new ContainerBuilder() //
 			.addSectionComponents((section) =>

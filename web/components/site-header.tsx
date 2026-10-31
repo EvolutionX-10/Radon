@@ -26,6 +26,7 @@ export function SiteHeader() {
 					<RadonMark className="brand-mark" />
 					<span>
 						radon<span className="brand-dot">.</span>
+						<span className="brand-release">V3</span>
 					</span>
 				</Link>
 				<nav className="desktop-nav" aria-label="Main navigation">

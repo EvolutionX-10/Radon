@@ -1,6 +1,6 @@
 <div align="center">
 
-# Radon
+# Radon V3
 
 [![License]][apache]
 [![GitHub stars]][stars]
@@ -9,6 +9,8 @@
 [![Continuous Integration](https://github.com/EvolutionX-10/Radon/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/EvolutionX-10/Radon/actions/workflows/continuous-integration.yml)
 
 </div>
+
+Version **3.0.0** · V3 preview. Four years after the first commit in February 2022, Radon brings a fresh website identity, three-game claiming, clearer Discord cards, more moderation tools, and guided setup. Full launch is planned after Discord intent approval. See the [V3 release notes and comparison](docs/radon-v3.md); `/updates` and the website share the public announcement.
 
 ## Table of Contents
 
@@ -96,7 +98,7 @@ To contribute to this repository, feel free to fork the repository and make your
 
 ## Project Stats
 
-[![Radon](https://repobeats.axiom.co/api/embed/2dfcb3b8b5cbc2d7e8ecf7928bac05b966076c7f.svg 'All kinds Contributions are welcomed!')](https://top.gg/bot/944833303226236989)
+[![Radon](https://repobeats.axiom.co/api/embed/2dfcv3b8b5cbc2d7e8ecf7928bac05b966076c7f.svg 'All kinds Contributions are welcomed!')](https://top.gg/bot/944833303226236989)
 
 <!-- REFERENCES -->
 

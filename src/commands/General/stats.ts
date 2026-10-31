@@ -1,3 +1,4 @@
+import { release } from '#lib/release.js';
 import { RadonGuildId, TestServerGuildIds } from '#constants';
 import { RadonCommand } from '#lib/structures/commands/RadonCommand.js';
 import { Timestamp } from '#lib/structures/classes/Timestamp.js';
@@ -80,6 +81,7 @@ export class UserCommand extends RadonCommand {
 
 		return {
 			Statistics: {
+				Radon: `${release.name} · v${release.version}`,
 				Users: stats.users.toString(),
 				Servers: stats.guilds.toString(),
 				Channels: stats.channels.toString(),

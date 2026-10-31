@@ -36,7 +36,7 @@ describe('shared player update history', () => {
 	});
 	it('searches history without case sensitivity and respects Discord suggestion bounds', () => {
 		expect(updateChoices(' BUG ')).toContainEqual(expect.objectContaining({ value: 'bug-reports-and-updates' }));
-		expect(updateChoices('2026-10-31')).toHaveLength(updates.length);
+		expect(updateChoices('2026-10-31')).toHaveLength(updates.filter((entry) => entry.date === '2026-10-31').length);
 		expect(updateChoices('nonexistent')).toEqual([]);
 		const history = Array.from({ length: 35 }, (_, index) => ({ ...updates[0], id: `release-${index}`, title: 'Long title '.repeat(30) }));
 		const choices = updateChoices('', history);

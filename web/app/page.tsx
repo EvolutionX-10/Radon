@@ -24,6 +24,7 @@ import { GameArt } from '@/components/game-art';
 import { FAQ } from '@/components/faq';
 import { games, site } from '@/lib/site';
 import { pageMetadata } from '@/lib/metadata';
+import { release } from '@/lib/release';
 import { updates, updateDate } from '@/lib/updates';
 
 export const metadata = pageMetadata(
@@ -40,6 +41,7 @@ const structuredData = {
 			'@type': 'SoftwareApplication',
 			'@id': `${site.url}/#bot`,
 			name: 'Radon',
+			softwareVersion: release.version,
 			url: site.url,
 			applicationCategory: 'CommunicationApplication',
 			operatingSystem: 'Discord',
@@ -56,8 +58,8 @@ export default function Home() {
 			<script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }} />
 			<section className="hero container" aria-labelledby="hero-title">
 				<div className="hero-copy">
-					<Link href="#games" className="announcement">
-						<span className="new-pill">LEVEL UP</span>Three games. One very good bot.
+					<Link href="/updates#radon-v3" className="announcement">
+						<span className="new-pill">V3 PREVIEW</span>Radon, renewed. Meet version 3.
 						<ChevronRight size={14} />
 					</Link>
 					<h1 id="hero-title">
@@ -72,7 +74,7 @@ export default function Home() {
 						</span>
 					</h1>
 					<p className="hero-description">
-						Game rewards, a safer community, and less of the busywork. Meet Radon. Your server’s new favorite teammate.
+						Four years of community. A new chapter with Radon V3. More games, clearer moderation, and less of the busywork.
 					</p>
 					<div className="hero-actions">
 						<Button asChild className="button-primary button-large">
@@ -408,7 +410,7 @@ export default function Home() {
 					</span>
 					<h2 id="updates-title">Always a little better.</h2>
 					<p>
-						New features and fixes, in one place. You can catch up in Discord with <code>/updates</code>, too.
+						Meet Radon V3 and see what changed. You can catch up in Discord with <code>/updates</code>, too.
 					</p>
 					<Link href="/updates" className="text-link">
 						See all updates

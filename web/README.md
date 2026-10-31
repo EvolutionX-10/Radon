@@ -32,7 +32,7 @@ Browser test files use `*.pw.ts` so the bot's root `bun test` does not discover 
 - `/`: features, interactive illustrative preview, supported games, searchable command examples, optional voting perks, and FAQ.
 - `/guide`: setup, account management, all three supported games, Supporter Pass behavior, opt-in alerts, staff posting, and troubleshooting.
 - `/guide/server`: visual server handbook with a situation picker, real command examples, warnings and severity, direct moderation, cases and logs, reports, AutoMod, locks, utilities, and troubleshooting. All examples are illustrative; nothing invokes Discord. Guide topic links connect both handbooks.
-- `/updates`: a dated, linkable history shared with the bot's `/updates` command. The home page shows the newest entry.
+- `/updates`: the Radon V3 preview spotlight, a visual before/after comparison, and a dated, linkable history shared with the bot's `/updates` command. The home page shows the newest entry.
 - `/terms-of-service` and `/privacy-policy`: legal and data-handling information.
 - `/opengraph-image` and `/icon.svg`: self-contained social preview and favicon.
 - `/robots.txt` and `/sitemap.xml`: discovery for all six public content routes.
@@ -62,3 +62,5 @@ The October 31, 2026 local production audit scored **100/100 for SEO on all five
 Use the existing Vercel project, with **Root Directory: `web`**, framework Next.js, install command `bun install --frozen-lockfile`, and build command `bun run build`. Enable **Include source files outside of the Root Directory in the Build Step** in the project's Root Directory settings so `../shared/updates.json` is available. No environment variables or backend services are required. Keep Next.js's platform-provided tracing root: Vercel packages this app relative to the repository root and needs the `web/` prefix in the build manifest. Forcing `outputFileTracingRoot` to `web/` removes that prefix and can make packaging look for `.next` manifests in the repository root. Leave `turbopack.root` unset so both roots follow the hosting platform’s layout. This does not change which bot files run; the website still imports no bot runtime code. The existing project URL is centralized in `lib/site.ts` for social metadata; update it if the primary domain changes.
 
 The bug-reporting, updates, and website follow-up PR targets `codex/game-rewards` (PR #591). Review and manually test its branch preview before merging it into that branch; merge #591 into `main` only after acceptance. No production deployment is part of these checks.
+
+V3 identity and release status live in `../shared/release.json`; its dated announcement lives in the shared update history. The spotlight reuses the new website logo. Preview copy does not enable intent-dependent features or claim Discord approval. See `../docs/radon-v3.md` for the comparison baseline and launch status.

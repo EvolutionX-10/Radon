@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { ReleaseSpotlight } from '@/components/release-spotlight';
+import './release.css';
 import { ArrowUpRight, Sparkles } from 'lucide-react';
 import { DocumentHeading } from '@/components/document-heading';
 import { pageMetadata } from '@/lib/metadata';
@@ -6,7 +8,7 @@ import { updates, updateDate } from '@/lib/updates';
 
 export const metadata = pageMetadata(
 	'What’s new',
-	'See the latest Radon updates, new Discord commands, game coupon features, and fixes.',
+	'Meet Radon V3: version 3.0.0, a fresh look, more games, clearer moderation, and the next chapter after four years. Read the shared Discord update history.',
 	'/updates'
 );
 
@@ -17,6 +19,7 @@ export default function UpdatesPage() {
 				New features, useful improvements, and the little fixes that make a difference. Run <code>/updates</code> in Discord to catch up
 				there, too.
 			</DocumentHeading>
+			<ReleaseSpotlight />
 			<div className="updates-timeline">
 				{updates.map((update, index) => (
 					<article key={update.id} id={update.id} className="update-entry" aria-labelledby={`${update.id}-title`}>
