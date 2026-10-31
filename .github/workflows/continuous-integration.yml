@@ -52,3 +52,38 @@ jobs:
         run: bun run db:generate
       - name: Run Tests
         run: bun test
+
+  MongoTests:
+    name: MongoDB integration tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.5
+      - name: Install Dependencies
+        run: bun install --frozen-lockfile
+      - name: Generate Prisma Client
+        run: bun run db:generate
+      - name: Start disposable MongoDB replica set
+        run: |
+          docker run --detach --name radon-test-mongo --publish 127.0.0.1:27028:27017 mongo:7 --replSet radonTest --bind_ip_all
+          for attempt in $(seq 1 30); do
+            if docker exec radon-test-mongo mongosh --quiet --eval 'db.adminCommand({ping: 1})' >/dev/null 2>&1; then break; fi
+            sleep 2
+          done
+          docker exec radon-test-mongo mongosh --quiet --eval 'rs.initiate({_id: "radonTest", members: [{_id: 0, host: "localhost:27017"}]})'
+          for attempt in $(seq 1 30); do
+            if docker exec radon-test-mongo mongosh --quiet --eval 'if (!db.hello().isWritablePrimary) quit(1)' >/dev/null 2>&1; then exit 0; fi
+            sleep 2
+          done
+          echo 'MongoDB replica set did not become writable.' >&2
+          exit 1
+      - name: Run tests against disposable local database
+        env:
+          RADON_TEST_MONGO_URL: mongodb://127.0.0.1:27028/radon_test_ci?directConnection=true&replicaSet=radonTest
+          RADON_REDEMPTION_TEST_MONGO: mongodb://127.0.0.1:27028/radon_test_ci?directConnection=true&replicaSet=radonTest
+        run: bun test
+      - name: Remove disposable database
+        if: always()
+        run: docker rm --force radon-test-mongo || true

@@ -58,7 +58,8 @@ in one running instance does not change the saved environment image. Set
 `RADON_BUN_INSTALL_DIR` to choose a different installation directory.
 
 Run `bun run check` before opening a pull request. CI runs formatting, type
-checking, and the offline test suite. Setup and checks do not log in to Discord
+checking, the offline test suite, and opt-in database tests against a disposable
+local MongoDB replica set. Setup and checks do not log in to Discord
 or apply database schema changes. Running the bot requires your configured
 Discord and MongoDB credentials.
 
