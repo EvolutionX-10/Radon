@@ -144,3 +144,56 @@ model redemptionGuildPolicy {
   roleId    String?
   channelId String?
 }
+
+// New collections are additive. Existing guild warning documents are unchanged.
+type ModerationCaseNote {
+  actorId String
+  text String
+  createdAt DateTime @db.Date
+}
+
+type ModerationReasonEdit {
+  actorId String
+  previous String
+  reason String
+  createdAt DateTime @db.Date
+}
+
+model moderationCase {
+  id String @id @map("_id")
+  guildId String
+  targetId String
+  actorId String
+  action String
+  reason String
+  createdAt DateTime @default(now()) @db.Date
+  notes ModerationCaseNote[]
+  reasonEdits ModerationReasonEdit[]
+  logMessageId String?
+  sourceUrl String?
+  @@index([guildId, targetId, createdAt])
+  @@index([guildId, logMessageId])
+}
+
+model moderationReportSettings {
+  id String @id @map("_id")
+  channelId String
+}
+
+model moderationReport {
+  id String @id @map("_id")
+  guildId String
+  channelId String
+  messageId String
+  targetId String
+  reporterId String
+  messageUrl String
+  excerpt String
+  status String @default("pending")
+  createdAt DateTime @default(now()) @db.Date
+  reviewedAt DateTime? @db.Date
+  reviewerId String?
+  reviewAction String?
+  reviewMessageId String?
+  @@index([guildId, status, createdAt])
+}

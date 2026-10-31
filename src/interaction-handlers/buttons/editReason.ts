@@ -1,3 +1,4 @@
+import { isModerationStaff } from '../../lib/moderation/authorization.js';
 import { RadonButtonInteraction } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
 import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework';
@@ -16,10 +17,14 @@ export class EditReasonButtonHandler extends InteractionHandler {
 	}
 
 	public override async run(interaction: RadonButtonInteraction, result: InteractionHandler.ParseResult<this>) {
+		if (!interaction.guild) return;
+		const member = await interaction.guild.members.fetch({ user: interaction.user.id, force: true });
+		if (!(await isModerationStaff(member, this.container.prisma)))
+			return interaction.reply({ content: 'Only configured moderation staff can edit reasons.', ephemeral: true });
 		const { messageId } = result;
 
 		const message = interaction.message;
-		if (!message || message.author.id !== interaction.client.user.id) {
+		if (!message || message.id !== messageId || message.author.id !== interaction.client.user.id) {
 			return interaction.reply({
 				content: `This message isn't from me hence I can't edit!`,
 				ephemeral: true
@@ -31,7 +36,7 @@ export class EditReasonButtonHandler extends InteractionHandler {
 			.setTitle('Edit Reason');
 
 		let reason;
-		if (message.embeds[0].description?.startsWith('```')) reason = undefined;
+		if (message.embeds[0]?.description?.startsWith('```')) reason = undefined;
 		else reason = message.embeds[0].description?.trim();
 
 		const reasonInput = new TextInputBuilder()

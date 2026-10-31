@@ -38,9 +38,7 @@ export class UserCommand extends RadonCommand {
 			url: reply.resource?.message?.url
 		};
 
-		if (await interaction.guild.settings?.modlogs.modLogs_exist()) {
-			this.container.client.emit(RadonEvents.ModAction, data);
-		}
+		this.container.client.emit(RadonEvents.ModAction, data);
 
 		return;
 	}
