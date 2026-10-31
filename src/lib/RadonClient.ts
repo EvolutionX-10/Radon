@@ -2,6 +2,7 @@ import { ClientConfig } from '#config';
 import type { Settings, Utils } from '#lib/structures';
 import { PrismaClient } from '@prisma/client';
 import { container, SapphireClient } from '@sapphire/framework';
+import { performanceMetrics } from './utility/functions/metrics.js';
 
 export class RadonClient<Ready extends boolean = boolean> extends SapphireClient<Ready> {
 	public constructor() {
@@ -9,7 +10,19 @@ export class RadonClient<Ready extends boolean = boolean> extends SapphireClient
 	}
 
 	public override async login(token?: string): Promise<string> {
-		container.prisma = new PrismaClient();
+		if (performanceMetrics.enabled) {
+			const prisma = new PrismaClient({
+				log: [
+					{ emit: 'event', level: 'query' },
+					{ emit: 'event', level: 'error' }
+				]
+			});
+			prisma.$on('query', (event) => performanceMetrics.record('database:query', event.duration));
+			prisma.$on('error', () => performanceMetrics.record('database:error', undefined, false));
+			container.prisma = prisma;
+		} else {
+			container.prisma = new PrismaClient();
+		}
 		return super.login(token);
 	}
 

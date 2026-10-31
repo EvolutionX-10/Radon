@@ -6,6 +6,7 @@ import { version as sapphireVersion } from '@sapphire/framework';
 import { roundNumber } from '@sapphire/utilities';
 import { ContainerBuilder, MessageFlags, version, bold, heading, HeadingLevel } from 'discord.js';
 import { uptime } from 'node:os';
+import { performanceMetrics } from '../../lib/utility/functions/metrics.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	name: 'stats',
@@ -28,7 +29,7 @@ export class UserCommand extends RadonCommand {
 	public override chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		return interaction.reply({
 			components: [this.buildContainer()],
-			flags: MessageFlags.IsComponentsV2
+			flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral
 		});
 	}
 
@@ -46,6 +47,25 @@ export class UserCommand extends RadonCommand {
 				)
 			);
 			if (section !== 'Misc') container.addSeparatorComponents((s) => s);
+		}
+		if (performanceMetrics.enabled) {
+			const summaries = performanceMetrics
+				.snapshot()
+				.sort((a, b) => b.recentP95Ms - a.recentP95Ms)
+				.slice(0, 5);
+			container.addTextDisplayComponents((text) =>
+				text.setContent(
+					'## Performance\nProcess-local; counts and average since restart, p95 of up to 128 recent timings.\n' +
+						(summaries.length
+							? summaries
+									.map(
+										(s) =>
+											`- ${s.name}: ${s.count} runs, ${s.failures} failures; avg ${s.averageMs.toFixed(1)}ms, p95 ${s.recentP95Ms.toFixed(1)}ms`
+									)
+									.join('\n')
+							: 'No measurements yet.')
+				)
+			);
 		}
 
 		return container;
