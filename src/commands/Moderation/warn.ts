@@ -423,7 +423,9 @@ export class UserCommand extends RadonCommand {
 			});
 		}
 
-		const totalwarns = warn.warnlist.find((warn) => warn?.id === member.id)?.warns.length ?? 0;
+		const totalwarns =
+			warn.warnlist.find((person) => person.id === member.id)?.warns.filter((entry) => !entry.expiration || entry.expiration > warn.updatedAt!)
+				.length ?? 0;
 
 		const content = `${member} had their warning removed\n*They now have ${totalwarns} warning(s)*`;
 
