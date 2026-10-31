@@ -230,7 +230,6 @@ code {
 	display: none;
 }
 .hero {
-	overflow: clip;
 	position: relative;
 	display: grid;
 	grid-template-columns: 0.95fr 1.05fr;
@@ -316,6 +315,8 @@ h1 {
 	color: var(--lime);
 }
 .preview-scene {
+	overflow: clip;
+	overflow-clip-margin: 25px;
 	position: relative;
 	padding-block: 44px 30px;
 	min-width: 0;
