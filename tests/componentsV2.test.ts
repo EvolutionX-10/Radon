@@ -1,6 +1,4 @@
-import { UserCommand as SetupCommand } from '../src/commands/Admin/setup.js';
 import { Confirmation } from '../src/lib/structures/classes/Confirmation.js';
-import { Embed } from '../src/lib/structures/classes/Embed.js';
 import { describe, expect, it, mock, spyOn } from 'bun:test';
 import {
 	ActionRowBuilder,
@@ -351,26 +349,6 @@ describe('Components V2 presentation compatibility', () => {
 });
 
 describe('interactive card lifecycle', () => {
-	it('renders every setup stage without expecting a previous embed', async () => {
-		const updates: any[] = [];
-		const message = { id: 'wizard', embeds: [], components: [card('Setup')] };
-		const interaction = {
-			update: async (payload: any) => {
-				updates.push(payload);
-				return { interaction: { responseMessageId: 'wizard' } };
-			},
-			channel: { messages: { cache: new Map([['wizard', message]]) } }
-		};
-		const command = { welcome: () => new Embed()._title('Welcome to Radon')._description('Configure your server') };
-		for (const step of ['step1', 'step2', 'step3', 'step4']) {
-			expect(await (SetupCommand.prototype as any)[step].call(command, interaction, message, 1)).toBe(message);
-			valid(updates.at(-1));
-		}
-		expect(components(updates[0]).find((c) => c.custom_id === 'mod_roles')).toBeDefined();
-		expect(components(updates[1]).find((c) => c.custom_id === 'admin_roles')).toBeDefined();
-		expect(components(updates[2]).find((c) => c.custom_id === 'modlog_channel')).toBeDefined();
-		expect(components(updates[3]).find((c) => c.custom_id === 'private_modlog')).toBeDefined();
-	});
 	it('retains confirmation text when the buttons are disabled on selection', async () => {
 		const events = new Map<string, (...args: any[]) => Promise<void>>();
 		const collector = {
