@@ -29,6 +29,8 @@ Help reflects your access in the current server and channel, including configure
 
 Use `/guide` for the first-time coupon walkthrough, supported games, optional vote rewards, and troubleshooting. Existing `/claim` commands and Solo Leveling CLAIM buttons work as before; choose the optional `game` field for Seven Knights Re:BIRTH or The Seven Deadly Sins: Idle Adventure. `/vote` offers an optional 24-hour Supporter Pass for extra saved accounts and personal coupon alerts. See the [player guide](docs/player-guide.md) and [vote rewards setup](docs/vote-rewards.md).
 
+Use `/bug` to report a problem privately to the bot owner. Reports are saved with a reference; misuse will lead to a ban from the bot. The owner can review them with `/bugreports`. Use `/updates` to read recent changes or select an older release. The website shares the same update history. See [bug reporting](docs/bug-reports.md) and [maintaining updates](docs/updates.md).
+
 For developers: help reads the live application registrations and command preconditions. When guarding an individual route with `@PermissionLevel`, pass its subcommand path as the second argument (for example, `@PermissionLevel('Administrator', 'action create')`) so help uses the same guard declaration. Add temporarily unavailable routes to the command's `unavailableSubcommands` list.
 
 ## Beta Testing for Radon
@@ -64,6 +66,8 @@ checking, the offline test suite, and opt-in database tests against a disposable
 local MongoDB replica set. Setup and checks do not log in to Discord
 or apply database schema changes. Running the bot requires your configured
 Discord and MongoDB credentials.
+
+Run `bun run test:coverage` to generate a terminal coverage summary and `coverage/lcov.info`. CI retains this report as an artifact. The website has its own lint, build, and browser checks in `web/`; see its README for commands.
 
 The [implementation checklist](docs/implementation-checklist.md) tracks the
 moderation improvements, individual PR review order, and remaining rollout checks.

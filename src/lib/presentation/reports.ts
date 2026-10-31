@@ -1,5 +1,5 @@
 import { ButtonBuilder, ButtonStyle } from 'discord.js';
-import { card, date, divider, person, safe, text, type Identity } from './components.js';
+import { card, date, divider, person, safe, text, type Identity } from '#lib/presentation/components.js';
 
 interface ReportDisplay {
 	id: string;

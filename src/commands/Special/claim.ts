@@ -1,7 +1,7 @@
-import { v2 } from '../../lib/presentation/components.js';
+import { v2 } from '#lib/presentation/components.js';
 import { Emojis } from '#constants';
-import { RadonCommand } from '#lib/structures';
-import { sec } from '#lib/utility';
+import { RadonCommand } from '#lib/structures/commands/RadonCommand.js';
+import { sec } from '#lib/utility/functions/duration.js';
 import { ApplyOptions } from '@sapphire/decorators';
 import { RegisterBehavior } from '@sapphire/framework';
 import {
@@ -12,16 +12,16 @@ import {
 	InteractionContextType,
 	MessageFlags,
 	PermissionFlagsBits,
-	escapeMarkdown
+	escapeMarkdown,
+	type SlashCommandStringOption
 } from 'discord.js';
-import { accountOwnerKey, games, getGame } from '../../lib/redemption/games.js';
-import { accountLimit, supporterUntil } from '../../lib/rewards/service.js';
-import { subscribeCoupons } from '../../lib/rewards/alerts.js';
-import type { SlashCommandStringOption } from 'discord.js';
-import { canPostCoupon, claimButtonId } from '../../lib/redemption/posts.js';
-import { deleteMemberCode, saveMemberCode } from '../../lib/redemption/persistence.js';
-import { redemptionService, runClaims } from '../../lib/redemption/runtime.js';
-import { makeNetmarbleAdapter, maskMemberCode, RedemptionError, receiptKey, validateCoupon } from '../../lib/redemption/service.js';
+import { accountOwnerKey, games, getGame } from '#lib/redemption/games.js';
+import { accountLimit, supporterUntil } from '#lib/rewards/service.js';
+import { subscribeCoupons } from '#lib/rewards/alerts.js';
+import { canPostCoupon, claimButtonId } from '#lib/redemption/posts.js';
+import { deleteMemberCode, saveMemberCode } from '#lib/redemption/persistence.js';
+import { redemptionService, runClaims } from '#lib/redemption/runtime.js';
+import { makeNetmarbleAdapter, maskMemberCode, RedemptionError, receiptKey, validateCoupon } from '#lib/redemption/service.js';
 
 @ApplyOptions<RadonCommand.Options>({ description: 'Claim game coupons; defaults to Solo Leveling: ARISE', cooldownDelay: sec(3) })
 export class UserCommand extends RadonCommand {

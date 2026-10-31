@@ -1,9 +1,9 @@
-import { v2 } from '../../lib/presentation/components.js';
-import { RadonCommand } from '#lib/structures';
+import { v2 } from '#lib/presentation/components.js';
+import { RadonCommand } from '#lib/structures/commands/RadonCommand.js';
 import { ApplyOptions } from '@sapphire/decorators';
 import { InteractionContextType, MessageFlags } from 'discord.js';
-import { supporterUntil, voteService } from '../../lib/rewards/service.js';
-import { rewardButtons, rewardContainer } from '../../lib/rewards/presentation.js';
+import { supporterUntil, voteService } from '#lib/rewards/service.js';
+import { rewardButtons, rewardContainer } from '#lib/rewards/presentation.js';
 
 @ApplyOptions<RadonCommand.Options>({ description: 'Vote optionally to unlock account slots and personal coupon alerts' })
 export class UserCommand extends RadonCommand {

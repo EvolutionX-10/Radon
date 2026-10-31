@@ -1,10 +1,12 @@
-import type { Metadata } from 'next';
 import Link from 'next/link';
+import { DocumentHeading } from '@/components/document-heading';
+import { pageMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-	title: 'Terms of Service',
-	description: 'Terms for using the Radon Discord bot for moderation, game coupon claiming, and server utilities.'
-};
+export const metadata = pageMetadata(
+	'Terms of Service',
+	'Terms for using the Radon Discord bot for moderation, game coupon claiming, and server utilities.',
+	'/terms-of-service'
+);
 
 const sections = [
 	{
@@ -25,7 +27,7 @@ const sections = [
 	},
 	{
 		title: '5. Prohibited use',
-		body: 'You may not use Radon to harass users, automate abuse, bypass platform enforcement, or perform unlawful activity.'
+		body: 'You may not use Radon to harass users, automate abuse, bypass platform enforcement, or perform unlawful activity. Misusing bug reports, including spam, harassment, or deliberately false reports, will lead to a ban from using the bot.'
 	},
 	{
 		title: '6. Limitation of liability',
@@ -40,17 +42,10 @@ const sections = [
 export default function TermsOfServicePage() {
 	return (
 		<article className="container legal-page">
-			<header className="document-heading">
-				<Link href="/" className="text-link">
-					← Back to Radon
-				</Link>
-				<p className="eyebrow">THE GOOD-TO-KNOW STUFF</p>
-				<h1>Terms of Service</h1>
-				<p>
-					These terms apply to use of Radon, a Discord bot for moderation, game coupon claiming, and server utilities. Effective date:
-					October 31, 2026.
-				</p>
-			</header>
+			<DocumentHeading eyebrow="THE GOOD-TO-KNOW STUFF" title="Terms of Service">
+				These terms apply to use of Radon, a Discord bot for moderation, game coupon claiming, and server utilities. Effective date: October
+				31, 2026.
+			</DocumentHeading>
 			<div className="document-sections">
 				{sections.map((section) => (
 					<section key={section.title} className="document-section">

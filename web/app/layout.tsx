@@ -14,10 +14,25 @@ const description = 'Your server’s new favorite teammate. Claim game coupons, 
 
 export const metadata: Metadata = {
 	metadataBase: new URL(site.url),
-	title: { default: 'Radon | Your server. A whole lot more alive.', template: '%s | Radon' },
+	title: { default: 'Radon Discord Bot | Game Coupons & Moderation', template: '%s | Radon' },
 	description,
-	openGraph: { type: 'website', locale: 'en_US', siteName: 'Radon', title: 'Radon | Your server. A whole lot more alive.', description },
-	twitter: { card: 'summary_large_image', title: 'Radon | Your server. A whole lot more alive.', description }
+	openGraph: {
+		type: 'website',
+		locale: 'en_US',
+		siteName: 'Radon',
+		title: 'Radon Discord Bot | Game Coupons & Moderation',
+		description,
+		images: [
+			{ url: `${site.url}/opengraph-image`, width: 1200, height: 630, alt: 'Radon — game rewards, moderation, and a better Discord community.' }
+		]
+	},
+	twitter: {
+		card: 'summary_large_image',
+		title: 'Radon Discord Bot | Game Coupons & Moderation',
+		description,
+		images: [`${site.url}/opengraph-image`]
+	},
+	robots: { index: true, follow: true }
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -46,6 +61,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 								<Link href="/#features">Features</Link>
 								<Link href="/#games">Supported games</Link>
 								<Link href="/#commands">Commands</Link>
+								<Link href="/updates">What’s new</Link>
 							</div>
 							<div>
 								<span>GOOD TO KNOW</span>

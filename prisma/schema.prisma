@@ -7,6 +7,33 @@ datasource db {
   url      = env("MONGO")
 }
 
+// Private bot bug inbox. This is separate from guild moderation reports/blacklists.
+model bugReport {
+  id          String   @id @map("_id")
+  reporterId  String
+  guildId     String
+  channelId   String
+  summary     String
+  details     String
+  status      String   @default("open")
+  createdAt   DateTime @default(now()) @db.Date
+  reviewedAt  DateTime? @db.Date
+  reviewerId  String?
+  reviewNote  String?
+
+  @@index([status, createdAt, id])
+  @@index([reporterId, createdAt])
+}
+
+model bugReporter {
+  id           String   @id @map("_id")
+  nextReportAt DateTime @db.Date
+  banned       Boolean  @default(false)
+  banReason    String?
+  bannedBy     String?
+  updatedAt    DateTime @updatedAt @db.Date
+}
+
 type MemberWarnData {
   id    String @map("_id")
   warns Warn[]

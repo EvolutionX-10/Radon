@@ -1,6 +1,6 @@
 import { PermissionFlagsBits, type GuildMember } from 'discord.js';
-import { validateCoupon } from './service.js';
-import { getGame } from './games.js';
+import { validateCoupon } from '#lib/redemption/service.js';
+import { getGame } from '#lib/redemption/games.js';
 
 export function claimButtonId(game: string, code: string, expiresAt = 0) {
 	getGame(game);

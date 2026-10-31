@@ -1,5 +1,5 @@
 import type { Prisma, PrismaClient } from '@prisma/client';
-import { randomUUID, RedemptionError, receiptKey, type ReceiptStore, type Reservation } from './service.js';
+import { randomUUID, RedemptionError, receiptKey, type ReceiptStore, type Reservation } from '#lib/redemption/service.js';
 
 export class PrismaReceipts implements ReceiptStore {
 	public constructor(private readonly prisma: PrismaClient) {}

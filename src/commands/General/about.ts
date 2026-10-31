@@ -1,6 +1,9 @@
 import { Emojis, RecommendedPermissions, UserFlags, voteRow } from '#constants';
-import { Button, RadonCommand, Row, Timestamp } from '#lib/structures';
-import { isOwner } from '#lib/utility';
+import { RadonCommand } from '#lib/structures/commands/RadonCommand.js';
+import { Button } from '#lib/structures/classes/Button.js';
+import { Row } from '#lib/structures/classes/Row.js';
+import { Timestamp } from '#lib/structures/classes/Timestamp.js';
+import { isOwner } from '#lib/utility/functions/permissions.js';
 import { ApplyOptions } from '@sapphire/decorators';
 import {
 	italic,

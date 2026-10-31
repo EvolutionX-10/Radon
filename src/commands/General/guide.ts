@@ -1,7 +1,7 @@
-import { RadonCommand } from '#lib/structures';
+import { RadonCommand } from '#lib/structures/commands/RadonCommand.js';
 import { ApplyOptions } from '@sapphire/decorators';
 import { InteractionContextType, MessageFlags } from 'discord.js';
-import { guideContainer, guideTopics, type GuideTopic } from '../../lib/redemption/guide.js';
+import { guideContainer, guideTopics, type GuideTopic } from '#lib/redemption/guide.js';
 
 @ApplyOptions<RadonCommand.Options>({ description: 'Learn coupon claiming, supported games, and optional vote rewards' })
 export class UserCommand extends RadonCommand {

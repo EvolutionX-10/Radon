@@ -23,10 +23,37 @@ import { CommandBrowser } from '@/components/command-browser';
 import { GameArt } from '@/components/game-art';
 import { FAQ } from '@/components/faq';
 import { games, site } from '@/lib/site';
+import { pageMetadata } from '@/lib/metadata';
+import { updates, updateDate } from '@/lib/updates';
+
+export const metadata = pageMetadata(
+	'Game Coupons & Discord Moderation',
+	'Meet Radon: a free Discord bot for Solo Leveling, Seven Knights, and 7DS game coupons, moderation tools, server utilities, and optional voting perks.',
+	'/'
+);
+
+const structuredData = {
+	'@context': 'https://schema.org',
+	'@graph': [
+		{ '@type': 'WebSite', '@id': `${site.url}/#website`, name: 'Radon', url: site.url, inLanguage: 'en', description: metadata.description },
+		{
+			'@type': 'SoftwareApplication',
+			'@id': `${site.url}/#bot`,
+			name: 'Radon',
+			url: site.url,
+			applicationCategory: 'CommunicationApplication',
+			operatingSystem: 'Discord',
+			description: metadata.description,
+			offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+			featureList: ['Game coupon claiming', 'Discord moderation', 'Server utilities', 'Optional vote rewards']
+		}
+	]
+};
 
 export default function Home() {
 	return (
 		<>
+			<script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, '\\u003c') }} />
 			<section className="hero container" aria-labelledby="hero-title">
 				<div className="hero-copy">
 					<Link href="#games" className="announcement">
@@ -371,6 +398,32 @@ export default function Home() {
 					<p className="support-fineprint">
 						Always optional. Free claiming stays free. Perks require a verified vote, last 24 hours, and don’t stack.
 					</p>
+				</article>
+			</section>
+			<section className="container updates-preview" aria-labelledby="updates-title">
+				<div>
+					<span className="eyebrow">
+						<span />
+						THE LATEST FROM RADON
+					</span>
+					<h2 id="updates-title">Always a little better.</h2>
+					<p>
+						New features and fixes, in one place. You can catch up in Discord with <code>/updates</code>, too.
+					</p>
+					<Link href="/updates" className="text-link">
+						See all updates
+						<ArrowUpRight size={16} aria-hidden="true" />
+					</Link>
+				</div>
+				<article className="latest-update">
+					<time dateTime={updates[0].date}>{updateDate(updates[0].date)}</time>
+					<h3>
+						<Link href={`/updates#${updates[0].id}`}>
+							{updates[0].title}
+							<ArrowUpRight size={18} aria-hidden="true" />
+						</Link>
+					</h3>
+					<p>{updates[0].summary}</p>
 				</article>
 			</section>
 			<section className="section container faq-section" aria-labelledby="faq-title">

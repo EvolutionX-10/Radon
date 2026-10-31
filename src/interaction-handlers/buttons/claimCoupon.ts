@@ -1,10 +1,10 @@
-import { v2 } from '../../lib/presentation/components.js';
+import { v2 } from '#lib/presentation/components.js';
 import { ApplyOptions } from '@sapphire/decorators';
 import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework';
 import { MessageFlags, ModalBuilder, TextInputStyle, type ButtonInteraction } from 'discord.js';
-import { disableClaimButtons, parseClaimButton } from '../../lib/redemption/posts.js';
-import { runClaims } from '../../lib/redemption/runtime.js';
-import { accountOwnerKey, getGame } from '../../lib/redemption/games.js';
+import { disableClaimButtons, parseClaimButton } from '#lib/redemption/posts.js';
+import { runClaims } from '#lib/redemption/runtime.js';
+import { accountOwnerKey, getGame } from '#lib/redemption/games.js';
 
 @ApplyOptions<InteractionHandler.Options>({ interactionHandlerType: InteractionHandlerTypes.Button })
 export class ButtonHandler extends InteractionHandler {

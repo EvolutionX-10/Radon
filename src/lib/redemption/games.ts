@@ -1,4 +1,4 @@
-import { RedemptionError } from './service.js';
+import { RedemptionError } from '#lib/redemption/service.js';
 
 export const games = [
 	{ id: 'sololv', name: 'Solo Leveling: ARISE', minLength: 30, maxLength: 36 },

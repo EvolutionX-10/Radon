@@ -1,11 +1,11 @@
-import { v2 } from '../../lib/presentation/components.js';
+import { v2 } from '#lib/presentation/components.js';
 import { Prefixes } from '#constants';
-import type { PermissionLevel } from '#lib/decorators';
-import { RadonCommand } from '#lib/structures';
-import { canUseApplicationCommand } from '../../lib/structures/help/applicationPermissions.js';
-import { canDiscoverCommand, getApplicationHelpEntries } from '../../lib/structures/help/catalogue.js';
-import { buildHelpContainer, getHelpCategories, getHelpPage, type HelpEntry, type HelpState } from '../../lib/structures/help/layout.js';
-import { mins } from '#lib/utility';
+import type { PermissionLevel } from '#lib/decorators/PermissionLevel.js';
+import { RadonCommand } from '#lib/structures/commands/RadonCommand.js';
+import { canUseApplicationCommand } from '#lib/structures/help/applicationPermissions.js';
+import { canDiscoverCommand, getApplicationHelpEntries } from '#lib/structures/help/catalogue.js';
+import { buildHelpContainer, getHelpCategories, getHelpPage, type HelpEntry, type HelpState } from '#lib/structures/help/layout.js';
+import { mins } from '#lib/utility/functions/duration.js';
 import { ApplyOptions } from '@sapphire/decorators';
 import { ApplicationCommandType, InteractionContextType, MessageFlags } from 'discord.js';
 

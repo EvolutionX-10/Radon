@@ -1,30 +1,30 @@
-import type { Metadata } from 'next';
-import Link from 'next/link';
-import { ArrowLeft, ArrowUpRight, Info, ShieldCheck } from 'lucide-react';
+import { ArrowUpRight, Info, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { DocumentHeading } from '@/components/document-heading';
 import { games, site } from '@/lib/site';
+import { pageMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-	title: 'Getting started',
-	description: 'Your Radon player guide: add the Discord bot, save game accounts, claim coupons, and understand optional Supporter Pass perks.'
-};
+export const metadata = pageMetadata(
+	'Getting started',
+	'Your Radon player guide: add the Discord bot, save game accounts, claim coupons, and understand optional Supporter Pass perks.',
+	'/guide'
+);
 
 export default function GuidePage() {
 	return (
 		<div className="container guide-page">
-			<header className="document-heading">
-				<Link href="/" className="text-link">
-					<ArrowLeft size={14} />
-					Back to the good stuff
-				</Link>
-				<p className="eyebrow">A LITTLE HELP GETTING STARTED</p>
-				<h1>
-					Your next move,
-					<br />
-					<span className="lavender-text">made simple.</span>
-				</h1>
-				<p>From adding Radon to claiming your first reward. Everything happens in Discord, right where your community already is.</p>
-			</header>
+			<DocumentHeading
+				eyebrow="A LITTLE HELP GETTING STARTED"
+				title={
+					<>
+						Your next move,
+						<br />
+						<span className="lavender-text">made simple.</span>
+					</>
+				}
+			>
+				From adding Radon to claiming your first reward. Everything happens in Discord, right where your community already is.
+			</DocumentHeading>
 			<div className="guide-layout">
 				<nav className="guide-nav" aria-label="On this page">
 					<span>IN THIS GUIDE</span>
