@@ -7,7 +7,12 @@ import { UserListener } from '../src/listeners/Moderation/warnAction.js';
 import { RadonEvents } from '../src/lib/types/Events.js';
 import { makeExecutor, makeMember, makeUserTarget } from './fixtures/moderation.js';
 
-function fixture() {
+function fixture(
+	prisma = {
+		$runCommandRaw: mock(async () => ({ ok: 1, value: null })),
+		moderationScheduledBan: { findUnique: mock(async () => null) }
+	}
+) {
 	const moderator = makeExecutor();
 	const target = makeMember();
 	Object.assign(target, { guild: moderator.guild });
@@ -18,10 +23,23 @@ function fixture() {
 			throw Object.assign(new Error('Unknown member'), { code: 10007 });
 		})
 	});
-	return { moderator, target, service: new ModerationAction(moderator.guild) };
+	return { moderator, target, service: new ModerationAction(moderator.guild, prisma as never) };
 }
 
 describe('shared moderation execution', () => {
+	it('refuses a replacement ban before dispatch when its schedule cannot be checked', async () => {
+		const prisma = {
+			$runCommandRaw: mock(async () => ({ ok: 1, value: null })),
+			moderationScheduledBan: {
+				findUnique: mock(async () => {
+					throw new Error('Schedule storage unavailable');
+				})
+			}
+		};
+		const { moderator, target, service } = fixture(prisma);
+		await expect(service.invoke({ moderator, target, action: 'ban' })).rejects.toThrow('Schedule storage unavailable');
+		expect(moderator.guild.bans.create).not.toHaveBeenCalled();
+	});
 	it('bans non-members by ID with the requested deletion interval', async () => {
 		const { moderator, service } = fixture();
 		await service.invoke({ moderator, target: makeUserTarget(), action: 'ban', reason: 'spam' }, { deleteMessageSeconds: 172_800 });
@@ -143,5 +161,65 @@ describe('role settings snapshots', () => {
 		modRoles = [];
 		expect((await roles.snapshot()).mods).toEqual([]);
 		expect(findUnique).toHaveBeenCalledTimes(2);
+	});
+});
+
+describe('temporary-ban dispatch and replacement failure outcomes', () => {
+	function dispatchFixture(status: 'preparing' | 'scheduled' | 'cancelled' = 'preparing', failure?: Error) {
+		const now = new Date();
+		const task = { id: 'guild:target', generation: 'generation', expectedReason: 'marked reason', status, dueAt: now, leaseUntil: null };
+		const writes: any[] = [];
+		const prisma = {
+			moderationScheduledBan: { findUnique: mock(async () => task) },
+			$runCommandRaw: mock(async (q: any) => {
+				writes.push(q);
+				return { ok: 1, value: { _id: task.id } };
+			})
+		};
+		const f = fixture(prisma as never);
+		const put = mock(async () => {
+			if (failure) throw failure;
+		});
+		Object.assign(f.moderator.guild, { client: { rest: { put } } });
+		Object.assign(f.moderator.guild.bans, { cache: new Map() });
+		return { ...f, writes, put };
+	}
+	it('does not send the ban if its preparation was cancelled before dispatch', async () => {
+		const f = dispatchFixture('cancelled');
+		await expect(
+			f.service.invoke(
+				{ moderator: f.moderator, target: f.target, action: 'ban', reason: 'marked reason' },
+				{ temporaryBanGeneration: 'generation' }
+			)
+		).rejects.toThrow('cancelled or replaced');
+		expect(f.put).not.toHaveBeenCalled();
+		expect(f.writes).toHaveLength(0);
+	});
+	it('activates a successful temporary ban only under its exact dispatch token', async () => {
+		const f = dispatchFixture();
+		await f.service.invoke(
+			{ moderator: f.moderator, target: f.target, action: 'ban', reason: 'marked reason' },
+			{ temporaryBanGeneration: 'generation' }
+		);
+		expect(f.put).toHaveBeenCalledTimes(1);
+		expect(f.writes[1].query.leaseOwner).toBe(f.writes[0].update.$set.leaseOwner);
+		expect(f.writes[1].update.$set).toMatchObject({ status: 'scheduled', leaseOwner: null, leaseUntil: null });
+	});
+	it('does not cancel the original expiry after a definite replacement rejection', async () => {
+		const f = dispatchFixture('scheduled', Object.assign(new Error('Forbidden'), { status: 403 }));
+		await expect(f.service.invoke({ moderator: f.moderator, target: f.target, action: 'ban', reason: 'replacement' })).rejects.toThrow(
+			'Forbidden'
+		);
+		expect(f.writes[1].update.$set.status).toBeUndefined();
+		expect(f.writes[1].update.$set.leaseOwner).toBeNull();
+	});
+	it('retains the reservation on an unknown replacement outcome and uses a distinct marker', async () => {
+		const f = dispatchFixture('scheduled', new Error('network timeout'));
+		await expect(f.service.invoke({ moderator: f.moderator, target: f.target, action: 'ban', reason: 'marked reason' })).rejects.toThrow(
+			'network timeout'
+		);
+		expect(f.put.mock.calls[0][1].reason).toContain('Radon replacement ban');
+		expect(f.writes[1].update.$set.status).toBeUndefined();
+		expect(f.writes[1].update.$set.leaseOwner).toBeUndefined();
 	});
 });

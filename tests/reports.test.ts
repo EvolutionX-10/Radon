@@ -61,6 +61,6 @@ describe('private report storage and reviews', () => {
 		const prisma = {
 			$runCommandRaw: async () => ({ ok: 1, value: { _id: 'case' }, writeConcernError: { code: 64 } })
 		} as unknown as PrismaClient;
-		expect(atomicUpdate(prisma, 'moderationCase', { _id: 'case' }, { $set: { reason: 'new' } })).rejects.toThrow('did not confirm');
+		await expect(atomicUpdate(prisma, 'moderationCase', { _id: 'case' }, { $set: { reason: 'new' } })).rejects.toThrow('did not confirm');
 	});
 });

@@ -1,12 +1,27 @@
 import type { GuildInteraction, ModActionData, TimeoutActionData } from '#lib/types';
 import { isGuildOwner, isModerator, isOwner, runAllChecks } from '#lib/utility';
-import { Guild, User } from 'discord.js';
+import { Guild, User, Routes } from 'discord.js';
+import { container } from '@sapphire/framework';
+import type { PrismaClient } from '@prisma/client';
+import {
+	guardScheduledBanReplacement,
+	assertBanDispatchWindow,
+	banDispatchReason,
+	finishBanDispatch,
+	recoverBanDispatch
+} from '../../moderation/temporaryBans.js';
 
 export class ModerationAction {
-	public constructor(public readonly guild: Guild) {}
+	public constructor(
+		public readonly guild: Guild,
+		private readonly prisma?: PrismaClient
+	) {}
 
 	/** Resolves only after the entire action succeeds; callers may log success afterwards. */
-	public async invoke(data: ModActionData, options: { deleteMessageSeconds?: number; removeTimeout?: boolean } = {}) {
+	public async invoke(
+		data: ModActionData,
+		options: { deleteMessageSeconds?: number; removeTimeout?: boolean; temporaryBanGeneration?: string } = {}
+	) {
 		const { action, reason } = data;
 		if (data.moderator.guild.id !== this.guild.id) throw new Error('The moderator must belong to this server.');
 		// Confirmations can outlive a role revocation. Fetch current membership before executing.
@@ -35,8 +50,45 @@ export class ModerationAction {
 			case 'softban': {
 				const seconds = options.deleteMessageSeconds ?? (action === 'softban' ? 86_400 : 0);
 				if (!Number.isInteger(seconds) || seconds < 0 || seconds > 604_800) throw new Error('Message deletion must be between 0 and 7 days.');
-				await this.guild.bans.create(target.id, { deleteMessageSeconds: seconds, reason });
-				if (action === 'softban') await this.guild.members.unban(target.id, reason);
+				const dispatch = await guardScheduledBanReplacement(
+					this.prisma ?? container.prisma,
+					this.guild.id,
+					target.id,
+					reason ?? '',
+					options.temporaryBanGeneration
+				);
+				if (!dispatch) {
+					await this.guild.bans.create(target.id, { deleteMessageSeconds: seconds, reason });
+					if (action === 'softban') await this.guild.members.unban(target.id, reason);
+				} else {
+					let submitted = false;
+					try {
+						assertBanDispatchWindow(dispatch);
+						submitted = true;
+						await this.guild.client.rest.put(Routes.guildBan(this.guild.id, target.id), {
+							body: { delete_message_seconds: seconds },
+							reason: banDispatchReason(dispatch, reason ?? ''),
+							signal: AbortSignal.timeout(60_000)
+						});
+						this.guild.bans.cache.delete(target.id);
+						if (action === 'softban') {
+							assertBanDispatchWindow(dispatch);
+							await this.guild.client.rest.delete(Routes.guildBan(this.guild.id, target.id), {
+								reason,
+								signal: AbortSignal.timeout(60_000)
+							});
+							this.guild.bans.cache.delete(target.id);
+						}
+						if (!(await finishBanDispatch(this.prisma ?? container.prisma, dispatch)))
+							throw new Error('The ban completed but its persisted schedule outcome could not be confirmed.');
+					} catch (error) {
+						const status = (error as { status?: number }).status;
+						const definiteFailure =
+							!submitted || (typeof status === 'number' && status >= 400 && status < 500 && status !== 408 && status !== 429);
+						await recoverBanDispatch(this.prisma ?? container.prisma, dispatch, error, definiteFailure);
+						throw error;
+					}
+				}
 				break;
 			}
 			case 'kick':
