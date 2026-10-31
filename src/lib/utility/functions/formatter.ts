@@ -52,6 +52,7 @@ const order: Record<PermissionsString, number> = {
 	ReadMessageHistory: 3,
 	Connect: 4,
 	Speak: 5,
+	SetVoiceChannelStatus: 5,
 	UseEmbeddedActivities: 5,
 	Stream: 5,
 	UseSoundboard: 5,

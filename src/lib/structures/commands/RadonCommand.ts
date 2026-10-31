@@ -1,4 +1,5 @@
 import type { GuildSettings } from '#lib/structures';
+import { getSubcommandPermissions } from '../help/subcommandPermissions.js';
 import type { GuildMessage } from '#lib/types';
 import { PermissionLevels } from '#lib/types';
 import {
@@ -22,6 +23,10 @@ import {
 	MessageContextMenuCommandInteraction as MessageCTXCommandInteraction
 } from 'discord.js';
 export abstract class RadonCommand extends Command {
+	/** Method-level guards registered by PermissionLevel for help discovery. */
+	public readonly subcommandPermissions = getSubcommandPermissions(this);
+	/** Registered routes that currently cannot perform their action. */
+	public readonly unavailableSubcommands: readonly string[] = [];
 	/**
 	 * Whether the command can be disabled.
 	 */

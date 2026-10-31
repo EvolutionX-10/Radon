@@ -310,7 +310,7 @@ export class UserCommand extends RadonCommand {
 		return interaction.showModal(modal);
 	}
 
-	@PermissionLevel('Administrator')
+	@PermissionLevel('Administrator', 'all text')
 	private unlockAllText(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const role = interaction.options.getRole('role') ?? interaction.guild.roles.everyone;
 		if (!this.checkRole(role)) {
@@ -336,7 +336,7 @@ export class UserCommand extends RadonCommand {
 		return interaction.showModal(modal);
 	}
 
-	@PermissionLevel('Administrator')
+	@PermissionLevel('Administrator', 'all voice')
 	private async unlockAllVoice(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const role = interaction.options.getRole('role') ?? interaction.guild.roles.everyone;
 
@@ -371,7 +371,7 @@ export class UserCommand extends RadonCommand {
 		return interaction.editReply(content);
 	}
 
-	@PermissionLevel('Administrator')
+	@PermissionLevel('Administrator', 'all thread')
 	private unlockAllThread(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const role = interaction.options.getRole('role') ?? interaction.guild.roles.everyone;
 		if (!this.checkRole(role)) {
@@ -397,7 +397,7 @@ export class UserCommand extends RadonCommand {
 		return interaction.showModal(modal);
 	}
 
-	@PermissionLevel('Administrator')
+	@PermissionLevel('Administrator', 'server')
 	private unlockServer(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const role = interaction.options.getRole('role') ?? interaction.guild.roles.everyone;
 		const deep = interaction.options.getBoolean('deep') ?? false;
