@@ -2,13 +2,18 @@ import type { RadonCommand } from '#lib/structures';
 import { isAdmin, isGuildOwner, isModerator, isOwner } from '#lib/utility';
 import { UserError } from '@sapphire/framework';
 import type { GuildMember } from 'discord.js';
+import { registerSubcommandPermission } from '../structures/help/subcommandPermissions.js';
 
-export const PermissionLevel = (level: PermissionLevel) => {
-	return function <This, Args extends [RadonCommand.ChatInputCommandInteraction, ...unknown[]], Return>(
+export const PermissionLevel = (level: PermissionLevel, subcommand?: string) => {
+	function decorate<This, Args extends [RadonCommand.ChatInputCommandInteraction, ...unknown[]], Return>(
 		method: (this: This, ...args: Args) => Return,
-		_context: ClassMethodDecoratorContext<This, (this: This, ...args: Args) => Return>
-	) {
-		return function (this: This, ...args: Args): Return {
+		context: ClassMethodDecoratorContext<This, (this: This, ...args: Args) => Return>
+	): (this: This, ...args: Args) => Return;
+	function decorate(target: object, key: string | symbol, descriptor: PropertyDescriptor): PropertyDescriptor;
+	function decorate(methodOrTarget: unknown, _contextOrKey: unknown, descriptor?: PropertyDescriptor): unknown {
+		// Bun 1.3 uses legacy decorators; TypeScript also supports the standard signature.
+		const method = (descriptor?.value ?? methodOrTarget) as (...args: [RadonCommand.ChatInputCommandInteraction, ...unknown[]]) => unknown;
+		const guarded = function (this: unknown, ...args: [RadonCommand.ChatInputCommandInteraction, ...unknown[]]) {
 			const interaction = args[0];
 
 			const check = async () => {
@@ -58,9 +63,12 @@ export const PermissionLevel = (level: PermissionLevel) => {
 				}
 			};
 
-			return check().then(() => method.apply(this, args)) as Return;
+			return check().then(() => method.apply(this, args));
 		};
-	};
+		if (subcommand) registerSubcommandPermission(guarded, subcommand, level);
+		return descriptor ? { ...descriptor, value: guarded } : guarded;
+	}
+	return decorate;
 };
 
 export type PermissionLevel = 'Administrator' | 'Moderator' | 'ServerOwner' | 'Everyone';

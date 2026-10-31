@@ -32,6 +32,7 @@ import {
 	cooldownLimit: 2
 })
 export class UserCommand extends RadonCommand {
+	public override readonly unavailableSubcommands = ['bulk add', 'bulk remove'];
 	public override chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const subcmd = interaction.options.getSubcommand();
 

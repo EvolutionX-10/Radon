@@ -13,12 +13,21 @@
 ## Table of Contents
 
 - [Invite](#invite-radon-to-your-server-click-here)
+- [Command Help](#command-help)
 - [Beta Testing](#beta-testing-for-radon)
 - [Developing on Radon](#developing-on-radon)
 - [Contributing](#contributing)
 - [Project Stats](#project-stats)
 
 ## Invite Radon to your server [`Click here`][invite]
+
+## Command Help
+
+Run `/help` in a server to open a private Components V2 command browser. Choose a category or use First, Back, Next, and Last to browse commands and their usage. `<argument>` means required and `[argument]` means optional. Controls expire after five minutes; run `/help` again to refresh the list.
+
+Help reflects your access in the current server and channel, including configured moderator/admin roles, bot owner access, community restrictions, Discord command permissions, and commands registered only in specific servers. It includes slash subcommands, context menus (right-click → Apps), and eligible prefix commands. Disabled commands are omitted, and browsing does not consume command cooldowns. Target-specific checks such as role hierarchy still apply when running a command.
+
+For developers: help reads the live application registrations and command preconditions. When guarding an individual route with `@PermissionLevel`, pass its subcommand path as the second argument (for example, `@PermissionLevel('Administrator', 'action create')`) so help uses the same guard declaration. Add temporarily unavailable routes to the command's `unavailableSubcommands` list.
 
 ## Beta Testing for Radon
 

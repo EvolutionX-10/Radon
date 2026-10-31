@@ -542,7 +542,7 @@ export class UserCommand extends RadonCommand {
 		return description;
 	}
 
-	@PermissionLevel('Administrator')
+	@PermissionLevel('Administrator', 'action create')
 	private async createAction(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const action = interaction.options.getString('action', true) as warnAction;
 		const severity = interaction.options.getInteger('severity', true);
@@ -598,7 +598,7 @@ export class UserCommand extends RadonCommand {
 		});
 	}
 
-	@PermissionLevel('Administrator')
+	@PermissionLevel('Administrator', 'action remove')
 	private async removeAction(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const severity = interaction.options.getInteger('severity', true);
 		const rem = await interaction.guild.settings?.warns?.removeAction(severity);
