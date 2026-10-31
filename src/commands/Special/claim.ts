@@ -287,9 +287,9 @@ export class UserCommand extends RadonCommand {
 		const saved = await this.container.prisma.memberCodes.findUnique({
 			where: { id: accountOwnerKey(interaction.user.id, interaction.options.getString('game') ?? 'sololv') }
 		});
-		const preview = saved?.memberCodes[0]
-			? await redemptionService(this.container.prisma).preview(game.id, code, { memberCode: saved.memberCodes[0] })
-			: null;
+		const preview = await redemptionService(this.container.prisma).preview(game.id, code, {
+			memberCode: saved?.memberCodes[0] ?? 'EDC9B7A5D68B4F0B9E7293500507E850'
+		});
 		const container = new ContainerBuilder()
 			.addTextDisplayComponents((text) =>
 				text.setContent(`## ${game.name} coupon\n\`${code}\`${expiresAt ? `\nClaim before <t:${Math.floor(expiresAt / 1_000)}:F>.` : ''}`)
@@ -304,6 +304,7 @@ export class UserCommand extends RadonCommand {
 							.setCustomId(claimButtonId(game.id, code, expiresAt))
 					)
 			);
+
 		if (preview) {
 			if (preview.imageUrl)
 				container.addSectionComponents((section) =>
@@ -312,6 +313,10 @@ export class UserCommand extends RadonCommand {
 						.setThumbnailAccessory((thumbnail) => thumbnail.setURL(preview.imageUrl!))
 				);
 			else container.addTextDisplayComponents((text) => text.setContent(escapeMarkdown(preview.name)));
+		} else {
+			return interaction.editReply(
+				`Coupon preview failed. The coupon may be invalid, expired, or the game service is temporarily unavailable.`
+			);
 		}
 		container.addActionRowComponents((row) =>
 			row.addComponents(new ButtonBuilder().setCustomId('guide:start').setStyle(ButtonStyle.Secondary).setLabel('How to claim'))
