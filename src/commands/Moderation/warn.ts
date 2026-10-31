@@ -319,16 +319,18 @@ export class UserCommand extends RadonCommand {
 		});
 
 		if (typeof warn === 'undefined') {
-			return interaction.reply({
-				content: `It seems you've already reached the limit of active warns on ${member}`
+			return interaction.editReply({
+				content: `The limit is 50 stored warnings per member. Remove an old warning before adding another on ${member}.`
 			});
 		}
 
-		const personWarns = await interaction.guild.settings?.warns.getRefined(member);
-		const totalSeverity = await interaction.guild.settings?.warns.getSeverity(member);
-
-		const totalwarns = personWarns?.active.length ?? 0;
-		const actions = await interaction.guild.settings?.warns.getActions();
+		// Use the successful write's snapshot. A subsequent read could include a
+		// concurrent warning and cause both commands to execute the same threshold.
+		const totalSeverity = warn.severity;
+		const totalwarns =
+			warn.warnlist.find((person) => person.id === member.id)?.warns.filter((entry) => !entry.expiration || entry.expiration > warn.updatedAt!)
+				.length ?? 0;
+		const actions = warn.actions.filter((action) => warn.previousSeverity < action.severity && action.severity <= totalSeverity);
 
 		let content = `${member} has been warned for __${reason}__\nWarn ID: \`${warnId}\`\n*They now have ${totalwarns} warning(s)*`;
 		if (!silent) {
@@ -343,14 +345,16 @@ export class UserCommand extends RadonCommand {
 
 		await interaction.editReply({ content }).catch(() => null);
 
-		const msg = await interaction.channel.send({
-			embeds: [
-				{
-					description: `${member} has been warned`,
-					color: Color.Moderation
-				}
-			]
-		});
+		const msg = await interaction.channel
+			.send({
+				embeds: [
+					{
+						description: `${member} has been warned`,
+						color: Color.Moderation
+					}
+				]
+			})
+			.catch(() => null);
 
 		const data: WarnActionData = {
 			warnId,
@@ -360,12 +364,10 @@ export class UserCommand extends RadonCommand {
 			reason,
 			severity,
 			action: 'warn',
-			url: msg.url
+			url: msg?.url
 		};
 
-		if (await interaction.guild.settings!.modlogs.modLogs_exist()) {
-			this.container.client.emit(RadonEvents.ModAction, data);
-		}
+		this.container.client.emit(RadonEvents.ModAction, data);
 
 		if (actions?.length) {
 			this.container.client.emit(RadonEvents.WarnAction, member, totalSeverity, actions);
@@ -434,9 +436,7 @@ export class UserCommand extends RadonCommand {
 			url: reply.resource?.message?.url
 		};
 
-		if (await interaction.guild.settings?.modlogs.modLogs_exist()) {
-			this.container.client.emit(RadonEvents.ModAction, data);
-		}
+		this.container.client.emit(RadonEvents.ModAction, data);
 
 		return interaction.editReply({ content });
 	}

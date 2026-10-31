@@ -51,6 +51,7 @@ model guildWarns {
   updatedAt DateTime?        @db.Date
   warnlist  MemberWarnData[]
   actions   WarnAction[]
+  revision  Int?
 }
 
 model nicknames {
