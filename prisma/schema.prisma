@@ -124,3 +124,23 @@ model automodConfig {
 
   @@index([raidRestoreAt])
 }
+
+// Hash keys avoid storing member codes or coupon codes in redemption history.
+model redemptionReceipt {
+  id        String   @id @map("_id")
+  token     String
+  status    String
+  expiresAt DateTime @db.Date
+  updatedAt DateTime @db.Date
+}
+
+model redemptionAccountLabel {
+  id   String @id @map("_id")
+  name String
+}
+
+model redemptionGuildPolicy {
+  id        String  @id @map("_id")
+  roleId    String?
+  channelId String?
+}

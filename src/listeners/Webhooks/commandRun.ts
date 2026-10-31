@@ -38,7 +38,12 @@ export class UserListener extends Listener {
 				return opts
 					.filter((opt) => opt.type !== 1 && opt.type !== 2) // Exclude subcommands
 					.map((opt) => {
-						const value = opt.value !== undefined ? opt.value : opt.user?.tag || opt.channel?.name || opt.role?.name || 'unknown';
+						const value =
+							interaction.commandName === 'claim' && ['member_code', 'name'].includes(opt.name)
+								? '[redacted]'
+								: opt.value !== undefined
+									? opt.value
+									: opt.user?.tag || opt.channel?.name || opt.role?.name || 'unknown';
 						return `\`${opt.name}: ${value}\``;
 					});
 			};
@@ -65,6 +70,7 @@ export class UserListener extends Listener {
 		return webhook.send({
 			username: interaction.user.username,
 			content,
+			allowedMentions: { parse: [] },
 			avatarURL: interaction.user.displayAvatarURL() ?? interaction.client.user!.displayAvatarURL()
 		});
 	}

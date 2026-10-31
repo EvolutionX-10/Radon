@@ -1,108 +1,58 @@
-import { Emojis } from '#constants';
-import { RadonEvents } from '#lib/types';
-import { claimCoupon } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework';
-import { bold, GuildTextBasedChannel, MessageFlags, ModalBuilder, TextInputStyle, type ButtonInteraction } from 'discord.js';
+import { MessageFlags, ModalBuilder, TextInputStyle, type ButtonInteraction } from 'discord.js';
+import { disableClaimButtons, parseClaimButton } from '../../lib/redemption/posts.js';
+import { runClaims } from '../../lib/redemption/runtime.js';
 
-@ApplyOptions<InteractionHandler.Options>({
-	interactionHandlerType: InteractionHandlerTypes.Button
-})
+@ApplyOptions<InteractionHandler.Options>({ interactionHandlerType: InteractionHandlerTypes.Button })
 export class ButtonHandler extends InteractionHandler {
-	public override async parse(interaction: ButtonInteraction) {
-		// Check if the button ID starts with 'code-'
-		if (!interaction.customId.startsWith('code-')) return this.none();
-
-		const code = interaction.customId.slice(5); // Extract code after 'code-'
-		return this.some({ code });
+	public override parse(interaction: ButtonInteraction) {
+		const parsed = parseClaimButton(interaction.customId);
+		return parsed ? this.some(parsed) : this.none();
 	}
-
-	public override async run(interaction: ButtonInteraction, { code }: { code: string }) {
-		try {
-			// Get member codes for this user
-			const userData = await this.container.prisma.memberCodes.findUnique({
-				where: { id: interaction.user.id }
-			});
-
-			if (!userData || userData.memberCodes.length === 0) {
-				return this.fallbackModal(interaction, code);
-			}
-
-			await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-			const memberCodes = userData.memberCodes;
-			let successCount = 0;
-			let failCount = 0;
-			const failedDetails: string[] = [];
-
-			// Claim coupon for each member code
-			for (const memberCode of memberCodes) {
-				const result = await claimCoupon(code, memberCode);
-				this.container.client.emit(RadonEvents.CodeClaim, {
-					...result,
-					userTag: interaction.user.tag,
-					avatarURL: interaction.user.displayAvatarURL(),
-					guild: interaction.guild!.name,
-					guildId: interaction.guild!.id,
-					channel: (interaction.channel as GuildTextBasedChannel).name,
-					channelId: interaction.channel!.id
-				});
-
-				if (result.success) {
-					successCount++;
-				} else {
-					failCount++;
-					failedDetails.push(`• \`${memberCode.slice(0, 4)}...${memberCode.slice(-4)}\`: ${result.message}`);
-				}
-			}
-
-			// Build response message
-			let content = '';
-
-			// Only show success if there are successful claims
-			if (successCount > 0) {
-				content += `${Emojis.Confirm} Claimed in **${successCount}** account(s)\n`;
-			}
-
-			// Show failures
-			if (failCount > 0) {
-				if (successCount > 0) content += '\n';
-				content += `${Emojis.Cross} Failed in **${failCount}** account(s)\n`;
-				if (failedDetails.length > 0) {
-					content += failedDetails.join('\n');
-				}
-			}
-
-			return interaction.editReply({ content });
-		} catch (error) {
-			this.container.logger.error('Error claiming coupon via button:', error);
-			return interaction.editReply({
-				content: `${Emojis.Cross} An error occurred while claiming the coupon. Please try again later.`
-			});
+	public override async run(interaction: ButtonInteraction, { code, expired }: { code: string; expired: boolean }) {
+		if (expired) {
+			await interaction.reply({ content: 'This coupon post has expired.', flags: MessageFlags.Ephemeral });
+			await interaction.message
+				.edit({ components: disableClaimButtons(interaction.message.components.map((component) => component.toJSON())) })
+				.catch(() => null);
+			return;
 		}
-	}
-
-	private async fallbackModal(interaction: ButtonInteraction, code: string) {
-		const modal = new ModalBuilder() //
-			.setCustomId(`claim-set-modal/${code}`)
-			.setTitle('Adding Member Code')
-			.addTextDisplayComponents((textDisplay) =>
-				textDisplay.setContent(
-					`It seems you don't have any member codes registered. Follow the steps to get your member code:\n 1. Open your game\n 2. Go to Settings > Account\n 3. Copy your ${bold('Member Code')}`
-				)
-			)
-			.addLabelComponents((label) =>
-				label
-					.setLabel('Member Code')
-					.setTextInputComponent((textInput) =>
-						textInput
-							.setCustomId('memberCodeInput')
-							.setStyle(TextInputStyle.Short)
-							.setMinLength(30)
-							.setMaxLength(36)
-							.setPlaceholder('Enter your Member Code here, Ex: C9AFA7145EF0406E900966B0201ZBB50')
-							.setRequired(true)
+		let timer: ReturnType<typeof setTimeout> | undefined;
+		try {
+			// A modal must be the initial response; bound lookup time to preserve Discord's response deadline.
+			const data = await Promise.race([
+				this.container.prisma.memberCodes.findUnique({ where: { id: interaction.user.id } }),
+				new Promise<never>((_, reject) => {
+					timer = setTimeout(() => reject(new Error('Account lookup timed out')), 1_500);
+				})
+			]);
+			if (data?.memberCodes.length) {
+				await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+				return runClaims(interaction, code, data.memberCodes);
+			}
+			const expiresAt = interaction.customId.startsWith('redeem:') ? interaction.customId.split(':')[1] : '0';
+			const modal = new ModalBuilder()
+				.setCustomId(`claim-set-modal/${expiresAt}/${code}`)
+				.setTitle('Save your Solo Leveling account')
+				.addTextDisplayComponents((text) =>
+					text.setContent(
+						'In Solo Leveling: ARISE, open Settings → Account and copy your Member Code. Radon saves it so future claims need only a button click.'
 					)
-			);
-		await interaction.showModal(modal);
+				)
+				.addLabelComponents((label) =>
+					label
+						.setLabel('Member Code')
+						.setTextInputComponent((input) =>
+							input.setCustomId('memberCodeInput').setStyle(TextInputStyle.Short).setMinLength(30).setMaxLength(36).setRequired(true)
+						)
+				);
+			return interaction.showModal(modal);
+		} catch {
+			const reply = { content: 'Account lookup is temporarily unavailable. Please try again.', flags: MessageFlags.Ephemeral as const };
+			return interaction.deferred || interaction.replied ? interaction.editReply({ content: reply.content }) : interaction.reply(reply);
+		} finally {
+			if (timer) clearTimeout(timer);
+		}
 	}
 }

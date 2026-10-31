@@ -1,60 +1,35 @@
-import { Emojis } from '#constants';
-import { RadonEvents } from '#lib/types';
-import { claimCoupon } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework';
-import { GuildTextBasedChannel, MessageFlags, ModalSubmitInteraction } from 'discord.js';
+import { MessageFlags, type ModalSubmitInteraction } from 'discord.js';
+import { saveMemberCode } from '../../lib/redemption/persistence.js';
+import { parseClaimButton } from '../../lib/redemption/posts.js';
+import { runClaims } from '../../lib/redemption/runtime.js';
+import { makeNetmarbleAdapter, RedemptionError } from '../../lib/redemption/service.js';
 
-@ApplyOptions<InteractionHandler.Options>({
-	interactionHandlerType: InteractionHandlerTypes.ModalSubmit
-})
+@ApplyOptions<InteractionHandler.Options>({ interactionHandlerType: InteractionHandlerTypes.ModalSubmit })
 export class ModalHandler extends InteractionHandler {
-	public override async run(interaction: ModalSubmitInteraction, result: InteractionHandler.ParseResult<this>) {
-		const { memberCode, code } = result;
-		const userId = interaction.user.id;
-
+	public override async run(interaction: ModalSubmitInteraction, { memberCode, code, expired }: InteractionHandler.ParseResult<this>) {
 		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-
-		// Save the member code to the database
-		await this.container.prisma.memberCodes.create({
-			data: {
-				id: userId,
-				memberCodes: [memberCode],
-				createdAt: new Date(),
-				updatedAt: new Date()
-			}
-		});
-
-		const response = await claimCoupon(code, memberCode);
-		this.container.client.emit(RadonEvents.CodeClaim, {
-			...response,
-			userTag: interaction.user.tag,
-			avatarURL: interaction.user.displayAvatarURL(),
-			guild: interaction.guild!.name,
-			guildId: interaction.guild!.id,
-			channel: (interaction.channel as GuildTextBasedChannel).name,
-			channelId: interaction.channel!.id
-		});
-
-		if (response.success) {
-			return interaction.editReply({
-				content: `${Emojis.Confirm} ${response.message}!`
-			});
-		} else {
-			return interaction.editReply({
-				content: `${Emojis.Cross} Failed to claim coupon.\n\n**Reason:** ${response.message}`
-			});
+		try {
+			if (expired) return interaction.editReply('This coupon post has expired. Your account was not saved.');
+			if (!makeNetmarbleAdapter().validateAccount(memberCode))
+				return interaction.editReply('Copy your 30–36 character member code from the game account settings.');
+			await saveMemberCode(this.container.prisma, interaction.user.id, memberCode);
+			return runClaims(interaction, code, [memberCode]);
+		} catch (error) {
+			return interaction.editReply(error instanceof RedemptionError ? error.message : 'Your account could not be saved. Please try again.');
 		}
 	}
-
-	public override parse(interaction: ModalSubmitInteraction<'cached'>) {
-		const { customId } = interaction;
-
-		if (!customId.startsWith('claim-set-modal')) return this.none();
-		const code = customId.split('/')[1];
-
-		const memberCode = interaction.fields.getTextInputValue('memberCodeInput');
-
-		return this.some({ memberCode, code });
+	public override parse(interaction: ModalSubmitInteraction) {
+		if (!interaction.customId.startsWith('claim-set-modal/')) return this.none();
+		const parts = interaction.customId.split('/');
+		const parsed =
+			parts.length === 2
+				? parseClaimButton(`code-${parts[1]}`)
+				: parts.length === 3
+					? parseClaimButton(`redeem:${parts[1]}:${parts[2]}`)
+					: null;
+		if (!parsed) return this.none();
+		return this.some({ ...parsed, memberCode: interaction.fields.getTextInputValue('memberCodeInput').trim() });
 	}
 }

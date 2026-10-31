@@ -62,6 +62,11 @@ export abstract class RadonCommand extends Command {
 			(this.community = options.community ?? false));
 	}
 
+	/** Dynamic, read-only route visibility for commands with guild-specific policies. */
+	public async canDiscoverRoute(_interaction: RadonCommand.ChatInputCommandInteraction, _route: string): Promise<boolean> {
+		return true;
+	}
+
 	protected error(identifier: string | UserError, context?: unknown): never {
 		throw typeof identifier === 'string' ? new UserError({ identifier, context }) : identifier;
 	}
