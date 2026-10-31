@@ -2,7 +2,7 @@ import { ApplyOptions } from '@sapphire/decorators';
 import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework';
 import type { ButtonInteraction } from 'discord.js';
 import { MessageFlags } from 'discord.js';
-import { guideContent, guideButtons, guideTopics, type GuideTopic } from '../../lib/redemption/guide.js';
+import { guideContainer, guideTopics, type GuideTopic } from '../../lib/redemption/guide.js';
 
 @ApplyOptions<InteractionHandler.Options>({ interactionHandlerType: InteractionHandlerTypes.Button })
 export class ButtonHandler extends InteractionHandler {
@@ -12,12 +12,17 @@ export class ButtonHandler extends InteractionHandler {
 	}
 	public override run(interaction: ButtonInteraction, topic: GuideTopic) {
 		if (interaction.message.flags.has(MessageFlags.Ephemeral))
-			return interaction.update({ content: guideContent(topic), components: [guideButtons()], allowedMentions: { parse: [] } });
+			return interaction.update({
+				content: null,
+				embeds: [],
+				flags: MessageFlags.IsComponentsV2,
+				components: [guideContainer(topic)],
+				allowedMentions: { parse: [] }
+			});
 		// Reply privately so a guide button on a public coupon never edits that post.
 		return interaction.reply({
-			content: guideContent(topic),
-			components: [guideButtons()],
-			flags: MessageFlags.Ephemeral,
+			components: [guideContainer(topic)],
+			flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
 			allowedMentions: { parse: [] }
 		});
 	}

@@ -1,7 +1,7 @@
 import { RadonCommand } from '#lib/structures';
 import { ApplyOptions } from '@sapphire/decorators';
 import { InteractionContextType, MessageFlags } from 'discord.js';
-import { guideButtons, guideContent, guideTopics, type GuideTopic } from '../../lib/redemption/guide.js';
+import { guideContainer, guideTopics, type GuideTopic } from '../../lib/redemption/guide.js';
 
 @ApplyOptions<RadonCommand.Options>({ description: 'Learn coupon claiming, supported games, and optional vote rewards' })
 export class UserCommand extends RadonCommand {
@@ -21,9 +21,8 @@ export class UserCommand extends RadonCommand {
 	}
 	public override chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		return interaction.reply({
-			content: guideContent((interaction.options.getString('topic') ?? 'start') as GuideTopic),
-			components: [guideButtons()],
-			flags: MessageFlags.Ephemeral,
+			components: [guideContainer((interaction.options.getString('topic') ?? 'start') as GuideTopic)],
+			flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
 			allowedMentions: { parse: [] }
 		});
 	}

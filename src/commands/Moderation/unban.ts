@@ -1,3 +1,4 @@
+import { v2 } from '../../lib/presentation/components.js';
 import { Emojis } from '#constants';
 import { RadonCommand } from '#lib/structures';
 import { type BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
@@ -20,15 +21,20 @@ export class UserCommand extends RadonCommand {
 		const ban = await interaction.guild.bans.fetch(user.id).catch(() => null);
 
 		if (!ban)
-			return interaction.reply({
-				content: `${Emojis.Cross} ${user} is not banned!`,
-				flags: MessageFlags.Ephemeral
-			});
+			return interaction.reply(
+				v2(
+					{
+						content: `${Emojis.Cross} ${user} is not banned!`,
+						flags: MessageFlags.Ephemeral
+					},
+					'Radon · Unban'
+				)
+			);
 
 		const content = `${Emojis.Confirm} ${user} has been unbanned ${reason ? `for the following reason: ${reason}` : ''}`;
 		await interaction.guild.bans.remove(user, reason);
 
-		const reply = await interaction.reply({ content, withResponse: true });
+		const reply = await interaction.reply(v2({ content, withResponse: true }, 'Radon · Unban'));
 
 		const data: BaseModActionData = {
 			action: 'unban',

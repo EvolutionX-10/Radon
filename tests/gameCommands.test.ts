@@ -1,3 +1,4 @@
+import { displayText } from './fixtures/presentation.js';
 import { afterEach, describe, expect, it, spyOn } from 'bun:test';
 import { container } from '@sapphire/framework';
 import { SlashCommandBuilder, ApplicationCommandOptionType, MessageFlags } from 'discord.js';
@@ -80,7 +81,7 @@ describe('live-user claim paths', () => {
 			await ClaimCommand.prototype.chatInputRun.call({ container: { prisma: f.prisma } } as any, f.interaction as any);
 			expect(f.lookups).toEqual(['123']);
 			expect(requests).toEqual(['https://coupon.netmarble.com/api/coupon']);
-			expect(f.replies.at(-1).content).toContain('Claimed in **1**');
+			expect(displayText(f.replies.at(-1))).toContain('Claimed in **1**');
 		} finally {
 			fetcher.mockRestore();
 		}
@@ -99,7 +100,7 @@ describe('live-user claim paths', () => {
 			});
 			expect(f.lookups).toEqual(['game:tskgb:123']);
 			expect(f.form()).toBeUndefined();
-			expect(f.replies.at(-1).content).toContain('Claimed in **1**');
+			expect(displayText(f.replies.at(-1))).toContain('Claimed in **1**');
 		} finally {
 			fetcher.mockRestore();
 		}
@@ -140,7 +141,7 @@ describe('live-user claim paths', () => {
 				Array.from({ length: 5 }, (_, index) => String(index).padStart(32, 'A'))
 			);
 			expect(performance.now() - start).toBeLessThan(5_000);
-			expect(f.replies.at(-1).content).toContain('Claimed in **5**');
+			expect(displayText(f.replies.at(-1))).toContain('Claimed in **5**');
 		} finally {
 			fetcher.mockRestore();
 		}
@@ -148,7 +149,7 @@ describe('live-user claim paths', () => {
 	it('a delayed status edit finishes before the final claim result, so it cannot overwrite success', async () => {
 		const f = fixture();
 		f.interaction.editReply = async (reply: any) => {
-			if (reply.content.startsWith('Still processing')) await new Promise((resolve) => setTimeout(resolve, 150));
+			if (displayText(reply).includes('Still processing')) await new Promise((resolve) => setTimeout(resolve, 150));
 			f.replies.push(reply);
 		};
 		const fetcher = spyOn(globalThis, 'fetch').mockImplementation(async () => {
@@ -157,8 +158,8 @@ describe('live-user claim paths', () => {
 		});
 		try {
 			await runClaims(f.interaction as any, 'CODE', ['A'.repeat(32)]);
-			expect(f.replies[0].content).toContain('Still processing');
-			expect(f.replies.at(-1).content).toContain('Claimed in **1**');
+			expect(displayText(f.replies[0])).toContain('Still processing');
+			expect(displayText(f.replies.at(-1))).toContain('Claimed in **1**');
 		} finally {
 			fetcher.mockRestore();
 		}

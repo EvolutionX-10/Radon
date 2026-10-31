@@ -1,3 +1,4 @@
+import { displayText } from './fixtures/presentation.js';
 import { describe, expect, it } from 'bun:test';
 import { ModalHandler } from '../src/interaction-handlers/modals/editModlog.js';
 
@@ -62,13 +63,13 @@ describe('warning reason modal persistence', () => {
 		expect(f.warningUpdates).toEqual([['123456789012345678', 'warn-example', 'New reason']]);
 		expect(f.memberFetches()).toBe(1);
 		expect(f.logUpdates).toHaveLength(1);
-		expect(f.replies[0]).toBe('Reason updated.');
+		expect(displayText(f.replies[0])).toContain('Reason updated.');
 	});
 	it('rejects missing warning references without pretending that stored reasons changed', async () => {
 		const f = fixture(false);
 		await ModalHandler.prototype.run.call(f.handler as any, f.interaction as any, f.result as any);
 		expect(f.warningUpdates).toHaveLength(0);
 		expect(f.logUpdates).toHaveLength(0);
-		expect(f.replies[0]).toContain('missing or invalid');
+		expect(displayText(f.replies[0])).toContain('missing or invalid');
 	});
 });

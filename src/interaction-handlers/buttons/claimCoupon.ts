@@ -1,3 +1,4 @@
+import { v2 } from '../../lib/presentation/components.js';
 import { ApplyOptions } from '@sapphire/decorators';
 import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework';
 import { MessageFlags, ModalBuilder, TextInputStyle, type ButtonInteraction } from 'discord.js';
@@ -17,7 +18,7 @@ export class ButtonHandler extends InteractionHandler {
 	) {
 		const game = getGame(gameId);
 		if (expired) {
-			await interaction.reply({ content: 'This coupon post has expired.', flags: MessageFlags.Ephemeral });
+			await interaction.reply(v2({ content: 'This coupon post has expired.', flags: MessageFlags.Ephemeral }, 'Coupon claim'));
 			await interaction.message
 				.edit({ components: disableClaimButtons(interaction.message.components.map((component) => component.toJSON())) })
 				.catch(() => null);
@@ -65,7 +66,9 @@ export class ButtonHandler extends InteractionHandler {
 			return interaction.showModal(modal);
 		} catch {
 			const reply = { content: 'Account lookup is temporarily unavailable. Please try again.', flags: MessageFlags.Ephemeral as const };
-			return interaction.deferred || interaction.replied ? interaction.editReply({ content: reply.content }) : interaction.reply(reply);
+			return interaction.deferred || interaction.replied
+				? interaction.editReply(v2({ content: reply.content }, 'Coupon claim'))
+				: interaction.reply(v2(reply, 'Coupon claim'));
 		} finally {
 			if (timer) clearTimeout(timer);
 		}

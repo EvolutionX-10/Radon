@@ -1,3 +1,4 @@
+import { v2, messageText } from '../../lib/presentation/components.js';
 import { RadonGuildId, TestServerGuildIds } from '#constants';
 import { Confirmation, RadonCommand, Timestamp } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
@@ -49,13 +50,15 @@ export class UserCommand extends RadonCommand {
 		const guild = await this.container.client.guilds.fetch(id).catch(() => null);
 
 		if (!guild) {
-			return interaction.reply({ content: `Guild with ID \`${id}\` not found.`, flags: MessageFlags.Ephemeral });
+			return interaction.reply(v2({ content: `Guild with ID \`${id}\` not found.`, flags: MessageFlags.Ephemeral }, 'Radon · Nuke'));
 		}
 
 		const members = guild.memberCount == guild.members.cache.size ? guild.members.cache : await guild.members.fetch().catch(() => null);
 		const channels = await guild.channels.fetch().catch(() => null);
 		if (!members || !channels) {
-			return interaction.reply({ content: `Could not fetch members or channels for guild with ID \`${id}\`.`, flags: MessageFlags.Ephemeral });
+			return interaction.reply(
+				v2({ content: `Could not fetch members or channels for guild with ID \`${id}\`.`, flags: MessageFlags.Ephemeral }, 'Radon · Nuke')
+			);
 		}
 
 		// Filter bannable members
@@ -77,15 +80,20 @@ export class UserCommand extends RadonCommand {
 		const confirmation = new Confirmation({
 			content: `Are you sure you want to nuke the guild \`${guild.name}\`? This will delete all channels, roles and ban all members!\n\n${stats}`,
 			onCancel: ({ msg, i }) => {
-				return i.editReply({ content: `${msg.content}\nNuke cancelled.` });
+				return i.editReply(v2({ content: `${messageText(msg)}\nNuke cancelled.` }, 'Radon · Nuke'));
 			},
 			onConfirm: async ({ i, msg }) => {
 				const estimatedTime = new Timestamp(Date.now() + estimatedMs);
-				await i.editReply({ content: `${msg.content}\nNuke in progress... This may take a while. ETA: ${estimatedTime.getRelativeTime()}` });
+				await i.editReply(
+					v2(
+						{ content: `${messageText(msg)}\nNuke in progress... This may take a while. ETA: ${estimatedTime.getRelativeTime()}` },
+						'Radon · Nuke'
+					)
+				);
 
 				const status = await this.nukeGuild(id);
 
-				return i.editReply({ content: `${msg.content}\nGuild with ID \`${id}\` has been nuked.\n\n${status}` });
+				return i.editReply(v2({ content: `${messageText(msg)}\nGuild with ID \`${id}\` has been nuked.\n\n${status}` }, 'Radon · Nuke'));
 			}
 		});
 

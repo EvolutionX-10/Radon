@@ -1,3 +1,4 @@
+import { v2 } from '../../lib/presentation/components.js';
 import { Emojis } from '#constants';
 import { RadonCommand } from '#lib/structures';
 import { sec } from '#lib/utility';
@@ -36,7 +37,8 @@ export class UserCommand extends RadonCommand {
 					const data = await this.container.prisma.memberCodes.findUnique({
 						where: { id: accountOwnerKey(interaction.user.id, interaction.options.getString('game') ?? 'sololv') }
 					});
-					if (!data?.memberCodes.length) return interaction.editReply('Use `/claim set` to save your member code first.');
+					if (!data?.memberCodes.length)
+						return interaction.editReply(v2('Use `/claim set` to save your member code first.', 'Game accounts & coupons'));
 					return runClaims(interaction, interaction.options.getString('coupon_code', true), data.memberCodes, game.id);
 				}
 				case 'solo':
@@ -48,7 +50,9 @@ export class UserCommand extends RadonCommand {
 					);
 				case 'delete': {
 					const remaining = await deleteMemberCode(this.container.prisma, owner, interaction.options.getString('member_code', true).trim());
-					return interaction.editReply(`${Emojis.Confirm} Account deleted. You have ${remaining} saved accounts for ${game.name}.`);
+					return interaction.editReply(
+						v2(`${Emojis.Confirm} Account deleted. You have ${remaining} saved accounts for ${game.name}.`, 'Game accounts & coupons')
+					);
 				}
 				case 'view':
 					return await this.view(interaction);
@@ -59,20 +63,26 @@ export class UserCommand extends RadonCommand {
 					await subscribeCoupons(this.container.prisma, interaction.user.id, interaction.guildId!, game.id, enabled);
 					const active = enabled && (await supporterUntil(this.container.prisma, interaction.user.id));
 					return interaction.editReply(
-						!enabled
-							? `Alerts for ${game.name} in this server are off.`
-							: `Subscribed to ${game.name} coupons posted by staff in this server. ${active ? 'Alerts are active; allow direct messages from this server.' : 'Alerts will start when you activate a Supporter Pass with /vote.'}`
+						v2(
+							!enabled
+								? `Alerts for ${game.name} in this server are off.`
+								: `Subscribed to ${game.name} coupons posted by staff in this server. ${active ? 'Alerts are active; allow direct messages from this server.' : 'Alerts will start when you activate a Supporter Pass with /vote.'}`,
+							'Game accounts & coupons'
+						)
 					);
 				}
 				case 'policy':
 					return await this.policy(interaction);
 				default:
-					return interaction.editReply('Unknown claim action.');
+					return interaction.editReply(v2('Unknown claim action.', 'Game accounts & coupons'));
 			}
 		} catch (error) {
 			if (!(error instanceof RedemptionError)) this.container.logger.error('Claim command could not complete.');
 			return interaction.editReply(
-				error instanceof RedemptionError ? error.message : 'This operation is temporarily unavailable. Please try again later.'
+				v2(
+					error instanceof RedemptionError ? error.message : 'This operation is temporarily unavailable. Please try again later.',
+					'Game accounts & coupons'
+				)
 			);
 		}
 	}
@@ -227,13 +237,16 @@ export class UserCommand extends RadonCommand {
 			interaction.options.getString('name')?.trim() || undefined,
 			limit
 		);
-		return interaction.editReply(`${Emojis.Confirm} Saved account. You have ${count}/${limit} saved accounts for ${game.name}.`);
+		return interaction.editReply(
+			v2(`${Emojis.Confirm} Saved account. You have ${count}/${limit} saved accounts for ${game.name}.`, 'Game accounts & coupons')
+		);
 	}
 	private async view(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const data = await this.container.prisma.memberCodes.findUnique({
 			where: { id: accountOwnerKey(interaction.user.id, interaction.options.getString('game') ?? 'sololv') }
 		});
-		if (!data?.memberCodes.length) return interaction.editReply('You have no saved accounts. Use `/claim set` to add one.');
+		if (!data?.memberCodes.length)
+			return interaction.editReply(v2('You have no saved accounts. Use `/claim set` to add one.', 'Game accounts & coupons'));
 		const owner = accountOwnerKey(interaction.user.id, interaction.options.getString('game') ?? 'sololv');
 		const labels = await this.container.prisma.redemptionAccountLabel.findMany({
 			where: { id: { in: data.memberCodes.map((code) => receiptKey('label', owner, code)) } }
@@ -244,27 +257,37 @@ export class UserCommand extends RadonCommand {
 					`${index + 1}. **${escapeMarkdown(labels.find((label) => label.id === receiptKey('label', owner, code))?.name ?? `Account ${index + 1}`)}** · \`${maskMemberCode(code)}\``
 			)
 			.join('\n');
-		return interaction.editReply({
-			content: `Your ${getGame(interaction.options.getString('game') ?? 'sololv').name} accounts (${data.memberCodes.length} saved):\n${content}\nThe first ${await accountLimit(this.container.prisma, interaction.user.id)} are active for batch claims. Use /claim solo for a specific account.`,
-			allowedMentions: { parse: [] }
-		});
+		return interaction.editReply(
+			v2(
+				{
+					content: `Your ${getGame(interaction.options.getString('game') ?? 'sololv').name} accounts (${data.memberCodes.length} saved):\n${content}\nThe first ${await accountLimit(this.container.prisma, interaction.user.id)} are active for batch claims. Use /claim solo for a specific account.`,
+					allowedMentions: { parse: [] }
+				},
+				'Game accounts & coupons'
+			)
+		);
 	}
 	private async policy(interaction: RadonCommand.ChatInputCommandInteraction) {
 		if (!interaction.member.permissions.has(PermissionFlagsBits.ManageGuild))
 			throw new RedemptionError('Manage Server permission is required to configure coupon posting.');
 		if (interaction.options.getBoolean('reset')) {
 			await this.container.prisma.redemptionGuildPolicy.deleteMany({ where: { id: interaction.guildId! } });
-			return interaction.editReply('Coupon posting restored to members with Manage Messages, in accessible text channels.');
+			return interaction.editReply(
+				v2('Coupon posting restored to members with Manage Messages, in accessible text channels.', 'Game accounts & coupons')
+			);
 		}
 		const role = interaction.options.getRole('posting_role');
 		const channel = interaction.options.getChannel('posting_channel');
-		if (!role && !channel) return interaction.editReply('Choose a posting role, a posting channel, or reset the policy.');
+		if (!role && !channel)
+			return interaction.editReply(v2('Choose a posting role, a posting channel, or reset the policy.', 'Game accounts & coupons'));
 		await this.container.prisma.redemptionGuildPolicy.upsert({
 			where: { id: interaction.guildId! },
 			create: { id: interaction.guildId!, roleId: role?.id, channelId: channel?.id },
 			update: { ...(role ? { roleId: role.id } : {}), ...(channel ? { channelId: channel.id } : {}) }
 		});
-		return interaction.editReply('Coupon posting policy saved. Staff with Manage Messages can also post in the configured channel.');
+		return interaction.editReply(
+			v2('Coupon posting policy saved. Staff with Manage Messages can also post in the configured channel.', 'Game accounts & coupons')
+		);
 	}
 	private async post(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const game = getGame(interaction.options.getString('game') ?? 'sololv');
@@ -315,7 +338,10 @@ export class UserCommand extends RadonCommand {
 			else container.addTextDisplayComponents((text) => text.setContent(escapeMarkdown(preview.name)));
 		} else {
 			return interaction.editReply(
-				`Coupon preview failed. The coupon may be invalid, expired, or the game service is temporarily unavailable.`
+				v2(
+					`Coupon preview failed. The coupon may be invalid, expired, or the game service is temporarily unavailable.`,
+					'Game accounts & coupons'
+				)
 			);
 		}
 		container.addActionRowComponents((row) =>
@@ -340,7 +366,7 @@ export class UserCommand extends RadonCommand {
 		} catch {
 			this.container.logger.warn('Coupon posted, but personal alerts could not be queued.');
 		}
-		return interaction.editReply(`${Emojis.Confirm} Posted coupon: ${message.url}`);
+		return interaction.editReply(v2(`${Emojis.Confirm} Posted coupon: ${message.url}`, 'Game accounts & coupons'));
 	}
 }
 

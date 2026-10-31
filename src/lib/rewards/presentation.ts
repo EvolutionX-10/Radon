@@ -1,4 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
+import { card, divider, text, accents } from '../presentation/components.js';
 import type { VoteCheck } from './service.js';
 import { LISTED_BOT_ID } from './service.js';
 
@@ -36,4 +37,23 @@ export function rewardSummary(until: number, checks: VoteCheck[] = []) {
 		),
 		'Need help? Run `/guide`.'
 	].join('\n\n');
+}
+
+export function rewardContainer(until: number, checks: VoteCheck[] = []) {
+	const blocks = rewardSummary(until, checks).split('\n\n');
+	const panel = card('Your Supporter Pass', blocks[1], until > Date.now() ? accents.success : accents.primary);
+	divider(panel);
+	text(
+		panel,
+		'### Choose what works for you\n**Free** · Five saved accounts per game, normal coupon claiming.\n**Supporter** · Ten saved accounts per game, optional personal coupon alerts for 24 hours.'
+	);
+	text(
+		panel,
+		'### Activate your pass\nVote on either site below, then press **Check my vote**. Both sites give the same perks; voting on both is optional.'
+	);
+	divider(panel);
+	for (const block of blocks.slice(4, -1)) text(panel, block);
+	panel.addActionRowComponents(rewardButtons());
+	text(panel, '-# Voting is optional. For a walkthrough, open /guide topic:rewards.');
+	return panel;
 }

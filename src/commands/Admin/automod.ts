@@ -1,3 +1,4 @@
+import { v2, card, componentMessage, divider, text, safe } from '../../lib/presentation/components.js';
 import { RadonCommand } from '../../lib/structures/commands/RadonCommand.js';
 import { PermissionLevels } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
@@ -204,7 +205,7 @@ export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
 		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 		if (!interaction.memberPermissions.has(PermissionFlagsBits.ManageGuild))
-			return interaction.editReply('Manage Server is required to configure AutoMod.');
+			return interaction.editReply(v2('Manage Server is required to configure AutoMod.', 'AutoMod'));
 		try {
 			const subcommand = interaction.options.getSubcommand(true);
 			if (subcommand === 'native' || subcommand === 'remove') return await this.native(interaction, subcommand === 'remove');
@@ -213,7 +214,10 @@ export class UserCommand extends RadonCommand {
 		} catch (error) {
 			this.container.logger.error('AutoMod configuration failed', error);
 			return interaction.editReply(
-				'AutoMod configuration failed. No success was recorded. Check the bot permissions, rule limits, and database availability, then try again.'
+				v2(
+					'AutoMod configuration failed. No success was recorded. Check the bot permissions, rule limits, and database availability, then try again.',
+					'AutoMod'
+				)
 			);
 		}
 	}
@@ -250,23 +254,26 @@ export class UserCommand extends RadonCommand {
 		const rules = await interaction.guild.autoModerationRules.fetch();
 		const owned = rules.find((rule) => rule.name === `Radon: ${preset}` && rule.creatorId === interaction.client.user.id);
 		if (remove) {
-			if (!owned) return interaction.editReply('No matching native rule owned by this bot was found.');
+			if (!owned) return interaction.editReply(v2('No matching native rule owned by this bot was found.', 'AutoMod'));
 			await owned.delete(`Requested by ${interaction.user.id}`);
-			return interaction.editReply(`Removed the ${preset} preset.`);
+			return interaction.editReply(v2(`Removed the ${preset} preset.`, 'AutoMod'));
 		}
 		const mode = interaction.options.getString('mode', true) as Mode;
 		if (mode === 'off') {
 			if (owned) await owned.setEnabled(false, `Requested by ${interaction.user.id}`);
-			return interaction.editReply(`The ${preset} preset is off.`);
+			return interaction.editReply(v2(`The ${preset} preset is off.`, 'AutoMod'));
 		}
 		const channel = await this.alertChannel(interaction);
-		if (!channel) return interaction.editReply('Choose an alert channel that both you and the bot can access and the bot can send messages to.');
+		if (!channel)
+			return interaction.editReply(
+				v2('Choose an alert channel that both you and the bot can access and the bot can send messages to.', 'AutoMod')
+			);
 		const exemptions = await this.ids(
 			interaction,
 			interaction.options.getString('exempt_roles') ?? [...(owned?.exemptRoles.keys() ?? [])].join(' '),
 			interaction.options.getString('exempt_channels') ?? [...(owned?.exemptChannels.keys() ?? [])].join(' ')
 		);
-		if (!exemptions) return interaction.editReply('Exemptions must be valid IDs in this server: up to 20 roles and 50 channels.');
+		if (!exemptions) return interaction.editReply(v2('Exemptions must be valid IDs in this server: up to 20 roles and 50 channels.', 'AutoMod'));
 		let options;
 		try {
 			options = nativeRule({
@@ -279,42 +286,53 @@ export class UserCommand extends RadonCommand {
 				exemptChannels: exemptions.channelIds
 			});
 		} catch (error) {
-			return interaction.editReply((error as Error).message);
+			return interaction.editReply(v2((error as Error).message, 'AutoMod'));
 		}
 		options.reason = `Requested by ${interaction.user.id}`;
 		const rule = owned ? await owned.edit(options) : await interaction.guild.autoModerationRules.create(options);
-		return interaction.editReply({
-			content: `${preset} preset ${rule.id}: ${mode}. ${mode === 'observe' ? 'Matching messages are reported without blocking.' : 'Matching messages are blocked and reported.'}`,
-			allowedMentions: { parse: [] }
-		});
+		return interaction.editReply(
+			v2(
+				{
+					content: `### ${preset} · ${mode}\n${mode === 'observe' ? 'Matching messages are reported without blocking.' : 'Matching messages are blocked and reported.'}\n-# Native rule reference: \`${rule.id}\``,
+					allowedMentions: { parse: [] }
+				},
+				'AutoMod'
+			)
+		);
 	}
 
 	private async custom(interaction: RadonCommand.ChatInputCommandInteraction, module: string) {
 		const existing = await this.container.prisma.automodConfig.findUnique({ where: { id: interaction.guildId } });
 		if (module === 'exemptions') {
-			if (!existing) return interaction.editReply('Configure a flood, links, or raid rule first.');
+			if (!existing) return interaction.editReply(v2('Configure a flood, links, or raid rule first.', 'AutoMod'));
 			const ids = await this.ids(interaction, interaction.options.getString('roles', true), interaction.options.getString('channels', true));
-			if (!ids) return interaction.editReply('Use valid role/channel IDs in this server, or none to clear them.');
+			if (!ids) return interaction.editReply(v2('Use valid role/channel IDs in this server, or none to clear them.', 'AutoMod'));
 			await this.container.prisma.automodConfig.update({
 				where: { id: interaction.guildId },
 				data: { exemptRoleIds: ids.roleIds, exemptChannelIds: ids.channelIds }
 			});
 			autoModService.invalidate(interaction.guildId);
-			return interaction.editReply('Custom-rule exemptions updated. Staff with Manage Messages are also exempt from message rules.');
+			return interaction.editReply(
+				v2('Custom-rule exemptions updated. Staff with Manage Messages are also exempt from message rules.', 'AutoMod')
+			);
 		}
 		const mode = interaction.options.getString('mode', true) as Mode;
-		if (!existing && mode === 'off') return interaction.editReply('This custom rule is already off.');
+		if (!existing && mode === 'off') return interaction.editReply(v2('This custom rule is already off.', 'AutoMod'));
 		const intent = module === 'raid' ? GatewayIntentBits.GuildMembers : GatewayIntentBits.MessageContent;
 		if (mode !== 'off' && !interaction.client.options.intents.has(intent))
 			return interaction.editReply(
-				module === 'raid'
-					? 'Join detection is disabled in this installation. Enable the Guild Members intent in the Developer Portal, set RADON_AUTOMOD_MEMBERS_ENABLED=true, and restart before enabling it.'
-					: 'Custom message inspection is disabled in this installation. Enable the Message Content intent in the Developer Portal, set RADON_AUTOMOD_CONTENT_ENABLED=true, and restart before enabling it.'
+				v2(
+					module === 'raid'
+						? 'Join detection is disabled in this installation. Enable the Guild Members intent in the Developer Portal, set RADON_AUTOMOD_MEMBERS_ENABLED=true, and restart before enabling it.'
+						: 'Custom message inspection is disabled in this installation. Enable the Message Content intent in the Developer Portal, set RADON_AUTOMOD_CONTENT_ENABLED=true, and restart before enabling it.',
+					'AutoMod'
+				)
 			);
 		const channel = mode === 'off' ? null : await this.alertChannel(interaction, existing?.alertChannelId);
-		if (mode !== 'off' && !channel) return interaction.editReply('Choose an accessible alert channel with Send Messages permission for the bot.');
+		if (mode !== 'off' && !channel)
+			return interaction.editReply(v2('Choose an accessible alert channel with Send Messages permission for the bot.', 'AutoMod'));
 		if (mode === 'enforce' && module !== 'raid' && !interaction.guild.members.me!.permissions.has(PermissionFlagsBits.ManageMessages))
-			return interaction.editReply('The bot needs Manage Messages to enforce message rules.');
+			return interaction.editReply(v2('The bot needs Manage Messages to enforce message rules.', 'AutoMod'));
 		let domains: { blockedDomains?: string[]; allowedDomains?: string[]; allowedInviteCodes?: string[] } = {};
 		if (module === 'links') {
 			try {
@@ -329,7 +347,10 @@ export class UserCommand extends RadonCommand {
 				if (invites !== null) domains.allowedInviteCodes = parseInviteCodes(invites === 'none' ? '' : invites);
 			} catch {
 				return interaction.editReply(
-					'Enter up to 100 plain domains or case-sensitive invite codes separated by spaces/commas, or none to clear a list. URLs, paths, and wildcards are not accepted.'
+					v2(
+						'Enter up to 100 plain domains or case-sensitive invite codes separated by spaces/commas, or none to clear a list. URLs, paths, and wildcards are not accepted.',
+						'AutoMod'
+					)
 				);
 			}
 		}
@@ -369,7 +390,10 @@ export class UserCommand extends RadonCommand {
 		autoModService.invalidate(interaction.guildId);
 		if (module === 'raid' && mode !== 'enforce') await autoModService.restoreRaid(this.container.prisma, interaction.guild, true);
 		return interaction.editReply(
-			`${module}: ${mode}. ${mode === 'observe' ? 'Only staff alerts will be sent.' : mode === 'enforce' ? (module === 'raid' ? 'Join bursts temporarily raise verification to Highest; existing role holders are unaffected.' : 'Matching messages will be deleted and reported.') : 'Automatic handling is disabled.'}${module === 'raid' && mode !== 'enforce' ? ' Any in-flight restriction is queued for restoration; check /automod status.' : ''}`
+			v2(
+				`${module}: ${mode}. ${mode === 'observe' ? 'Only staff alerts will be sent.' : mode === 'enforce' ? (module === 'raid' ? 'Join bursts temporarily raise verification to Highest; existing role holders are unaffected.' : 'Matching messages will be deleted and reported.') : 'Automatic handling is disabled.'}${module === 'raid' && mode !== 'enforce' ? ' Any in-flight restriction is queued for restoration; check /automod status.' : ''}`,
+				'AutoMod'
+			)
 		);
 	}
 
@@ -379,27 +403,48 @@ export class UserCommand extends RadonCommand {
 			this.container.prisma.automodConfig.findUnique({ where: { id: interaction.guildId } })
 		]);
 		const native = rules.filter((rule) => rule.creatorId === interaction.client.user.id && rule.name.startsWith('Radon: '));
-		return interaction.editReply({
-			content: [
-				'Native rules:',
-				...native.map((rule) => `${rule.name}: ${rule.enabled ? 'enabled' : 'off'} (${rule.id})`),
-				...(native.size ? [] : ['None.']),
-				`Custom flood: ${config?.floodMode ?? 'off'}; links: ${config?.linkMode ?? 'off'}; raid: ${config?.raidMode ?? 'off'}.`,
-				`Content inspection available: ${interaction.client.options.intents.has(GatewayIntentBits.MessageContent)}. Join events available: ${interaction.client.options.intents.has(GatewayIntentBits.GuildMembers)}.`,
-				...(config
-					? [
-							`Alerts: ${config.alertChannelId}. Flood: ${config.floodThreshold} messages / ${config.windowSeconds}s, ${config.duplicateThreshold} duplicates.`,
-							`Blocked domains: ${config.blockedDomains.join(', ') || 'none'}. Allowed domains: ${config.allowedDomains.join(', ') || 'none'}. Block invites: ${config.blockInvites}.`,
-							`Approved invite codes: ${config.allowedInviteCodes.join(', ') || 'none'}.`,
-							`Exempt role IDs: ${config.exemptRoleIds.join(', ') || 'none'}. Exempt channel IDs: ${config.exemptChannelIds.join(', ') || 'none'}.`,
-							`Raid: ${config.raidThreshold} joins / ${config.raidWindowSeconds}s, restriction ${config.raidDurationSeconds}s.`,
-							...(config.raidRestoreAt ? [`Pending verification restoration: ${config.raidRestoreAt.toISOString()}.`] : [])
-						]
-					: [])
-			]
-				.join('\n')
-				.slice(0, 2000),
-			allowedMentions: { parse: [] }
-		});
+		const panel = card('AutoMod overview', 'Review protection before changing a rule.');
+		const mode = (value: string) => (value === 'observe' ? 'Observe · alerts only' : value === 'enforce' ? 'Enforce · automatic action' : 'Off');
+		text(panel, '### Discord rules');
+		for (const rule of native.values())
+			text(
+				panel,
+				`**${safe(rule.name.replace('Radon: ', ''), 80)}** · ${rule.enabled ? 'Enabled' : 'Off'}\n-# Native rule reference: \`${rule.id}\``
+			);
+		if (!native.size) text(panel, 'No native presets configured. Start with /automod native.');
+		divider(panel);
+		text(
+			panel,
+			`### Radon rules\n**Flood & duplicates** · ${mode(config?.floodMode ?? 'off')}\n**Links & invites** · ${mode(config?.linkMode ?? 'off')}\n**Join bursts** · ${mode(config?.raidMode ?? 'off')}`
+		);
+		text(
+			panel,
+			`**Detection available**\nMessage inspection: **${interaction.client.options.intents.has(GatewayIntentBits.MessageContent) ? 'Yes' : 'No'}** · Join events: **${interaction.client.options.intents.has(GatewayIntentBits.GuildMembers) ? 'Yes' : 'No'}**`
+		);
+		if (config) {
+			const list = (values: string[], format: (value: string) => string = (value) => safe(value, 100)) =>
+				values.slice(0, 6).map(format).join(', ') + (values.length > 6 ? ` · +${values.length - 6} more` : '') || 'None';
+			divider(panel);
+			text(
+				panel,
+				`### Thresholds & delivery\n**Alerts** · <#${config.alertChannelId}>\n**Flood** · ${config.floodThreshold} messages / ${config.windowSeconds}s · ${config.duplicateThreshold} duplicates\n**Raid** · ${config.raidThreshold} joins / ${config.raidWindowSeconds}s · ${config.raidDurationSeconds}s restriction`
+			);
+			text(
+				panel,
+				`**Blocked domains** · ${list(config.blockedDomains)}\n**Allowed domains** · ${list(config.allowedDomains)}\n**Block Discord invites** · ${config.blockInvites ? 'Yes' : 'No'}\n**Approved invite codes** · ${list(config.allowedInviteCodes)}`
+			);
+			text(
+				panel,
+				`**Exempt roles** · ${list(config.exemptRoleIds, (id) => '<@&' + id + '>')}\n**Exempt channels** · ${list(config.exemptChannelIds, (id) => '<#' + id + '>')}`
+			);
+			if (config.raidRestoreAt)
+				text(panel, `**Verification restoration pending** · <t:${Math.floor(config.raidRestoreAt.getTime() / 1000)}:f>`);
+		}
+		divider(panel);
+		text(
+			panel,
+			'-# Observe sends alerts; enforce acts on matches; off disables handling. Native rules have their own exemptions. Start with /guide topic:automod.'
+		);
+		return interaction.editReply(componentMessage(panel));
 	}
 }

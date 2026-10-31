@@ -1,3 +1,4 @@
+import { v2 } from '../../lib/presentation/components.js';
 import { Emojis } from '#constants';
 import { Confirmation, ModerationAction, RadonCommand } from '#lib/structures';
 import { type BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
@@ -31,7 +32,7 @@ export class UserCommand extends RadonCommand {
 		const dm = interaction.options.getBoolean('dm') ?? false;
 
 		const { content: ctn, result } = runAllChecks(interaction.member, user, 'ban');
-		if (!result) return interaction.reply({ content: ctn, flags: MessageFlags.Ephemeral });
+		if (!result) return interaction.reply(v2({ content: ctn, flags: MessageFlags.Ephemeral }, 'Radon · Ban'));
 
 		const confirm = new Confirmation({
 			content: `Are you sure you want to ban ${user}? ${reason ? `\nReason: ${reason}` : ''}`,
@@ -39,9 +40,14 @@ export class UserCommand extends RadonCommand {
 				await this.ban(interaction, user, reason, days, dm);
 			},
 			onCancel: ({ i }) => {
-				return i.editReply({
-					content: `${Emojis.Cross} Wow careful, stopped the ban hammer at the last moment!`
-				});
+				return i.editReply(
+					v2(
+						{
+							content: `${Emojis.Cross} Wow careful, stopped the ban hammer at the last moment!`
+						},
+						'Radon · Ban'
+					)
+				);
 			}
 		});
 		return confirm.run(interaction);
@@ -103,16 +109,26 @@ export class UserCommand extends RadonCommand {
 			});
 
 		if (!ban) {
-			return interaction.editReply({
-				content: `${Emojis.Cross} Failed to ban user, please try again! If this persists, contact support server!`
-			});
+			return interaction.editReply(
+				v2(
+					{
+						content: `${Emojis.Cross} Failed to ban user, please try again! If this persists, contact support server!`
+					},
+					'Radon · Ban'
+				)
+			);
 		}
 
 		if (dm) {
 			await user
-				.send({
-					content: `You have been banned from ${interaction.guild.name}\n${reason ? `Reason: ${reason}` : ''}`
-				})
+				.send(
+					v2(
+						{
+							content: `You have been banned from ${interaction.guild.name}\n${reason ? `Reason: ${reason}` : ''}`
+						},
+						'Radon · Ban'
+					)
+				)
 				.catch(() => (content += `\n\n> ${Emojis.Cross} Couldn't DM user!`));
 		}
 
@@ -122,7 +138,7 @@ export class UserCommand extends RadonCommand {
 			reason,
 			action: 'ban',
 			url: (
-				await interaction.editReply(content).catch((error) => {
+				await interaction.editReply(v2(content, 'Radon · Ban')).catch((error) => {
 					this.container.logger.error('Could not send ban result:', error);
 					return null;
 				})

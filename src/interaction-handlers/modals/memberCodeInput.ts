@@ -1,3 +1,4 @@
+import { v2 } from '../../lib/presentation/components.js';
 import { ApplyOptions } from '@sapphire/decorators';
 import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework';
 import { MessageFlags, type ModalSubmitInteraction } from 'discord.js';
@@ -16,11 +17,11 @@ export class ModalHandler extends InteractionHandler {
 	) {
 		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 		try {
-			if (expired) return interaction.editReply('This coupon post has expired. Your account was not saved.');
+			if (expired) return interaction.editReply(v2('This coupon post has expired. Your account was not saved.', 'Coupon claim'));
 			const game = getGame(gameId);
 			if (!makeNetmarbleAdapter(fetch, game.id).validateAccount(memberCode))
 				return interaction.editReply(
-					`Copy your ${game.minLength}–${game.maxLength} character member code from the ${game.name} account settings.`
+					v2(`Copy your ${game.minLength}–${game.maxLength} character member code from the ${game.name} account settings.`, 'Coupon claim')
 				);
 			await saveMemberCode(
 				this.container.prisma,
@@ -31,7 +32,9 @@ export class ModalHandler extends InteractionHandler {
 			);
 			return runClaims(interaction, code, [memberCode], game.id);
 		} catch (error) {
-			return interaction.editReply(error instanceof RedemptionError ? error.message : 'Your account could not be saved. Please try again.');
+			return interaction.editReply(
+				v2(error instanceof RedemptionError ? error.message : 'Your account could not be saved. Please try again.', 'Coupon claim')
+			);
 		}
 	}
 	public override parse(interaction: ModalSubmitInteraction) {

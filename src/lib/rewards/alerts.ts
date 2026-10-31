@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import type { PrismaClient } from '@prisma/client';
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits, type Client } from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits, type Client, type MessageCreateOptions } from 'discord.js';
+import { v2 } from '../presentation/components.js';
 import { getGame } from '../redemption/games.js';
 import { PrismaReceipts } from '../redemption/persistence.js';
 import { claimButtonId } from '../redemption/posts.js';
@@ -15,11 +16,8 @@ export async function subscribeCoupons(prisma: PrismaClient, userId: string, gui
 	});
 }
 
-export interface AlertMessage {
-	content: string;
-	components: ActionRowBuilder<ButtonBuilder>[];
-	allowedMentions: { parse: [] };
-}
+export type AlertMessage = MessageCreateOptions;
+
 /** A leased, paginated outbox. A delivery reservation is written before sending:
  * uncertain DM outcomes are not retried and cannot produce notification storms. */
 export async function deliverCouponAlerts(
@@ -70,18 +68,21 @@ export async function deliverCouponAlerts(
 					try {
 						await send(
 							sub.userId,
-							{
-								content: `New ${getGame(post.game).name} coupon: \`${post.code}\`\nPosted in a server you follow: ${post.messageUrl}\nUse CLAIM below. Stop alerts with \`/claim alerts enabled:False\` in that server.`,
-								components: [
-									new ActionRowBuilder<ButtonBuilder>().addComponents(
-										new ButtonBuilder()
-											.setLabel('CLAIM')
-											.setStyle(ButtonStyle.Success)
-											.setCustomId(claimButtonId(post.game, post.code, post.couponExpiresAt?.getTime() ?? 0))
-									)
-								],
-								allowedMentions: { parse: [] }
-							},
+							v2(
+								{
+									content: `New ${getGame(post.game).name} coupon: \`${post.code}\`\nPosted in a server you follow: ${post.messageUrl}\nUse CLAIM below. Stop alerts with \`/claim alerts enabled:False\` in that server.`,
+									components: [
+										new ActionRowBuilder<ButtonBuilder>().addComponents(
+											new ButtonBuilder()
+												.setLabel('CLAIM')
+												.setStyle(ButtonStyle.Success)
+												.setCustomId(claimButtonId(post.game, post.code, post.couponExpiresAt?.getTime() ?? 0))
+										)
+									],
+									allowedMentions: { parse: [] }
+								},
+								'New coupon'
+							),
 							{ guildId: post.guildId, channelId: post.channelId }
 						);
 					} catch {

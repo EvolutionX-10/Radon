@@ -1,3 +1,4 @@
+import { v2 } from '../presentation/components.js';
 import type { automodConfig, Prisma, PrismaClient } from '@prisma/client';
 import { randomUUID } from 'node:crypto';
 import { GuildVerificationLevel, PermissionFlagsBits, type Guild, type GuildMember, type Message } from 'discord.js';
@@ -72,7 +73,7 @@ export class AutoModService {
 	public async alert(guild: Guild, channelId: string, content: string) {
 		const channel = await guild.channels.fetch(channelId);
 		if (!channel?.isTextBased() || !channel.isSendable()) throw new Error('AutoMod alert channel is unavailable.');
-		await channel.send({ content, allowedMentions: { parse: [] } });
+		await channel.send(v2({ content, allowedMentions: { parse: [] } }, 'AutoMod alert'));
 	}
 
 	public async message(prisma: PrismaClient, message: Message, edited = false): Promise<void> {

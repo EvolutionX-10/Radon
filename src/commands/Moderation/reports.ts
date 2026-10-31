@@ -1,9 +1,12 @@
+import { v2 } from '../../lib/presentation/components.js';
 import { RadonCommand } from '../../lib/structures/commands/RadonCommand.js';
 import { PermissionLevel } from '#lib/decorators';
 import { PermissionLevels } from '#lib/types';
+import { card, componentMessage, divider, identity, text } from '../../lib/presentation/components.js';
+import { reportContainer } from '../../lib/presentation/reports.js';
 import { ModerationReports } from '../../lib/moderation/reports.js';
 import { ApplyOptions } from '@sapphire/decorators';
-import { ChannelType, InteractionContextType, MessageFlags, PermissionFlagsBits, escapeMarkdown } from 'discord.js';
+import { ChannelType, InteractionContextType, MessageFlags, PermissionFlagsBits } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({ description: 'Configure and review private member reports', permissionLevel: PermissionLevels.Moderator })
 export class UserCommand extends RadonCommand {
@@ -51,20 +54,24 @@ export class UserCommand extends RadonCommand {
 				orderBy: { createdAt: 'asc' },
 				take: 10
 			});
-			return interaction.editReply({
-				content: records.map((r) => `\`${r.id}\` · ${r.status}\n${r.messageUrl}`).join('\n\n') || 'No open reports.',
-				allowedMentions: { parse: [] }
-			});
+			const panel = card('Report inbox', `${records.length} open report${records.length === 1 ? '' : 's'} · Oldest first`);
+			if (!records.length) text(panel, 'You’re all caught up. No open reports.');
+			for (const report of records) {
+				divider(panel);
+				text(
+					panel,
+					`**${report.status}** · <@${report.targetId}> · reported by <@${report.reporterId}>\n[Open message](${report.messageUrl})\n-# Report reference: \`${report.id}\``
+				);
+			}
+			text(panel, '-# Use /reports view with a report reference for the message and people involved.');
+			return interaction.editReply(v2(componentMessage(panel), 'Reports'));
 		}
 		const id = interaction.options.getString('id', true);
 		if (subcommand === 'reset') return this.reset(interaction, id);
 		const record = await this.container.prisma.moderationReport.findFirst({ where: { id, guildId: interaction.guildId } });
-		return interaction.editReply({
-			content: record
-				? `**Report ${record.id}**\nStatus: ${record.status}\nReporter: ${record.reporterId}\nAuthor: ${record.targetId}\n${record.messageUrl}\n\n${escapeMarkdown(record.excerpt).slice(0, 1300)}`
-				: 'Report not found in this server.',
-			allowedMentions: { parse: [] }
-		});
+		if (!record) return interaction.editReply(v2('Report not found in this server.', 'Reports'));
+		const [author, reporter] = await Promise.all([identity(interaction.guild, record.targetId), identity(interaction.guild, record.reporterId)]);
+		return interaction.editReply(v2(componentMessage(reportContainer(record, author, reporter)), 'Reports'));
 	}
 
 	@PermissionLevel('Administrator', 'configure')
@@ -72,16 +79,19 @@ export class UserCommand extends RadonCommand {
 		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 		const channel = interaction.options.getChannel('channel', true);
 		if (channel.type !== ChannelType.GuildText || channel.permissionsFor(interaction.guild.roles.everyone).has('ViewChannel'))
-			return interaction.editReply('Choose a staff text channel hidden from @everyone.');
+			return interaction.editReply(v2('Choose a staff text channel hidden from @everyone.', 'Reports'));
 		if (!channel.permissionsFor(interaction.guild.members.me!).has(['ViewChannel', 'SendMessages', 'EmbedLinks']))
-			return interaction.editReply('I need View Channel, Send Messages, and Embed Links in that channel.');
+			return interaction.editReply(v2('I need View Channel, Send Messages, and Embed Links in that channel.', 'Reports'));
 		await this.container.prisma.moderationReportSettings.upsert({
 			where: { id: interaction.guildId },
 			create: { id: interaction.guildId, channelId: channel.id },
 			update: { channelId: channel.id }
 		});
 		return interaction.editReply(
-			`Report notifications will be sent to <#${channel.id}>. Review all role and member overwrites to ensure only trusted staff can read it.`
+			v2(
+				`Report notifications will be sent to <#${channel.id}>. Review all role and member overwrites to ensure only trusted staff can read it.`,
+				'Reports'
+			)
 		);
 	}
 
@@ -89,9 +99,12 @@ export class UserCommand extends RadonCommand {
 	private async reset(interaction: RadonCommand.ChatInputCommandInteraction, id: string) {
 		const result = await new ModerationReports(this.container.prisma).reset(interaction.guildId, id);
 		return interaction.editReply(
-			result
-				? 'Report returned to pending. Check whether the previous action completed before taking another action.'
-				: 'No interrupted review found.'
+			v2(
+				result
+					? 'Report returned to pending. Check whether the previous action completed before taking another action.'
+					: 'No interrupted review found.',
+				'Reports'
+			)
 		);
 	}
 }

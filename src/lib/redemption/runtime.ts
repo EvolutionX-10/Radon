@@ -1,3 +1,4 @@
+import { v2 } from '../presentation/components.js';
 import { Emojis } from '#constants';
 import { RadonEvents } from '#lib/types';
 import type { PrismaClient } from '@prisma/client';
@@ -52,10 +53,15 @@ export async function runClaims(
 		// the publisher is slow. This never reports unconfirmed claims as success.
 		progress = setTimeout(() => {
 			progressWrite = interaction
-				.editReply({
-					content: `Still processing ${selected.length} account(s). The game service is taking longer than usual. You can leave this message open; the final results will appear here.`,
-					allowedMentions: { parse: [] }
-				})
+				.editReply(
+					v2(
+						{
+							content: `Still processing ${selected.length} account(s). The game service is taking longer than usual. You can leave this message open; the final results will appear here.`,
+							allowedMentions: { parse: [] }
+						},
+						'Coupon claim'
+					)
+				)
 				.catch(() => null);
 		}, 4_000).unref();
 		const results = await redemptionService(container.prisma).claimBatch(
@@ -79,22 +85,32 @@ export async function runClaims(
 		}
 		clearTimeout(progress);
 		await progressWrite;
-		return interaction.editReply({
-			content:
-				formatClaimResults(results) +
-				(selected.length < memberCodes.length
-					? '\nExtra accounts are still saved. Use `/claim solo` to claim for one, or `/vote` to unlock all ten slots.'
-					: ''),
-			allowedMentions: { parse: [] }
-		});
+		return interaction.editReply(
+			v2(
+				{
+					content:
+						formatClaimResults(results) +
+						(selected.length < memberCodes.length
+							? '\nExtra accounts are still saved. Use `/claim solo` to claim for one, or `/vote` to unlock all ten slots.'
+							: ''),
+					allowedMentions: { parse: [] }
+				},
+				'Coupon claim'
+			)
+		);
 	} catch (error) {
 		if (progress) clearTimeout(progress);
 		await progressWrite;
 		if (!(error instanceof RedemptionError)) container.logger.error('Redemption failed before a confirmed response.');
-		return interaction.editReply({
-			content: error instanceof RedemptionError ? error.message : 'Redemption is temporarily unavailable. Please try again later.',
-			allowedMentions: { parse: [] }
-		});
+		return interaction.editReply(
+			v2(
+				{
+					content: error instanceof RedemptionError ? error.message : 'Redemption is temporarily unavailable. Please try again later.',
+					allowedMentions: { parse: [] }
+				},
+				'Coupon claim'
+			)
+		);
 	} finally {
 		if (progress) clearTimeout(progress);
 	}

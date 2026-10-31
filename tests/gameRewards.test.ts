@@ -2,7 +2,7 @@ import { describe, expect, it } from 'bun:test';
 import { accountOwnerKey, games, getGame } from '../src/lib/redemption/games.js';
 import { makeNetmarbleAdapter, receiptKey } from '../src/lib/redemption/service.js';
 import { claimButtonId, parseClaimButton } from '../src/lib/redemption/posts.js';
-import { guideContent, guideTopics, guideButtons } from '../src/lib/redemption/guide.js';
+import { guideContent, guideTopics, guideContainer } from '../src/lib/redemption/guide.js';
 import { postListingStats, startListingReporter, stopListingReporter } from '../src/lib/rewards/listings.js';
 import { rewardButtons, rewardSummary } from '../src/lib/rewards/presentation.js';
 import { EventEmitter } from 'node:events';
@@ -100,7 +100,11 @@ describe('guides and optional voting', () => {
 			expect(guideContent(topic).length).toBeLessThanOrEqual(2_000);
 			expect(guideContent(topic).length).toBeGreaterThan(100);
 		}
-		expect(guideButtons().toJSON().components).toHaveLength(5);
+		expect(
+			guideContainer()
+				.toJSON()
+				.components.filter((component) => component.type === 1)
+		).toHaveLength(2);
 		expect(
 			rewardSummary(Date.now() + 1_000, [
 				{ provider: 'topgg', status: 'verified' },

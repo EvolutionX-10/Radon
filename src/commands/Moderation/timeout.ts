@@ -1,3 +1,4 @@
+import { v2 } from '../../lib/presentation/components.js';
 import { Emojis } from '#constants';
 import { ModerationAction, RadonCommand, Timestamp } from '#lib/structures';
 import { PermissionLevels, RadonEvents, type TimeoutActionData } from '#lib/types';
@@ -19,36 +20,61 @@ export class UserCommand extends RadonCommand {
 		const dm = interaction.options.getBoolean('dm') ?? false;
 
 		if (!member)
-			return interaction.editReply({
-				content: `${Emojis.Cross} You must specify a valid member that is in this server!`
-			});
+			return interaction.editReply(
+				v2(
+					{
+						content: `${Emojis.Cross} You must specify a valid member that is in this server!`
+					},
+					'Radon · Timeout'
+				)
+			);
 
 		const { content: ctn, result } = runAllChecks(interaction.member, member, 'timeout');
 		if (!result || member.user.bot)
-			return interaction.editReply({
-				content: ctn || `${Emojis.Cross} I can't perform timeout on bots!`
-			});
+			return interaction.editReply(
+				v2(
+					{
+						content: ctn || `${Emojis.Cross} I can't perform timeout on bots!`
+					},
+					'Radon · Timeout'
+				)
+			);
 
 		let time = interaction.options.getString('duration', true);
 		if (!isNaN(Number(time))) time += 's';
 		const duration = new Duration(time).offset;
 		if (!Number.isFinite(duration) || duration < 0)
-			return interaction.editReply({
-				content: `${Emojis.Cross} Invalid duration! Valid examples: \`1d\`, \`1h\`, \`1m\`, \`1s\`\nTo remove a timeout just put \`0\` as the duration.`
-			});
+			return interaction.editReply(
+				v2(
+					{
+						content: `${Emojis.Cross} Invalid duration! Valid examples: \`1d\`, \`1h\`, \`1m\`, \`1s\`\nTo remove a timeout just put \`0\` as the duration.`
+					},
+					'Radon · Timeout'
+				)
+			);
 
 		const MAX_TIMEOUT_DURATION = new Duration('28d').offset;
 
 		if (duration > MAX_TIMEOUT_DURATION) {
-			return interaction.editReply({
-				content: `${Emojis.Cross} You cannot timeout a member for more than 28 days!`
-			});
+			return interaction.editReply(
+				v2(
+					{
+						content: `${Emojis.Cross} You cannot timeout a member for more than 28 days!`
+					},
+					'Radon · Timeout'
+				)
+			);
 		}
 
 		if (duration === 0 && !member.isCommunicationDisabled()) {
-			return interaction.editReply({
-				content: `${Emojis.Cross} ${member} is not on timeout!`
-			});
+			return interaction.editReply(
+				v2(
+					{
+						content: `${Emojis.Cross} ${member} is not on timeout!`
+					},
+					'Radon · Timeout'
+				)
+			);
 		}
 
 		let content = `${Emojis.Confirm} ${member} has been timed out for ${new DurationFormatter().format(duration)}`;
@@ -61,14 +87,21 @@ export class UserCommand extends RadonCommand {
 			);
 		} catch (error) {
 			this.container.logger.error('Timeout failed:', error);
-			return interaction.editReply(`${Emojis.Cross} The timeout could not be updated. Please check my permissions and role position.`);
+			return interaction.editReply(
+				v2(`${Emojis.Cross} The timeout could not be updated. Please check my permissions and role position.`, 'Radon · Timeout')
+			);
 		}
 
 		if (duration !== 0 && dm) {
 			await member
-				.send({
-					content: `You have been timed out for ${new DurationFormatter().format(duration)}!\nServer: ${interaction.guild.name}`
-				})
+				.send(
+					v2(
+						{
+							content: `You have been timed out for ${new DurationFormatter().format(duration)}!\nServer: ${interaction.guild.name}`
+						},
+						'Radon · Timeout'
+					)
+				)
 				.catch(() => (content += `\n\n> ${Emojis.Cross} Couldn't DM the member!`));
 		}
 
@@ -86,7 +119,7 @@ export class UserCommand extends RadonCommand {
 		}
 
 		if (duration === 0) content = `${Emojis.Confirm} Removed timeout from ${member}`;
-		return interaction.editReply(content);
+		return interaction.editReply(v2(content, 'Radon · Timeout'));
 	}
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {
