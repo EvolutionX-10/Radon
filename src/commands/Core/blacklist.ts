@@ -1,3 +1,4 @@
+import { v2 } from '../../lib/presentation/components.js';
 import { Color, RadonGuildId, TestServerGuildIds } from '#constants';
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
@@ -90,7 +91,7 @@ export class UserCommand extends RadonCommand {
 			case 'remove':
 				return this.remove(interaction);
 			default:
-				return interaction.reply({ content: 'Invalid subcommand.' });
+				return interaction.reply(v2({ content: 'Invalid subcommand.' }, 'Radon · Blacklist'));
 		}
 	}
 
@@ -100,18 +101,19 @@ export class UserCommand extends RadonCommand {
 		const force = interaction.options.getBoolean('force') ?? false;
 
 		const guild = await this.container.client.guilds.fetch(id).catch(() => null);
-		if (!guild && !force) return interaction.reply({ content: `I can't find that guild.`, flags: MessageFlags.Ephemeral });
+		if (!guild && !force)
+			return interaction.reply(v2({ content: `I can't find that guild.`, flags: MessageFlags.Ephemeral }, 'Radon · Blacklist'));
 
 		if (force && !guild) {
 			await this.container.settings.blacklists.add(id, reason);
-			return interaction.reply({ content: `Guild with ID \`${id}\` has been blacklisted.` });
+			return interaction.reply(v2({ content: `Guild with ID \`${id}\` has been blacklisted.` }, 'Radon · Blacklist'));
 		}
 
 		if (guild) {
 			await guild.leave();
 			const k = await guild?.settings?.blacklists.add(id, reason).catch(() => undefined);
 			if (typeof k === 'undefined') console.log(`Could Not Save Blacklist for ${guild.name} (${id})`);
-			await interaction.reply({ content: `Guild \`${guild.name}\` [\`${id}\`] has been blacklisted.` });
+			await interaction.reply(v2({ content: `Guild \`${guild.name}\` [\`${id}\`] has been blacklisted.` }, 'Radon · Blacklist'));
 		}
 
 		const channel = this.container.client.channels.cache.get('950646836471947294') as TextChannel;
@@ -141,9 +143,11 @@ export class UserCommand extends RadonCommand {
 		const id = interaction.options.getString('id', true);
 
 		const reason = await this.container.settings.blacklists.remove(id).catch(() => null);
-		if (!reason) return interaction.reply({ content: `That guild isn't blacklisted.`, flags: MessageFlags.Ephemeral });
+		if (!reason) return interaction.reply(v2({ content: `That guild isn't blacklisted.`, flags: MessageFlags.Ephemeral }, 'Radon · Blacklist'));
 
-		await interaction.reply({ content: `Guild with ID \`${id}\` has been removed from the blacklist.\nBlacklist reason: ${reason}` });
+		await interaction.reply(
+			v2({ content: `Guild with ID \`${id}\` has been removed from the blacklist.\nBlacklist reason: ${reason}` }, 'Radon · Blacklist')
+		);
 
 		const channel = this.container.client.channels.cache.get('950646836471947294') as TextChannel;
 		if (!channel) return;

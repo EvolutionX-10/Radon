@@ -1,3 +1,4 @@
+import { v2 } from '../../lib/presentation/components.js';
 import { Color, Emojis, WarnSeverity } from '#constants';
 import { PermissionLevel } from '#lib/decorators';
 import { Embed, JustButtons, RadonCommand, RadonPaginatedMessageEmbedFields, Timestamp } from '#lib/structures';
@@ -277,35 +278,60 @@ export class UserCommand extends RadonCommand {
 		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 		if (!interaction.channel) return;
 		if (!member) {
-			return interaction.editReply({
-				content: `${Emojis.Cross} You must specify a valid member that is in this server!`
-			});
+			return interaction.editReply(
+				v2(
+					{
+						content: `${Emojis.Cross} You must specify a valid member that is in this server!`
+					},
+					'Warnings'
+				)
+			);
 		}
 		const { content: ctn, result } = runAllChecks(interaction.member, member, 'warn');
 		if (!result || member.user.bot)
-			return interaction.editReply({
-				content: ctn || `${Emojis.Cross} Bots were not meant to be warned!`
-			});
+			return interaction.editReply(
+				v2(
+					{
+						content: ctn || `${Emojis.Cross} Bots were not meant to be warned!`
+					},
+					'Warnings'
+				)
+			);
 		const deleteMsg = interaction.options.getBoolean('delete_messages') ?? false;
 		const severity = (interaction.options.getInteger('severity') ?? 1) as warnSeverityNum;
 		const expires = interaction.options.getString('expiration') ?? expirationFromSeverity[severity];
 		const silent = interaction.options.getBoolean('silent') ?? false;
 
 		if (isNaN(new Duration(expires).offset)) {
-			return interaction.editReply({
-				content: `${Emojis.Cross} Invalid duration! Valid examples: \`1 week\`, \`1h\`, \`10 days\`, \`5 hours\``
-			});
+			return interaction.editReply(
+				v2(
+					{
+						content: `${Emojis.Cross} Invalid duration! Valid examples: \`1 week\`, \`1h\`, \`10 days\`, \`5 hours\``
+					},
+					'Warnings'
+				)
+			);
 		}
 		const expiration = new Date(Date.now() + new Duration(expires).offset);
 		if (expiration.getTime() > Date.now() + new Duration('28 days').offset) {
-			return interaction.editReply({
-				content: `${Emojis.Cross} Expiration cannot be more than 28 days`
-			});
+			return interaction.editReply(
+				v2(
+					{
+						content: `${Emojis.Cross} Expiration cannot be more than 28 days`
+					},
+					'Warnings'
+				)
+			);
 		}
 		if (expiration.getTime() < Date.now() + new Duration('1 hour').offset) {
-			return interaction.editReply({
-				content: `${Emojis.Cross} Expiration cannot be less than 1 hour. Please use a longer duration.`
-			});
+			return interaction.editReply(
+				v2(
+					{
+						content: `${Emojis.Cross} Expiration cannot be less than 1 hour. Please use a longer duration.`
+					},
+					'Warnings'
+				)
+			);
 		}
 		const warnId = uid();
 
@@ -319,9 +345,14 @@ export class UserCommand extends RadonCommand {
 		});
 
 		if (typeof warn === 'undefined') {
-			return interaction.editReply({
-				content: `The limit is 50 stored warnings per member. Remove an old warning before adding another on ${member}.`
-			});
+			return interaction.editReply(
+				v2(
+					{
+						content: `The limit is 50 stored warnings per member. Remove an old warning before adding another on ${member}.`
+					},
+					'Warnings'
+				)
+			);
 		}
 
 		// Use the successful write's snapshot. A subsequent read could include a
@@ -335,25 +366,35 @@ export class UserCommand extends RadonCommand {
 		let content = `${member} has been warned for __${reason}__\nWarn ID: \`${warnId}\`\n*They now have ${totalwarns} warning(s)*`;
 		if (!silent) {
 			await member
-				.send({
-					content: `You have been warned in ${member.guild.name} for __${reason}__\nWarn ID: \`${warnId}\``
-				})
+				.send(
+					v2(
+						{
+							content: `You have been warned in ${member.guild.name} for __${reason}__\nWarn ID: \`${warnId}\``
+						},
+						'Warnings'
+					)
+				)
 				.catch(() => {
 					content += `\n\n> ${Emojis.Cross} Couldn't DM member`;
 				});
 		}
 
-		await interaction.editReply({ content }).catch(() => null);
+		await interaction.editReply(v2({ content }, 'Warnings')).catch(() => null);
 
 		const msg = await interaction.channel
-			.send({
-				embeds: [
+			.send(
+				v2(
 					{
-						description: `${member} has been warned`,
-						color: Color.Moderation
-					}
-				]
-			})
+						embeds: [
+							{
+								description: `${member} has been warned`,
+								color: Color.Moderation
+							}
+						]
+					},
+					'Warnings'
+				)
+			)
 			.catch(() => null);
 
 		const data: WarnActionData = {
@@ -375,10 +416,15 @@ export class UserCommand extends RadonCommand {
 
 		if (deleteMsg) {
 			if (!interaction.guild.members.me?.permissions.has('ManageMessages')) {
-				return interaction.followUp({
-					content: "I don't have the `Manage Messages` permission, so I couldn't delete messages.",
-					flags: MessageFlags.Ephemeral
-				});
+				return interaction.followUp(
+					v2(
+						{
+							content: "I don't have the `Manage Messages` permission, so I couldn't delete messages.",
+							flags: MessageFlags.Ephemeral
+						},
+						'Warnings'
+					)
+				);
 			}
 			const textChannels = interaction.guild.channels.cache.filter(
 				(c) => c.isTextBased() && c.permissionsFor(interaction.guild.members.me!).has('ManageMessages')
@@ -406,21 +452,31 @@ export class UserCommand extends RadonCommand {
 		const reply = await interaction.deferReply({ withResponse: true });
 
 		if (!member) {
-			return interaction.editReply({
-				content: `${Emojis.Cross} You must specify a valid member that is in this server!`
-			});
+			return interaction.editReply(
+				v2(
+					{
+						content: `${Emojis.Cross} You must specify a valid member that is in this server!`
+					},
+					'Warnings'
+				)
+			);
 		}
 
 		const warn = await interaction.guild.settings?.warns.remove(warnId, member);
 
 		if (!warn) {
-			return interaction.editReply({
-				content:
-					`That warning does not exist on ${member}\n` +
-					`Possible reasons: \n` +
-					`\` - \` The warning ID is incorrect\n` +
-					`\` - \` The member has not been warned`
-			});
+			return interaction.editReply(
+				v2(
+					{
+						content:
+							`That warning does not exist on ${member}\n` +
+							`Possible reasons: \n` +
+							`\` - \` The warning ID is incorrect\n` +
+							`\` - \` The member has not been warned`
+					},
+					'Warnings'
+				)
+			);
 		}
 
 		const totalwarns =
@@ -440,16 +496,21 @@ export class UserCommand extends RadonCommand {
 
 		this.container.client.emit(RadonEvents.ModAction, data);
 
-		return interaction.editReply({ content });
+		return interaction.editReply(v2({ content }, 'Warnings'));
 	}
 
 	private async list(interaction: RadonCommand.ChatInputCommandInteraction | RadonCommand.UserContextMenuCommandInteraction) {
 		const member = interaction.options.getMember('target') ?? interaction.options.getMember('user');
 		if (!member) {
-			return interaction.reply({
-				content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
-				flags: MessageFlags.Ephemeral
-			});
+			return interaction.reply(
+				v2(
+					{
+						content: `${Emojis.Cross} You must specify a valid member that is in this server!`,
+						flags: MessageFlags.Ephemeral
+					},
+					'Warnings'
+				)
+			);
 		}
 
 		if (interaction.isContextMenuCommand()) {
@@ -461,9 +522,14 @@ export class UserCommand extends RadonCommand {
 		const data = await interaction.guild.settings?.warns.getRefined(member);
 
 		if (!data || data.active.length === 0) {
-			return interaction.editReply({
-				content: `${member} has no active warnings`
-			});
+			return interaction.editReply(
+				v2(
+					{
+						content: `${member} has no active warnings`
+					},
+					'Warnings'
+				)
+			);
 		}
 
 		const warns_size = data.active.length;
@@ -504,7 +570,7 @@ export class UserCommand extends RadonCommand {
 	private async list_all(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const warns = await interaction.guild.settings?.warns.getAll(interaction.guildId);
 		await interaction.deferReply();
-		if (!warns || !warns.length) return interaction.editReply(`No warnings found!`);
+		if (!warns || !warns.length) return interaction.editReply(v2(`No warnings found!`, 'Warnings'));
 
 		const paginatedEmbed = new JustButtons();
 
@@ -553,7 +619,7 @@ export class UserCommand extends RadonCommand {
 
 		let content = `\nIt will be applied to any user that crosses the threshold of \`${severity}\` severity in warnings.`;
 
-		if (action === 'timeout' && !time) return interaction.editReply(`Please provide a duration for timeout!`);
+		if (action === 'timeout' && !time) return interaction.editReply(v2(`Please provide a duration for timeout!`, 'Warnings'));
 
 		let duration: number | undefined;
 
@@ -563,16 +629,26 @@ export class UserCommand extends RadonCommand {
 			duration = new Duration(time!).offset;
 
 			if (isNaN(duration))
-				return interaction.editReply({
-					content: `${Emojis.Cross} Invalid duration! Valid examples: \`1d\`, \`1h\`, \`1m\`, \`1s\`\nTo remove a timeout just put \`0\` as the duration.`
-				});
+				return interaction.editReply(
+					v2(
+						{
+							content: `${Emojis.Cross} Invalid duration! Valid examples: \`1d\`, \`1h\`, \`1m\`, \`1s\`\nTo remove a timeout just put \`0\` as the duration.`
+						},
+						'Warnings'
+					)
+				);
 
 			const MAX_TIMEOUT_DURATION = new Duration('28d').offset;
 
 			if (duration > MAX_TIMEOUT_DURATION) {
-				return interaction.editReply({
-					content: `${Emojis.Cross} You cannot timeout a member for more than 28 days!`
-				});
+				return interaction.editReply(
+					v2(
+						{
+							content: `${Emojis.Cross} You cannot timeout a member for more than 28 days!`
+						},
+						'Warnings'
+					)
+				);
 			}
 		}
 
@@ -583,21 +659,36 @@ export class UserCommand extends RadonCommand {
 		});
 
 		if (added === null)
-			return interaction.editReply({
-				content: `${Emojis.Cross} An action already exists for severity ${severity}`
-			});
+			return interaction.editReply(
+				v2(
+					{
+						content: `${Emojis.Cross} An action already exists for severity ${severity}`
+					},
+					'Warnings'
+				)
+			);
 		if (added === undefined)
-			return interaction.editReply({
-				content: `You have 10 actions already! There is a limit of 10 actions\nRemove actions in order to create new!`
-			});
+			return interaction.editReply(
+				v2(
+					{
+						content: `You have 10 actions already! There is a limit of 10 actions\nRemove actions in order to create new!`
+					},
+					'Warnings'
+				)
+			);
 
 		if (time && action !== 'timeout') content += `\n\n> Note: The duration will be ignored here since the action is not a timeout.`;
 
 		const timeoutcontent = time && action === 'timeout' ? ` with a duration of __${new DurationFormatter().format(duration!)}__.` : '.';
 
-		return interaction.editReply({
-			content: `${Emojis.Confirm} Successfully added a ${action} action${timeoutcontent}\n${content}`
-		});
+		return interaction.editReply(
+			v2(
+				{
+					content: `${Emojis.Confirm} Successfully added a ${action} action${timeoutcontent}\n${content}`
+				},
+				'Warnings'
+			)
+		);
 	}
 
 	@PermissionLevel('Administrator', 'action remove')
@@ -605,23 +696,38 @@ export class UserCommand extends RadonCommand {
 		const severity = interaction.options.getInteger('severity', true);
 		const rem = await interaction.guild.settings?.warns?.removeAction(severity);
 		if (!rem)
-			return interaction.reply({
-				content: 'No action found for this severity',
-				flags: MessageFlags.Ephemeral
-			});
-		return interaction.reply({
-			content: `${Emojis.Confirm} Successfully removed the ${rem.action} action for ${rem.severity} severity`
-		});
+			return interaction.reply(
+				v2(
+					{
+						content: 'No action found for this severity',
+						flags: MessageFlags.Ephemeral
+					},
+					'Warnings'
+				)
+			);
+		return interaction.reply(
+			v2(
+				{
+					content: `${Emojis.Confirm} Successfully removed the ${rem.action} action for ${rem.severity} severity`
+				},
+				'Warnings'
+			)
+		);
 	}
 
 	private async listActions(interaction: RadonCommand.ChatInputCommandInteraction) {
 		const actions = await interaction.guild.settings?.warns?.getActions();
 
 		if (!actions?.length)
-			return interaction.reply({
-				content: 'No actions found',
-				flags: MessageFlags.Ephemeral
-			});
+			return interaction.reply(
+				v2(
+					{
+						content: 'No actions found',
+						flags: MessageFlags.Ephemeral
+					},
+					'Warnings'
+				)
+			);
 
 		const embed_fields = actions.map((e) => {
 			return {

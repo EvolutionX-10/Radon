@@ -1,3 +1,4 @@
+import { displayText } from './fixtures/presentation.js';
 import { describe, expect, it, spyOn } from 'bun:test';
 import { ModerationAction } from '../src/lib/structures/classes/ModerationAction.js';
 import { UserHandler } from '../src/interaction-handlers/buttons/reviewReport.js';
@@ -78,14 +79,14 @@ describe('report button authorization and hierarchy', () => {
 	it('denies an unconfigured role before reading or claiming a report', async () => {
 		const f = fixture({ staff: false });
 		await UserHandler.prototype.run.call(f.handler as any, f.interaction as any, { action: 'timeout', id: 'report' });
-		expect(f.replies[0]).toContain('Only configured moderation staff');
+		expect(displayText(f.replies[0])).toContain('Only configured moderation staff');
 		expect(f.queries()).toBe(0);
 		expect(f.claims()).toBe(0);
 	});
 	it('rejects a message not bound to the stored report', async () => {
 		const f = fixture({ validMessage: false });
 		await UserHandler.prototype.run.call(f.handler as any, f.interaction as any, { action: 'dismiss', id: 'report' });
-		expect(f.replies[0]).toContain('no longer valid');
+		expect(displayText(f.replies[0])).toContain('no longer valid');
 		expect(f.claims()).toBe(0);
 	});
 	it('rejects above-ranked members before invoking even the old moderation implementation', async () => {
@@ -93,20 +94,20 @@ describe('report button authorization and hierarchy', () => {
 		await UserHandler.prototype.run.call(f.handler as any, f.interaction as any, { action: 'timeout', id: 'report' });
 		expect(f.fetchedTarget()).toBe(true);
 		expect(f.timeouts()).toBe(0);
-		expect(f.replies[0]).toContain('action failed');
+		expect(displayText(f.replies[0])).toContain('action failed');
 	});
 	it('rejects timeout on bots', async () => {
 		const f = fixture({ bot: true });
 		await UserHandler.prototype.run.call(f.handler as any, f.interaction as any, { action: 'timeout', id: 'report' });
 		expect(f.timeouts()).toBe(0);
-		expect(f.replies[0]).toContain('action failed');
+		expect(displayText(f.replies[0])).toContain('action failed');
 	});
 	it('lets configured staff dismiss a valid report without targeting a member', async () => {
 		const f = fixture();
 		await UserHandler.prototype.run.call(f.handler as any, f.interaction as any, { action: 'dismiss', id: 'report' });
 		expect(f.fetchedTarget()).toBe(false);
 		expect(f.claims()).toBe(2);
-		expect(f.replies[0]).toBe('Report dismissed.');
+		expect(displayText(f.replies[0])).toContain('Report dismissed.');
 	});
 	it('keeps a timeout review claimed after a network error of unknown outcome', async () => {
 		const f = fixture();
@@ -114,8 +115,8 @@ describe('report button authorization and hierarchy', () => {
 		try {
 			await UserHandler.prototype.run.call(f.handler as any, f.interaction as any, { action: 'timeout', id: 'report' });
 			expect(f.claims()).toBe(1);
-			expect(f.replies[0]).toContain('outcome could not be confirmed');
-			expect(f.replies[0]).toContain('remains in review');
+			expect(displayText(f.replies[0])).toContain('outcome could not be confirmed');
+			expect(displayText(f.replies[0])).toContain('remains in review');
 		} finally {
 			invoke.mockRestore();
 		}

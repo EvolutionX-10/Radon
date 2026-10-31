@@ -1,3 +1,4 @@
+import { v2 } from '../../lib/presentation/components.js';
 import { Color } from '#constants';
 import { Embed, JustButtons } from '#lib/structures';
 import type { RadonButtonInteraction } from '#lib/types';
@@ -35,9 +36,14 @@ export class UserRolesButtonHandler extends InteractionHandler {
 			.map((role) => role);
 
 		if (roles.length === 0) {
-			return interaction.editReply({
-				content: `${member.user.globalName || member.user.username} has no roles besides @everyone.`
-			});
+			return interaction.editReply(
+				v2(
+					{
+						content: `${member.user.globalName || member.user.username} has no roles besides @everyone.`
+					},
+					'Member roles'
+				)
+			);
 		}
 
 		// Split roles into chunks of 10 for pagination
@@ -73,7 +79,7 @@ export class UserRolesButtonHandler extends InteractionHandler {
 
 		if (pages.length === 1) {
 			// If only one page, send it directly
-			return interaction.editReply(pages[0]);
+			return interaction.editReply(v2(pages[0], 'Member roles'));
 		}
 
 		// Use JustButtons for pagination

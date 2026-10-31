@@ -114,8 +114,8 @@ export class UserCommand extends RadonCommand {
 			.addSeparatorComponents((s) => s)
 			.addTextDisplayComponents((textDisplay) =>
 				textDisplay.setContent(
-					`If you like using me, consider voting to help me grow and reach more servers!\n` +
-						subtext('Your support means a lot and helps keep the bot running smoothly. Thank you!')
+					`Vote on either site, then check your vote to unlock a 24-hour Supporter Pass: extra saved accounts and optional coupon alerts.\n` +
+						subtext('Normal claiming stays free. Use /vote for your pass status or /guide for help. Thank you for supporting Radon!')
 				)
 			)
 			.addActionRowComponents(voteRow)

@@ -1,3 +1,4 @@
+import { v2 } from '../../lib/presentation/components.js';
 import { Emojis } from '#constants';
 import { ModerationAction, RadonCommand } from '#lib/structures';
 import { type BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
@@ -21,13 +22,18 @@ export class UserCommand extends RadonCommand {
 		const reply = await interaction.deferReply({ withResponse: true });
 
 		if (!member) {
-			return interaction.editReply({
-				content: `${Emojis.Cross} You must specify a valid member that is in this server!`
-			});
+			return interaction.editReply(
+				v2(
+					{
+						content: `${Emojis.Cross} You must specify a valid member that is in this server!`
+					},
+					'Radon · Kick'
+				)
+			);
 		}
 
 		const { content: ctn, result } = runAllChecks(interaction.member, member, 'kick');
-		if (!result) return interaction.editReply({ content: ctn });
+		if (!result) return interaction.editReply(v2({ content: ctn }, 'Radon · Kick'));
 
 		let content = `${Emojis.Confirm} ${member.user.tag} has been kicked ${reason ? `for the following reason: ${reason}` : ''}`;
 
@@ -38,16 +44,26 @@ export class UserCommand extends RadonCommand {
 				return null;
 			});
 		if (!kicked) {
-			return interaction.editReply({
-				content: `Kick failed due to missing permissions, please contact support server if this persists!`
-			});
+			return interaction.editReply(
+				v2(
+					{
+						content: `Kick failed due to missing permissions, please contact support server if this persists!`
+					},
+					'Radon · Kick'
+				)
+			);
 		}
 
 		if (dm) {
 			await member
-				.send({
-					content: `You have been kicked from ${member.guild.name} ${reason ? `for the following reason: ${reason}` : ''}`
-				})
+				.send(
+					v2(
+						{
+							content: `You have been kicked from ${member.guild.name} ${reason ? `for the following reason: ${reason}` : ''}`
+						},
+						'Radon · Kick'
+					)
+				)
 				.catch(() => (content += `\n\n> ${Emojis.Cross} Couldn't DM member!`));
 		}
 
@@ -61,7 +77,7 @@ export class UserCommand extends RadonCommand {
 
 		this.container.client.emit(RadonEvents.ModAction, data);
 
-		return interaction.editReply(content);
+		return interaction.editReply(v2(content, 'Radon · Kick'));
 	}
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {

@@ -83,6 +83,7 @@ jobs:
         env:
           RADON_TEST_MONGO_URL: mongodb://127.0.0.1:27028/radon_test_ci?directConnection=true&replicaSet=radonTest
           RADON_REDEMPTION_TEST_MONGO: mongodb://127.0.0.1:27028/radon_test_ci_redemption?directConnection=true&replicaSet=radonTest
+          RADON_REWARDS_TEST_MONGO: mongodb://127.0.0.1:27028/radon_test_ci_rewards?directConnection=true&replicaSet=radonTest
           RADON_LOCK_TEST_MONGO: mongodb://127.0.0.1:27028/radon_test_ci_locks?directConnection=true&replicaSet=radonTest
         run: bun test
       - name: Remove disposable database

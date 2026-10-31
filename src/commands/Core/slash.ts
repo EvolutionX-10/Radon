@@ -1,3 +1,4 @@
+import { v2 } from '../../lib/presentation/components.js';
 import { Emojis } from '#constants';
 import { Confirmation, RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
@@ -47,14 +48,14 @@ export class UserCommand extends RadonCommand {
 			time: mins(5),
 			filter: (i) => i.user.id === interaction.user.id
 		});
-		if (!collector) return void interaction.followUp('Collector creation failed');
+		if (!collector) return void interaction.followUp(v2('Collector creation failed', 'Radon · Slash'));
 
 		collector.on('collect', async (i) => {
 			await i.deferUpdate();
 			if (i.customId.startsWith('delete-')) {
 				const cmdId = i.customId.split('-')[1];
 				const cmd = commands[context][type].find((c) => c.id === cmdId);
-				if (!cmd) return void i.followUp({ content: 'Command not found', flags: MessageFlags.Ephemeral });
+				if (!cmd) return void i.followUp(v2({ content: 'Command not found', flags: MessageFlags.Ephemeral }, 'Radon · Slash'));
 
 				return void new Confirmation({
 					onConfirm: async ({ i: _i }) => {
@@ -64,10 +65,10 @@ export class UserCommand extends RadonCommand {
 							components: [this.buildContainer(commands[context][type], page, context, type)],
 							flags: MessageFlags.IsComponentsV2
 						});
-						return _i.editReply(`Deleted ${mentionCommand(cmd)} *(${cmd.id})*`);
+						return _i.editReply(v2(`Deleted ${mentionCommand(cmd)} *(${cmd.id})*`, 'Radon · Slash'));
 					},
 					onCancel: ({ i: _i }) => {
-						return _i.editReply(`Cancelled deletion of ${mentionCommand(cmd)} *(${cmd.id})*`);
+						return _i.editReply(v2(`Cancelled deletion of ${mentionCommand(cmd)} *(${cmd.id})*`, 'Radon · Slash'));
 					},
 					content: `Are you sure you want to delete ${mentionCommand(cmd)} *(${cmd.id})*?`,
 					ephemeral: true
@@ -89,7 +90,9 @@ export class UserCommand extends RadonCommand {
 					page = 1;
 				}
 				if (commands[context][type].length === 0) {
-					return void i.followUp({ content: `No commands found for the selected context and type.`, flags: MessageFlags.Ephemeral });
+					return void i.followUp(
+						v2({ content: `No commands found for the selected context and type.`, flags: MessageFlags.Ephemeral }, 'Radon · Slash')
+					);
 				}
 			} else if (i.customId === 'command-type') {
 				const selected = (i as StringSelectMenuInteraction<'cached'>).values[0] as unknown as Exclude<
@@ -101,7 +104,9 @@ export class UserCommand extends RadonCommand {
 					page = 1;
 				}
 				if (commands[context][type].length === 0) {
-					return void i.followUp({ content: `No commands found for the selected context and type.`, flags: MessageFlags.Ephemeral });
+					return void i.followUp(
+						v2({ content: `No commands found for the selected context and type.`, flags: MessageFlags.Ephemeral }, 'Radon · Slash')
+					);
 				}
 			}
 
@@ -112,10 +117,15 @@ export class UserCommand extends RadonCommand {
 		});
 
 		collector.on('ignore', (i) => {
-			i.reply({
-				content: 'Unauthorized!',
-				flags: MessageFlags.Ephemeral
-			});
+			i.reply(
+				v2(
+					{
+						content: 'Unauthorized!',
+						flags: MessageFlags.Ephemeral
+					},
+					'Radon · Slash'
+				)
+			);
 		});
 	}
 

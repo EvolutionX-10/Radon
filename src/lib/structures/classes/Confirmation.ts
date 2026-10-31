@@ -1,3 +1,4 @@
+import { v2 } from '../../presentation/components.js';
 import { Emojis } from '#constants';
 import {
 	type APIButtonComponentWithCustomId,
@@ -78,29 +79,44 @@ export class Confirmation {
 		let msg: Message<boolean>;
 		if (message instanceof Message) {
 			if (!message.channel.isSendable()) return;
-			msg = await message.channel.send({
-				content: this.options.content,
-				embeds: this.options?.content ? [] : [embed],
-				components: [row]
-			});
+			msg = await message.channel.send(
+				v2(
+					{
+						content: this.options.content,
+						embeds: this.options?.content ? [] : [embed],
+						components: [row]
+					},
+					'Confirm action'
+				)
+			);
 		} else {
 			if (message instanceof ChatInputCommandInteraction) {
-				const interactionResponse = await message.reply({
-					content: this.options.content,
-					embeds: this.options?.content ? [] : [embed],
-					components: [row],
-					withResponse: true,
-					flags: this.options.ephemeral ? MessageFlags.Ephemeral : undefined
-				});
+				const interactionResponse = await message.reply(
+					v2(
+						{
+							content: this.options.content,
+							embeds: this.options?.content ? [] : [embed],
+							components: [row],
+							withResponse: true,
+							flags: this.options.ephemeral ? MessageFlags.Ephemeral : undefined
+						},
+						'Confirm action'
+					)
+				);
 				msg = message.channel?.messages.cache.get(interactionResponse.interaction.responseMessageId!) as Message<boolean>;
 			} else {
-				const interactionResponse = await message.followUp({
-					content: this.options.content,
-					embeds: this.options?.content ? [] : [embed],
-					components: [row],
-					withResponse: true,
-					flags: this.options.ephemeral ? MessageFlags.Ephemeral : undefined
-				});
+				const interactionResponse = await message.followUp(
+					v2(
+						{
+							content: this.options.content,
+							embeds: this.options?.content ? [] : [embed],
+							components: [row],
+							withResponse: true,
+							flags: this.options.ephemeral ? MessageFlags.Ephemeral : undefined
+						},
+						'Confirm action'
+					)
+				);
 				msg = message.channel?.messages.cache.get(interactionResponse.id) as Message<boolean>;
 			}
 		}
@@ -113,13 +129,18 @@ export class Confirmation {
 		collector.on('collect', async (i) => {
 			row.components.map((b) => b.setDisabled());
 			if (id !== i.user.id) {
-				await i.reply({
-					content: this.options.wrongUserResponse ?? 'Not for you!',
-					flags: MessageFlags.Ephemeral
-				});
+				await i.reply(
+					v2(
+						{
+							content: this.options.wrongUserResponse ?? 'Not for you!',
+							flags: MessageFlags.Ephemeral
+						},
+						'Confirm action'
+					)
+				);
 				return;
 			}
-			await i.update({ components: [row] });
+			await i.update(v2({ content: this.options.content, embeds: this.options.content ? [] : [embed], components: [row] }, 'Confirm action'));
 			if (i.customId === (this.buttons[0].data as APIButtonComponentWithCustomId).custom_id) {
 				await this.options.onConfirm({ i, msg });
 			} else if (i.customId === (this.buttons[1].data as APIButtonComponentWithCustomId).custom_id) {
@@ -133,11 +154,16 @@ export class Confirmation {
 			}
 			if (c.filter((b) => b.user.id === id)?.size === 0) {
 				row.components.map((b) => b.setDisabled());
-				await msg.edit({
-					content: this.options.content ? 'No response received.' : null,
-					embeds: this.options.content ? [] : [embed.setDescription('No response received.')],
-					components: [row]
-				});
+				await msg.edit(
+					v2(
+						{
+							content: this.options.content ? 'No response received.' : null,
+							embeds: this.options.content ? [] : [embed.setDescription('No response received.')],
+							components: [row]
+						},
+						'Confirm action'
+					)
+				);
 			}
 		});
 		return collector;

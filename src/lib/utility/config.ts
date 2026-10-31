@@ -36,17 +36,6 @@ export const config: Config = {
 	logger: {
 		level: LogLevel.Info
 	},
-	// botlist: {
-	// 	keys: {
-	// 		topGG: envParseString('TOP_BOT_TOKEN'),
-	// 		voidBots: envParseString('VOID_BOT_TOKEN')
-	// 	},
-	// 	clientId: '944833303226236989',
-	// 	autoPost: {
-	// 		enabled: process.env.NODE_ENV === 'production',
-	// 		interval: Time.Hour * 12
-	// 	}
-	// },
 	sweepers: {
 		bans: {
 			interval: 300,

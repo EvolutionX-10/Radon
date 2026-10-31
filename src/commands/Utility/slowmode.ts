@@ -1,3 +1,4 @@
+import { v2 } from '../../lib/presentation/components.js';
 import { Emojis } from '#constants';
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
@@ -16,27 +17,42 @@ export class UserCommand extends RadonCommand {
 		let time = interaction.options.getString('duration');
 		if (!time) {
 			await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-			return interaction.editReply({
-				content: `Currently Slowmode is ${
-					interaction.channel!.rateLimitPerUser
-						? `${new DurationFormatter().format(interaction.channel!.rateLimitPerUser * 1000)}`
-						: 'disabled'
-				}`
-			});
+			return interaction.editReply(
+				v2(
+					{
+						content: `Currently Slowmode is ${
+							interaction.channel!.rateLimitPerUser
+								? `${new DurationFormatter().format(interaction.channel!.rateLimitPerUser * 1000)}`
+								: 'disabled'
+						}`
+					},
+					'Radon · Slowmode'
+				)
+			);
 		}
 		if (!isNaN(Number(time))) time += 's';
 		const duration = new Duration(time).offset;
 		if (isNaN(duration))
-			return interaction.reply({
-				content: `${Emojis.Cross} Invalid duration! Valid examples: \`1h\`, \`1m\`, \`1s\`, \`2 hours\`\nTo remove slowmode just put \`0\` as the duration.`,
-				flags: MessageFlags.Ephemeral
-			});
+			return interaction.reply(
+				v2(
+					{
+						content: `${Emojis.Cross} Invalid duration! Valid examples: \`1h\`, \`1m\`, \`1s\`, \`2 hours\`\nTo remove slowmode just put \`0\` as the duration.`,
+						flags: MessageFlags.Ephemeral
+					},
+					'Radon · Slowmode'
+				)
+			);
 
 		const MAX_SLOWMODE_DURATION = new Duration('6hr').offset;
 		if (duration > MAX_SLOWMODE_DURATION) {
-			return interaction.reply({
-				content: `${Emojis.Cross} You cannot set slowmode for more than 6 hours!`
-			});
+			return interaction.reply(
+				v2(
+					{
+						content: `${Emojis.Cross} You cannot set slowmode for more than 6 hours!`
+					},
+					'Radon · Slowmode'
+				)
+			);
 		}
 		let content = `${Emojis.Confirm} Set the slowmode for ${new DurationFormatter().format(duration)} in ${interaction.channel}`;
 
@@ -49,7 +65,7 @@ export class UserCommand extends RadonCommand {
 			`Done by ${interaction.user.tag}`;
 
 		await interaction.channel!.setRateLimitPerUser(Math.floor(duration / 1000), reason);
-		return interaction.reply({ content });
+		return interaction.reply(v2({ content }, 'Radon · Slowmode'));
 	}
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {

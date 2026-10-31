@@ -1,8 +1,11 @@
+import { v2 } from '../../lib/presentation/components.js';
 import { RadonCommand } from '../../lib/structures/commands/RadonCommand.js';
 import { PermissionLevels } from '#lib/types';
 import { ModerationCases } from '../../lib/moderation/cases.js';
+import { card, componentMessage, date, divider, identity, person, safe, text } from '../../lib/presentation/components.js';
+import { guideContainer } from '../../lib/redemption/guide.js';
 import { ApplyOptions } from '@sapphire/decorators';
-import { InteractionContextType, MessageFlags, escapeMarkdown, PermissionFlagsBits } from 'discord.js';
+import { InteractionContextType, MessageFlags, PermissionFlagsBits } from 'discord.js';
 
 @ApplyOptions<RadonCommand.Options>({ description: 'Review moderation cases and add staff notes', permissionLevel: PermissionLevels.Moderator })
 export class UserCommand extends RadonCommand {
@@ -13,6 +16,7 @@ export class UserCommand extends RadonCommand {
 				.setDescription(this.description)
 				.setContexts(InteractionContextType.Guild)
 				.setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
+				.addSubcommand((s) => s.setName('help').setDescription('Understand cases, references, notes, and reason edits'))
 				.addSubcommand((s) =>
 					s
 						.setName('view')
@@ -48,49 +52,73 @@ export class UserCommand extends RadonCommand {
 		const cases = new ModerationCases(this.container.prisma);
 		const guildId = interaction.guildId;
 		const subcommand = interaction.options.getSubcommand();
+		if (subcommand === 'help') return interaction.editReply(v2(componentMessage(guideContainer('cases')), 'Moderation case'));
 		if (subcommand === 'history') {
 			const records = await cases.history(
 				guildId,
 				interaction.options.getUser('member', true).id,
 				interaction.options.getString('before') ?? undefined
 			);
-			const rows = records.map(
-				(r) => `\`${r.id}\` — ${r.action} — ${r.createdAt.toISOString()}\n${escapeMarkdown(r.reason || 'No reason').slice(0, 100)}`
+			const member = await identity(
+				interaction.guild,
+				interaction.options.getUser('member', true).id,
+				interaction.options.getUser('member', true)
 			);
-			return interaction.editReply({
-				content: rows.length ? rows.join('\n\n') + `\n\nNext page: before ${records.at(-1)!.id}` : 'No cases found.',
-				allowedMentions: { parse: [] }
-			});
+			const panel = card('Moderation history', `${records.length} recent case${records.length === 1 ? '' : 's'}`);
+			person(panel, 'Member', member);
+			if (!records.length) text(panel, 'No cases found.');
+			for (const record of records) {
+				divider(panel);
+				text(
+					panel,
+					`**${record.action}** · ${date(record.createdAt)}\n${safe(record.reason || 'No reason provided', 90)}\n-# Case reference: \`${record.id}\``
+				);
+			}
+			if (records.length) text(panel, `-# Older cases: /case history member:MEMBER before:${records.at(-1)!.id}`);
+			return interaction.editReply(v2(componentMessage(panel), 'Moderation case'));
 		}
 		const id = interaction.options.getString('id', true);
 		const record = await cases.get(guildId, id);
-		if (!record) return interaction.editReply('Case not found in this server.');
+		if (!record) return interaction.editReply(v2('Case not found in this server.', 'Moderation case'));
 		if (subcommand === 'note') {
 			await cases.addNote(guildId, id, interaction.user.id, interaction.options.getString('text', true));
-			return interaction.editReply('Staff note added.');
+			return interaction.editReply(v2('Staff note added.', 'Moderation case'));
 		}
 		if (subcommand === 'reason') {
 			await cases.editReason(guildId, id, interaction.user.id, interaction.options.getString('text', true));
-			return interaction.editReply('Case reason updated. Previous reasons remain in the audit trail.');
+			return interaction.editReply(v2('Case reason updated. Previous reasons remain in the audit trail.', 'Moderation case'));
 		}
-		const notes = record.notes
-			.slice(-5)
-			.map((n) => `${n.createdAt.toISOString()} · ${n.actorId}: ${escapeMarkdown(n.text).slice(0, 180)}`)
-			.join('\n');
-		const edits = record.reasonEdits
-			.slice(-5)
-			.map(
-				(e) =>
-					`${e.createdAt.toISOString()} · ${e.actorId}: ${escapeMarkdown(e.previous).slice(0, 100)} → ${escapeMarkdown(e.reason).slice(0, 100)}`
-			)
-			.join('\n');
-		return interaction.editReply({
-			content:
-				`**Case ${record.id}**\nAction: ${record.action}\nTarget: ${record.targetId}\nModerator: ${record.actorId}\nCreated: ${record.createdAt.toISOString()}\nReason: ${escapeMarkdown(record.reason || 'No reason').slice(0, 512)}\n\n**Recent staff notes**\n${notes || 'None'}\n\n**Recent reason edits**\n${edits || 'None'}`.slice(
-					0,
-					2000
-				),
-			allowedMentions: { parse: [] }
-		});
+		const [target, moderator] = await Promise.all([identity(interaction.guild, record.targetId), identity(interaction.guild, record.actorId)]);
+		const panel = card(`${record.action.charAt(0).toUpperCase() + record.action.slice(1)} · Case details`, date(record.createdAt));
+		person(panel, 'Member', target);
+		text(panel, `**Moderator** · **${safe(moderator.name, 100)}** · <@${moderator.id}>`);
+		divider(panel);
+		text(panel, `### Reason\n${safe(record.reason || 'No reason provided', 512)}`);
+		text(
+			panel,
+			`### Recent staff notes\n${
+				record.notes
+					.slice(-5)
+					.map((note) => `${date(note.createdAt)} · <@${note.actorId}>\n${safe(note.text, 140)}`)
+					.join('\n') || 'No staff notes yet.'
+			}`
+		);
+		text(
+			panel,
+			`### Recent reason edits\n${
+				record.reasonEdits
+					.slice(-5)
+					.map(
+						(edit) => `${date(edit.createdAt)} · <@${edit.actorId}>\n${safe(edit.previous || 'No reason', 65)} → ${safe(edit.reason, 65)}`
+					)
+					.join('\n') || 'No reason edits yet.'
+			}`
+		);
+		divider(panel);
+		text(
+			panel,
+			`-# Case reference: \`${record.id}\`\n-# /case note adds a staff note. /case reason edits this saved record. Use Edit Reason on the log to update both. See /case help.`
+		);
+		return interaction.editReply(v2(componentMessage(panel), 'Moderation case'));
 	}
 }

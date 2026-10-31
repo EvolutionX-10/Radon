@@ -1,3 +1,4 @@
+import { v2 } from '../../lib/presentation/components.js';
 import { Emojis } from '#constants';
 import { ModerationAction, RadonCommand } from '#lib/structures';
 import { type BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
@@ -30,14 +31,19 @@ export class UserCommand extends RadonCommand {
 		const dm = interaction.options.getBoolean('dm') ?? false;
 
 		if (!member)
-			return interaction.editReply({
-				content: `${Emojis.Cross} You must specify a valid member that is in this server!`
-			});
+			return interaction.editReply(
+				v2(
+					{
+						content: `${Emojis.Cross} You must specify a valid member that is in this server!`
+					},
+					'Radon · Softban'
+				)
+			);
 		const reason = interaction.options.getString('reason') ?? undefined;
 		const days = interaction.options.getInteger('days') ?? 1;
 
 		const { content: ctn, result } = runAllChecks(interaction.member, member, 'softban');
-		if (!result) return interaction.editReply(ctn);
+		if (!result) return interaction.editReply(v2(ctn, 'Radon · Softban'));
 
 		let content = `${Emojis.Confirm} ${member} has been soft banned ${reason ? `for the following reason: ${reason}` : ''}`;
 
@@ -49,15 +55,23 @@ export class UserCommand extends RadonCommand {
 		} catch (error) {
 			this.container.logger.error('Softban failed:', error);
 			return interaction.editReply(
-				`${Emojis.Cross} Softban did not complete. Check the ban list before retrying: the ban may have succeeded while the unban failed.`
+				v2(
+					`${Emojis.Cross} Softban did not complete. Check the ban list before retrying: the ban may have succeeded while the unban failed.`,
+					'Radon · Softban'
+				)
 			);
 		}
 
 		if (dm) {
 			await member
-				.send({
-					content: `You have been soft banned from ${interaction.guild.name}\n${reason ? `Reason: ${reason}` : ''}`
-				})
+				.send(
+					v2(
+						{
+							content: `You have been soft banned from ${interaction.guild.name}\n${reason ? `Reason: ${reason}` : ''}`
+						},
+						'Radon · Softban'
+					)
+				)
 				.catch(() => (content += `\n\n> ${Emojis.Cross} Couldn't DM member!`));
 		}
 
@@ -71,7 +85,7 @@ export class UserCommand extends RadonCommand {
 
 		this.container.client.emit(RadonEvents.ModAction, data);
 
-		return interaction.editReply(content);
+		return interaction.editReply(v2(content, 'Radon · Softban'));
 	}
 
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {

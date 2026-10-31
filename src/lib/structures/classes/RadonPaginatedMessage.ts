@@ -1,10 +1,24 @@
+import type { Collection, Snowflake } from 'discord.js';
+import { componentPage, endComponentPagination, updatePageMenu } from '../../presentation/pagination.js';
 import { Emojis } from '#constants';
-import { PaginatedMessage, type PaginatedMessageOptions } from '@sapphire/discord.js-utilities';
-import { type APIStringSelectComponent, ButtonStyle, ComponentType, MessageComponentInteraction } from 'discord.js';
+import {
+	type PaginatedMessageStopReasons,
+	type PaginatedMessageInteractionUnion,
+	PaginatedMessage,
+	type PaginatedMessageOptions
+} from '@sapphire/discord.js-utilities';
+import { ButtonStyle, ComponentType } from 'discord.js';
 /**
  * Extends Paginated message with custom order
  */
 export class RadonPaginatedMessage extends PaginatedMessage {
+	public override async resolvePage(...args: Parameters<PaginatedMessage['resolvePage']>) {
+		return componentPage(this, await super.resolvePage(...args), args[2]);
+	}
+	protected override async handleEnd(_collected: Collection<Snowflake, PaginatedMessageInteractionUnion>, reason: PaginatedMessageStopReasons) {
+		await endComponentPagination(this, reason);
+	}
+
 	public constructor(options: PaginatedMessageOptions = {}) {
 		super(options);
 		this.setActions([
@@ -80,14 +94,7 @@ export class RadonPaginatedMessage extends PaginatedMessage {
 		]);
 	}
 
-	private updateComponents(handler: PaginatedMessage, interaction: MessageComponentInteraction) {
-		const page = handler.messages[handler.index]!;
-		// @ts-ignore Components exists
-		const { options } = interaction.message.components![1].components[0] as unknown as APIStringSelectComponent;
-		for (const option of options) {
-			if (option.value === `${handler.index}`) option.default = true;
-			else option.default = false;
-		}
-		page.components = interaction.message.components;
+	private updateComponents(handler: PaginatedMessage, _interaction: unknown) {
+		updatePageMenu(handler);
 	}
 }

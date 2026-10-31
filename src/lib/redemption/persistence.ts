@@ -74,7 +74,8 @@ async function mongoWrite(prisma: PrismaClient, command: Prisma.InputJsonObject)
 		throw new RedemptionError('The database could not confirm this operation.');
 	return result;
 }
-export async function saveMemberCode(prisma: PrismaClient, userId: string, memberCode: string, name?: string) {
+export async function saveMemberCode(prisma: PrismaClient, userId: string, memberCode: string, name?: string, limit = 5) {
+	if (limit !== 5 && limit !== 10) throw new RedemptionError('Invalid account allowance.');
 	for (let attempt = 0; attempt < 8; attempt++) {
 		const current = await prisma.memberCodes.findUnique({ where: { id: userId } });
 		if (current?.memberCodes.includes(memberCode)) {
@@ -86,7 +87,8 @@ export async function saveMemberCode(prisma: PrismaClient, userId: string, membe
 				});
 			return current.memberCodes.length;
 		}
-		if (current && current.memberCodes.length >= 5) throw new RedemptionError('You have reached the limit of five accounts. Delete one first.');
+		if (current && current.memberCodes.length >= limit)
+			throw new RedemptionError(`You have reached the limit of ${limit} accounts. Delete one first, or use /vote for optional extra slots.`);
 		if (!current) {
 			try {
 				await prisma.memberCodes.create({ data: { id: userId, memberCodes: [memberCode], createdAt: new Date(), updatedAt: new Date() } });

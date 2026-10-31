@@ -1,3 +1,4 @@
+import { v2 } from '../../../lib/presentation/components.js';
 import { RadonEvents } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener, UserError, type ContextMenuCommandDeniedPayload } from '@sapphire/framework';
@@ -10,9 +11,14 @@ export class UserListener extends Listener {
 	public run({ context, message: content }: UserError, { interaction }: ContextMenuCommandDeniedPayload) {
 		if (Reflect.get(Object(context), 'silent')) return;
 
-		return interaction.reply({
-			content,
-			flags: MessageFlags.Ephemeral
-		});
+		return interaction.reply(
+			v2(
+				{
+					content,
+					flags: MessageFlags.Ephemeral
+				},
+				'Command unavailable'
+			)
+		);
 	}
 }
