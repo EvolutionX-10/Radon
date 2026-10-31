@@ -108,7 +108,19 @@ export const commands = [
 		description: 'Browse the live commands available to you in your server and channel.',
 		example: '/help'
 	},
-	{ name: '/vote', category: 'Getting started', description: 'View optional voting perks, verify a vote, and check pass expiry.', example: '/vote' }
+	{
+		name: '/vote',
+		category: 'Getting started',
+		description: 'View optional voting perks, verify a vote, and check pass expiry.',
+		example: '/vote'
+	},
+	{ name: '/updates', category: 'Getting started', description: 'Catch up on the latest Radon features and fixes.', example: '/updates' },
+	{
+		name: '/bug',
+		category: 'Getting started',
+		description: 'Privately report a problem to the bot owner. Misuse will lead to a bot ban.',
+		example: '/bug'
+	}
 ] as const;
 
 export const faqs = [

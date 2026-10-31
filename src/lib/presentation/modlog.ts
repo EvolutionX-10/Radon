@@ -1,5 +1,5 @@
 import { ComponentType, TextDisplayBuilder, type APIEmbed, type Message } from 'discord.js';
-import { card, clip, date, divider, text, componentMessage } from './components.js';
+import { card, clip, date, divider, text, componentMessage } from '#lib/presentation/components.js';
 
 const Title = 59101;
 const Reason = 59102;

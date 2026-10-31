@@ -1,10 +1,9 @@
-import { v2 } from '../../lib/presentation/components.js';
-import { RadonCommand } from '../../lib/structures/commands/RadonCommand.js';
+import { RadonCommand } from '#lib/structures/commands/RadonCommand.js';
 import { ApplyOptions } from '@sapphire/decorators';
 import { MessageFlags, InteractionContextType } from 'discord.js';
-import { componentMessage, identity } from '../../lib/presentation/components.js';
-import { reportContainer } from '../../lib/presentation/reports.js';
-import { ModerationReports } from '../../lib/moderation/reports.js';
+import { componentMessage, identity, v2 } from '#lib/presentation/components.js';
+import { reportContainer } from '#lib/presentation/reports.js';
+import { ModerationReports } from '#lib/moderation/reports.js';
 
 @ApplyOptions<RadonCommand.Options>({ description: 'Report a message privately to server moderators', cooldownDelay: 30_000 })
 export class UserCommand extends RadonCommand {

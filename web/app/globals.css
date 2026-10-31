@@ -64,6 +64,7 @@
 html {
 	scroll-behavior: smooth;
 	scroll-padding-top: 110px;
+	scrollbar-gutter: stable;
 }
 body {
 	margin: 0;
@@ -1733,6 +1734,10 @@ h2 {
 	padding-block: 65px 90px;
 }
 .document-heading {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	gap: 30px;
 	padding-bottom: 34px;
 	border-bottom: 1px solid #39333f;
 	margin-bottom: 34px;
@@ -1741,16 +1746,33 @@ h2 {
 	font-size: 64px;
 	line-height: 1.1;
 	letter-spacing: -3px;
+	overflow-wrap: break-word;
 }
-.document-heading > p {
+.document-heading .document-description {
 	color: #b5aabc;
 	font-size: 14px;
 	line-height: 1.9;
 	max-width: 750px;
-	margin-top: 22px;
+	margin-top: 20px;
 }
-.document-heading .text-link {
-	margin-bottom: 15px;
+.document-intro > .eyebrow {
+	display: flex;
+	margin: 0 0 16px;
+}
+.document-back {
+	display: flex;
+	min-height: 32px;
+}
+.document-back .text-link {
+	width: fit-content;
+	min-height: 32px;
+	font-size: 13px;
+}
+.document-back svg {
+	flex-shrink: 0;
+}
+.document-back .text-link:hover svg {
+	transform: translateX(-3px);
 }
 .legal-page {
 	max-width: 940px;
@@ -2760,7 +2782,7 @@ h2 {
 		font-size: 44px;
 		letter-spacing: -2px;
 	}
-	.document-heading > p {
+	.document-heading .document-description {
 		font-size: 13px;
 	}
 	.document-section {
@@ -2809,6 +2831,238 @@ h2 {
 		font-size: 10px;
 	}
 }
+/* Release notes keep a readable line length on large screens and stack on phones. */
+.updates-preview {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 50px;
+	align-items: center;
+	margin-top: 88px;
+}
+.updates-preview > div > p {
+	margin-block: 20px;
+	max-width: 430px;
+	color: #b5aabc;
+	font-size: 14px;
+	line-height: 1.9;
+}
+.latest-update,
+.updates-help {
+	padding: 30px;
+	background: #1b191f;
+	border: 1px solid #3a323f;
+	border-radius: 12px;
+}
+.latest-update time,
+.update-meta time {
+	font-family: var(--font-code), monospace;
+	font-size: 11px;
+	color: #b5aabc;
+}
+.latest-update h3 {
+	font-size: 23px;
+	line-height: 1.3;
+	margin-block: 16px 12px;
+}
+.latest-update h3 a {
+	display: flex;
+	gap: 12px;
+	justify-content: space-between;
+}
+.latest-update h3 svg {
+	flex-shrink: 0;
+	margin-top: 5px;
+	color: var(--lavender);
+}
+.latest-update p,
+.update-body p,
+.update-body li,
+.updates-help p {
+	font-size: 14px;
+	color: #bcb0c5;
+	line-height: 1.9;
+}
+.updates-timeline {
+	display: grid;
+	gap: 24px;
+}
+.update-entry {
+	display: grid;
+	grid-template-columns: 180px minmax(0, 1fr);
+	gap: 32px;
+	border-bottom: 1px solid #39333f;
+	padding-block: 10px 34px;
+	scroll-margin-top: 110px;
+}
+.update-meta {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 16px;
+	padding-top: 5px;
+}
+.update-meta .outline-pill {
+	font-size: 9px;
+}
+.update-body h2 {
+	font-size: 28px;
+	letter-spacing: -0.7px;
+	margin: 0 0 15px;
+	line-height: 1.25;
+}
+.update-body h2 a:hover {
+	text-decoration: underline;
+	text-underline-offset: 5px;
+}
+.update-body ul {
+	list-style: disc;
+	padding-left: 20px;
+	margin-top: 16px;
+}
+.update-body li + li {
+	margin-top: 10px;
+}
+.update-body li::marker {
+	color: var(--lavender);
+}
+.updates-help {
+	margin-top: 36px;
+}
+.updates-help h2 {
+	font-size: 22px;
+	margin: 0;
+}
+.updates-help p {
+	margin-block: 14px 20px;
+}
+/* Animate transforms, keeping document flow and the brand mark stable. */
+.feature-card,
+.game-card,
+.latest-update {
+	transition:
+		transform 220ms ease,
+		border-color 220ms ease,
+		box-shadow 220ms ease;
+}
+.text-link svg,
+.card-link svg,
+.game-arrow svg,
+.latest-update h3 svg {
+	transition: transform 180ms ease;
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+	.feature-card:hover,
+	.latest-update:hover {
+		transform: translateY(-4px);
+		border-color: #74608b;
+		box-shadow: 0 14px 35px #08070c35;
+	}
+	.card-link:hover svg,
+	.latest-update h3 a:hover svg {
+		transform: translate(2px, -2px);
+	}
+	.game-card:hover .game-arrow svg {
+		transform: translate(2px, -2px);
+	}
+}
+@media (prefers-reduced-motion: no-preference) {
+	.hero-highlight svg path {
+		stroke-dasharray: 400;
+		animation: draw-underline 900ms ease both;
+	}
+	.document-intro {
+		animation: arrive 420ms ease both;
+	}
+	.cta-sparkle {
+		animation: sparkle-drift 7s ease-in-out 3;
+	}
+	.sparkle-two {
+		animation-delay: -3s;
+	}
+	@supports (animation-timeline: view()) {
+		.feature-card,
+		.game-card,
+		.update-entry {
+			animation: scroll-arrive linear both;
+			animation-timeline: view();
+			animation-range: entry 0% entry 65%;
+		}
+	}
+}
+@keyframes draw-underline {
+	from {
+		stroke-dashoffset: 400;
+	}
+	to {
+		stroke-dashoffset: 0;
+	}
+}
+@keyframes arrive {
+	from {
+		opacity: 0.7;
+		transform: translateY(8px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+@keyframes scroll-arrive {
+	from {
+		opacity: 0.7;
+		translate: 0 18px;
+	}
+	to {
+		opacity: 1;
+		translate: 0 0;
+	}
+}
+@keyframes sparkle-drift {
+	0%,
+	100% {
+		transform: translateY(0) rotate(0);
+	}
+	50% {
+		transform: translateY(-9px) rotate(12deg);
+	}
+}
+@media (max-width: 1050px) {
+	.desktop-nav {
+		display: none;
+	}
+	.mobile-toggle {
+		display: inline-flex;
+	}
+}
+@media (max-width: 640px) {
+	.updates-preview {
+		grid-template-columns: 1fr;
+		gap: 24px;
+		margin-top: 60px;
+	}
+	.latest-update,
+	.updates-help {
+		padding: 23px;
+	}
+	.latest-update h3 {
+		font-size: 21px;
+	}
+	.update-entry {
+		grid-template-columns: 1fr;
+		gap: 20px;
+	}
+	.update-meta {
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+	}
+	.update-body h2 {
+		font-size: 25px;
+	}
+	.document-heading {
+		gap: 24px;
+	}
+}
 @media (prefers-reduced-motion: reduce) {
 	html {
 		scroll-behavior: auto;
@@ -2816,6 +3070,7 @@ h2 {
 	*,
 	*::before,
 	*::after {
+		animation: none !important;
 		animation-duration: 0.01ms !important;
 		animation-iteration-count: 1 !important;
 		transition-duration: 0.01ms !important;

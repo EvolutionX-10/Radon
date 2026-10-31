@@ -1,5 +1,5 @@
 import { ButtonBuilder, ButtonStyle } from 'discord.js';
-import { card, divider, text } from '../presentation/components.js';
+import { card, divider, text } from '#lib/presentation/components.js';
 
 export const guideTopics = ['start', 'games', 'rewards', 'problems', 'staff', 'cases', 'automod'] as const;
 export type GuideTopic = (typeof guideTopics)[number];

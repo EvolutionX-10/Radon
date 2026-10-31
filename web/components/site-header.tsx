@@ -12,7 +12,8 @@ const navigation = [
 	['Features', '/#features'],
 	['Games', '/#games'],
 	['Commands', '/#commands'],
-	['Getting started', '/guide']
+	['Getting started', '/guide'],
+	['Updates', '/updates']
 ];
 
 export function SiteHeader() {
@@ -53,7 +54,9 @@ export function SiteHeader() {
 									<RadonMark className="brand-mark" />
 									radon.
 								</SheetTitle>
-								<SheetDescription className="sr-only">Explore features, games, commands, and the player guide.</SheetDescription>
+								<SheetDescription className="sr-only">
+									Explore features, games, commands, updates, and the player guide.
+								</SheetDescription>
 							</SheetHeader>
 							<nav aria-label="Mobile navigation" className="mobile-nav">
 								{navigation.map(([label, href]) => (

@@ -92,6 +92,7 @@ RUN bun install --frozen-lockfile --production && \
 
 # Copy built application from builder stage
 COPY --from=builder /app/src ./src
+COPY --from=builder /app/shared ./shared
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/tsconfig.base.json ./tsconfig.base.json

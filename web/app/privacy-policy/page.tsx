@@ -1,10 +1,12 @@
-import type { Metadata } from 'next';
 import Link from 'next/link';
+import { DocumentHeading } from '@/components/document-heading';
+import { pageMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-	title: 'Privacy Policy',
-	description: 'Privacy policy for the Radon Discord bot for moderation, game coupon claiming, and server utilities.'
-};
+export const metadata = pageMetadata(
+	'Privacy Policy',
+	'Privacy policy for the Radon Discord bot for moderation, game coupon claiming, and server utilities.',
+	'/privacy-policy'
+);
 
 const dataGroups = [
 	{
@@ -18,6 +20,10 @@ const dataGroups = [
 	{
 		title: 'Optional feature data',
 		body: 'Game Member Codes and optional account names are saved per game for coupon claiming. Feature data also includes claim settings, nickname locks, and optional AI chat channel configuration.'
+	},
+	{
+		title: 'Bug reports',
+		body: 'When you submit /bug, Radon stores your report text, Discord user ID, server and channel IDs when available, submission time, and review records. The bot owner can read reports and may receive a direct notification. Cooldown and abuse restriction records enforce reporting limits and bot access. Reports are not posted publicly; avoid including passwords, tokens, or other sensitive information.'
 	}
 ];
 
@@ -40,7 +46,7 @@ const policySections = [
 	},
 	{
 		title: '5. Data retention',
-		body: 'Data is retained for operational needs, including moderation, duplicate-redemption prevention, and alert deduplication. Saved game accounts remain stored after a Supporter Pass expires until you remove them; turning off alerts disables the subscription. Removing an account or subscription does not necessarily remove operational redemption or delivery records.'
+		body: 'Data is retained for operational needs, including moderation, duplicate-redemption prevention, and alert deduplication. Saved game accounts remain stored after a Supporter Pass expires until you remove them; turning off alerts disables the subscription. Removing an account or subscription does not necessarily remove operational redemption or delivery records. Bug reports, review records, cooldowns, and abuse restrictions have no automatic expiry or deletion; the bot owner manages their removal.'
 	},
 	{
 		title: '6. Data sharing',
@@ -59,14 +65,9 @@ const policySections = [
 export default function PrivacyPolicyPage() {
 	return (
 		<article className="container legal-page">
-			<header className="document-heading">
-				<Link href="/" className="text-link">
-					← Back to Radon
-				</Link>
-				<p className="eyebrow">THE GOOD-TO-KNOW STUFF</p>
-				<h1>Privacy Policy</h1>
-				<p>This policy explains what data Radon processes and why. Effective date: October 31, 2026.</p>
-			</header>
+			<DocumentHeading eyebrow="THE GOOD-TO-KNOW STUFF" title="Privacy Policy">
+				This policy explains what data Radon processes and why. Effective date: October 31, 2026.
+			</DocumentHeading>
 			<div className="data-groups">
 				{dataGroups.map((group) => (
 					<section key={group.title} className="document-section">

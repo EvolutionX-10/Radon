@@ -1,0 +1,25 @@
+[
+	{
+		"id": "bug-reports-and-updates",
+		"date": "2026-10-31",
+		"title": "A direct line for bugs, and a place for updates",
+		"summary": "Report a problem privately and keep up with what changes in Radon.",
+		"changes": [
+			"Use /bug to send a bug report directly to Radon's owner. Reports are saved privately, with a reference you can keep.",
+			"Spam, false reports, and abuse will lead to a ban from using the bot. Never include passwords, tokens, or private account codes in a report.",
+			"Use /updates to read the latest changes, or choose an older update with the release option. The website now has the same update history.",
+			"The website has smoother motion, clearer navigation on guide and legal pages, and improved search and sharing metadata."
+		]
+	},
+	{
+		"id": "games-rewards-and-guides",
+		"date": "2026-10-31",
+		"title": "More games, optional vote rewards, and clearer guides",
+		"summary": "The same claiming workflow now supports three games, with optional extras for supporters.",
+		"changes": [
+			"Claim coupons for Solo Leveling: ARISE, Seven Knights Re:BIRTH, and The Seven Deadly Sins: Idle Adventure. Existing Solo Leveling accounts and CLAIM buttons keep working.",
+			"A verified vote on either Top.gg or Discord Bot List unlocks a 24-hour Supporter Pass: ten saved accounts per game and optional coupon alerts. Free claiming and five saved accounts remain available.",
+			"Use /guide for claiming, voting, troubleshooting, moderation cases, and AutoMod. Command replies now use clearer cards and private staff views."
+		]
+	}
+]

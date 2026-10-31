@@ -1,11 +1,11 @@
 import { randomUUID } from 'node:crypto';
 import type { PrismaClient } from '@prisma/client';
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits, type Client, type MessageCreateOptions } from 'discord.js';
-import { v2 } from '../presentation/components.js';
-import { getGame } from '../redemption/games.js';
-import { PrismaReceipts } from '../redemption/persistence.js';
-import { claimButtonId } from '../redemption/posts.js';
-import { receiptKey } from '../redemption/service.js';
+import { v2 } from '#lib/presentation/components.js';
+import { getGame } from '#lib/redemption/games.js';
+import { PrismaReceipts } from '#lib/redemption/persistence.js';
+import { claimButtonId } from '#lib/redemption/posts.js';
+import { receiptKey } from '#lib/redemption/service.js';
 
 export async function subscribeCoupons(prisma: PrismaClient, userId: string, guildId: string, game: string, enabled: boolean) {
 	getGame(game);

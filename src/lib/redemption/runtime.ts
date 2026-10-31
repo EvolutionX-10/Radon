@@ -1,13 +1,13 @@
-import { v2 } from '../presentation/components.js';
+import { v2 } from '#lib/presentation/components.js';
 import { Emojis } from '#constants';
-import { RadonEvents } from '#lib/types';
+import { RadonEvents } from '#lib/types/Events.js';
 import type { PrismaClient } from '@prisma/client';
 import { container } from '@sapphire/framework';
 import type { ButtonInteraction, ChatInputCommandInteraction, ModalSubmitInteraction } from 'discord.js';
-import { PrismaReceipts } from './persistence.js';
-import { makeNetmarbleAdapter, maskMemberCode, RedemptionError, RedemptionService, type ClaimResult } from './service.js';
-import { games } from './games.js';
-import { accountLimit } from '../rewards/service.js';
+import { PrismaReceipts } from '#lib/redemption/persistence.js';
+import { makeNetmarbleAdapter, maskMemberCode, RedemptionError, RedemptionService, type ClaimResult } from '#lib/redemption/service.js';
+import { games } from '#lib/redemption/games.js';
+import { accountLimit } from '#lib/rewards/service.js';
 
 const services = new WeakMap<PrismaClient, RedemptionService>();
 export function redemptionService(prisma: PrismaClient) {

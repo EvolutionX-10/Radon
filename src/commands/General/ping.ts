@@ -1,5 +1,5 @@
-import { v2 } from '../../lib/presentation/components.js';
-import { RadonCommand } from '#lib/structures';
+import { v2 } from '#lib/presentation/components.js';
+import { RadonCommand } from '#lib/structures/commands/RadonCommand.js';
 import { ApplyOptions } from '@sapphire/decorators';
 import { MessageFlags } from 'discord.js';
 

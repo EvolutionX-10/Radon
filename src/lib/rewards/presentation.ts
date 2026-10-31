@@ -1,7 +1,6 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
-import { card, divider, text, accents } from '../presentation/components.js';
-import type { VoteCheck } from './service.js';
-import { LISTED_BOT_ID } from './service.js';
+import { card, divider, text, accents } from '#lib/presentation/components.js';
+import { LISTED_BOT_ID, type VoteCheck } from '#lib/rewards/service.js';
 
 export function rewardButtons() {
 	return new ActionRowBuilder<ButtonBuilder>().addComponents(

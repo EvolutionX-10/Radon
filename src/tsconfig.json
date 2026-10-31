@@ -12,6 +12,7 @@
 			"#lib/*": ["lib/*"],
 			"#root/*": ["*"]
 		},
+		"resolveJsonModule": true,
 		"noEmit": true,
 		"skipLibCheck": true,
 		"moduleResolution": "NodeNext",

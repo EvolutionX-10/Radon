@@ -1,9 +1,9 @@
-import { v2 } from '../../lib/presentation/components.js';
+import { v2 } from '#lib/presentation/components.js';
 import { ApplyOptions } from '@sapphire/decorators';
 import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework';
 import { MessageFlags, type ButtonInteraction } from 'discord.js';
-import { supporterUntil, voteService } from '../../lib/rewards/service.js';
-import { rewardContainer } from '../../lib/rewards/presentation.js';
+import { supporterUntil, voteService } from '#lib/rewards/service.js';
+import { rewardContainer } from '#lib/rewards/presentation.js';
 
 @ApplyOptions<InteractionHandler.Options>({ interactionHandlerType: InteractionHandlerTypes.Button })
 export class ButtonHandler extends InteractionHandler {

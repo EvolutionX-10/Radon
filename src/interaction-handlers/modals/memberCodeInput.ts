@@ -1,13 +1,13 @@
-import { v2 } from '../../lib/presentation/components.js';
+import { v2 } from '#lib/presentation/components.js';
 import { ApplyOptions } from '@sapphire/decorators';
 import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework';
 import { MessageFlags, type ModalSubmitInteraction } from 'discord.js';
-import { saveMemberCode } from '../../lib/redemption/persistence.js';
-import { parseClaimButton } from '../../lib/redemption/posts.js';
-import { runClaims } from '../../lib/redemption/runtime.js';
-import { makeNetmarbleAdapter, RedemptionError } from '../../lib/redemption/service.js';
-import { accountOwnerKey, getGame } from '../../lib/redemption/games.js';
-import { accountLimit } from '../../lib/rewards/service.js';
+import { saveMemberCode } from '#lib/redemption/persistence.js';
+import { parseClaimButton } from '#lib/redemption/posts.js';
+import { runClaims } from '#lib/redemption/runtime.js';
+import { makeNetmarbleAdapter, RedemptionError } from '#lib/redemption/service.js';
+import { accountOwnerKey, getGame } from '#lib/redemption/games.js';
+import { accountLimit } from '#lib/rewards/service.js';
 
 @ApplyOptions<InteractionHandler.Options>({ interactionHandlerType: InteractionHandlerTypes.ModalSubmit })
 export class ModalHandler extends InteractionHandler {

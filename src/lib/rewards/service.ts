@@ -1,5 +1,5 @@
 import type { PrismaClient } from '@prisma/client';
-import { PrismaReceipts } from '../redemption/persistence.js';
+import { PrismaReceipts } from '#lib/redemption/persistence.js';
 
 export const LISTED_BOT_ID = '944833303226236989';
 export const PASS_MS = 24 * 60 * 60_000;

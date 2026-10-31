@@ -1,6 +1,6 @@
 import { PaginatedMessage, type PaginatedMessageResolvedPage } from '@sapphire/discord.js-utilities';
 import { ComponentType, Message, type APIActionRowComponent, type APIComponentInMessageActionRow } from 'discord.js';
-import { v2 } from './components.js';
+import { v2 } from '#lib/presentation/components.js';
 
 export function componentPage(handler: PaginatedMessage, page: PaginatedMessageResolvedPage, index: number) {
 	const converted = v2(page, 'Radon');

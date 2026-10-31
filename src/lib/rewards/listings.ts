@@ -1,5 +1,5 @@
 import type { Client } from 'discord.js';
-import { LISTED_BOT_ID } from './service.js';
+import { LISTED_BOT_ID } from '#lib/rewards/service.js';
 
 export async function postListingStats(botId: string, guildCount: number, tokens: { topgg?: string; dbl?: string }, fetcher: typeof fetch = fetch) {
 	if (!Number.isSafeInteger(guildCount) || guildCount < 0) throw new Error('Invalid guild count');
