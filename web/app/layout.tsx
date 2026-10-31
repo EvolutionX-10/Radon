@@ -14,10 +14,10 @@ const description = 'Your server’s new favorite teammate. Claim game coupons, 
 
 export const metadata: Metadata = {
 	metadataBase: new URL(site.url),
-	title: { default: 'Radon — Your server. A whole lot more alive.', template: '%s | Radon' },
+	title: { default: 'Radon | Your server. A whole lot more alive.', template: '%s | Radon' },
 	description,
-	openGraph: { type: 'website', locale: 'en_US', siteName: 'Radon', title: 'Radon — Your server. A whole lot more alive.', description },
-	twitter: { card: 'summary_large_image', title: 'Radon — Your server. A whole lot more alive.', description }
+	openGraph: { type: 'website', locale: 'en_US', siteName: 'Radon', title: 'Radon | Your server. A whole lot more alive.', description },
+	twitter: { card: 'summary_large_image', title: 'Radon | Your server. A whole lot more alive.', description }
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
