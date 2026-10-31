@@ -1,483 +1,269 @@
 import { Emojis } from '#constants';
 import { RadonCommand } from '#lib/structures';
-import { RadonEvents } from '#lib/types';
-import { claimCoupon, CouponResult, GetCouponApiResponse, sec } from '#lib/utility';
+import { sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { RegisterBehavior } from '@sapphire/framework';
-import {
-	ButtonStyle,
-	ChannelType,
-	codeBlock,
-	ContainerBuilder,
-	GuildTextBasedChannel,
-	heading,
-	HeadingLevel,
-	InteractionContextType,
-	MessageFlags
-} from 'discord.js';
+import { ButtonStyle, ChannelType, ContainerBuilder, InteractionContextType, MessageFlags, PermissionFlagsBits, escapeMarkdown } from 'discord.js';
+import { canPostCoupon } from '../../lib/redemption/posts.js';
+import { deleteMemberCode, saveMemberCode } from '../../lib/redemption/persistence.js';
+import { redemptionService, runClaims } from '../../lib/redemption/runtime.js';
+import { makeNetmarbleAdapter, maskMemberCode, RedemptionError, receiptKey, validateCoupon } from '../../lib/redemption/service.js';
 
-@ApplyOptions<RadonCommand.Options>({
-	description: 'Claim coupons for Solo Leveling Arise',
-	cooldownDelay: sec(3)
-})
+@ApplyOptions<RadonCommand.Options>({ description: 'Claim coupons for Solo Leveling Arise', cooldownDelay: sec(3) })
 export class UserCommand extends RadonCommand {
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const subcmd = interaction.options.getSubcommand(true) as Subcommands;
-
-		switch (subcmd) {
-			case 'set':
-				return this.set(interaction);
-			case 'code':
-				return this.code(interaction);
-			case 'delete':
-				return this.delete(interaction);
-			case 'view':
-				return this.view(interaction);
-			case 'post':
-				return this.post(interaction);
-			case 'solo':
-				return this.solo(interaction);
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+		try {
+			switch (interaction.options.getSubcommand(true)) {
+				case 'set':
+					return await this.set(interaction);
+				case 'code': {
+					const data = await this.container.prisma.memberCodes.findUnique({ where: { id: interaction.user.id } });
+					if (!data?.memberCodes.length) return interaction.editReply('Use `/claim set` to save your member code first.');
+					return runClaims(interaction, interaction.options.getString('coupon_code', true), data.memberCodes);
+				}
+				case 'solo':
+					return runClaims(interaction, interaction.options.getString('coupon_code', true), [
+						interaction.options.getString('member_code', true)
+					]);
+				case 'delete': {
+					const remaining = await deleteMemberCode(
+						this.container.prisma,
+						interaction.user.id,
+						interaction.options.getString('member_code', true).trim()
+					);
+					return interaction.editReply(`${Emojis.Confirm} Account deleted. You have ${remaining}/5 saved accounts.`);
+				}
+				case 'view':
+					return await this.view(interaction);
+				case 'post':
+					return await this.post(interaction);
+				case 'policy':
+					return await this.policy(interaction);
+				default:
+					return interaction.editReply('Unknown claim action.');
+			}
+		} catch (error) {
+			if (!(error instanceof RedemptionError)) this.container.logger.error('Claim command could not complete.');
+			return interaction.editReply(
+				error instanceof RedemptionError ? error.message : 'This operation is temporarily unavailable. Please try again later.'
+			);
+		}
+	}
+	public override async canDiscoverRoute(interaction: RadonCommand.ChatInputCommandInteraction, route: string): Promise<boolean> {
+		if (route === 'policy') return interaction.member.permissions.has(PermissionFlagsBits.ManageGuild);
+		if (route !== 'post') return true;
+		try {
+			const policy = await this.container.prisma.redemptionGuildPolicy.findUnique({ where: { id: interaction.guildId! } });
+			return canPostCoupon(interaction.member, policy?.roleId);
+		} catch {
+			return false;
 		}
 	}
 
 	public override async autocompleteRun(interaction: RadonCommand.AutoComplete) {
 		const focus = interaction.options.getFocused(true);
-
-		if (focus.name === 'member_code') {
-			const userId = interaction.user.id;
-			const data = await this.container.prisma.memberCodes.findUnique({
-				where: { id: userId }
-			});
-
-			if (!data?.memberCodes?.length) {
-				return interaction.respond([
-					{
-						name: 'No member codes found!',
-						value: ''
-					}
-				]);
-			}
-
-			const choices = data.memberCodes.map((code, index) => ({
-				name: `${index + 1}: ${code}`,
-				value: code
-			}));
-
-			const filtered = choices.filter((choice) => choice.value.toLowerCase().includes((focus.value as string).toLowerCase())).slice(0, 24);
-
-			return interaction.respond(filtered.length > 0 ? filtered : choices);
-		}
+		if (focus.name !== 'member_code') return interaction.respond([]);
+		const data = await this.container.prisma.memberCodes.findUnique({ where: { id: interaction.user.id } });
+		const codes = data?.memberCodes ?? [];
+		const labels = await this.container.prisma.redemptionAccountLabel.findMany({
+			where: { id: { in: codes.map((code) => receiptKey('label', interaction.user.id, code)) } }
+		});
+		const choices = codes.map((code, index) => ({
+			name: `${labels.find((label) => label.id === receiptKey('label', interaction.user.id, code))?.name ?? `Account ${index + 1}`} · ${maskMemberCode(code)}`,
+			value: code
+		}));
+		return interaction.respond(
+			choices.filter((choice) => `${choice.name} ${choice.value}`.toLowerCase().includes(String(focus.value).toLowerCase())).slice(0, 25)
+		);
 	}
-
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
 			(builder) =>
-				builder //
+				builder
 					.setName(this.name)
 					.setDescription(this.description)
 					.setContexts([InteractionContextType.Guild])
-					.addSubcommand((builder) =>
-						builder //
+					.addSubcommand((sub) =>
+						sub
 							.setName('set')
-							.setDescription('Set your member code for claiming coupons')
+							.setDescription('Save or name a Solo Leveling account')
 							.addStringOption((option) =>
-								option //
+								option
 									.setName('member_code')
 									.setDescription('Your Solo Leveling member code')
 									.setRequired(true)
+									.setMinLength(30)
+									.setMaxLength(36)
+							)
+							.addStringOption((option) =>
+								option.setName('name').setDescription('An optional account name, such as Main or Alt').setMaxLength(32)
 							)
 					)
-					.addSubcommand((builder) =>
-						builder //
+					.addSubcommand((sub) =>
+						sub
 							.setName('code')
-							.setDescription('Claim a coupon code')
+							.setDescription('Claim a coupon for your saved accounts')
 							.addStringOption((option) =>
-								option //
-									.setName('coupon_code')
-									.setDescription('The coupon code to claim')
-									.setRequired(true)
+								option.setName('coupon_code').setDescription('The coupon code').setRequired(true).setMaxLength(64)
 							)
 					)
-					.addSubcommand((builder) =>
-						builder //
-							.setName('delete')
-							.setDescription('Delete a member code from your account')
-							.addStringOption((option) =>
-								option //
-									.setName('member_code')
-									.setDescription('The member code to delete')
-									.setRequired(true)
-									.setAutocomplete(true)
-							)
-					)
-					.addSubcommand((builder) =>
-						builder //
-							.setName('view')
-							.setDescription('View your registered member codes')
-					)
-					.addSubcommand((builder) =>
-						builder //
-							.setName('post')
-							.setDescription('Post a coupon code for others to claim')
-							.addStringOption((option) =>
-								option //
-									.setName('code')
-									.setDescription('The coupon code to post')
-									.setRequired(true)
-							)
-							.addChannelOption((option) =>
-								option //
-									.setName('channel')
-									.setDescription('The channel to post the coupon in (defaults to current channel)')
-									.addChannelTypes(ChannelType.GuildText)
-							)
-					)
-					.addSubcommand((builder) =>
-						builder //
+					.addSubcommand((sub) =>
+						sub
 							.setName('solo')
 							.setDescription('Claim a coupon with a specific member code')
 							.addStringOption((option) =>
-								option //
+								option
 									.setName('member_code')
 									.setDescription('Your Solo Leveling member code')
 									.setRequired(true)
 									.setAutocomplete(true)
+									.setMinLength(30)
+									.setMaxLength(36)
 							)
 							.addStringOption((option) =>
-								option //
-									.setName('coupon_code')
-									.setDescription('The coupon code to claim')
-									.setRequired(true)
+								option.setName('coupon_code').setDescription('The coupon code').setRequired(true).setMaxLength(64)
+							)
+					)
+					.addSubcommand((sub) =>
+						sub
+							.setName('delete')
+							.setDescription('Delete a saved member code')
+							.addStringOption((option) =>
+								option.setName('member_code').setDescription('The account to delete').setRequired(true).setAutocomplete(true)
+							)
+					)
+					.addSubcommand((sub) => sub.setName('view').setDescription('View your saved accounts privately'))
+					.addSubcommand((sub) =>
+						sub
+							.setName('post')
+							.setDescription('Post a coupon for others to claim (staff only)')
+							.addStringOption((option) => option.setName('code').setDescription('The coupon code').setRequired(true).setMaxLength(64))
+							.addChannelOption((option) =>
+								option
+									.setName('channel')
+									.setDescription('Where to post (defaults to this channel)')
+									.addChannelTypes(ChannelType.GuildText)
+							)
+							.addIntegerOption((option) =>
+								option
+									.setName('expires_in')
+									.setDescription('Disable redemption after this many minutes; use the published coupon expiry')
+									.setMinValue(1)
+									.setMaxValue(43_200)
+							)
+					)
+					.addSubcommand((sub) =>
+						sub
+							.setName('policy')
+							.setDescription('Configure coupon posting access (Manage Server required)')
+							.addRoleOption((option) => option.setName('posting_role').setDescription('Allow this role to post coupons'))
+							.addChannelOption((option) =>
+								option
+									.setName('posting_channel')
+									.setDescription('Restrict coupon posts to this channel')
+									.addChannelTypes(ChannelType.GuildText)
+							)
+							.addBooleanOption((option) =>
+								option.setName('reset').setDescription('Restore staff-only posting in any accessible text channel')
 							)
 					),
-			{
-				idHints: ['1458819699272978505', '1458818793659961516'],
-				behaviorWhenNotIdentical: RegisterBehavior.Overwrite
-			}
+			{ idHints: ['1458819699272978505', '1458818793659961516'], behaviorWhenNotIdentical: RegisterBehavior.Overwrite }
 		);
 	}
-
 	private async set(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const memberCode = interaction.options.getString('member_code', true);
-		const userId = interaction.user.id;
-
-		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-
-		try {
-			// Get existing member codes for this user
-			const existingData = await this.container.prisma.memberCodes.findUnique({
-				where: { id: userId }
-			});
-
-			if (existingData) {
-				// Check if user has reached the maximum limit
-				if (existingData.memberCodes.length >= 5) {
-					return interaction.editReply({
-						content: `${Emojis.Cross} You have reached the maximum limit of 5 member codes! Please delete one before adding a new one.`
-					});
-				}
-
-				// Check if the member code already exists
-				if (existingData.memberCodes.includes(memberCode)) {
-					return interaction.editReply({
-						content: `${Emojis.Cross} This member code is already registered for your account!`
-					});
-				}
-
-				// Add new member code to the array
-				await this.container.prisma.memberCodes.update({
-					where: { id: userId },
-					data: {
-						memberCodes: [...existingData.memberCodes, memberCode],
-						updatedAt: new Date()
-					}
-				});
-
-				return interaction.editReply({
-					content: `${Emojis.Confirm} Successfully added member code! You now have ${existingData.memberCodes.length + 1}/5 member code(s) registered.`
-				});
-			} else {
-				// Create new entry
-				await this.container.prisma.memberCodes.create({
-					data: {
-						id: userId,
-						memberCodes: [memberCode],
-						createdAt: new Date(),
-						updatedAt: new Date()
-					}
-				});
-
-				return interaction.editReply({
-					content: `${Emojis.Confirm} Successfully registered your first member code!`
-				});
-			}
-		} catch (error) {
-			this.container.logger.error('Error setting member code:', error);
-			return interaction.editReply({
-				content: `${Emojis.Cross} An error occurred while setting your member code. Please try again later.`
-			});
-		}
+		const memberCode = interaction.options.getString('member_code', true).trim();
+		if (!makeNetmarbleAdapter().validateAccount(memberCode))
+			throw new RedemptionError('Copy your 30–36 character member code from the game account settings.');
+		const count = await saveMemberCode(
+			this.container.prisma,
+			interaction.user.id,
+			memberCode,
+			interaction.options.getString('name')?.trim() || undefined
+		);
+		return interaction.editReply(`${Emojis.Confirm} Saved account. You have ${count}/5 saved accounts.`);
 	}
-
-	private async code(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const couponCode = interaction.options.getString('coupon_code', true);
-		const userId = interaction.user.id;
-
-		await interaction.deferReply();
-
-		try {
-			// Get member codes for this user
-			const userData = await this.container.prisma.memberCodes.findUnique({
-				where: { id: userId }
-			});
-
-			if (!userData || userData.memberCodes.length === 0) {
-				return interaction.editReply({
-					content: `${Emojis.Cross} You don't have any member codes registered! Please use \`/claim set\` to register your member code first.`
-				});
-			}
-
-			const memberCodes = userData.memberCodes;
-			const results: CouponResult[] = [];
-
-			// Claim coupon for each member code
-			for (const memberCode of memberCodes) {
-				const result = await claimCoupon(couponCode, memberCode).catch(() => null);
-				if (!result) continue;
-				this.container.client.emit(RadonEvents.CodeClaim, {
-					...result,
-					userTag: interaction.user.tag,
-					avatarURL: interaction.user.displayAvatarURL(),
-					guild: interaction.guild!.name,
-					guildId: interaction.guild!.id,
-					channel: (interaction.channel as GuildTextBasedChannel).name,
-					channelId: interaction.channel!.id
-				});
-				results.push(result);
-			}
-
-			// Build response message
-			const successCount = results.filter((r) => r.success).length;
-			const failCount = results.filter((r) => !r.success).length;
-
-			let content = '';
-
-			// Only show success if there are successful claims
-			if (successCount > 0) {
-				content += `${Emojis.Confirm} Claimed in **${successCount}** account(s)\n`;
-			}
-
-			// Show failures
-			if (failCount > 0) {
-				if (successCount > 0) content += '\n';
-				content += `${Emojis.Cross} Failed in **${failCount}** account(s)\n`;
-				const failedResults = results.filter((r) => !r.success);
-				for (const result of failedResults) {
-					content += `- \`${result.memberCode.slice(0, 4)}...${result.memberCode.slice(-4)}\`: ${result.message}\n`;
-				}
-			}
-
-			return interaction.editReply({ content });
-		} catch (error) {
-			this.container.logger.error('Error claiming coupon:', error);
-			return interaction.editReply({
-				content: `${Emojis.Cross} An error occurred while claiming the coupon. Please try again later.`
-			});
-		}
-	}
-
-	private async post(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const code = interaction.options.getString('code', true);
-		const guildTextChannel = (interaction.options.getChannel('channel') ?? interaction.channel) as GuildTextBasedChannel;
-
-		const userData = await this.container.prisma.memberCodes.findUnique({
-			where: { id: interaction.user.id }
-		});
-		const dummyPID = userData?.memberCodes[0] || 'EDC9B7A5D68B4F0B9E7293500507E850';
-
-		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-
-		try {
-			// Get coupon info
-			const getUrl = new URL('https://coupon.netmarble.com/api/coupon/reward');
-			getUrl.searchParams.append('gameCode', 'sololv');
-			getUrl.searchParams.append('couponCode', code);
-			getUrl.searchParams.append('langCd', 'EN_US');
-			getUrl.searchParams.append('pid', dummyPID); // Dummy PID to get coupon info
-
-			const response = await fetch(getUrl.toString());
-			const couponInfo = (await response.json()) as GetCouponApiResponse;
-
-			if (!couponInfo.resultData?.[0]?.productName) {
-				return interaction.editReply({
-					content: `${Emojis.Cross} Could not retrieve coupon information. Please check the code and try again.`
-				});
-			}
-
-			const container = new ContainerBuilder()
-				.addSectionComponents((section) =>
-					section
-						.addTextDisplayComponents((text) =>
-							text.setContent(
-								heading('New Code!', HeadingLevel.Two) +
-									'\n' +
-									heading(couponInfo.resultData![0].productName || 'Coupon rewards available', HeadingLevel.Three)
-							)
-						)
-						.setThumbnailAccessory((thumbnail) =>
-							thumbnail.setURL(couponInfo.resultData![0].productImageUrl).setDescription('Coupon Code Image')
-						)
-				)
-				.addSectionComponents((section) =>
-					section
-						.addTextDisplayComponents((text) => text.setContent(codeBlock(code)))
-						.setButtonAccessory((button) => button.setLabel('CLAIM').setStyle(ButtonStyle.Success).setCustomId(`code-${code}`))
-				);
-
-			const msg = await guildTextChannel.send({
-				components: [container],
-				flags: MessageFlags.IsComponentsV2
-			});
-
-			if (msg)
-				return interaction.editReply({
-					content: `${Emojis.Confirm} Successfully posted the coupon code in ${msg.url}`
-				});
-
-			return interaction.editReply({
-				content: `${Emojis.Cross} Failed to post the coupon code. Please try again later.`
-			});
-		} catch (error) {
-			this.container.logger.error('Error posting coupon:', error);
-			return interaction.editReply({
-				content: `${Emojis.Cross} An error occurred while posting the coupon. Please try again later.`
-			});
-		}
-	}
-
-	private async solo(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const memberCode = interaction.options.getString('member_code', true);
-		const couponCode = interaction.options.getString('coupon_code', true);
-
-		await interaction.deferReply();
-
-		try {
-			const result = await claimCoupon(couponCode, memberCode);
-			this.container.client.emit(RadonEvents.CodeClaim, {
-				...result,
-				userTag: interaction.user.tag,
-				avatarURL: interaction.user.displayAvatarURL(),
-				guild: interaction.guild!.name,
-				guildId: interaction.guild!.id,
-				channel: (interaction.channel as GuildTextBasedChannel).name,
-				channelId: interaction.channel!.id
-			});
-
-			if (result.success) {
-				return interaction.editReply({
-					content: `${Emojis.Confirm} ${result.message}!`
-				});
-			} else {
-				return interaction.editReply({
-					content: `${Emojis.Cross} Failed to claim coupon.\n\n**Reason:** ${result.message}`
-				});
-			}
-		} catch (error) {
-			this.container.logger.error('Error claiming coupon (solo):', error);
-			return interaction.editReply({
-				content: `${Emojis.Cross} An error occurred while claiming the coupon. Please try again later.`
-			});
-		}
-	}
-
-	private async delete(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const memberCode = interaction.options.getString('member_code', true);
-		const userId = interaction.user.id;
-
-		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-
-		try {
-			// Get existing member codes for this user
-			const existingData = await this.container.prisma.memberCodes.findUnique({
-				where: { id: userId }
-			});
-
-			if (!existingData || existingData.memberCodes.length === 0) {
-				return interaction.editReply({
-					content: `${Emojis.Cross} You don't have any member codes registered!`
-				});
-			}
-
-			// Check if the member code exists
-			if (!existingData.memberCodes.includes(memberCode)) {
-				return interaction.editReply({
-					content: `${Emojis.Cross} This member code is not registered for your account!`
-				});
-			}
-
-			// Remove the member code from the array
-			const updatedCodes = existingData.memberCodes.filter((code) => code !== memberCode);
-
-			if (updatedCodes.length === 0) {
-				// Delete the entire document if no codes remain
-				await this.container.prisma.memberCodes.delete({
-					where: { id: userId }
-				});
-
-				return interaction.editReply({
-					content: `${Emojis.Confirm} Successfully deleted your last member code! You now have no member codes registered.`
-				});
-			} else {
-				// Update with remaining codes
-				await this.container.prisma.memberCodes.update({
-					where: { id: userId },
-					data: {
-						memberCodes: updatedCodes,
-						updatedAt: new Date()
-					}
-				});
-
-				return interaction.editReply({
-					content: `${Emojis.Confirm} Successfully deleted member code! You now have ${updatedCodes.length} member code(s) registered.`
-				});
-			}
-		} catch (error) {
-			this.container.logger.error('Error deleting member code:', error);
-			return interaction.editReply({
-				content: `${Emojis.Cross} An error occurred while deleting your member code. Please try again later.`
-			});
-		}
-	}
-
 	private async view(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const userId = interaction.user.id;
-
-		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-
-		try {
-			// Get existing member codes for this user
-			const existingData = await this.container.prisma.memberCodes.findUnique({
-				where: { id: userId }
-			});
-
-			if (!existingData || existingData.memberCodes.length === 0) {
-				return interaction.editReply({
-					content: `${Emojis.Cross} You don't have any member codes registered!\n\nUse \`/claim set\` to add your first member code.`
-				});
-			}
-
-			const codesList = existingData.memberCodes.map((code, index) => `${index + 1}. \`${code}\``).join('\n');
-
-			const content = `## Your Registered Member Codes\n\n${codesList}\n\n**Total:** ${existingData.memberCodes.length}/5`;
-
-			return interaction.editReply({ content });
-		} catch (error) {
-			this.container.logger.error('Error viewing member codes:', error);
-			return interaction.editReply({
-				content: `${Emojis.Cross} An error occurred while retrieving your member codes. Please try again later.`
-			});
+		const data = await this.container.prisma.memberCodes.findUnique({ where: { id: interaction.user.id } });
+		if (!data?.memberCodes.length) return interaction.editReply('You have no saved accounts. Use `/claim set` to add one.');
+		const labels = await this.container.prisma.redemptionAccountLabel.findMany({
+			where: { id: { in: data.memberCodes.map((code) => receiptKey('label', interaction.user.id, code)) } }
+		});
+		const content = data.memberCodes
+			.map(
+				(code, index) =>
+					`${index + 1}. **${escapeMarkdown(labels.find((label) => label.id === receiptKey('label', interaction.user.id, code))?.name ?? `Account ${index + 1}`)}** · \`${maskMemberCode(code)}\``
+			)
+			.join('\n');
+		return interaction.editReply({
+			content: `Your Solo Leveling accounts (${data.memberCodes.length}/5):\n${content}`,
+			allowedMentions: { parse: [] }
+		});
+	}
+	private async policy(interaction: RadonCommand.ChatInputCommandInteraction) {
+		if (!interaction.member.permissions.has(PermissionFlagsBits.ManageGuild))
+			throw new RedemptionError('Manage Server permission is required to configure coupon posting.');
+		if (interaction.options.getBoolean('reset')) {
+			await this.container.prisma.redemptionGuildPolicy.deleteMany({ where: { id: interaction.guildId! } });
+			return interaction.editReply('Coupon posting restored to members with Manage Messages, in accessible text channels.');
 		}
+		const role = interaction.options.getRole('posting_role');
+		const channel = interaction.options.getChannel('posting_channel');
+		if (!role && !channel) return interaction.editReply('Choose a posting role, a posting channel, or reset the policy.');
+		await this.container.prisma.redemptionGuildPolicy.upsert({
+			where: { id: interaction.guildId! },
+			create: { id: interaction.guildId!, roleId: role?.id, channelId: channel?.id },
+			update: { ...(role ? { roleId: role.id } : {}), ...(channel ? { channelId: channel.id } : {}) }
+		});
+		return interaction.editReply('Coupon posting policy saved. Staff with Manage Messages can also post in the configured channel.');
+	}
+	private async post(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const code = interaction.options.getString('code', true).trim();
+		if (!validateCoupon(code)) throw new RedemptionError('Enter a coupon containing 1–64 letters, numbers, underscores or hyphens.');
+		const policy = await this.container.prisma.redemptionGuildPolicy.findUnique({ where: { id: interaction.guildId! } });
+		if (!canPostCoupon(interaction.member, policy?.roleId))
+			throw new RedemptionError('You need Manage Messages permission or the configured coupon posting role.');
+		const targetId = interaction.options.getChannel('channel')?.id ?? interaction.channelId;
+		if (policy?.channelId && policy.channelId !== targetId)
+			throw new RedemptionError('Coupon posts are restricted to the configured posting channel.');
+		const channel = await interaction.guild.channels.fetch(targetId);
+		if (
+			channel?.type !== ChannelType.GuildText ||
+			!channel.permissionsFor(interaction.member).has([PermissionFlagsBits.ViewChannel, PermissionFlagsBits.SendMessages])
+		)
+			throw new RedemptionError('Choose a text channel you can view and send messages in.');
+		const minutes = interaction.options.getInteger('expires_in');
+		const expiresAt = minutes ? Date.now() + minutes * 60_000 : 0;
+		const saved = await this.container.prisma.memberCodes.findUnique({ where: { id: interaction.user.id } });
+		const preview = saved?.memberCodes[0]
+			? await redemptionService(this.container.prisma).preview('sololv', code, { memberCode: saved.memberCodes[0] })
+			: null;
+		const container = new ContainerBuilder()
+			.addTextDisplayComponents((text) =>
+				text.setContent(
+					`## Solo Leveling: ARISE coupon\n\`${code}\`${expiresAt ? `\nClaim before <t:${Math.floor(expiresAt / 1_000)}:F>.` : ''}`
+				)
+			)
+			.addSectionComponents((section) =>
+				section
+					.addTextDisplayComponents((text) => text.setContent('Claim for your saved accounts. Results are private.'))
+					.setButtonAccessory((button) =>
+						button
+							.setLabel('CLAIM')
+							.setStyle(ButtonStyle.Success)
+							.setCustomId(`redeem:${expiresAt.toString(36)}:${code}`)
+					)
+			);
+		if (preview) {
+			if (preview.imageUrl)
+				container.addSectionComponents((section) =>
+					section
+						.addTextDisplayComponents((text) => text.setContent(escapeMarkdown(preview.name)))
+						.setThumbnailAccessory((thumbnail) => thumbnail.setURL(preview.imageUrl!))
+				);
+			else container.addTextDisplayComponents((text) => text.setContent(escapeMarkdown(preview.name)));
+		}
+		const message = await channel.send({ components: [container], flags: MessageFlags.IsComponentsV2, allowedMentions: { parse: [] } });
+		return interaction.editReply(`${Emojis.Confirm} Posted coupon: ${message.url}`);
 	}
 }
-
-type Subcommands = 'set' | 'code' | 'delete' | 'view' | 'post' | 'solo';

@@ -1,3 +1,4 @@
+import { interactionFailureMetadata } from '../../lib/redemption/privacy.js';
 import { RadonEvents } from '#lib/types';
 import { ApplyOptions } from '@sapphire/decorators';
 import { Listener, type InteractionHandlerError } from '@sapphire/framework';
@@ -7,6 +8,6 @@ import { Listener, type InteractionHandlerError } from '@sapphire/framework';
 })
 export class UserListener extends Listener {
 	public run(error: Error, payload: InteractionHandlerError) {
-		console.log(error, payload);
+		this.container.logger.error('Interaction handler failed', interactionFailureMetadata(error, payload));
 	}
 }

@@ -25,11 +25,12 @@ export async function canDiscoverCommand(command: RadonCommand, interaction: Rad
 	return (await command.preconditions.chatInputRun(interaction, command as ChatInputCommand, { external: true })).isOk();
 }
 
-export function getApplicationHelpEntries(
+export async function getApplicationHelpEntries(
 	command: RadonCommand,
 	registered: ApplicationCommand,
-	allowedLevels: ReadonlySet<PermissionLevel>
-): HelpEntry[] {
+	allowedLevels: ReadonlySet<PermissionLevel>,
+	interaction: RadonCommand.ChatInputCommandInteraction
+): Promise<HelpEntry[]> {
 	const category = command.category ?? 'General';
 	if (registered.type !== ApplicationCommandType.ChatInput) {
 		const target = registered.type === ApplicationCommandType.User ? 'user' : 'message';
@@ -42,7 +43,10 @@ export function getApplicationHelpEntries(
 			}
 		];
 	}
-	return getHelpRoutes(registered.description, registered.options).flatMap((route) => {
+	const routes = getHelpRoutes(registered.description, registered.options);
+	const visible = await Promise.all(routes.map((route) => command.canDiscoverRoute(interaction, route.path)));
+	return routes.flatMap((route, index) => {
+		if (!visible[index]) return [];
 		if (command.unavailableSubcommands.includes(route.path)) return [];
 		const level = command.subcommandPermissions.get(route.path);
 		if (level && !allowedLevels.has(level)) return [];

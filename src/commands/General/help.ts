@@ -119,7 +119,7 @@ export class UserCommand extends RadonCommand {
 					applicationCommand.type === ApplicationCommandType.ChatInput ? registry.chatInputCommands : registry.contextMenuCommands;
 				if (!names.has(applicationCommand.id) && !names.has(applicationCommand.name)) continue;
 				if (!canUseApplicationCommand(applicationCommand, interaction, permissions)) continue;
-				entries.push(...getApplicationHelpEntries(command, applicationCommand, allowedLevels));
+				entries.push(...(await getApplicationHelpEntries(command, applicationCommand, allowedLevels, interaction)));
 			}
 			if (command.supportsMessageCommands()) {
 				entries.push({

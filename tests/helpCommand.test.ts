@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it, mock, spyOn } from 'bun:test';
-import { SapphireClient, type Command } from '@sapphire/framework';
+import { container, SapphireClient, type Command } from '@sapphire/framework';
 import { fileURLToPath } from 'node:url';
 import {
 	ApplicationCommand,
@@ -13,6 +13,7 @@ import {
 	SlashCommandBuilder,
 	type ApplicationCommandPermissions
 } from 'discord.js';
+import { UserCommand as ClaimCommand } from '../src/commands/Special/claim.js';
 import { UserCommand as HelpCommand } from '../src/commands/General/help.js';
 import { UserCommand as AboutCommand } from '../src/commands/General/about.js';
 import { UserCommand as StatsCommand } from '../src/commands/General/stats.js';
@@ -269,6 +270,31 @@ describe('help discovery with actual commands and preconditions', () => {
 		const interaction = makeInteraction({ roles: [{ id: 'mod', name: 'Staff' }], modRoles: ['mod'] }).interaction;
 		const guardedWarn = warn as unknown as { createAction: (i: RadonCommand.ChatInputCommandInteraction) => Promise<unknown> };
 		await expect(guardedWarn.createAction(interaction)).rejects.toMatchObject({ identifier: 'PermissionLevelError' });
+	});
+	it('uses dynamic claim posting policy in actual help discovery without consuming a cooldown', async () => {
+		const previousPrisma = container.prisma;
+		const claim = load(ClaimCommand, 'claim');
+		container.prisma = {
+			redemptionGuildPolicy: { findUnique: async () => ({ roleId: 'coupon-posters' }) }
+		} as unknown as typeof container.prisma;
+		try {
+			const regular = await entriesFor();
+			expect(regular.names).toContain('/claim code');
+			expect(regular.names).not.toContain('/claim post');
+			expect(regular.names).not.toContain('/claim policy');
+			const poster = await entriesFor({ roles: [{ id: 'coupon-posters', name: 'Coupon Posters' }] });
+			expect(poster.names).toContain('/claim post');
+			expect(poster.names).not.toContain('/claim policy');
+			const staff = await entriesFor({ permissions: [PermissionFlagsBits.ManageMessages] });
+			expect(staff.names).toContain('/claim post');
+			const manager = await entriesFor({ permissions: [PermissionFlagsBits.ManageGuild] });
+			expect(manager.names).toContain('/claim policy');
+			for (let attempt = 0; attempt < 3; attempt++) expect(await claim.canDiscoverRoute(poster.interaction, 'post')).toBe(true);
+		} finally {
+			container.prisma = previousPrisma;
+			commands.delete(claim.name);
+			for (let index = registered.length - 1; index >= 0; index--) if (registered[index].command.name === 'claim') registered.splice(index, 1);
+		}
 	});
 	it('records method decorator route metadata on command instances', () => {
 		expect(warn.subcommandPermissions.get('action create')).toBe('Administrator');
