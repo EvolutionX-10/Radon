@@ -1,11 +1,11 @@
 import { afterEach, describe, expect, it, mock, spyOn } from 'bun:test';
-import { container } from '@sapphire/framework';
-import { InteractionCollector, MessageFlags, SlashCommandBuilder } from 'discord.js';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import { MessageFlags, SlashCommandBuilder } from 'discord.js';
 import { Owners } from '../src/lib/utility/constants.js';
 import { BUG_WARNING, BugReports, cleanBugText } from '../src/lib/bugs/service.js';
 import { bugInbox, bugReportCard, bugWarning } from '../src/lib/bugs/presentation.js';
 import { allowBotInteraction } from '../src/lib/bugs/access.js';
-import { RadonClient } from '../src/lib/RadonClient.js';
 import { UserCommand as BugCommand } from '../src/commands/General/bug.js';
 import { UserCommand as BugReportsCommand } from '../src/commands/Core/bugreports.js';
 import { ButtonHandler } from '../src/interaction-handlers/buttons/bugReport.js';
@@ -221,61 +221,12 @@ describe('bot-wide misuse bans', () => {
 		expect(await subject.chatInputRun({ guildId: 'guild', user: { id: reporterId } })).toBe('ok');
 		expect(prisma.blacklist.findUnique).toHaveBeenCalledTimes(1);
 	});
-	it('suppresses raw collector/handler callbacks for banned users and forwards allowed events once', async () => {
-		const savedPrisma = container.prisma;
-		const savedClient = container.client;
-		const savedLogger = container.logger;
-		const savedStores = [...container.stores];
-		const client = new RadonClient();
-		const collectorAction = mock(() => null);
-		const collector = new InteractionCollector(client, { time: 5000 });
-		collector.on('collect', collectorAction);
-		const sapphireHandler = mock(() => null);
-		const otherEvent = mock(() => null);
-		client.on('interactionCreate', sapphireHandler);
-		client.on('test-event', otherEvent);
-		const lookup = mock(async () => ({ banned: true }));
-		container.prisma = { bugReporter: { findUnique: lookup } } as any;
-		try {
-			for (const failed of [false, true]) {
-				if (failed) lookup.mockRejectedValueOnce(new Error('DB failure'));
-				const reply = mock(async () => null);
-				expect(
-					client.emit('interactionCreate', {
-						id: record.id,
-						user: { id: reporterId },
-						isAutocomplete: () => false,
-						isRepliable: () => true,
-						reply
-					} as any)
-				).toBe(true);
-				await new Promise((resolve) => setTimeout(resolve, 0));
-				expect(reply.mock.calls[0][0].flags & MessageFlags.Ephemeral).toBe(MessageFlags.Ephemeral);
-			}
-			expect(collectorAction).not.toHaveBeenCalled();
-			expect(sapphireHandler).not.toHaveBeenCalled();
-			lookup.mockResolvedValueOnce(null as any);
-			client.emit('interactionCreate', { id: record.id, user: { id: reporterId } } as any);
-			await new Promise((resolve) => setTimeout(resolve, 0));
-			expect(collectorAction).toHaveBeenCalledTimes(1);
-			expect(sapphireHandler).toHaveBeenCalledTimes(1);
-			client.emit('interactionCreate', { id: 'another-interaction', user: { id: Owners[0] } } as any);
-			await new Promise((resolve) => setTimeout(resolve, 0));
-			expect(collectorAction).toHaveBeenCalledTimes(2);
-			expect(sapphireHandler).toHaveBeenCalledTimes(2);
-			expect(lookup).toHaveBeenCalledTimes(3);
-			expect(client.emit('test-event', 'payload')).toBe(true);
-			expect(otherEvent).toHaveBeenCalledWith('payload');
-			expect(client.emit('missing-event')).toBe(false);
-		} finally {
-			collector.stop();
-			await client.destroy();
-			container.prisma = savedPrisma;
-			container.client = savedClient;
-			container.logger = savedLogger;
-			container.stores.clear();
-			for (const [name, store] of savedStores) container.stores.set(name, store);
-		}
+	it('suppresses raw collector/handler callbacks for banned users and forwards allowed events once', () => {
+		const result = spawnSync(process.execPath, [fileURLToPath(new URL('./fixtures/bugAccess.ts', import.meta.url))], {
+			encoding: 'utf8',
+			timeout: 10_000
+		});
+		expect({ status: result.status, error: result.error?.message, stderr: result.stderr }).toEqual({ status: 0, error: undefined, stderr: '' });
 	});
 	it('rejects autocomplete queries and times out failed access lookups before Discord acknowledgement expires', async () => {
 		const respond = mock(async () => null);
