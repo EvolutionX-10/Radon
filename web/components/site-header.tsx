@@ -13,6 +13,7 @@ const navigation = [
 	['Games', '/#games'],
 	['Commands', '/#commands'],
 	['Getting started', '/guide'],
+	['Server guide', '/guide/server'],
 	['Updates', '/updates']
 ];
 
@@ -55,7 +56,7 @@ export function SiteHeader() {
 									radon.
 								</SheetTitle>
 								<SheetDescription className="sr-only">
-									Explore features, games, commands, updates, and the player guide.
+									Explore features, games, commands, updates, and the player and server guides.
 								</SheetDescription>
 							</SheetHeader>
 							<nav aria-label="Mobile navigation" className="mobile-nav">

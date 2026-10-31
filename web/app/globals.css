@@ -3076,3 +3076,61 @@ h2 {
 		transition-duration: 0.01ms !important;
 	}
 }
+
+/* Shared entry points for the player and server handbooks. */
+.guide-switcher {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 12px;
+	margin-bottom: 30px;
+}
+.guide-switcher > a {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	min-width: 0;
+	padding: 18px 20px;
+	border: 1px solid #483951;
+	border-radius: 10px;
+	background: #1e1925;
+	color: #c6b2dc;
+	transition:
+		border-color 160ms ease,
+		background-color 160ms ease;
+}
+.guide-switcher > a[aria-current='page'] {
+	border-color: #9c7fb9;
+	background: #30253c;
+	color: #e1cdf9;
+}
+.guide-switcher > a:hover {
+	border-color: #b599d0;
+	background: #30253c;
+}
+.guide-switcher > a > svg {
+	flex-shrink: 0;
+}
+.guide-switcher > a > svg:last-child {
+	margin-left: auto;
+}
+.guide-switcher strong {
+	display: block;
+	font-size: 14px;
+	font-weight: 600;
+}
+.guide-switcher small {
+	display: block;
+	color: #bfb0cd;
+	font-size: 11px;
+	line-height: 1.7;
+	margin-top: 4px;
+}
+@media (max-width: 480px) {
+	.guide-switcher {
+		grid-template-columns: 1fr;
+		gap: 8px;
+	}
+	.guide-switcher > a {
+		padding: 14px 16px;
+	}
+}

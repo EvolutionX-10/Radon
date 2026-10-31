@@ -64,7 +64,7 @@ test('FAQ explains optional perks and opens with the keyboard', async ({ page })
 });
 
 test('all pages and game guide links work without horizontal scrolling', async ({ page, request }) => {
-	for (const route of ['/', '/guide', '/terms-of-service', '/privacy-policy', '/updates']) {
+	for (const route of ['/', '/guide', '/guide/server', '/terms-of-service', '/privacy-policy', '/updates']) {
 		const response = await page.goto(route);
 		expect(response?.status()).toBe(200);
 		await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
@@ -103,7 +103,7 @@ test('mobile navigation closes after choosing a destination', async ({ page, isM
 });
 
 test('pages and interactive states meet WCAG A and AA automated checks', async ({ page }) => {
-	for (const route of ['/', '/guide', '/terms-of-service', '/privacy-policy', '/updates']) {
+	for (const route of ['/', '/guide', '/guide/server', '/terms-of-service', '/privacy-policy', '/updates']) {
 		await page.goto(route);
 		const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
 		expect(
@@ -118,7 +118,7 @@ test('pages and interactive states meet WCAG A and AA automated checks', async (
 });
 
 test('secondary page back navigation stays above the title at every viewport', async ({ page }) => {
-	for (const route of ['/terms-of-service', '/privacy-policy', '/guide', '/updates']) {
+	for (const route of ['/terms-of-service', '/privacy-policy', '/guide', '/guide/server', '/updates']) {
 		await page.goto(route);
 		for (const width of [320, 640, 768, 1024, 1440]) {
 			await page.setViewportSize({ width, height: 900 });
@@ -169,7 +169,7 @@ test('public pages have unique crawlable metadata and working discovery files', 
 	const origin = 'https://radon-lake-phi.vercel.app';
 	const titles = new Set<string>();
 	const descriptions = new Set<string>();
-	for (const route of ['/', '/guide', '/updates', '/terms-of-service', '/privacy-policy']) {
+	for (const route of ['/', '/guide', '/guide/server', '/updates', '/terms-of-service', '/privacy-policy']) {
 		await page.goto(route);
 		const title = await page.title();
 		const description = await page.locator('meta[name="description"]').getAttribute('content');
@@ -188,13 +188,14 @@ test('public pages have unique crawlable metadata and working discovery files', 
 		await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'index, follow');
 		await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
 	}
-	expect(titles.size).toBe(5);
-	expect(descriptions.size).toBe(5);
+	expect(titles.size).toBe(6);
+	expect(descriptions.size).toBe(6);
 	const robots = await request.get('/robots.txt');
 	expect(await robots.text()).toContain(`Sitemap: ${origin}/sitemap.xml`);
 	const sitemap = await request.get('/sitemap.xml');
 	const xml = await sitemap.text();
-	for (const route of ['/', '/guide', '/updates', '/terms-of-service', '/privacy-policy']) expect(xml).toContain(`<loc>${origin}${route}</loc>`);
+	for (const route of ['/', '/guide', '/guide/server', '/updates', '/terms-of-service', '/privacy-policy'])
+		expect(xml).toContain(`<loc>${origin}${route}</loc>`);
 	await page.goto('/');
 	const schema = await page.locator('script[type="application/ld+json"]').evaluate((element) => JSON.parse(element.textContent!));
 	expect(schema['@graph'].map((entry: { '@type': string }) => entry['@type'])).toEqual(['WebSite', 'SoftwareApplication']);

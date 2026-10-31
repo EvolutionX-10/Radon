@@ -1,3 +1,5 @@
+import Link from 'next/link';
+import { GuideSwitcher } from '@/components/guide-switcher';
 import { ArrowUpRight, Info, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DocumentHeading } from '@/components/document-heading';
@@ -25,6 +27,7 @@ export default function GuidePage() {
 			>
 				From adding Radon to claiming your first reward. Everything happens in Discord, right where your community already is.
 			</DocumentHeading>
+			<GuideSwitcher current="player" />
 			<div className="guide-layout">
 				<nav className="guide-nav" aria-label="On this page">
 					<span>IN THIS GUIDE</span>
@@ -212,7 +215,7 @@ export default function GuidePage() {
 						<p>
 							Use <code>/help</code> for the commands available to your role and channel. Radon includes warnings, configurable warning
 							actions, timeouts, bans, and moderation records. Discord permissions, configured staff roles, and role hierarchy still
-							apply.
+							apply. Read the <Link href="/guide/server">visual server guide</Link> for what to use, when, and how.
 						</p>
 					</section>
 					<section className="document-section" id="troubleshooting">
