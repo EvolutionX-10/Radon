@@ -20,6 +20,12 @@ class MemoryStore implements LockStore {
 		record.leaseUntil = until;
 		return true;
 	}
+	async renew(id: string, token: string, until: Date) {
+		const record = this.records.get(id);
+		if (record?.operationToken !== token) return false;
+		record.leaseUntil = until;
+		return true;
+	}
 	async release(id: string, token: string) {
 		const record = this.records.get(id);
 		if (record?.operationToken === token) record.leaseUntil = null;
@@ -316,5 +322,131 @@ describe('Mongo lease commands', () => {
 		} as unknown as PrismaClient;
 		await expect(lockStore(prisma).remove('id', 'old')).rejects.toThrow('ownership changed');
 		expect(commands).toEqual([{ delete: 'channelLockSnapshot', deletes: [{ q: { _id: 'id', operationToken: 'old' }, limit: 1 }] }]);
+	});
+});
+
+import { LockExpiryWorker, parseLockDuration } from '../src/lib/locks/expiry.js';
+
+describe('lease renewal during slow Discord requests', () => {
+	it('keeps a slow in-flight lock leased beyond its initial deadline', async () => {
+		const f = fixture();
+		let now = new Date(0);
+		let tick!: () => Promise<void>;
+		let stopped = false;
+		const service = new LockService(f.store, () => now, {
+			start: (renew) => {
+				tick = renew;
+				return () => {
+					stopped = true;
+				};
+			}
+		});
+		let finish!: () => void;
+		const wait = new Promise<void>((resolve) => {
+			finish = resolve;
+		});
+		f.target.apply = async () => {
+			await wait;
+		};
+		const pending = service.lock(f.target, 'lock');
+		while (!tick) await Promise.resolve();
+		now = new Date(90_000);
+		await tick();
+		now = new Date(180_000);
+		expect(await new LockService(f.store, () => now).unlock(f.target, 'too early')).toBe('busy');
+		finish();
+		expect(await pending).toBe('locked');
+		expect(stopped).toBe(true);
+		expect([...f.store.records.values()][0].leaseUntil).toBeNull();
+	});
+	it('retains recovery data and refuses success after losing lease ownership', async () => {
+		const f = fixture();
+		let tick!: () => Promise<void>;
+		let finish!: () => void;
+		const wait = new Promise<void>((resolve) => {
+			finish = resolve;
+		});
+		const service = new LockService(f.store, () => new Date(), {
+			start: (renew) => {
+				tick = renew;
+				return () => {};
+			}
+		});
+		f.target.apply = async () => {
+			await wait;
+		};
+		const pending = service.lock(f.target, 'lock');
+		while (!tick) await Promise.resolve();
+		const record = [...f.store.records.values()][0];
+		record.operationToken = 'replacement-owner';
+		await tick();
+		finish();
+		await expect(pending).rejects.toThrow('ownership could not be verified');
+		expect(f.store.records.get(f.target.id)?.snapshot).toBe('original');
+		expect(f.store.records.get(f.target.id)?.operationToken).toBe('replacement-owner');
+	});
+});
+
+describe('temporary lock expiry', () => {
+	it('accepts explicit bounded durations and rejects ambiguous or unsafe values', () => {
+		expect(parseLockDuration('')).toBeNull();
+		expect(parseLockDuration('10m')).toBe(600_000);
+		expect(parseLockDuration('1d 6h')).toBe(108_000_000);
+		expect(parseLockDuration('0.5h')).toBe(1_800_000);
+		for (const input of ['30', '-1h', '1month', '10m garbage', '0s', '9s', '29d']) expect(() => parseLockDuration(input)).toThrow();
+	});
+	it('restores persisted jobs after a worker restart and backs off failures without dropping later jobs', async () => {
+		const f = fixture();
+		await f.service.lock(f.target, 'lock', new Date(0));
+		const record = [...f.store.records.values()][0];
+		const errors: unknown[] = [];
+		const delayed: Date[] = [];
+		let called = 0;
+		const worker = new LockExpiryWorker(
+			{
+				listDue: async () => [record, record],
+				restore: async () => {
+					called++;
+					if (called === 1) throw new Error('missing permission');
+					return new LockService(f.store).unlock(f.target, 'expired');
+				},
+				defer: async (_record, until) => {
+					delayed.push(until);
+				},
+				error: (error) => {
+					errors.push(error);
+				}
+			},
+			() => new Date(0)
+		);
+		await worker.run();
+		expect(called).toBe(2);
+		expect(errors).toHaveLength(1);
+		expect(delayed[0].getTime()).toBe(300_000);
+		expect(f.state()).toBe('original');
+	});
+	it('serializes polling passes while an earlier restoration is still running', async () => {
+		let fetches = 0;
+		let finish!: () => void;
+		const wait = new Promise<void>((resolve) => {
+			finish = resolve;
+		});
+		const worker = new LockExpiryWorker({
+			listDue: async () => {
+				fetches++;
+				await wait;
+				return [];
+			},
+			restore: async () => 'restored',
+			defer: async () => {},
+			error: () => {}
+		});
+		const first = worker.run();
+		await worker.run();
+		expect(fetches).toBe(1);
+		finish();
+		await first;
+		await worker.run();
+		expect(fetches).toBe(2);
 	});
 });

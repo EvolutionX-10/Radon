@@ -25,6 +25,19 @@ export function lockStore(prisma: PrismaClient): LockStore {
 			});
 			return !!checked(result).value;
 		},
+
+		renew: async (id, operationToken, leaseUntil) => {
+			const result = checked(
+				await prisma.$runCommandRaw({
+					findAndModify: 'channelLockSnapshot',
+					query: { _id: id, operationToken },
+					update: { $set: { leaseUntil: { $date: leaseUntil.toISOString() } } },
+					new: true
+				})
+			);
+			return !!result.value;
+		},
+
 		release: async (id, operationToken) => {
 			checked(
 				await prisma.$runCommandRaw({

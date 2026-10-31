@@ -91,6 +91,7 @@ model channelLockSnapshot {
   operationToken String
   leaseUntil     DateTime? @db.Date
   expiresAt      DateTime? @db.Date
+  retryAfter     DateTime? @db.Date
   createdAt      DateTime  @db.Date
 
   @@index([guildId])

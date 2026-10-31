@@ -12,6 +12,7 @@ import {
 } from 'discord.js';
 import type { RadonCommand } from '../structures/commands/RadonCommand.js';
 import { isAdmin, isOwner } from '../utility/functions/permissions.js';
+import { parseLockDuration } from './expiry.js';
 import { LockService, runLockBatch, type LockTarget } from './LockService.js';
 import { lockSessions, type LockScope, type LockSession } from './sessions.js';
 import { lockStore } from './store.js';
@@ -42,6 +43,15 @@ export async function beginLockPrompt(interaction: RadonCommand.ChatInputCommand
 		.setTitle(action === 'lock' ? 'Lock' : 'Restore lock')
 		.setCustomId(`radon-lock:${action}:${token}`)
 		.addComponents(new ActionRowBuilder<TextInputBuilder>().addComponents(reason));
+	if (action === 'lock') {
+		const duration = new TextInputBuilder()
+			.setCustomId('duration')
+			.setLabel('Duration (optional, e.g. 10m or 2h)')
+			.setStyle(TextInputStyle.Short)
+			.setMaxLength(40)
+			.setRequired(false);
+		modal.addComponents(new ActionRowBuilder<TextInputBuilder>().addComponents(duration));
+	}
 	return interaction.showModal(modal);
 }
 
@@ -99,12 +109,18 @@ export async function completeLockPrompt(interaction: ModalSubmitInteraction, pr
 		const reason = interaction.fields.getTextInputValue('reason').trim();
 		const auditReason = `Requested by ${interaction.user.tag} (${interaction.user.id})${reason ? `: ${reason}` : ''}`.slice(0, 512);
 		const targets = await getLockTargets(interaction.guild, session);
+		const duration =
+			session.action === 'lock' && interaction.fields.fields.has('duration')
+				? parseLockDuration(interaction.fields.getTextInputValue('duration'))
+				: null;
+		const expiresAt = duration === null ? null : new Date(Date.now() + duration);
 		const service = new LockService(lockStore(prisma));
 		let missing = 0;
 		const result = await runLockBatch(
 			targets,
 			async (target) => {
-				const outcome = session.action === 'lock' ? await service.lock(target, auditReason) : await service.unlock(target, auditReason);
+				const outcome =
+					session.action === 'lock' ? await service.lock(target, auditReason, expiresAt) : await service.unlock(target, auditReason);
 				if (outcome === 'busy') throw new Error('Another lock operation is running; try again shortly.');
 				if (outcome === 'no snapshot') missing++;
 				return outcome === 'locked' || outcome === 'restored';
@@ -120,6 +136,7 @@ export async function completeLockPrompt(interaction: ModalSubmitInteraction, pr
 				.slice(0, 8)
 				.map((failure) => `- ${failure}`)
 				.join('\n')}\nFailed locks retain their recovery snapshot. Retry the matching unlock command.`;
+		if (expiresAt && result.completed) content += `\nAutomatic restoration scheduled for <t:${Math.floor(expiresAt.getTime() / 1000)}:F>.`;
 		if (reason) content += `\nReason: ${reason}`;
 		return interaction.editReply({ content: content.slice(0, 2000), allowedMentions: { parse: [] } });
 	} catch (error) {

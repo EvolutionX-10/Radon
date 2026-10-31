@@ -2,6 +2,10 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'bun:test'
 import { PrismaClient } from '@prisma/client';
 import { LockService, type LockRecord, type LockTarget } from '../src/lib/locks/LockService.js';
 import { lockStore } from '../src/lib/locks/store.js';
+import { createLockExpiryWorker } from '../src/lib/locks/scheduler.js';
+import { roleTarget } from '../src/lib/locks/targets.js';
+import { PermissionsBitField } from 'discord.js';
+import type { RadonClient } from '../src/lib/RadonClient.js';
 
 // Never inherit MONGO or connect to a production server in this test suite.
 const url = process.env.RADON_LOCK_TEST_MONGO;
@@ -102,6 +106,64 @@ suite('MongoDB lock snapshot integration', () => {
 		expect(state).toBe('original');
 		expect(await store.find(target.id)).toBeNull();
 	});
+
+	function fakeRoleClient() {
+		const role = {
+			id: 'guild',
+			managed: false,
+			permissions: new PermissionsBitField(PermissionsBitField.Flags.SendMessages),
+			setPermissions: async (bits: bigint) => {
+				role.permissions = new PermissionsBitField(bits);
+				return role;
+			}
+		};
+		const guild = {
+			id: 'guild',
+			roles: { fetch: async () => role },
+			members: { me: { permissions: new PermissionsBitField(PermissionsBitField.Flags.ManageRoles) } }
+		};
+		const client = { guilds: { cache: new Map([['guild', guild]]) } } as unknown as RadonClient;
+		return { role, guild, client };
+	}
+	it('renews a lease only while the same worker still owns it', async () => {
+		const store = lockStore(prisma);
+		const entry = record();
+		await store.create(entry);
+		const later = new Date(Date.now() + 600_000);
+		expect(await store.renew(entry.id, 'wrong-token', later)).toBe(false);
+		expect(await store.renew(entry.id, entry.operationToken, later)).toBe(true);
+		expect((await store.find(entry.id))?.leaseUntil?.toISOString()).toBe(later.toISOString());
+	});
+	it('finds persisted expired locks after restart and restores the original role permissions', async () => {
+		const f = fakeRoleClient();
+		const target = roleTarget(f.guild as never, 'guild');
+		await new LockService(lockStore(prisma)).lock(target, 'temporary', new Date(Date.now() - 1000));
+		expect(f.role.permissions.has('SendMessages')).toBe(false);
+		const errors: unknown[] = [];
+		await createLockExpiryWorker(f.client, prisma, (error) => errors.push(error)).run();
+		expect(errors).toEqual([]);
+		expect(f.role.permissions.has('SendMessages')).toBe(true);
+		expect(await prisma.channelLockSnapshot.findUnique({ where: { id: target.id } })).toBeNull();
+	});
+	it('retains failed expiry snapshots and persists a five-minute retry backoff', async () => {
+		const f = fakeRoleClient();
+		const target = roleTarget(f.guild as never, 'guild');
+		await new LockService(lockStore(prisma)).lock(target, 'temporary', new Date(Date.now() - 1000));
+		f.role.setPermissions = async () => {
+			throw new Error('permission revoked');
+		};
+		const errors: unknown[] = [];
+		const worker = createLockExpiryWorker(f.client, prisma, (error) => errors.push(error));
+		await worker.run();
+		const saved = await prisma.channelLockSnapshot.findUnique({ where: { id: target.id } });
+		expect(saved).not.toBeNull();
+		expect(saved?.retryAfter?.getTime()).toBeGreaterThan(Date.now() + 290_000);
+		expect(saved?.leaseUntil).toBeNull();
+		expect(errors).toHaveLength(1);
+		await worker.run();
+		expect(errors).toHaveLength(1);
+	});
+
 	it('rejects stale removal tokens without deleting a newer snapshot', async () => {
 		const store = lockStore(prisma);
 		const entry = record();
