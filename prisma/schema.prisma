@@ -79,3 +79,21 @@ model aiChatConfig {
   createdBy       String // Owner who enabled it
   personalityMode String   @default("default") // For future: different personality modes
 }
+
+// Created before changing Discord permissions. Do not TTL-delete restoration data.
+model channelLockSnapshot {
+  id             String    @id @map("_id")
+  guildId        String
+  targetId       String
+  roleId         String
+  kind           String
+  snapshot       String
+  operationToken String
+  leaseUntil     DateTime? @db.Date
+  expiresAt      DateTime? @db.Date
+  retryAfter     DateTime? @db.Date
+  createdAt      DateTime  @db.Date
+
+  @@index([guildId])
+  @@index([expiresAt])
+}

@@ -4,21 +4,11 @@ import { PermissionLevels } from '#lib/types';
 import { sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
 import { BucketScope } from '@sapphire/framework';
-import { ChannelType, PermissionFlagsBits } from 'discord-api-types/v9';
-import {
-	ActionRowBuilder,
-	CategoryChannel,
-	GuildChannel,
-	ModalBuilder,
-	Role,
-	TextInputBuilder,
-	TextInputStyle,
-	ThreadChannel,
-	InteractionContextType
-} from 'discord.js';
+import { ChannelType, PermissionFlagsBits, InteractionContextType } from 'discord.js';
+import { beginLockPrompt } from '../../lib/locks/interaction.js';
 
 @ApplyOptions<RadonCommand.Options>({
-	description: 'Lock!',
+	description: 'Lock channels and preserve their previous permissions',
 	permissionLevel: PermissionLevels.Moderator,
 	cooldownDelay: sec(30),
 	cooldownScope: BucketScope.Guild,
@@ -27,19 +17,8 @@ import {
 })
 export class UserCommand extends RadonCommand {
 	public override chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const subCmd = interaction.options.getSubcommand();
-		const grp = interaction.options.getSubcommandGroup(false);
-		if (grp) {
-			switch (subCmd as group) {
-				case 'text':
-					return this.lockAllText(interaction);
-				case 'voice':
-					return this.lockAllVoice(interaction);
-				case 'thread':
-					return this.lockAllThread(interaction);
-			}
-		}
-		switch (subCmd as subcmd) {
+		const scope = [interaction.options.getSubcommandGroup(false), interaction.options.getSubcommand()].filter(Boolean).join(' ');
+		switch (scope) {
 			case 'text':
 				return this.lockText(interaction);
 			case 'voice':
@@ -48,8 +27,16 @@ export class UserCommand extends RadonCommand {
 				return this.lockCategory(interaction);
 			case 'thread':
 				return this.lockThread(interaction);
+			case 'all text':
+				return this.lockAllText(interaction);
+			case 'all voice':
+				return this.lockAllVoice(interaction);
+			case 'all thread':
+				return this.lockAllThread(interaction);
 			case 'server':
 				return this.lockServer(interaction);
+			default:
+				return interaction.reply('Unknown lock operation.');
 		}
 	}
 
@@ -193,278 +180,38 @@ export class UserCommand extends RadonCommand {
 	}
 
 	private lockText(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const channel = interaction.options.getChannel('channel', true);
-
-		if (!channel.permissionsFor(this.container.client.user!)!.has('ManageRoles'))
-			return interaction.reply('I do not have permission to lock channels!');
-
-		const role = interaction.options.getRole('role') ?? interaction.guild.roles.everyone;
-
-		if (!this.checkRole(role)) {
-			return interaction.reply('This role is integrated to a bot or higher than my highest role! Action cancelled.');
-		}
-
-		if (this.isLocked(channel, role)) return interaction.reply(`<#${channel.id}> is already locked for ${role}!`);
-
-		const modal = new ModalBuilder();
-		const ReasonInput = new TextInputBuilder()
-			.setCustomId('reason')
-			.setLabel('Reason for lock')
-			.setPlaceholder(`This will be sent in #${channel.name} (OPTIONAL)`)
-			.setRequired(false)
-			.setStyle(TextInputStyle.Paragraph);
-
-		const row = new ActionRowBuilder<TextInputBuilder>().setComponents(ReasonInput);
-
-		modal.setTitle('Lock').setComponents(row).setCustomId('@lock/text');
-
-		interaction.user.data = { content: `Locked channel <#${channel.id}> for ${role}`, channel, role };
-
-		return interaction.showModal(modal);
+		return beginLockPrompt(interaction, 'lock', 'text');
 	}
 
 	private lockVoice(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const channel = interaction.options.getChannel('channel', true);
-
-		if (!channel.permissionsFor(this.container.client.user!)!.has('ManageRoles'))
-			return interaction.reply('I do not have permission to lock channels!');
-
-		const role = interaction.options.getRole('role') ?? interaction.guild.roles.everyone!;
-		if (!this.checkRole(role)) {
-			return interaction.reply('This role is integrated to a bot or higher than my highest role! Action cancelled.');
-		}
-		if (this.isLocked(channel, role)) return interaction.reply(`<#${channel.id}> is already locked for ${role}!`);
-		let content = `Locked <#${channel.id}> for ${role}!`;
-		if (channel.isThread()) return;
-		channel.permissionOverwrites
-			.edit(
-				channel.guild.members.me!,
-				{
-					Connect: true,
-					Speak: true
-				},
-				{
-					reason: 'Creating permissions to avoid self lock out'
-				}
-			)
-			.catch(() => (content += `\n\n> Failed to create self permissions, please report this in support server!`));
-		channel.permissionOverwrites
-			.edit(
-				role,
-				{
-					Connect: false,
-					Speak: false
-				},
-				{
-					reason: `Requested by ${interaction.user.tag} (${interaction.user.id})`
-				}
-			)
-			.catch(() => null);
-
-		return interaction.reply(content);
+		return beginLockPrompt(interaction, 'lock', 'voice');
 	}
 
 	private lockCategory(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const category = interaction.options.getChannel('channel', true) as CategoryChannel;
-
-		if (!category.permissionsFor(this.container.client.user!)!.has('ManageRoles'))
-			return interaction.reply('I do not have permission to lock channels!');
-
-		const role = interaction.options.getRole('role') ?? interaction.guild.roles.everyone;
-		if (!this.checkRole(role)) {
-			return interaction.reply('This role is integrated to a bot or higher than my highest role! Action cancelled.');
-		}
-		const threads = interaction.options.getBoolean('threads') ?? false;
-
-		const content = `Successfully locked __${category.name}__ for ${role}!\n\nIssues Found:`;
-
-		const modal = new ModalBuilder();
-		const ReasonInput = new TextInputBuilder()
-			.setCustomId('reason')
-			.setLabel('Reason for lock')
-			.setPlaceholder(`This will be sent in ${category.name} (OPTIONAL)`)
-			.setRequired(false)
-			.setStyle(TextInputStyle.Paragraph);
-
-		const row = new ActionRowBuilder<TextInputBuilder>().setComponents(ReasonInput);
-
-		modal.setTitle('Lock').setComponents(row).setCustomId('@lock/category');
-
-		interaction.user.data = { content, category, role, threads };
-
-		return interaction.showModal(modal);
+		return beginLockPrompt(interaction, 'lock', 'category');
 	}
 
 	private lockThread(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const thread = interaction.options.getChannel('channel', true);
-		if (!thread || !thread.isThread()) return interaction.reply('Invalid thread!');
-
-		if (!thread.manageable) return interaction.reply('I do not have permission to lock this thread!');
-
-		if (this.isLocked(thread)) return interaction.reply(`<#${thread.id}> is already locked!`);
-
-		const modal = new ModalBuilder();
-		const ReasonInput = new TextInputBuilder()
-			.setCustomId('reason')
-			.setLabel('Reason for lock')
-			.setPlaceholder(`This will be sent in #${thread.name} (OPTIONAL)`)
-			.setRequired(false)
-			.setStyle(TextInputStyle.Paragraph);
-
-		const row = new ActionRowBuilder<TextInputBuilder>().setComponents(ReasonInput);
-
-		modal.setTitle('Lock').setComponents(row).setCustomId('@lock/thread');
-
-		interaction.user.data = { content: `Locked thread <#${thread.id}>!`, thread };
-
-		return interaction.showModal(modal);
+		return beginLockPrompt(interaction, 'lock', 'thread');
 	}
 
 	@PermissionLevel('Administrator', 'all text')
 	private lockAllText(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const role = interaction.options.getRole('role') ?? interaction.guild.roles.everyone;
-
-		if (!this.checkRole(role)) {
-			return interaction.reply('This role is integrated to a bot or higher than my highest role! Action cancelled.');
-		}
-
-		const content = `Successfully locked all text channels for ${role}!\n\nIssues Found:`;
-
-		const modal = new ModalBuilder();
-		const ReasonInput = new TextInputBuilder()
-			.setCustomId('reason')
-			.setLabel('Reason for lock')
-			.setPlaceholder(`This will be sent in all text channels (OPTIONAL)`)
-			.setRequired(false)
-			.setStyle(TextInputStyle.Paragraph);
-
-		const row = new ActionRowBuilder<TextInputBuilder>().setComponents(ReasonInput);
-
-		modal.setTitle('Lock').setComponents(row).setCustomId('@lock/all/text');
-
-		interaction.user.data = { content, role };
-
-		return interaction.showModal(modal);
+		return beginLockPrompt(interaction, 'lock', 'all text');
 	}
 
 	@PermissionLevel('Administrator', 'all voice')
-	private async lockAllVoice(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const role = interaction.options.getRole('role') ?? interaction.guild.roles.everyone;
-
-		if (!this.checkRole(role)) {
-			return interaction.reply('This role is integrated to a bot or higher than my highest role! Action cancelled.');
-		}
-		await interaction.deferReply();
-		let content = `Successfully locked all voice channels for ${role}!\n\nIssues Found:`;
-		const channels = interaction.guild!.channels.cache.filter((c) => c.isVoiceBased());
-
-		for (const channel of channels.values()) {
-			if (this.isLocked(channel, role) || !channel.isVoiceBased()) continue;
-			await this.container.utils.wait(500);
-			channel.permissionOverwrites
-				.edit(
-					channel.guild.members.me!,
-					{
-						Connect: true,
-						Speak: true
-					},
-					{
-						reason: 'Creating permissions to avoid self lock out'
-					}
-				)
-				.catch(() => null);
-
-			channel.permissionOverwrites
-				.edit(
-					role,
-					{
-						Connect: false,
-						Speak: false
-					},
-					{
-						reason: `Requested by ${interaction.user.tag} (${interaction.user.id})`
-					}
-				)
-				.catch(() => (content += `\n> Missing permissions to lock <#${channel.id}>!`));
-		}
-
-		content.endsWith(':') ? (content += ' None 🎉') : null;
-
-		return interaction.editReply(content);
+	private lockAllVoice(interaction: RadonCommand.ChatInputCommandInteraction) {
+		return beginLockPrompt(interaction, 'lock', 'all voice');
 	}
 
 	@PermissionLevel('Administrator', 'all thread')
 	private lockAllThread(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const role = interaction.options.getRole('role') ?? interaction.guild.roles.everyone;
-
-		if (!this.checkRole(role)) {
-			return interaction.reply('This role is integrated to a bot or higher than my highest role! Action cancelled.');
-		}
-
-		const content = `Successfully locked all threads for ${role}!\n\nIssues Found:`;
-
-		const modal = new ModalBuilder();
-		const ReasonInput = new TextInputBuilder()
-			.setCustomId('reason')
-			.setLabel('Reason for lock')
-			.setPlaceholder(`This will be sent in all threads (OPTIONAL)`)
-			.setRequired(false)
-			.setStyle(TextInputStyle.Paragraph);
-
-		const row = new ActionRowBuilder<TextInputBuilder>().setComponents(ReasonInput);
-
-		modal.setTitle('Lock').setComponents(row).setCustomId('@lock/all/thread');
-
-		interaction.user.data = { content, role };
-
-		return interaction.showModal(modal);
+		return beginLockPrompt(interaction, 'lock', 'all thread');
 	}
 
 	@PermissionLevel('Administrator', 'server')
 	private lockServer(interaction: RadonCommand.ChatInputCommandInteraction) {
-		const role = interaction.options.getRole('role') ?? interaction.guild.roles.everyone;
-		const deep = interaction.options.getBoolean('deep') ?? false;
-
-		if (!this.checkRole(role)) {
-			return interaction.reply('This role is integrated to a bot or higher than my highest role! Action cancelled.');
-		}
-
-		const content = `Successfully locked server for ${role}!\n\nIssues Found:`;
-
-		const modal = new ModalBuilder();
-		const ReasonInput = new TextInputBuilder()
-			.setCustomId('reason')
-			.setLabel('Reason for lock')
-			.setPlaceholder(`This will be sent in all channels (OPTIONAL)`)
-			.setRequired(false)
-			.setStyle(TextInputStyle.Paragraph);
-
-		const row = new ActionRowBuilder<TextInputBuilder>().setComponents(ReasonInput);
-
-		modal.setTitle('Lock').setComponents(row).setCustomId('@lock/server');
-
-		interaction.user.data = { content, role, deep };
-
-		return interaction.showModal(modal);
-	}
-
-	private isLocked(channel: GuildChannel | ThreadChannel, role?: Role) {
-		if (channel.isThread() && !channel.locked) return false;
-		if (!channel.isVoiceBased() && channel.permissionsFor(role!)?.has('SendMessages')) return false;
-		return !(channel.isVoiceBased() && channel.permissionsFor(role!)?.has('Connect'));
-	}
-
-	private checkRole(role: Role) {
-		if (role.tags?.botId) return false;
-		return role.position <= role.guild.members.me!.roles.highest.position;
-	}
-}
-
-type subcmd = 'text' | 'voice' | 'category' | 'thread' | 'server';
-type group = Exclude<subcmd, 'category' | 'server'>;
-
-declare module 'discord.js' {
-	interface User {
-		data: unknown;
+		return beginLockPrompt(interaction, 'lock', 'server');
 	}
 }
