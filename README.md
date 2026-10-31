@@ -50,6 +50,19 @@ At the moment I am not completely free but if you are interested in beta testing
 - [`Discord.js`][discord.js]: To interact with the Discord API
 - [`Sapphire`]: Framework used in Radon
 
+Run `bash scripts/setup.sh` after cloning. It installs the pinned Bun version in
+`~/.local/bin` when needed, installs locked dependencies, and generates the local
+Prisma client. Add `~/.local/bin` to your shell's `PATH` if it is not already there.
+Use the same command as the setup command for fresh cloud environments; an install
+in one running instance does not change the saved environment image. Set
+`RADON_BUN_INSTALL_DIR` to choose a different installation directory.
+
+Run `bun run check` before opening a pull request. CI runs formatting, type
+checking, the offline test suite, and opt-in database tests against a disposable
+local MongoDB replica set. Setup and checks do not log in to Discord
+or apply database schema changes. Running the bot requires your configured
+Discord and MongoDB credentials.
+
 ## Contributing
 
 To contribute to this repository, feel free to fork the repository and make your own changes. Once you have made your changes, you can submit a pull request.

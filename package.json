@@ -5,6 +5,7 @@
 	"main": "./src/index.ts",
 	"type": "module",
 	"private": true,
+	"packageManager": "bun@1.3.5",
 	"imports": {
 		"#constants": "./src/lib/utility/constants.ts",
 		"#config": "./src/lib/utility/config.ts",
@@ -13,7 +14,10 @@
 		"#root/*": "./src/*.ts"
 	},
 	"scripts": {
+		"setup": "bash scripts/setup.sh",
+		"db:generate": "prisma generate",
 		"test": "bun test",
+		"check": "bun run db:generate && bun run typecheck && bun test && bun run pretty",
 		"start": "NODE_ENV=production bun --watch .",
 		"dev": "NODE_ENV=development bun --watch .",
 		"release": "cj",
