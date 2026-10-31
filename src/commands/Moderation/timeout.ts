@@ -1,5 +1,5 @@
 import { Emojis } from '#constants';
-import { RadonCommand, Timestamp } from '#lib/structures';
+import { ModerationAction, RadonCommand, Timestamp } from '#lib/structures';
 import { PermissionLevels, RadonEvents, type TimeoutActionData } from '#lib/types';
 import { runAllChecks } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
@@ -32,7 +32,7 @@ export class UserCommand extends RadonCommand {
 		let time = interaction.options.getString('duration', true);
 		if (!isNaN(Number(time))) time += 's';
 		const duration = new Duration(time).offset;
-		if (isNaN(duration))
+		if (!Number.isFinite(duration) || duration < 0)
 			return interaction.editReply({
 				content: `${Emojis.Cross} Invalid duration! Valid examples: \`1d\`, \`1h\`, \`1m\`, \`1s\`\nTo remove a timeout just put \`0\` as the duration.`
 			});
@@ -54,7 +54,15 @@ export class UserCommand extends RadonCommand {
 		let content = `${Emojis.Confirm} ${member} has been timed out for ${new DurationFormatter().format(duration)}`;
 
 		const reason = interaction.options.getString('reason') ?? undefined;
-		await member.timeout(duration === 0 ? null : duration, reason);
+		try {
+			await new ModerationAction(interaction.guild).invoke(
+				{ moderator: interaction.member, target: member, action: 'timeout', reason, duration: new Timestamp(Date.now() + duration) },
+				{ removeTimeout: duration === 0 }
+			);
+		} catch (error) {
+			this.container.logger.error('Timeout failed:', error);
+			return interaction.editReply(`${Emojis.Cross} The timeout could not be updated. Please check my permissions and role position.`);
+		}
 
 		if (duration !== 0 && dm) {
 			await member
@@ -73,7 +81,7 @@ export class UserCommand extends RadonCommand {
 			url: reply.resource?.message?.url
 		};
 
-		if ((await interaction.guild.settings?.modlogs.modLogs_exist()) && duration !== 0) {
+		if (duration !== 0) {
 			this.container.client.emit(RadonEvents.ModAction, data);
 		}
 

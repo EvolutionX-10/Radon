@@ -1,5 +1,5 @@
 import { Emojis } from '#constants';
-import { RadonCommand } from '#lib/structures';
+import { ModerationAction, RadonCommand } from '#lib/structures';
 import { type BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
 import { runAllChecks, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
@@ -31,19 +31,24 @@ export class UserCommand extends RadonCommand {
 
 		let content = `${Emojis.Confirm} ${member.user.tag} has been kicked ${reason ? `for the following reason: ${reason}` : ''}`;
 
+		const kicked = await new ModerationAction(interaction.guild)
+			.invoke({ moderator: interaction.member, target: member, action: 'kick', reason })
+			.catch((error) => {
+				this.container.logger.error('Kick failed:', error);
+				return null;
+			});
+		if (!kicked) {
+			return interaction.editReply({
+				content: `Kick failed due to missing permissions, please contact support server if this persists!`
+			});
+		}
+
 		if (dm) {
 			await member
 				.send({
 					content: `You have been kicked from ${member.guild.name} ${reason ? `for the following reason: ${reason}` : ''}`
 				})
 				.catch(() => (content += `\n\n> ${Emojis.Cross} Couldn't DM member!`));
-		}
-
-		const kicked = await member.kick(reason).catch(() => null);
-		if (!kicked) {
-			return interaction.editReply({
-				content: `Kick failed due to missing permissions, please contact support server if this persists!`
-			});
 		}
 
 		const data: BaseModActionData = {
@@ -54,9 +59,7 @@ export class UserCommand extends RadonCommand {
 			url: reply.resource?.message?.url
 		};
 
-		if ((await interaction.guild.settings?.modlogs.modLogs_exist()) && kicked) {
-			this.container.client.emit(RadonEvents.ModAction, data);
-		}
+		this.container.client.emit(RadonEvents.ModAction, data);
 
 		return interaction.editReply(content);
 	}

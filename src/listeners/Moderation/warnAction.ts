@@ -9,7 +9,7 @@ import type { GuildMember } from 'discord.js';
 })
 export class UserListener extends Listener {
 	public override async run(member: GuildMember, severity: number, actions: WarnAction[]) {
-		const action = actions.sort((a, b) => b.severity - a.severity).find((e) => e.severity <= severity);
+		const action = [...actions].sort((a, b) => b.severity - a.severity).find((e) => e.severity <= severity);
 
 		if (!action) return;
 
@@ -21,11 +21,14 @@ export class UserListener extends Listener {
 			duration: action.action === 'timeout' ? new Timestamp(Date.now() + (action as TimeoutWarnAction).expiration) : undefined
 		};
 
-		await new ModerationAction(member.guild).invoke(data).catch(console.error);
-
-		if (await member.guild.settings?.modlogs.modLogs_exist()) {
-			this.container.client.emit(RadonEvents.ModAction, data);
+		try {
+			await new ModerationAction(member.guild).invoke(data);
+		} catch (error) {
+			this.container.logger.error(`Automated ${action.action} failed in guild ${member.guild.id} for member ${member.id}:`, error);
+			return;
 		}
+
+		this.container.client.emit(RadonEvents.ModAction, data);
 	}
 }
 

@@ -1,7 +1,6 @@
 import type { RadonCommand } from '#lib/structures';
 import { isAdmin, isGuildOwner, isModerator, isOwner } from '#lib/utility';
 import { UserError } from '@sapphire/framework';
-import type { GuildMember } from 'discord.js';
 import { registerSubcommandPermission } from '../structures/help/subcommandPermissions.js';
 
 export const PermissionLevel = (level: PermissionLevel, subcommand?: string) => {
@@ -17,12 +16,13 @@ export const PermissionLevel = (level: PermissionLevel, subcommand?: string) => 
 			const interaction = args[0];
 
 			const check = async () => {
-				const adminRoles = (await interaction.guild.settings?.roles.admins) ?? [];
-				const modRoles = (await interaction.guild.settings?.roles.mods) ?? [];
+				const roles = await interaction.guild.settings?.roles.snapshot();
+				const adminRoles = roles?.admins ?? [];
+				const modRoles = roles?.mods ?? [];
 
-				const admin = isAdmin(interaction.member as GuildMember) || interaction.member.roles.cache.some((r) => adminRoles.includes(r.id));
+				const admin = isAdmin(interaction.member) || interaction.member.roles.cache.some((r) => adminRoles.includes(r.id));
 
-				const mod = admin || isModerator(interaction.member) || interaction.member.roles.cache.some((r) => modRoles.includes(r.id));
+				const mod = isModerator(interaction.member, [...adminRoles, ...modRoles]);
 
 				const serverowner = isGuildOwner(interaction.member);
 

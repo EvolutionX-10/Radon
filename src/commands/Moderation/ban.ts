@@ -1,5 +1,5 @@
 import { Emojis } from '#constants';
-import { Confirmation, RadonCommand } from '#lib/structures';
+import { Confirmation, ModerationAction, RadonCommand } from '#lib/structures';
 import { type BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
 import { runAllChecks, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
@@ -95,15 +95,18 @@ export class UserCommand extends RadonCommand {
 			reason ? `for the following reason: __${reason}__` : ''
 		}`;
 
-		const ban = await interaction.guild.bans.create(user, { deleteMessageSeconds: 24 * 60 * 60 * days, reason }).catch(() => null);
+		const ban = await new ModerationAction(interaction.guild)
+			.invoke({ moderator: interaction.member, target: user, action: 'ban', reason }, { deleteMessageSeconds: 86_400 * days })
+			.catch((error) => {
+				this.container.logger.error('Ban failed:', error);
+				return null;
+			});
 
 		if (!ban) {
 			return interaction.editReply({
 				content: `${Emojis.Cross} Failed to ban user, please try again! If this persists, contact support server!`
 			});
 		}
-
-		const reply = await interaction.editReply(content);
 
 		if (dm) {
 			await user
@@ -118,12 +121,15 @@ export class UserCommand extends RadonCommand {
 			target: user,
 			reason,
 			action: 'ban',
-			url: reply.url
+			url: (
+				await interaction.editReply(content).catch((error) => {
+					this.container.logger.error('Could not send ban result:', error);
+					return null;
+				})
+			)?.url
 		};
 
-		if (await interaction.guild.settings?.modlogs.modLogs_exist()) {
-			this.container.client.emit(RadonEvents.ModAction, data);
-		}
+		this.container.client.emit(RadonEvents.ModAction, data);
 		return;
 	}
 }

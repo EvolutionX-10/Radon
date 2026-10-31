@@ -1,5 +1,5 @@
 import { Emojis } from '#constants';
-import { RadonCommand } from '#lib/structures';
+import { ModerationAction, RadonCommand } from '#lib/structures';
 import { type BaseModActionData, PermissionLevels, RadonEvents } from '#lib/types';
 import { runAllChecks, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
@@ -36,14 +36,22 @@ export class UserCommand extends RadonCommand {
 		const reason = interaction.options.getString('reason') ?? undefined;
 		const days = interaction.options.getInteger('days') ?? 1;
 
-		const { content: ctn, result } = runAllChecks(interaction.member, member, 'soft ban');
+		const { content: ctn, result } = runAllChecks(interaction.member, member, 'softban');
 		if (!result) return interaction.editReply(ctn);
 
 		let content = `${Emojis.Confirm} ${member} has been soft banned ${reason ? `for the following reason: ${reason}` : ''}`;
 
-		await member.ban({ deleteMessageSeconds: 24 * 60 * 60 * days, reason });
-
-		await interaction.guild.members.unban(member.id, reason);
+		try {
+			await new ModerationAction(interaction.guild).invoke(
+				{ moderator: interaction.member, target: member, action: 'softban', reason },
+				{ deleteMessageSeconds: 86_400 * days }
+			);
+		} catch (error) {
+			this.container.logger.error('Softban failed:', error);
+			return interaction.editReply(
+				`${Emojis.Cross} Softban did not complete. Check the ban list before retrying: the ban may have succeeded while the unban failed.`
+			);
+		}
 
 		if (dm) {
 			await member
@@ -61,9 +69,7 @@ export class UserCommand extends RadonCommand {
 			url: reply.resource?.message?.url
 		};
 
-		if (await interaction.guild.settings?.modlogs.modLogs_exist()) {
-			this.container.client.emit(RadonEvents.ModAction, data);
-		}
+		this.container.client.emit(RadonEvents.ModAction, data);
 
 		return interaction.editReply(content);
 	}

@@ -5,8 +5,8 @@ export function isAdmin(member: GuildMember): boolean {
 	return member.permissions.has('Administrator') || member.permissions.has('ManageGuild');
 }
 
-export function isModerator(member: GuildMember): boolean {
-	return isAdmin(member) || member.roles.cache.some((r) => r.name.toLowerCase().includes('moderator'));
+export function isModerator(member: GuildMember, configuredRoleIds: readonly string[] = []): boolean {
+	return isAdmin(member) || member.roles.cache.some((role) => configuredRoleIds.includes(role.id));
 }
 
 export function isGuildOwner(member: GuildMember): boolean {
