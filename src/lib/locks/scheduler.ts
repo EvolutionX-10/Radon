@@ -13,7 +13,7 @@ export function createLockExpiryWorker(client: RadonClient, prisma: PrismaClient
 			return prisma.channelLockSnapshot.findMany({
 				where: {
 					guildId: { in: [...client.guilds.cache.keys()] },
-					expiresAt: { lte: now },
+					expiresAt: { not: null, lte: now },
 					OR: [{ retryAfter: null }, { retryAfter: { isSet: false } }, { retryAfter: { lte: now } }]
 				},
 				orderBy: { expiresAt: 'asc' },

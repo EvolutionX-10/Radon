@@ -107,9 +107,9 @@ suite('MongoDB lock snapshot integration', () => {
 		expect(await store.find(target.id)).toBeNull();
 	});
 
-	function fakeRoleClient() {
+	function fakeRoleClient(id = 'guild') {
 		const role = {
-			id: 'guild',
+			id,
 			managed: false,
 			permissions: new PermissionsBitField(PermissionsBitField.Flags.SendMessages),
 			setPermissions: async (bits: bigint) => {
@@ -118,11 +118,11 @@ suite('MongoDB lock snapshot integration', () => {
 			}
 		};
 		const guild = {
-			id: 'guild',
+			id,
 			roles: { fetch: async () => role },
 			members: { me: { permissions: new PermissionsBitField(PermissionsBitField.Flags.ManageRoles) } }
 		};
-		const client = { guilds: { cache: new Map([['guild', guild]]) } } as unknown as RadonClient;
+		const client = { guilds: { cache: new Map([[id, guild]]) } } as unknown as RadonClient;
 		return { role, guild, client };
 	}
 	it('renews a lease only while the same worker still owns it', async () => {
@@ -145,6 +145,33 @@ suite('MongoDB lock snapshot integration', () => {
 		expect(f.role.permissions.has('SendMessages')).toBe(true);
 		expect(await prisma.channelLockSnapshot.findUnique({ where: { id: target.id } })).toBeNull();
 	});
+
+	it('never restores permanent or future locks when scanning overdue nullable dates', async () => {
+		const permanent = fakeRoleClient('permanent');
+		const expired = fakeRoleClient('expired');
+		const future = fakeRoleClient('future');
+		const service = new LockService(lockStore(prisma));
+		await service.lock(roleTarget(permanent.guild as never, 'permanent'), 'manual');
+		await service.lock(roleTarget(expired.guild as never, 'expired'), 'elapsed', new Date(Date.now() - 1000));
+		await service.lock(roleTarget(future.guild as never, 'future'), 'later', new Date(Date.now() + 60_000));
+		const client = {
+			guilds: {
+				cache: new Map([
+					['permanent', permanent.guild],
+					['expired', expired.guild],
+					['future', future.guild]
+				])
+			}
+		} as unknown as RadonClient;
+		const errors: unknown[] = [];
+		await createLockExpiryWorker(client, prisma, (error) => errors.push(error)).run();
+		expect(errors).toEqual([]);
+		expect(permanent.role.permissions.has('SendMessages')).toBe(false);
+		expect(expired.role.permissions.has('SendMessages')).toBe(true);
+		expect(future.role.permissions.has('SendMessages')).toBe(false);
+		expect(await prisma.channelLockSnapshot.count()).toBe(2);
+	});
+
 	it('retains failed expiry snapshots and persists a five-minute retry backoff', async () => {
 		const f = fakeRoleClient();
 		const target = roleTarget(f.guild as never, 'guild');
