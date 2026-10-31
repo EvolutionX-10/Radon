@@ -36,6 +36,8 @@ export interface RadonEnv {
 
 	DISCORD_TOKEN?: string;
 	MONGO?: string;
+	RADON_AUTOMOD_CONTENT_ENABLED?: BooleanString;
+	RADON_AUTOMOD_MEMBERS_ENABLED?: BooleanString;
 
 	VOID_BOT_TOKEN?: string;
 	TOP_BOT_TOKEN?: string;
