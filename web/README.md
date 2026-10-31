@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Radon website
 
-## Getting Started
+Public, responsive Next.js site for Radon. The website is independently installed and deployed from `web/`; it never imports the bot runtime, connects to the bot database, or requires bot credentials.
 
-First, run the development server:
+## Develop
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+From `web/`, with Bun installed:
+
+```sh
+bun install --frozen-lockfile
+bun run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The UI uses shadcn/ui with Radix primitives, Tailwind CSS 4, Lucide icons, and locally bundled Next.js fonts. `components.json` is the shadcn configuration. Custom visual styles live in `app/globals.css`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Check
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```sh
+bun run lint
+bun run typecheck
+bun run build
+bunx playwright install chromium
+bun run test:e2e
+```
 
-## Learn More
+Browser checks run against the production build on port 4173 and cover desktop and mobile layouts, command search and dialogs, the demo interaction, navigation, legal/guide routes, share assets, and automated WCAG A/AA checks. They also check widths from 320px to 1920px. For an existing Chromium installation, set `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` to its path. In restricted environments, use `NEXT_TELEMETRY_DISABLED=1` for Next.js commands.
 
-To learn more about Next.js, take a look at the following resources:
+Browser test files use `*.pw.ts` so the bot's root `bun test` does not discover them. They make no live bot, voting, moderation, or redemption requests. Test outputs are ignored by `web/.gitignore`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Content
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `/`: features, interactive illustrative preview, supported games, searchable command examples, optional voting perks, and FAQ.
+- `/guide`: setup, account management, all three supported games, Supporter Pass behavior, opt-in alerts, staff posting, and troubleshooting.
+- `/terms-of-service` and `/privacy-policy`: legal and data-handling information.
+- `/opengraph-image` and `/icon.svg`: self-contained social preview and favicon.
 
-## Deploy on Vercel
+`lib/site.ts` centralizes public links, game display data, command examples, and FAQs. The guide and privacy copy reflect the multi-game and vote-reward behavior documented in PR #591 (`docs/player-guide.md`). Copy deliberately avoids live server-count claims, uptime guarantees, valid-coupon claims, or automatic redemption promises. The preview CLAIM button changes local demo state only.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Future feature changes should update public copy here in the same PR. Keep the public website independent of runtime game modules and credentials; a static site cannot infer new bot behavior automatically.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Vercel
+
+Use the existing Vercel project, with **Root Directory: `web`**, framework Next.js, install command `bun install --frozen-lockfile`, and build command `bun run build`. No environment variables or backend services are required. `next.config.ts` scopes bundling and output tracing to this directory. The existing project URL is centralized in `lib/site.ts` for social metadata; update it if the primary domain changes.
+
+This redesign is stacked on `codex/game-rewards` (PR #591). Merge the website PR into that branch first, then merge #591 into `main` when game testing is complete. Keep production on the current branch until then; use the Vercel branch preview to review the redesign.
