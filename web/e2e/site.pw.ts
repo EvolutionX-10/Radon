@@ -166,7 +166,7 @@ test('updates are readable, linked, and reachable through navigation', async ({ 
 });
 
 test('public pages have unique crawlable metadata and working discovery files', async ({ page, request }) => {
-	const origin = 'https://radon-bot.vercel.app/';
+	const origin = 'https://radon-bot.vercel.app';
 	const titles = new Set<string>();
 	const descriptions = new Set<string>();
 	for (const route of ['/', '/guide', '/guide/server', '/updates', '/terms-of-service', '/privacy-policy']) {
