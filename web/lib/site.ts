@@ -1,6 +1,6 @@
 // Public website content only. Keep bot runtime imports and credentials out of web/.
 export const site = {
-	url: 'https://radon-lake-phi.vercel.app',
+	url: 'https://radon-bot.vercel.app',
 	invite: 'https://discord.com/api/oauth2/authorize?client_id=944833303226236989&scope=applications.commands+bot&permissions=543276137727',
 	github: 'https://github.com/EvolutionX-10/Radon',
 	topgg: 'https://top.gg/bot/944833303226236989/vote',
