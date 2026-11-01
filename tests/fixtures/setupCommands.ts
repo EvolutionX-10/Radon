@@ -19,7 +19,7 @@ try {
 		[Debug, 'debug'],
 		[Doctor, 'doctor']
 	] as const) {
-		const command = new Constructor({ name, path: `/virtual/Admin/${name}.ts`, root: '/virtual', store });
+		const command = new Constructor({ name, path: `/virtual/Admin/${name}.ts`, root: '/virtual', store }, {});
 		assert.equal(command.name, name);
 		assert.equal(command.permissionLevel, 6);
 		assert.equal(command.supportsChatInputCommands(), true);

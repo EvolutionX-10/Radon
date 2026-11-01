@@ -6,7 +6,7 @@ import { Owners } from '../../src/lib/utility/constants.js';
 
 // A real Sapphire client changes singleton stores and module initialization state.
 // Run this fixture in its own process so other command fixtures stay independent.
-const client = new RadonClient();
+const client = new RadonClient<true>();
 const collector = new InteractionCollector(client, { time: 5000 });
 let collectorActions = 0;
 let handlerActions = 0;

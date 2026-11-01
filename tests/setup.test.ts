@@ -9,6 +9,7 @@ import { diagnosticPages } from '../src/lib/setup/diagnostics.js';
 import { componentMessage } from '../src/lib/presentation/components.js';
 import { setupFixture, ids } from './fixtures/setup.js';
 import { displayText } from './fixtures/presentation.js';
+import { fileURLToPath } from 'bun';
 
 const open = (f: ReturnType<typeof setupFixture>) => Setup.prototype.chatInputRun.call(f.commandContext as any, f.interaction);
 async function click(f: ReturnType<typeof setupFixture>, id: string, values?: string[]) {
@@ -43,7 +44,7 @@ function saved(f: ReturnType<typeof setupFixture>) {
 
 describe('setup draft, save, and component authorization', () => {
 	it('loads all three commands through actual Sapphire constructors and inherited decorators', async () => {
-		const child = Bun.spawn([process.execPath, new URL('./fixtures/setupCommands.ts', import.meta.url).pathname], {
+		const child = Bun.spawn([process.execPath, fileURLToPath(new URL('./fixtures/setupCommands.ts', import.meta.url))], {
 			stdout: 'pipe',
 			stderr: 'pipe'
 		});
