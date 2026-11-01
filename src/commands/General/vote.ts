@@ -13,7 +13,7 @@ export class UserCommand extends RadonCommand {
 		);
 	}
 	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
-		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+		await interaction.deferReply();
 		try {
 			const checks = await voteService(this.container.prisma, '944833303226236989').check(interaction.user.id);
 			return interaction.editReply({

@@ -8,17 +8,20 @@ import { GuildMember, AuditLogEvent } from 'discord.js';
 })
 export class UserListener extends Listener {
 	public async run(oldMember: GuildMember, newMember: GuildMember) {
-		if (oldMember.partial) oldMember = await oldMember.fetch();
-		if (newMember.partial) newMember = await newMember.fetch();
+		let fetchedOldMember,
+			fetchedNewMember: GuildMember | null = null;
+		if (oldMember.partial) fetchedOldMember = await oldMember.fetch().catch(() => null);
+		if (newMember.partial) fetchedNewMember = await newMember.fetch().catch(() => null);
 
+		if (!fetchedOldMember || !fetchedNewMember) return;
 		const conditions =
-			(oldMember.nickname && !newMember.nickname) || // * Member removed nickname
-			(!oldMember.nickname && newMember.nickname) || // * Member added Nickname
-			(oldMember.nickname && newMember.nickname && oldMember.nickname !== newMember.nickname); // * Member changed nickname
+			(fetchedOldMember.nickname && !fetchedNewMember.nickname) || // * Member removed nickname
+			(!fetchedOldMember.nickname && fetchedNewMember.nickname) || // * Member added Nickname
+			(fetchedOldMember.nickname && fetchedNewMember.nickname && fetchedOldMember.nickname !== fetchedNewMember.nickname); // * Member changed nickname
 
 		if (!conditions) return;
 
-		const logs = await oldMember.guild
+		const logs = await fetchedOldMember.guild
 			.fetchAuditLogs({
 				type: AuditLogEvent.MemberUpdate,
 				limit: 1
@@ -31,11 +34,11 @@ export class UserListener extends Listener {
 
 		if (entry.executor?.id !== entry.target?.id) return;
 
-		const nicks = await oldMember.guild.settings?.nicknames.get();
+		const nicks = await fetchedOldMember.guild.settings?.nicknames.get();
 
 		if (!nicks || !nicks.freezed.length) return;
-		if (!nicks.freezed.includes(oldMember.id)) return;
+		if (!nicks.freezed.includes(fetchedOldMember.id)) return;
 
-		await newMember.setNickname(oldMember.displayName, 'Freezed Nickname').catch(() => null);
+		await fetchedNewMember.setNickname(fetchedOldMember.displayName, 'Freezed Nickname').catch(() => null);
 	}
 }

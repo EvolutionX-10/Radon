@@ -2,7 +2,7 @@ import { ButtonBuilder, ButtonStyle } from 'discord.js';
 import { card, divider, text } from '#lib/presentation/components.js';
 import type { UpdateEntry } from './catalogue.js';
 
-export const updatesUrl = 'https://radon-lake-phi.vercel.app/updates';
+export const updatesUrl = 'https://radon-bot.vercel.app/updates';
 
 export function updateCard(entry: UpdateEntry) {
 	const panel = card(entry.title, `${entry.date} · What's new in Radon`);
