@@ -1,5 +1,5 @@
 import { v2, messageText } from '../../lib/presentation/components.js';
-import { RadonGuildId, TestServerGuildIds } from '#constants';
+import { Emojis, RadonGuildId, TestServerGuildIds } from '#constants';
 import { Confirmation, RadonCommand, Timestamp } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
 import { wait } from '#lib/utility';
@@ -153,7 +153,7 @@ export class UserCommand extends RadonCommand {
 					if (webhook?.token) {
 						await webhook
 							.send({
-								content: `✅ Deleted role: **${role.name}** (${role.id}) from **${guild.name}**`
+								content: `${Emojis.Confirm} Deleted role: **${role.name}** (${role.id}) from **${guild.name}**`
 							})
 							.catch(() => null);
 					}

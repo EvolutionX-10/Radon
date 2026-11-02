@@ -1,7 +1,6 @@
 import { describe, expect, it, mock } from 'bun:test';
 import { ButtonStyle, ComponentType, IntentsBitField, MessageFlags, PermissionsBitField, SlashCommandBuilder } from 'discord.js';
 import { UserCommand as Setup } from '../src/commands/Admin/setup.js';
-import { UserCommand as Debug } from '../src/commands/Admin/debug.js';
 import { UserCommand as Doctor } from '../src/commands/Admin/doctor.js';
 import { draftConfiguration, readConfiguration, saveSetup } from '../src/lib/setup/configuration.js';
 import { configurationPages, setupScreen } from '../src/lib/setup/presentation.js';
@@ -357,7 +356,7 @@ describe('read-only configuration and shared diagnostics', () => {
 	it('paginates and refreshes private reports, then closes on revoked access', async () => {
 		const f = setupFixture();
 		saved(f);
-		await Debug.prototype.chatInputRun.call(f.commandContext as any, f.interaction);
+		await Doctor.prototype.chatInputRun.call(f.commandContext as any, f.interaction);
 		expect(f.interaction.deferReply).toHaveBeenCalledWith({ flags: MessageFlags.Ephemeral });
 		const next = { ...f.component('unused'), customId: 'admin-view:next' };
 		await f.handlers.get('collect')!(next);
@@ -372,10 +371,9 @@ describe('read-only configuration and shared diagnostics', () => {
 		expect(displayText(f.edits.at(-1))).toContain('Report closed');
 		expect(f.prisma.$transaction).not.toHaveBeenCalled();
 	});
-	it('registers guild-only setup view/start and both diagnostic names with administrator access', () => {
+	it('registers guild-only setup view/start and the doctor command with administrator access', () => {
 		for (const [Command, name] of [
 			[Setup, 'setup'],
-			[Debug, 'debug'],
 			[Doctor, 'doctor']
 		] as const) {
 			let data: any;
@@ -391,6 +389,5 @@ describe('read-only configuration and shared diagnostics', () => {
 			expect(data.contexts).toEqual([0]);
 			if (name === 'setup') expect(data.options.map((o: any) => o.name)).toEqual(['start', 'view']);
 		}
-		expect(Doctor.prototype.chatInputRun).toBe(Debug.prototype.chatInputRun);
 	});
 });

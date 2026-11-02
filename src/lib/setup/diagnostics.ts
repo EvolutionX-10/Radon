@@ -1,3 +1,4 @@
+import { Emojis } from '#constants';
 import type { PrismaClient } from '@prisma/client';
 import { ChannelType, type Guild } from 'discord.js';
 import { card, divider, safe, text } from '../presentation/components.js';
@@ -11,7 +12,8 @@ async function read<T>(run: () => Promise<T>): Promise<Read<T>> {
 	}
 }
 const label = (name: string) => name.replace(/([a-z])([A-Z])/g, '$1 $2');
-const line = (state: 'ok' | 'warn' | 'info' | 'unknown', value: string) => `${{ ok: '✓', warn: '⚠', info: '•', unknown: '?' }[state]} ${value}`;
+const line = (state: 'ok' | 'warn' | 'info' | 'unknown', value: string) =>
+	`${{ ok: Emojis.Confirm, warn: '⚠', info: '•', unknown: '?' }[state]} ${value}`;
 
 /** Read-only, guild-scoped evidence. Missing data is unknown, never a healthy default. */
 export async function diagnosticPages(prisma: PrismaClient, guild: Guild) {

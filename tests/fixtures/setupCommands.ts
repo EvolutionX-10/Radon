@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import { SapphireClient } from '@sapphire/framework';
 import { SlashCommandBuilder } from 'discord.js';
 import { UserCommand as Setup } from '../../src/commands/Admin/setup.js';
-import { UserCommand as Debug } from '../../src/commands/Admin/debug.js';
 import { UserCommand as Doctor } from '../../src/commands/Admin/doctor.js';
 
 // Constructor/decorator inheritance uses Sapphire's global stores: isolate this fixture.
@@ -16,7 +15,6 @@ try {
 	const store = client.stores.get('commands');
 	for (const [Constructor, name] of [
 		[Setup, 'setup'],
-		[Debug, 'debug'],
 		[Doctor, 'doctor']
 	] as const) {
 		const command = new Constructor({ name, path: `/virtual/Admin/${name}.ts`, root: '/virtual', store }, {});
@@ -41,7 +39,6 @@ try {
 				['start', 'view']
 			);
 	}
-	assert.equal(Doctor.prototype.chatInputRun, Debug.prototype.chatInputRun);
 } finally {
 	await client.destroy();
 }

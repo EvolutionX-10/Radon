@@ -32,14 +32,20 @@ Thresholds, domains and exemptions remain configurable through `/automod`.
 destinations and custom protection. Back/Next and Refresh work without opening
 another editing session. Native rule details remain available in `/automod status`.
 
-`/doctor` and the existing `/debug` share the same private, read-only diagnostic
-report. It checks saved roles and destinations, feature-specific bot permissions,
-actual role hierarchy, visible text-channel restrictions, runtime intent requests,
+`/doctor` provides a private, read-only diagnostic report. It replaces `/debug`
+as the single command for server readiness checks. It checks saved roles and
+destinations, feature-specific bot permissions, actual role hierarchy,
+visible text-channel restrictions, runtime intent requests,
 Discord application access flags, native/custom AutoMod, and overdue scheduled
 recovery. Failed reads are shown as unknown. Empty optional settings, role counts
 alone, and deliberately hidden channels are not reported as errors. Application
 flags are not a claim of Developer Portal approval. Recovery checks use only the
 current guild and exclude active leases and future retry backoff.
+
+When deploying this consolidation, the bot owner should use `/slash` to delete
+any previously registered `/debug` command (Global, and Guild if present).
+Sapphire registers `/doctor` by name, but the current registration policy does
+not automatically remove commands whose source files were deleted.
 
 All controls are user-bound; administrator access is refreshed on every action.
 Edits are serialized so rapid clicks and expiry cannot race. One editing session
@@ -64,5 +70,5 @@ or production credentials.
 
 Before deployment, visually check all four steps on desktop and mobile, selected
 defaults, Back/Cancel/expiry, missing permissions, removed roles/channels, skipped
-destinations, observation alerts, `/setup view`, `/doctor`, and `/debug` in a test
+destinations, observation alerts, `/setup view` and `/doctor` in a test
 server. Command registration now exposes `/setup start` and `/setup view`.

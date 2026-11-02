@@ -200,7 +200,7 @@ export function configurationPages(current: Configuration, guild: Guild): Contai
 	text(logs, `**Moderation logs:** ${channel(current.settings?.modLogChannel)}\n**Member reports:** ${channel(current.reports?.channelId)}`);
 	text(
 		logs,
-		'Missing or inaccessible destinations are checked by `/doctor` or `/debug`. Viewing configuration never changes channels, permissions, or settings.'
+		'Missing or inaccessible destinations are checked by `/doctor`. Viewing configuration never changes channels, permissions, or settings.'
 	);
 	const protection = card('Current configuration · Protection');
 	const config = current.automod;
@@ -216,7 +216,7 @@ export function configurationPages(current: Configuration, guild: Guild): Contai
 	);
 	for (const panel of [staff, logs, protection]) {
 		divider(panel);
-		text(panel, 'Change settings with `/setup`. Check readiness with `/doctor` or `/debug`.');
+		text(panel, 'Change settings with `/setup`. Check readiness with `/doctor`.');
 	}
 	return [staff, logs, protection];
 }

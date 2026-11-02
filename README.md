@@ -27,7 +27,7 @@ Version **3.0.0** · V3 preview. Four years after the first commit in February 2
 
 Use `/setup start` for a private guided server setup, or `/setup view` to inspect
 saved roles, log/report channels, and protection without changing them. `/doctor`
-and `/debug` share a private readiness report with actionable permission, role,
+provides a private readiness report with actionable permission, role,
 intent, and scheduled-recovery checks. See the [setup guide](docs/setup.md).
 
 Run `/help` in a server to open a private Components V2 command browser. Choose a category or use First, Back, Next, and Last to browse commands and their usage. `<argument>` means required and `[argument]` means optional. Controls expire after five minutes; run `/help` again to refresh the list.

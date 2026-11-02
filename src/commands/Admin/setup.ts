@@ -166,7 +166,7 @@ export class UserCommand extends RadonCommand {
 									summary({ ...draft, log: result.logId ? 'existing' : 'none', logChannelId: result.logId })
 								);
 								if (result.notes.length) text(panel, result.notes.join('\n'));
-								text(panel, 'View settings with `/setup view`. Check permissions and readiness with `/doctor` or `/debug`.');
+								text(panel, 'View settings with `/setup view`. Check permissions and readiness with `/doctor`.');
 								await i.editReply(componentMessage(panel));
 							} catch (error) {
 								logError(error);

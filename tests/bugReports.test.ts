@@ -8,8 +8,8 @@ import { bugInbox, bugReportCard, bugWarning } from '../src/lib/bugs/presentatio
 import { allowBotInteraction } from '../src/lib/bugs/access.js';
 import { UserCommand as BugCommand } from '../src/commands/General/bug.js';
 import { UserCommand as BugReportsCommand } from '../src/commands/Core/bugreports.js';
-import { ButtonHandler } from '../src/interaction-handlers/buttons/bugReport.js';
-import { ModalHandler } from '../src/interaction-handlers/modals/bugReport.js';
+import { ButtonHandler } from '../src/interaction-handlers/buttons/bugReportOpen.js';
+import { ModalHandler } from '../src/interaction-handlers/modals/bugReportSubmit.js';
 import { UserPrecondition as BlacklistPrecondition } from '../src/preconditions/global/Blacklist.js';
 import { UserListener as CommandLog } from '../src/listeners/Webhooks/commandRun.js';
 import { displayText } from './fixtures/presentation.js';
@@ -31,6 +31,13 @@ const record = {
 afterEach(() => mock.restore());
 
 describe('private bug reporting validation and authorization', () => {
+	it('loads and dispatches the warning button and submission modal together', () => {
+		const result = spawnSync(process.execPath, [fileURLToPath(new URL('./fixtures/bugHandlers.ts', import.meta.url))], {
+			encoding: 'utf8',
+			timeout: 10_000
+		});
+		expect({ status: result.status, error: result.error?.message, stderr: result.stderr }).toEqual({ status: 0, error: undefined, stderr: '' });
+	});
 	it('shows a firm abuse warning before opening a user-bound report form', async () => {
 		const reply = mock(async () => null);
 		await BugCommand.prototype.chatInputRun.call({} as any, { user: { id: reporterId }, reply } as any);
