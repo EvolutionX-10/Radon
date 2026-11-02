@@ -1,10 +1,10 @@
-import type { GuildSettings } from '#lib/structures';
-import { getSubcommandPermissions } from '../help/subcommandPermissions.js';
-import type { GuildMessage } from '#lib/types';
-import { PermissionLevels } from '#lib/types';
+import type { GuildSettings } from '#lib/structures/classes/GuildSettings.js';
+import { getSubcommandPermissions } from '#lib/structures/help/subcommandPermissions.js';
+import type { GuildMessage } from '#lib/types/Discord.js';
+import { PermissionLevels } from '#lib/types/permissionLevels.js';
 import {
-	ApplicationCommandRegistry,
-	Args as SapphireArgs,
+	type ApplicationCommandRegistry,
+	type Args as SapphireArgs,
 	type ChatInputCommandContext,
 	Command,
 	CommandOptionsRunTypeEnum,
@@ -14,13 +14,13 @@ import {
 	UserError
 } from '@sapphire/framework';
 import {
-	AutocompleteInteraction,
+	type AutocompleteInteraction,
 	PermissionsBitField,
 	PermissionFlagsBits,
-	ChatInputCommandInteraction as ChatInputInteraction,
-	ContextMenuCommandInteraction as CTXMenuCommandInteraction,
-	UserContextMenuCommandInteraction as UserCTXMenuCommandInteraction,
-	MessageContextMenuCommandInteraction as MessageCTXCommandInteraction
+	type ChatInputCommandInteraction as ChatInputInteraction,
+	type ContextMenuCommandInteraction as CTXMenuCommandInteraction,
+	type UserContextMenuCommandInteraction as UserCTXMenuCommandInteraction,
+	type MessageContextMenuCommandInteraction as MessageCTXCommandInteraction
 } from 'discord.js';
 export abstract class RadonCommand extends Command {
 	/** Method-level guards registered by PermissionLevel for help discovery. */

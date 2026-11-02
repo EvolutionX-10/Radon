@@ -39,8 +39,8 @@ export interface RadonEnv {
 	RADON_AUTOMOD_CONTENT_ENABLED?: BooleanString;
 	RADON_AUTOMOD_MEMBERS_ENABLED?: BooleanString;
 
-	VOID_BOT_TOKEN?: string;
 	TOP_BOT_TOKEN?: string;
+	DBL_BOT_TOKEN?: string;
 
 	REDIS_PORT?: string;
 	REDIS_PASSWORD?: string;

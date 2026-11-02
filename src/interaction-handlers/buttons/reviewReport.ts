@@ -1,6 +1,7 @@
+import { v2 } from '../../lib/presentation/components.js';
 import { ApplyOptions } from '@sapphire/decorators';
 import { InteractionHandler, InteractionHandlerTypes } from '@sapphire/framework';
-import { ButtonInteraction, MessageFlags } from 'discord.js';
+import { ButtonInteraction, MessageFlags, ComponentType } from 'discord.js';
 import { isModerationStaff } from '../../lib/moderation/authorization.js';
 import { ModerationReports } from '../../lib/moderation/reports.js';
 import { ModerationAction } from '../../lib/structures/classes/ModerationAction.js';
@@ -18,13 +19,13 @@ export class UserHandler extends InteractionHandler {
 		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 		const moderator = await interaction.guild.members.fetch({ user: interaction.user.id, force: true });
 		if (!(await isModerationStaff(moderator, this.container.prisma)))
-			return interaction.editReply('Only configured moderation staff can review reports.');
+			return interaction.editReply(v2('Only configured moderation staff can review reports.', 'Report review'));
 		const report = await this.container.prisma.moderationReport.findFirst({ where: { id: result.id, guildId: interaction.guildId! } });
 		if (!report || report.reviewMessageId !== interaction.message.id || interaction.message.author.id !== interaction.client.user.id)
-			return interaction.editReply('This report message is no longer valid.');
+			return interaction.editReply(v2('This report message is no longer valid.', 'Report review'));
 		const reports = new ModerationReports(this.container.prisma);
 		if (!(await reports.claim(interaction.guildId!, report.id, moderator.id, result.action)))
-			return interaction.editReply('This report is already reviewed or another moderator is reviewing it.');
+			return interaction.editReply(v2('This report is already reviewed or another moderator is reviewing it.', 'Report review'));
 		let performed = false;
 		let attempted = false;
 		try {
@@ -52,18 +53,40 @@ export class UserHandler extends InteractionHandler {
 			}
 			if (!(await reports.finish(interaction.guildId!, report.id, moderator.id, result.action === 'timeout' ? 'actioned' : 'dismissed')))
 				throw new Error('Report claim changed before completion');
-			await interaction.message.edit({ components: [] }).catch(() => null);
-			return interaction.editReply(result.action === 'timeout' ? 'Member timed out for 10 minutes. Report resolved.' : 'Report dismissed.');
+			if (interaction.message.flags?.has(MessageFlags.IsComponentsV2)) {
+				const disable = (component: any): any => {
+					const data = component.toJSON?.() ?? component;
+					return {
+						...data,
+						...(data.type === ComponentType.Button && data.custom_id?.startsWith('report:') ? { disabled: true } : {}),
+						...(data.type === ComponentType.TextDisplay && data.content?.startsWith('## Message report')
+							? {
+									content: `## Message report\n**${result.action === 'timeout' ? 'actioned' : 'dismissed'}** · Reviewed by <@${moderator.id}>`
+								}
+							: {}),
+						...(data.components ? { components: data.components.map(disable) } : {})
+					};
+				};
+				await interaction.message
+					.edit({ components: interaction.message.components.map(disable), allowedMentions: { parse: [] } })
+					.catch(() => null);
+			} else await interaction.message.edit({ components: [] }).catch(() => null);
+			return interaction.editReply(
+				v2(result.action === 'timeout' ? 'Member timed out for 10 minutes. Report resolved.' : 'Report dismissed.', 'Report review')
+			);
 		} catch (error) {
 			// Once timeout execution starts, network errors may hide a successful action. Keep its claim locked.
 			if (!attempted) await reports.reset(interaction.guildId!, report.id, moderator.id);
 			this.container.logger.error('Report review failed', error);
 			return interaction.editReply(
-				performed
-					? 'The timeout completed, but saving the report outcome failed. Ask an administrator to review it before retrying.'
-					: attempted
-						? 'The timeout outcome could not be confirmed. The report remains in review. Inspect the member before an administrator resets it.'
-						: 'The action failed. The report remains pending.'
+				v2(
+					performed
+						? 'The timeout completed, but saving the report outcome failed. Ask an administrator to review it before retrying.'
+						: attempted
+							? 'The timeout outcome could not be confirmed. The report remains in review. Inspect the member before an administrator resets it.'
+							: 'The action failed. The report remains pending.',
+					'Report review'
+				)
 			);
 		}
 	}

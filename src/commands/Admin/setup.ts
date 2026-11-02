@@ -1,466 +1,211 @@
-import { Color } from '#constants';
-import { Button, Embed, RadonCommand, Row } from '#lib/structures';
-import { PermissionLevels } from '#lib/types';
-import { mins, sec } from '#lib/utility';
 import { ApplyOptions } from '@sapphire/decorators';
-import { PermissionFlagsBits } from 'discord-api-types/v9';
-import {
-	MessageComponentInteraction,
-	ButtonStyle,
-	ChannelType,
-	Message,
-	type OverwriteResolvable,
-	OverwriteType,
-	TextChannel,
-	RoleSelectMenuBuilder,
-	Role,
-	Collection,
-	type APIRole,
-	ChannelSelectMenuBuilder,
-	InteractionContextType,
-	MessageFlags
-} from 'discord.js';
+import { InteractionContextType, MessageFlags, PermissionFlagsBits } from 'discord.js';
+import { RadonCommand } from '../../lib/structures/commands/RadonCommand.js';
+import { PermissionLevels } from '../../lib/types/permissionLevels.js';
+import { card, componentMessage, text } from '../../lib/presentation/components.js';
+import { draftConfiguration, readConfiguration, requireSetupAdmin, saveSetup, validateSetup } from '../../lib/setup/configuration.js';
+import { availableProtection, configurationPages, setupScreen, summary } from '../../lib/setup/presentation.js';
+import { openAdminBrowser } from '../../lib/setup/browser.js';
+
+// Prevent two local wizards from editing a guild together. Transactions also reject
+// stale reviewed snapshots across processes; opening the read-only view is unrestricted.
+const sessions = new Map<string, symbol>();
 
 @ApplyOptions<RadonCommand.Options>({
-	cooldownDelay: sec(60),
-	cooldownLimit: 2,
-	description: `Easy and interactive setup for Radon`,
+	description: 'Set up Radon or view the saved server configuration',
+	requiredClientPermissions: [],
 	permissionLevel: PermissionLevels.Administrator
 })
 export class UserCommand extends RadonCommand {
-	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
-		let stage = 0;
-		let interactionResponse = await interaction.reply({
-			embeds: [this.welcome()],
-			withResponse: true,
-			components: [
-				new Row<Button>()._components([
-					new Button() //
-						._customId('not-ready')
-						._label('I am not ready for this maze')
-						._style(ButtonStyle.Secondary)
-						._emoji('<:pepeOhno:891375539019976744>'),
-					new Button() //
-						._customId('start')
-						._label("Let's get started!")
-						._style(ButtonStyle.Secondary)
-						._emoji('<a:poggershype:879074649781174272>')
-				])
-			]
-		});
-
-		const msg_id = interactionResponse.interaction.responseMessageId;
-		if (!msg_id) return;
-		let msg = (await interaction.channel?.messages.fetch(msg_id)) as Message<boolean>;
-		if (!msg) return;
-
-		const collector = msg.createMessageComponentCollector({ time: mins(3) });
-
-		// --------------------------------------
-		let modRoles: Collection<string, Role | APIRole>;
-		let adminRoles: Collection<string, Role | APIRole>;
-		let modLogChannel: TextChannel | undefined;
-		// --------------------------------------
-
-		collector.on('collect', async (i) => {
-			if (i.user.id !== interaction.user.id) {
-				await i.followUp({
-					content: `This maze isn't for you mate!`,
-					flags: MessageFlags.Ephemeral
-				});
-				return;
-			}
-
-			switch (i.customId) {
-				case 'not-ready':
-					await i.update({
-						content: `No issues! You can do it whenever you are ready!`,
-						embeds: [],
-						components: []
-					});
-					collector.stop('not-ready');
-					return;
-
-				case 'start':
-					collector.resetTimer();
-					stage = 1;
-					await this.step1(i, msg, stage);
-					break;
-
-				case 'mod_roles':
-					stage = 2;
-					collector.resetTimer();
-					if (!i.isRoleSelectMenu()) break;
-					modRoles = i.roles;
-					msg = await this.step2(i, msg, stage);
-					break;
-
-				case 'admin_roles':
-					stage = 3;
-					collector.resetTimer();
-					if (!i.isRoleSelectMenu()) break;
-					adminRoles = i.roles;
-					if (adminRoles.some((r) => modRoles.has(r.id))) {
-						await i.reply({
-							content: `Moderation roles and Administration roles cannot be the same!`,
-							flags: MessageFlags.Ephemeral
-						});
-						break;
-					}
-					msg = await this.step3(i, msg, stage);
-					break;
-
-				case 'retry_modlog':
-					collector.resetTimer();
-					modLogChannel = undefined;
-					msg = await this.step3(i, msg, stage);
-					break;
-
-				// @ts-expect-error Falling through is intentional to avoid code duplication
-				case 'modlog_channel':
-					if (!i.isChannelSelectMenu()) break;
-					modLogChannel = i.channels.first() as TextChannel;
-				case 'confirm_modlog':
-					stage = 4;
-					const edit = await modLogChannel!
-						.edit({
-							permissionOverwrites: permissions(
-								!modLogChannel!.permissionsFor(interaction.guild.roles.everyone).has(PermissionFlagsBits.ViewChannel)
-							)
-						})
-						.catch(async () => {
-							i.channel &&
-								i.channel.isSendable() &&
-								(await i.channel.send(
-									`I am unable to edit permissions of ${modLogChannel}. Please grant me admin permission or click on "Make a new modlog"`
-								));
-							return null;
-						});
-					if (edit) {
-						collector.stop('Complete');
-					} else {
-						stage = 3;
-						collector.resetTimer();
-						modLogChannel = undefined;
-						msg = await this.step3(i, msg, stage);
-					}
-					break;
-
-				case 'make_modlog':
-					if (!interaction.guild.members.me?.permissions.has(PermissionFlagsBits.ManageChannels)) {
-						await i.followUp({
-							content: `I don't have the permissions to create channels!\nPlease give me the \`Manage Channels\` permission!`,
-							flags: MessageFlags.Ephemeral
-						});
-						return;
-					}
-					collector.resetTimer();
-					modLogChannel = undefined;
-					stage = 4;
-					msg = await this.step4(i, msg, stage);
-					break;
-
-				case 'public_modlog':
-				case 'private_modlog':
-					modLogChannel = await makeModlog(i.customId === 'private_modlog')
-						.then((c) => {
-							collector.stop('Complete');
-							stage = 5;
-							return c;
-						})
-						.catch(async () => {
-							if (!i.replied) await i.deferUpdate();
-							await i.followUp({
-								content:
-									`I couldn't create the modlog channel due to insufficient permissions!\nPlease try again after granting ` +
-									`\`Manage Channels\` [Creation of Channel], \`Manage Roles\` [To configure channel permissions], \`Embed Links and Send Messages\` [To send modlogs] permissions to me!\n` +
-									`**Note:** I need a role other than @everyone with the mentioned permissions!\n> ` +
-									`If you are still having issues run </about me:970217477126643752> and join our support server!`,
-								flags: MessageFlags.Ephemeral
-							});
-							return undefined;
-						});
-					break;
-			}
-		});
-
-		collector.on('end', async (_c, r) => {
-			if (r === 'not-ready') return;
-
-			if (r === 'Complete') {
-				const data = await this.container.prisma.guildSettings.upsert({
-					create: {
-						id: interaction.guildId,
-						configured: true,
-						modRoles: modRoles.map((m) => m.id),
-						adminRoles: adminRoles.map((m) => m.id),
-						modLogChannel: modLogChannel?.id ?? ''
-					},
-					update: {
-						configured: true,
-						modRoles: modRoles.map((m) => m.id),
-						adminRoles: adminRoles.map((m) => m.id),
-						modLogChannel: modLogChannel?.id ?? ''
-					},
-					where: {
-						id: interaction.guildId
-					}
-				});
-				const final = new Embed()
-					._color(Color.Admin)
-					._title('Overview')
-					._description('Here is a quick overview of your setup!')
-					._fields([
-						{
-							name: 'Moderator Roles',
-							value: modRoles.map((r) => r).join(', '),
-							inline: true
-						},
-						{
-							name: 'Admin Roles',
-							value: adminRoles.map((r) => r).join(', ') || 'None',
-							inline: true
-						},
-						{
-							name: 'Moderation Logs Channel',
-							// eslint-disable-next-line @typescript-eslint/no-base-to-string
-							value: modLogChannel ? `${modLogChannel}` : 'None'
-						}
-					])
-					._timestamp()
-					._author({
-						name: interaction.user.globalName ?? interaction.user.username,
-						iconURL: interaction.user.displayAvatarURL({ forceStatic: false })
-					})
-					._footer({
-						text: `${data ? 'Saved Successfully' : 'Created Successfully'}`
-					});
-
-				await msg.edit({
-					content: `Setup completed!`,
-					embeds: [final],
-					components: []
-				});
-				return;
-			}
-
-			await msg.edit({
-				content: `Setup failed due to inactivity!`,
-				embeds: [],
-				components: []
-			});
-		});
-
-		async function makeModlog(is_private: boolean) {
-			const moglog = await interaction.guild?.channels.create({
-				name: 'modlog',
-				type: ChannelType.GuildText,
-				topic: `Moderation log for ${interaction.guild?.name}`,
-				permissionOverwrites: permissions(is_private)
-			});
-			return moglog;
-		}
-
-		function permissions(is_private: boolean) {
-			let permissionOverwrites: OverwriteResolvable[] = [];
-			if (is_private) {
-				permissionOverwrites = [
-					{
-						id: interaction.guild.id,
-						deny: ['ViewChannel'],
-						type: OverwriteType.Role
-					},
-					{
-						id: interaction.client.user.id,
-						allow: ['ViewChannel', 'SendMessages', 'EmbedLinks', 'ManageChannels'],
-						type: OverwriteType.Member
-					}
-				];
-				const permissions = (id: string, mod: boolean): OverwriteResolvable => {
-					return {
-						id,
-						allow: ['ViewChannel'],
-						deny: mod ? ['SendMessages', 'ManageChannels'] : [],
-						type: OverwriteType.Role
-					};
-				};
-
-				for (const mod of modRoles.keys()) {
-					permissionOverwrites.push(permissions(mod, true));
-				}
-
-				for (const admin of adminRoles.keys()) {
-					permissionOverwrites.push(permissions(admin, false));
-				}
-			} else {
-				permissionOverwrites = [
-					{
-						id: interaction.guild.id,
-						allow: ['ViewChannel'],
-						deny: ['ManageChannels', 'SendMessages'],
-						type: OverwriteType.Role
-					},
-					{
-						id: interaction.client.user.id,
-						allow: ['SendMessages', 'EmbedLinks', 'ManageChannels'],
-						type: OverwriteType.Member
-					}
-				];
-			}
-			return permissionOverwrites;
-		}
-	}
-
 	public override registerApplicationCommands(registry: RadonCommand.Registry) {
 		registry.registerChatInputCommand(
 			(builder) =>
-				builder //
+				builder
 					.setName(this.name)
 					.setDescription(this.description)
-					.setContexts([InteractionContextType.Guild])
-					.setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+					.setContexts(InteractionContextType.Guild)
+					.setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+					.addSubcommand((s) => s.setName('start').setDescription('Set up or change Radon with a private guided review'))
+					.addSubcommand((s) => s.setName('view').setDescription('View the current configuration without changing anything')),
 			{ idHints: ['951113445930065980', '1019931909528223765'] }
 		);
 	}
 
-	private welcome() {
-		return new Embed()
-			._color(Color.Admin)
-			._thumbnail(this.container.client.user?.displayAvatarURL() ?? '')
-			._timestamp()
-			._title('Welcome to Radon!')
-			._description(`This is the setup wizard for Radon.\nThis will guide you through the process of setting up Radon.`);
-	}
-
-	/**
-	 * Moderator Roles Selection
-	 */
-	private async step1(i: MessageComponentInteraction, prevMessage: Message, _stage: number) {
-		const embed = new Embed(prevMessage.embeds[0].data)._fields([
-			{
-				name: `What are the Moderator roles? [Min: 1, Max: 3]`,
-				value: `Only the **selected** roles below will be considered as moderators`
-			}
-		]);
-
-		const rolesMenu = new RoleSelectMenuBuilder()
-			.setCustomId('mod_roles')
-			.setPlaceholder('Select moderator roles')
-			.setMinValues(1)
-			.setMaxValues(3);
-
-		const interactionResponse = await i.update({
-			embeds: [embed],
-			components: [new Row<RoleSelectMenuBuilder>()._components([rolesMenu])],
-			withResponse: true
-		});
-		return (i.channel?.messages.cache.get(interactionResponse.interaction.responseMessageId!) ||
-			(await i.channel?.messages.fetch(interactionResponse.interaction.responseMessageId!))) as Message<boolean>;
-	}
-
-	/**
-	 * Admin Roles Selection
-	 */
-	private async step2(i: MessageComponentInteraction, prevMessage: Message, _stage: number) {
-		const embed = new Embed(prevMessage.embeds[0].data)._fields(
-			[
-				{
-					name: `What are the Admin roles? [Max: 2]`,
-					value:
-						`Only the **selected** roles below will be considered as admins\n` +
-						`**Note**: __Moderation roles and Admin roles cannot be the same__`
+	public override async chatInputRun(interaction: RadonCommand.ChatInputCommandInteraction) {
+		const { prisma } = this.container;
+		const logError = (error: unknown) => this.container.logger.error('Setup interaction failed', error);
+		if (interaction.options.getSubcommand(false) === 'view')
+			return openAdminBrowser(
+				interaction,
+				prisma,
+				async () => {
+					await interaction.guild.roles.fetch();
+					return configurationPages(await readConfiguration(prisma, interaction.guildId), interaction.guild);
+				},
+				logError
+			);
+		await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+		const actor = await requireSetupAdmin(interaction.guild, prisma, interaction.user.id);
+		if (sessions.has(interaction.guildId))
+			return interaction.editReply(
+				componentMessage(
+					text(
+						card('Setup already open'),
+						'Another administrator has a setup session open. Finish or cancel it first. You can still use `/setup view`.'
+					)
+				)
+			);
+		const token = Symbol();
+		sessions.set(interaction.guildId, token);
+		const release = () => {
+			if (sessions.get(interaction.guildId) === token) sessions.delete(interaction.guildId);
+		};
+		try {
+			const initial = await readConfiguration(prisma, interaction.guildId);
+			await Promise.all([interaction.guild.roles.fetch(), interaction.guild.channels.fetch()]);
+			const draft = draftConfiguration(initial);
+			let step = 0;
+			let finished = false;
+			let canManage = actor.permissions.has('ManageGuild');
+			const screen = (notice?: string) => componentMessage(setupScreen(draft, step, interaction.guild, canManage, notice, false, initial));
+			const message = await interaction.editReply(screen());
+			const collector = message.createMessageComponentCollector({
+				time: 10 * 60_000,
+				idle: 5 * 60_000,
+				filter: (i) => i.customId.startsWith('setup:')
+			});
+			let pending = Promise.resolve();
+			const enqueue = (run: () => Promise<unknown>) =>
+				(pending = pending
+					.then(run)
+					.then(() => undefined)
+					.catch(logError));
+			collector.on('collect', async (i) => {
+				try {
+					if (i.user.id !== interaction.user.id)
+						return void (await i.reply({ content: 'Run /setup start to open your own setup.', flags: MessageFlags.Ephemeral }));
+					await i.deferUpdate();
+					await enqueue(async () => {
+						if (collector.ended || finished) return;
+						let freshActor;
+						try {
+							freshActor = await requireSetupAdmin(interaction.guild, prisma, i.user.id);
+						} catch {
+							finished = true;
+							collector.stop('access');
+							release();
+							await i.editReply(
+								componentMessage(text(card('Setup closed'), 'Your administrator access could not be confirmed. Nothing was saved.'))
+							);
+							return;
+						}
+						canManage = freshActor.permissions.has('ManageGuild');
+						const id = i.customId;
+						if (id === 'setup:cancel') {
+							finished = true;
+							collector.stop('cancel');
+							release();
+							await i.editReply(
+								componentMessage(
+									text(card('Setup cancelled'), 'Nothing was changed. Use `/setup view` to see the saved configuration.')
+								)
+							);
+							return;
+						}
+						if (step === 0 && i.isRoleSelectMenu() && (id === 'setup:mods' || id === 'setup:admins')) {
+							if (id === 'setup:mods') draft.modRoles = [...i.values];
+							else draft.adminRoles = [...i.values];
+						} else if (step === 1 && i.isChannelSelectMenu() && id === 'setup:logs') {
+							draft.logChannelId = i.values[0] ?? '';
+							draft.log = draft.logChannelId ? 'existing' : 'none';
+						} else if (step === 1 && i.isChannelSelectMenu() && id === 'setup:reports') {
+							draft.reportChannelId = i.values[0] ?? '';
+							draft.reports = draft.reportChannelId ? 'existing' : 'none';
+						} else if (step === 1 && id === 'setup:new-log') {
+							draft.log = 'create';
+						} else if (step === 1 && id === 'setup:skip-log') {
+							draft.log = 'none';
+							if (draft.reports === 'log') draft.reports = 'none';
+						} else if (step === 1 && id === 'setup:reports-log' && draft.log !== 'none') draft.reports = 'log';
+						else if (step === 1 && id === 'setup:skip-reports') draft.reports = 'none';
+						else if (step === 2 && id === 'setup:keep-protection') draft.protection = [];
+						else if (step === 2 && i.isStringSelectMenu() && id === 'setup:protection') {
+							const choices = availableProtection(interaction.guild, canManage);
+							if (i.values.some((value) => !choices.includes(value as (typeof choices)[number]))) return;
+							draft.protection = i.values as typeof choices;
+						} else if (i.isButton() && id === 'setup:back') step = Math.max(0, step - 1);
+						else if (i.isButton() && id === 'setup:next' && step < 3) {
+							if (step === 0 && draft.modRoles.some((role) => draft.adminRoles.includes(role))) {
+								await i.editReply(screen('Choose separate moderator and administrator roles.'));
+								return;
+							}
+							if (step >= 1) {
+								try {
+									await validateSetup(interaction.guild, freshActor, draft);
+								} catch (error) {
+									await i.editReply(screen((error as Error).message));
+									return;
+								}
+							}
+							step++;
+						} else if (i.isButton() && id === 'setup:save' && step === 3) {
+							// Validation failures stay editable. After dispatch, close even on an unknown
+							// outcome so a double click cannot create a second channel or replay a write.
+							try {
+								await validateSetup(interaction.guild, freshActor, draft);
+							} catch (error) {
+								await i.editReply(screen((error as Error).message));
+								return;
+							}
+							finished = true;
+							try {
+								await i.editReply(componentMessage(text(card('Saving configuration'), 'Applying the changes you reviewed…')));
+								const result = await saveSetup(prisma, interaction.guild, i.user.id, initial, draft);
+								const panel = text(
+									card('Configuration saved'),
+									summary({ ...draft, log: result.logId ? 'existing' : 'none', logChannelId: result.logId })
+								);
+								if (result.notes.length) text(panel, result.notes.join('\n'));
+								text(panel, 'View settings with `/setup view`. Check permissions and readiness with `/doctor`.');
+								await i.editReply(componentMessage(panel));
+							} catch (error) {
+								logError(error);
+								await i.editReply(componentMessage(text(card('Setup needs attention'), (error as Error).message)));
+							} finally {
+								collector.stop('saved');
+								release();
+							}
+							return;
+						} else return;
+						await i.editReply(screen());
+					});
+				} catch (error) {
+					logError(error);
 				}
-			],
-			true
-		);
-
-		const rolesMenu = new RoleSelectMenuBuilder() //
-			.setCustomId('admin_roles')
-			.setPlaceholder('Select admin roles')
-			.setMinValues(0)
-			.setMaxValues(2);
-
-		const interactionResponse = await i.update({
-			embeds: [embed],
-			components: [new Row<RoleSelectMenuBuilder>()._components([rolesMenu])],
-			withResponse: true
-		});
-		return (i.channel?.messages.cache.get(interactionResponse.interaction.responseMessageId!) ||
-			(await i.channel?.messages.fetch(interactionResponse.interaction.responseMessageId!))) as Message<boolean>;
-	}
-
-	/**
-	 * ModLog Channel Selection
-	 */
-	private async step3(i: MessageComponentInteraction, prevMessage: Message, _stage: number) {
-		const embed = new Embed(prevMessage.embeds[0].data)._fields(
-			[
-				{
-					name: `Where should moderation logs be sent?`,
-					value:
-						`If you **don't have** any channel, you can tell me to create one!\n` +
-						`If you **don't want** to have a mod log channel press confirm!`
-				}
-			],
-			true
-		);
-
-		const channelMenu = new ChannelSelectMenuBuilder() //
-			.setCustomId('modlog_channel')
-			.setPlaceholder('Select modlogs channel')
-			.setMinValues(0)
-			.setMaxValues(1)
-			.setChannelTypes(ChannelType.GuildText);
-
-		const interactionResponse = await i.update({
-			embeds: [embed],
-			components: [
-				new Row<ChannelSelectMenuBuilder>()._components([channelMenu]),
-				new Row<Button>()._components([
-					new Button()._customId('retry_modlog')._label('Retry')._style(ButtonStyle.Secondary),
-					new Button()._customId('make_modlog')._label('Make a new modlog')._style(ButtonStyle.Primary),
-					new Button()._customId('confirm_modlog')._label('Confirm')._style(ButtonStyle.Success)
-				])
-			],
-			withResponse: true
-		});
-
-		return (i.channel?.messages.cache.get(interactionResponse.interaction.responseMessageId!) ||
-			(await i.channel?.messages.fetch(interactionResponse.interaction.responseMessageId!))) as Message<boolean>;
-	}
-
-	/**
-	 * ModLog Channel Visibility
-	 */
-	private async step4(i: MessageComponentInteraction, prevMessage: Message, _stage: number) {
-		const embed = new Embed(prevMessage.embeds[0].data)._fields(
-			[
-				{
-					name: `What should be the visibility of the modlog?`,
-					value:
-						`If the modlog is __private__, only the moderators will be able to see it.\n` +
-						`If the modlog is __public__, everyone will be able to see it.\n` +
-						`Please press the appropriate button\n` +
-						`> Note: I need \`Manage Channels\` and \`Manage Roles\` permissions to configure permissions ` +
-						`of the modlog channel on @everyone role!\n` +
-						`> It is compulsory that I should have a role other than @everyone!\n` +
-						`> Once created successfully, feel free to tune permissions of the modlog channel`
-				}
-			],
-			true
-		);
-		const interactionResponse = await i.update({
-			embeds: [embed],
-			components: [
-				new Row<Button>()._components([
-					new Button()._customId('private_modlog')._label('Private')._style(ButtonStyle.Primary),
-					new Button()._customId('public_modlog')._label('Public')._style(ButtonStyle.Primary)
-				])
-			],
-			withResponse: true
-		});
-
-		return (i.channel?.messages.cache.get(interactionResponse.interaction.responseMessageId!) ||
-			(await i.channel?.messages.fetch(interactionResponse.interaction.responseMessageId!))) as Message<boolean>;
+			});
+			collector.on('end', () => {
+				void enqueue(async () => {
+					try {
+						if (!finished) {
+							finished = true;
+							await interaction.editReply(
+								componentMessage(
+									text(
+										card('Setup expired'),
+										'Nothing was changed. Run `/setup start` to continue, or `/setup view` to inspect saved settings.'
+									)
+								)
+							);
+						}
+					} finally {
+						release();
+					}
+				});
+			});
+			return message;
+		} catch (error) {
+			release();
+			throw error;
+		}
 	}
 }

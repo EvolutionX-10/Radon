@@ -1,3 +1,4 @@
+import { v2 } from '../../lib/presentation/components.js';
 import { PermissionLevel } from '#lib/decorators';
 import { RadonCommand } from '#lib/structures';
 import { PermissionLevels } from '#lib/types';
@@ -36,7 +37,7 @@ export class UserCommand extends RadonCommand {
 			case 'server':
 				return this.unlockServer(interaction);
 			default:
-				return interaction.reply('Unknown lock operation.');
+				return interaction.reply(v2('Unknown lock operation.', 'Radon · Unlock'));
 		}
 	}
 

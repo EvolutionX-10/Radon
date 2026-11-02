@@ -1,3 +1,4 @@
+import { displayText } from './fixtures/presentation.js';
 import { describe, expect, it, mock } from 'bun:test';
 import type { automodConfig, PrismaClient } from '@prisma/client';
 import { Collection, GuildVerificationLevel, type Guild, type GuildMember, type Message } from 'discord.js';
@@ -118,8 +119,8 @@ describe('AutoMod message processing', () => {
 		expect(f.remove).not.toHaveBeenCalled();
 		expect(f.send).toHaveBeenCalledTimes(1);
 		const payload = f.send.mock.calls[0][0] as { content: string; allowedMentions: { parse: string[] } };
-		expect(payload.content).toContain('Observation only');
-		expect(payload.content).not.toContain('https://evil.example');
+		expect(displayText(payload)).toContain('Observation only');
+		expect(displayText(payload)).not.toContain('https://evil.example');
 		expect(payload.allowedMentions.parse).toEqual([]);
 	});
 	it('enforce mode deletes matching messages but rate limits alerts separately', async () => {
@@ -129,7 +130,7 @@ describe('AutoMod message processing', () => {
 		await service.message(f.prisma, { ...f.message, id: 'second' } as Message);
 		expect(f.remove).toHaveBeenCalledTimes(2);
 		expect(f.send).toHaveBeenCalledTimes(1);
-		expect((f.send.mock.calls[0][0] as { content: string }).content).toContain('Message deleted');
+		expect(displayText(f.send.mock.calls[0][0])).toContain('Message deleted');
 	});
 	it('reports failed deletion accurately', async () => {
 		const f = setup({ linkMode: 'enforce' });
@@ -137,7 +138,7 @@ describe('AutoMod message processing', () => {
 			throw new Error('permission lost');
 		});
 		await new AutoModService().message(f.prisma, f.message);
-		expect((f.send.mock.calls[0][0] as { content: string }).content).toContain('Deletion failed');
+		expect(displayText(f.send.mock.calls[0][0])).toContain('Deletion failed');
 	});
 	it('honors role, channel, parent channel, and staff exemptions', async () => {
 		for (const kind of ['channel', 'parent', 'role', 'staff']) {

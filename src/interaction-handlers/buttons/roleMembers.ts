@@ -1,3 +1,4 @@
+import { v2 } from '../../lib/presentation/components.js';
 import { Color } from '#constants';
 import { Embed, JustButtons } from '#lib/structures';
 import type { RadonButtonInteraction } from '#lib/types';
@@ -39,9 +40,14 @@ export class RoleMembersButtonHandler extends InteractionHandler {
 			.map((member) => member);
 
 		if (members.length === 0) {
-			return interaction.editReply({
-				content: `No members currently have the ${role} role.`
-			});
+			return interaction.editReply(
+				v2(
+					{
+						content: `No members currently have the ${role} role.`
+					},
+					'Role members'
+				)
+			);
 		}
 
 		const membersPerPage = 10;
@@ -83,7 +89,7 @@ export class RoleMembersButtonHandler extends InteractionHandler {
 		}
 
 		if (pages.length === 1) {
-			return interaction.editReply(pages[0]);
+			return interaction.editReply(v2(pages[0], 'Role members'));
 		}
 
 		const paginatedMessage = new JustButtons();

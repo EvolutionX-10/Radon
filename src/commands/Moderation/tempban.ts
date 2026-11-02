@@ -1,3 +1,4 @@
+import { v2 } from '../../lib/presentation/components.js';
 import { RadonCommand } from '../../lib/structures/commands/RadonCommand.js';
 import { ModerationAction } from '../../lib/structures/classes/ModerationAction.js';
 import { PermissionLevels, RadonEvents } from '#lib/types';
@@ -46,54 +47,68 @@ export class UserCommand extends RadonCommand {
 				orderBy: { dueAt: 'asc' },
 				take: 10
 			});
-			return interaction.editReply({
-				content:
-					tasks
-						.map(
-							(t) =>
-								`${t.targetId} · ${t.status} · due ${t.dueAt.toISOString()}${t.lastError ? `\nLast attempt: ${t.lastError.slice(0, 100)}` : ''}`
-						)
-						.join('\n\n') || 'No pending automatic unbans.',
-				allowedMentions: { parse: [] }
-			});
+			return interaction.editReply(
+				v2(
+					{
+						content:
+							tasks
+								.map(
+									(t) =>
+										`${t.targetId} · ${t.status} · due ${t.dueAt.toISOString()}${t.lastError ? `\nLast attempt: ${t.lastError.slice(0, 100)}` : ''}`
+								)
+								.join('\n\n') || 'No pending automatic unbans.',
+						allowedMentions: { parse: [] }
+					},
+					'Temporary ban'
+				)
+			);
 		}
 		const user = interaction.options.getUser('member', true);
 		if (subcommand === 'cancel') {
 			const cancelled = await service.cancel(interaction.guildId, user.id);
 			return interaction.editReply(
-				cancelled
-					? 'Scheduled unban cancelled. The member remains banned until a moderator unbans them.'
-					: 'No pending schedule found, or a worker is currently processing it.'
+				v2(
+					cancelled
+						? 'Scheduled unban cancelled. The member remains banned until a moderator unbans them.'
+						: 'No pending schedule found, or a worker is currently processing it.',
+					'Temporary ban'
+				)
 			);
 		}
 		const duration = new Duration(interaction.options.getString('duration', true)).offset;
 		if (!Number.isFinite(duration) || duration < 60_000 || duration > 365 * 24 * 60 * 60_000)
-			return interaction.editReply('Choose a duration between 1 minute and 365 days, for example 7d.');
+			return interaction.editReply(v2('Choose a duration between 1 minute and 365 days, for example 7d.', 'Temporary ban'));
 		const target = await interaction.guild.members.fetch({ user: user.id, force: true }).catch(() => null);
-		if (!target) return interaction.editReply('Temporary bans currently require a member who is in this server.');
+		if (!target) return interaction.editReply(v2('Temporary bans currently require a member who is in this server.', 'Temporary ban'));
 		if (
 			target.id === interaction.user.id ||
 			target.id === interaction.guild.ownerId ||
 			(interaction.member.id !== interaction.guild.ownerId && interaction.member.roles.highest.comparePositionTo(target.roles.highest) <= 0)
 		)
-			return interaction.editReply('You cannot ban yourself, the server owner, or a member at or above your highest role.');
+			return interaction.editReply(
+				v2('You cannot ban yourself, the server owner, or a member at or above your highest role.', 'Temporary ban')
+			);
 		const reason = interaction.options.getString('reason', true);
 		let task;
 		try {
 			task = await service.prepare(interaction.guildId, user.id, interaction.user.id, reason, new Date(Date.now() + duration));
 		} catch (error) {
-			if ((error as { code?: string }).code === 'P2002') return interaction.editReply('This member already has a pending temporary ban.');
+			if ((error as { code?: string }).code === 'P2002')
+				return interaction.editReply(v2('This member already has a pending temporary ban.', 'Temporary ban'));
 			throw error;
 		}
 		const data = { action: 'ban' as const, moderator: interaction.member, target, reason: task.expectedReason };
 		try {
 			await new ModerationAction(interaction.guild).invoke(data, { temporaryBanGeneration: task.generation });
 			interaction.client.emit(RadonEvents.ModAction, data);
-			return interaction.editReply(`Member banned. Automatic unban scheduled for ${task.dueAt.toISOString()}.`);
+			return interaction.editReply(v2(`Member banned. Automatic unban scheduled for ${task.dueAt.toISOString()}.`, 'Temporary ban'));
 		} catch (error) {
 			this.container.logger.error('Temporary ban request failed or its outcome is unknown', error);
 			return interaction.editReply(
-				'The ban or schedule could not be confirmed. The recovery record is retained; check /tempban list and the server ban list before retrying.'
+				v2(
+					'The ban or schedule could not be confirmed. The recovery record is retained; check /tempban list and the server ban list before retrying.',
+					'Temporary ban'
+				)
 			);
 		}
 	}

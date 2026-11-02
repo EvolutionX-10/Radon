@@ -9,6 +9,8 @@ import { ChannelType, ChatInputCommandInteraction } from 'discord.js';
 })
 export class UserListener extends Listener {
 	public override async run(interaction: ChatInputCommandInteraction) {
+		// The private bug inbox must never be copied to the general command log.
+		if (interaction.commandName === 'bug' || interaction.commandName === 'bugreports') return;
 		if (!interaction.guild) return;
 		// if (Owners.includes(interaction.user.id)) return;
 

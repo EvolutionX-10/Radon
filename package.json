@@ -1,6 +1,6 @@
 {
 	"name": "radon",
-	"version": "2.0.0",
+	"version": "3.0.0",
 	"description": "An advanced moderation discord bot",
 	"main": "./src/index.ts",
 	"type": "module",
@@ -10,6 +10,7 @@
 		"#constants": "./src/lib/utility/constants.ts",
 		"#config": "./src/lib/utility/config.ts",
 		"#lib/RadonClient": "./src/lib/RadonClient.ts",
+		"#lib/*.js": "./src/lib/*.ts",
 		"#lib/*": "./src/lib/*/index.ts",
 		"#root/*": "./src/*.ts"
 	},
@@ -17,6 +18,7 @@
 		"setup": "bash scripts/setup.sh",
 		"db:generate": "prisma generate",
 		"test": "bun test",
+		"test:coverage": "bun test --coverage --coverage-reporter=text --coverage-reporter=lcov",
 		"check": "bun run db:generate && bun run typecheck && bun test && bun run pretty",
 		"start": "NODE_ENV=production bun --watch .",
 		"dev": "NODE_ENV=development bun --watch .",

@@ -1,6 +1,10 @@
+import { release } from '#lib/release.js';
 import { Emojis, RecommendedPermissions, UserFlags, voteRow } from '#constants';
-import { Button, RadonCommand, Row, Timestamp } from '#lib/structures';
-import { isOwner } from '#lib/utility';
+import { RadonCommand } from '#lib/structures/commands/RadonCommand.js';
+import { Button } from '#lib/structures/classes/Button.js';
+import { Row } from '#lib/structures/classes/Row.js';
+import { Timestamp } from '#lib/structures/classes/Timestamp.js';
+import { isOwner } from '#lib/utility/functions/permissions.js';
 import { ApplyOptions } from '@sapphire/decorators';
 import {
 	italic,
@@ -99,7 +103,7 @@ export class UserCommand extends RadonCommand {
 				new Button()._label(`Join Support Server!`)._style(ButtonStyle.Link)._emoji('🆘')._url(`https://discord.gg/YBFaDggpvt`)
 			);
 
-		const textContent = `${heading('About me!')}\nHello ${interaction.user}!\nI am Radon, a ${italic('moderation')} bot dedicated to make your server a better place`;
+		const textContent = `${heading(`${release.name} · v${release.version}`)}\nHello ${interaction.user}!\nI am Radon, your teammate for ${italic('moderation')}, game coupons, and a better community.\n${subtext(release.status)}`;
 
 		const container = new ContainerBuilder() //
 			.addSectionComponents((section) =>
@@ -114,8 +118,8 @@ export class UserCommand extends RadonCommand {
 			.addSeparatorComponents((s) => s)
 			.addTextDisplayComponents((textDisplay) =>
 				textDisplay.setContent(
-					`If you like using me, consider voting to help me grow and reach more servers!\n` +
-						subtext('Your support means a lot and helps keep the bot running smoothly. Thank you!')
+					`Vote on either site, then check your vote to unlock a 24-hour Supporter Pass: extra saved accounts and optional coupon alerts.\n` +
+						subtext('Normal claiming stays free. Use /vote for your pass status or /guide for help. Thank you for supporting Radon!')
 				)
 			)
 			.addActionRowComponents(voteRow)

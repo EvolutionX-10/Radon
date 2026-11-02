@@ -1,3 +1,4 @@
+import { safe } from '../../lib/presentation/components.js';
 import { Severity } from '#constants';
 import { ModerationCases } from '../../lib/moderation/cases.js';
 import { Embed } from '#lib/structures';
@@ -45,17 +46,17 @@ export class UserListener extends Listener {
 				iconURL: data.moderator.displayAvatarURL({ forceStatic: false })
 			})
 			._thumbnail(data.target.displayAvatarURL({ forceStatic: false }))
-			._title(`${this.getActionName(data.action)}${caseId ? ` · Case ${caseId}` : ''}`)
+			._title(this.getActionName(data.action))
 			._description(data.reason?.length ? data.reason : '```\nNo reason provided\n```')
 			._fields([
 				{
 					name: 'Moderator',
-					value: `- ${data.moderator} \`[${data.moderator.id}]\``,
+					value: `**${safe(data.moderator.displayName, 100)}** · ${data.moderator}`,
 					inline: true
 				},
 				{
 					name: 'Target',
-					value: `- ${data.target} \`[${data.target.id}]\``,
+					value: `**${safe(data.target.displayName, 100)}** · ${data.target}`,
 					inline: true
 				}
 			])
@@ -80,6 +81,8 @@ export class UserListener extends Listener {
 				value: `- ${(data as WarnActionData).severity}`
 			});
 		}
+
+		if (caseId) embed.addFields({ name: 'Case reference', value: `\`${caseId}\`` });
 
 		return data.moderator.guild.settings?.modlogs.sendModLog(embed, data.url);
 	}

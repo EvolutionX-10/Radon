@@ -1,12 +1,14 @@
+import { release } from '#lib/release.js';
 import { RadonGuildId, TestServerGuildIds } from '#constants';
-import { RadonCommand, Timestamp } from '#lib/structures';
-import { PermissionLevels } from '#lib/types';
+import { RadonCommand } from '#lib/structures/commands/RadonCommand.js';
+import { Timestamp } from '#lib/structures/classes/Timestamp.js';
+import { PermissionLevels } from '#lib/types/permissionLevels.js';
 import { ApplyOptions } from '@sapphire/decorators';
 import { version as sapphireVersion } from '@sapphire/framework';
 import { roundNumber } from '@sapphire/utilities';
 import { ContainerBuilder, MessageFlags, version, bold, heading, HeadingLevel } from 'discord.js';
 import { uptime } from 'node:os';
-import { performanceMetrics } from '../../lib/utility/functions/metrics.js';
+import { performanceMetrics } from '#lib/utility/functions/metrics.js';
 
 @ApplyOptions<RadonCommand.Options>({
 	name: 'stats',
@@ -79,6 +81,7 @@ export class UserCommand extends RadonCommand {
 
 		return {
 			Statistics: {
+				Radon: `${release.name} · v${release.version}`,
 				Users: stats.users.toString(),
 				Servers: stats.guilds.toString(),
 				Channels: stats.channels.toString(),

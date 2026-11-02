@@ -1,10 +1,12 @@
-import type { Metadata } from 'next';
 import Link from 'next/link';
+import { DocumentHeading } from '@/components/document-heading';
+import { pageMetadata } from '@/lib/metadata';
 
-export const metadata: Metadata = {
-	title: 'Terms of Service',
-	description: 'Terms for using the Radon Discord moderation bot.'
-};
+export const metadata = pageMetadata(
+	'Terms of Service',
+	'Terms for using the Radon Discord bot for moderation, game coupon claiming, and server utilities.',
+	'/terms-of-service'
+);
 
 const sections = [
 	{
@@ -13,7 +15,7 @@ const sections = [
 	},
 	{
 		title: '2. Intended use',
-		body: 'Radon is provided for Discord server moderation and management tasks. You must use it in compliance with Discord rules and applicable law.'
+		body: 'Radon provides Discord moderation, server utilities, and game coupon claiming. Game publishers control coupon validity, rewards, and account restrictions. Optional voting perks require verification and do not guarantee redemption. You must use it in compliance with Discord rules and applicable law.'
 	},
 	{
 		title: '3. Moderation responsibility',
@@ -25,7 +27,7 @@ const sections = [
 	},
 	{
 		title: '5. Prohibited use',
-		body: 'You may not use Radon to harass users, automate abuse, bypass platform enforcement, or perform unlawful activity.'
+		body: 'You may not use Radon to harass users, automate abuse, bypass platform enforcement, or perform unlawful activity. Misusing bug reports, including spam, harassment, or deliberately false reports, will lead to a ban from using the bot.'
 	},
 	{
 		title: '6. Limitation of liability',
@@ -39,23 +41,21 @@ const sections = [
 
 export default function TermsOfServicePage() {
 	return (
-		<article className="content-panel p-6 md:p-9">
-			<span className="badge">Legal</span>
-			<h1 className="mt-4 text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">Terms of Service</h1>
-			<p className="mt-3 max-w-3xl text-sm leading-7 text-slate-700 md:text-base">
-				These terms apply to use of Radon, a Discord moderation bot. Effective date: April 4, 2026.
-			</p>
-
-			<div className="mt-6 space-y-4">
+		<article className="container legal-page">
+			<DocumentHeading eyebrow="THE GOOD-TO-KNOW STUFF" title="Terms of Service">
+				These terms apply to use of Radon, a Discord bot for moderation, game coupon claiming, and server utilities. Effective date: October
+				31, 2026.
+			</DocumentHeading>
+			<div className="document-sections">
 				{sections.map((section) => (
-					<section key={section.title} className="rounded-xl border border-slate-200 bg-white/70 p-4 md:p-5">
-						<h2 className="text-lg font-semibold text-slate-900">{section.title}</h2>
-						<p className="mt-2 text-sm leading-7 text-slate-700 md:text-base">{section.body}</p>
+					<section key={section.title} className="document-section">
+						<h2>{section.title}</h2>
+						<p>{section.body}</p>
 					</section>
 				))}
 			</div>
 
-			<p className="mt-6 text-sm text-slate-600">
+			<p className="document-footer">
 				For privacy details, see the{' '}
 				<Link href="/privacy-policy" className="underline underline-offset-4">
 					Privacy Policy

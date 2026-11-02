@@ -1,6 +1,6 @@
 <div align="center">
 
-# Radon
+# Radon V3
 
 [![License]][apache]
 [![GitHub stars]][stars]
@@ -9,6 +9,8 @@
 [![Continuous Integration](https://github.com/EvolutionX-10/Radon/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/EvolutionX-10/Radon/actions/workflows/continuous-integration.yml)
 
 </div>
+
+Version **3.0.0** · V3 preview. Four years after the first commit in February 2022, Radon brings a fresh website identity, three-game claiming, clearer Discord cards, more moderation tools, and guided setup. Full launch is planned after Discord intent approval. See the [V3 release notes and comparison](docs/radon-v3.md); `/updates` and the website share the public announcement.
 
 ## Table of Contents
 
@@ -23,9 +25,18 @@
 
 ## Command Help
 
+Use `/setup start` for a private guided server setup, or `/setup view` to inspect
+saved roles, log/report channels, and protection without changing them. `/doctor`
+provides a private readiness report with actionable permission, role,
+intent, and scheduled-recovery checks. See the [setup guide](docs/setup.md).
+
 Run `/help` in a server to open a private Components V2 command browser. Choose a category or use First, Back, Next, and Last to browse commands and their usage. `<argument>` means required and `[argument]` means optional. Controls expire after five minutes; run `/help` again to refresh the list.
 
 Help reflects your access in the current server and channel, including configured moderator/admin roles, bot owner access, community restrictions, Discord command permissions, and commands registered only in specific servers. It includes slash subcommands, context menus (right-click → Apps), and eligible prefix commands. Disabled commands are omitted, and browsing does not consume command cooldowns. Target-specific checks such as role hierarchy still apply when running a command.
+
+Use `/guide` for the first-time coupon walkthrough, supported games, optional vote rewards, and troubleshooting. Existing `/claim` commands and Solo Leveling CLAIM buttons work as before; choose the optional `game` field for Seven Knights Re:BIRTH or The Seven Deadly Sins: Idle Adventure. `/vote` offers an optional 24-hour Supporter Pass for extra saved accounts and personal coupon alerts. See the [player guide](docs/player-guide.md) and [vote rewards setup](docs/vote-rewards.md).
+
+Use `/bug` to report a problem privately to the bot owner. Reports are saved with a reference; misuse will lead to a ban from the bot. The owner can review them with `/bugreports`. Use `/updates` to read recent changes or select an older release. The website shares the same update history. See [bug reporting](docs/bug-reports.md) and [maintaining updates](docs/updates.md).
 
 For developers: help reads the live application registrations and command preconditions. When guarding an individual route with `@PermissionLevel`, pass its subcommand path as the second argument (for example, `@PermissionLevel('Administrator', 'action create')`) so help uses the same guard declaration. Add temporarily unavailable routes to the command's `unavailableSubcommands` list.
 
@@ -63,6 +74,8 @@ local MongoDB replica set. Setup and checks do not log in to Discord
 or apply database schema changes. Running the bot requires your configured
 Discord and MongoDB credentials.
 
+Run `bun run test:coverage` to generate a terminal coverage summary and `coverage/lcov.info`. CI retains this report as an artifact. The website has its own lint, build, and browser checks in `web/`; see its README for commands.
+
 The [implementation checklist](docs/implementation-checklist.md) tracks the
 moderation improvements, individual PR review order, and remaining rollout checks.
 
@@ -85,7 +98,7 @@ To contribute to this repository, feel free to fork the repository and make your
 
 ## Project Stats
 
-[![Radon](https://repobeats.axiom.co/api/embed/2dfcb3b8b5cbc2d7e8ecf7928bac05b966076c7f.svg 'All kinds Contributions are welcomed!')](https://top.gg/bot/944833303226236989)
+[![Radon](https://repobeats.axiom.co/api/embed/2dfcv3b8b5cbc2d7e8ecf7928bac05b966076c7f.svg 'All kinds Contributions are welcomed!')](https://top.gg/bot/944833303226236989)
 
 <!-- REFERENCES -->
 

@@ -50,8 +50,47 @@ jobs:
         run: bun install --frozen-lockfile
       - name: Generate Prisma Client
         run: bun run db:generate
-      - name: Run Tests
-        run: bun test
+      - name: Run Tests with coverage
+        run: bun run test:coverage
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: bot-coverage
+          path: coverage/lcov.info
+          if-no-files-found: error
+
+  Website:
+    name: Website
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.5
+      - name: Install website dependencies
+        run: bun install --frozen-lockfile
+      - name: Lint website
+        run: bun run lint
+      - name: Build website
+        run: bun run build
+      - name: Check website types
+        run: bun run typecheck
+      - name: Install browser
+        run: bunx playwright install --with-deps chromium
+      - name: Check desktop and mobile behavior
+        run: bun run test:e2e
+      - name: Upload browser traces on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: website-browser-results
+          path: web/test-results/
+          if-no-files-found: ignore
 
   MongoTests:
     name: MongoDB integration tests
@@ -83,6 +122,8 @@ jobs:
         env:
           RADON_TEST_MONGO_URL: mongodb://127.0.0.1:27028/radon_test_ci?directConnection=true&replicaSet=radonTest
           RADON_REDEMPTION_TEST_MONGO: mongodb://127.0.0.1:27028/radon_test_ci_redemption?directConnection=true&replicaSet=radonTest
+          RADON_REWARDS_TEST_MONGO: mongodb://127.0.0.1:27028/radon_test_ci_rewards?directConnection=true&replicaSet=radonTest
+          RADON_BUG_TEST_MONGO: mongodb://127.0.0.1:27028/radon_test_ci_bugs?directConnection=true&replicaSet=radonTest
           RADON_LOCK_TEST_MONGO: mongodb://127.0.0.1:27028/radon_test_ci_locks?directConnection=true&replicaSet=radonTest
         run: bun test
       - name: Remove disposable database

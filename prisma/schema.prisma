@@ -7,6 +7,33 @@ datasource db {
   url      = env("MONGO")
 }
 
+// Private bot bug inbox. This is separate from guild moderation reports/blacklists.
+model bugReport {
+  id          String   @id @map("_id")
+  reporterId  String
+  guildId     String
+  channelId   String
+  summary     String
+  details     String
+  status      String   @default("open")
+  createdAt   DateTime @default(now()) @db.Date
+  reviewedAt  DateTime? @db.Date
+  reviewerId  String?
+  reviewNote  String?
+
+  @@index([status, createdAt, id])
+  @@index([reporterId, createdAt])
+}
+
+model bugReporter {
+  id           String   @id @map("_id")
+  nextReportAt DateTime @db.Date
+  banned       Boolean  @default(false)
+  banReason    String?
+  bannedBy     String?
+  updatedAt    DateTime @updatedAt @db.Date
+}
+
 type MemberWarnData {
   id    String @map("_id")
   warns Warn[]
@@ -143,6 +170,41 @@ model redemptionGuildPolicy {
   id        String  @id @map("_id")
   roleId    String?
   channelId String?
+}
+
+// Additive: no changes to existing Solo Leveling account documents.
+model supporterPass {
+  id        String   @id @map("_id")
+  userId    String
+  provider  String
+  expiresAt DateTime @db.Date
+  @@index([userId, expiresAt])
+}
+
+model couponSubscription {
+  id        String   @id @map("_id")
+  userId    String
+  guildId   String
+  game      String
+  enabled   Boolean
+  createdAt DateTime @db.Date
+  @@index([guildId, game, enabled])
+}
+
+model couponAlert {
+  id         String    @id @map("_id")
+  guildId    String
+  channelId  String
+  game       String
+  code       String
+  messageUrl String
+  cursor     String
+  createdAt  DateTime  @db.Date
+  expiresAt  DateTime  @db.Date
+  couponExpiresAt DateTime? @db.Date
+  leaseToken String?
+  leaseUntil DateTime? @db.Date
+  @@index([expiresAt])
 }
 
 // New collections are additive. Existing guild warning documents are unchanged.
